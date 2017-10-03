@@ -24,6 +24,30 @@ namespace Roslynator.CSharp
                 SyntaxKind.DoStatement);
         }
 
+        internal static bool IsJumpStatement(this SyntaxKind kind)
+        {
+            return kind.IsKind(
+                SyntaxKind.BreakStatement,
+                SyntaxKind.ContinueStatement,
+                SyntaxKind.GotoCaseStatement,
+                SyntaxKind.GotoDefaultStatement,
+                SyntaxKind.ReturnStatement,
+                SyntaxKind.ThrowStatement);
+        }
+
+        internal static bool IsJumpStatementOrYieldBreakStatement(this SyntaxKind kind)
+        {
+            return kind.IsJumpStatement()
+                || kind == SyntaxKind.YieldBreakStatement;
+        }
+
+        internal static bool IsBooleanLiteralExpression(this SyntaxKind kind)
+        {
+            return kind.IsKind(
+                SyntaxKind.TrueLiteralExpression,
+                SyntaxKind.FalseLiteralExpression);
+        }
+
         internal static bool IsKind(this SyntaxKind kind, SyntaxKind kind1, SyntaxKind kind2)
         {
             return kind == kind1

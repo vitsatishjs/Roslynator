@@ -49,6 +49,7 @@
     <Compile Include="CSharp\Extensions\SyntaxKindExtensions.cs" />
     <Compile Include="CSharp\GenericSyntax.cs" />
     <Compile Include="CSharp\Helpers\DetermineParameterTypeHelper.cs" />
+    <Compile Include="CSharp\Helpers\LogicalNegationHelper.cs" />
     <Compile Include="CSharp\OverrideInfo.cs" />
     <Compile Include="CSharp\Refactorings\RefactoringIdentifierSet.cs" />
     <Compile Include="CSharp\Refactorings\RefactoringSettings.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="CSharp\StringLiteralParser.StringLiteralParseResult.cs" />
     <Compile Include="CSharp\XmlElementInfo.cs" />
     <Compile Include="CSharp\XmlElementKind.cs" />
-    <Compile Include="CSharp\Helpers\ModifierHelpers\ModifierHelper.cs" />
+    <Compile Include="CSharp\Modifier.cs" />
     <Compile Include="CSharp\IMemberDeclarationComparer.cs" />
     <Compile Include="CSharp\IModifierComparer.cs" />
     <Compile Include="CSharp\CSharpUtility.cs" />
