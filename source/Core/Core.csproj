@@ -150,7 +150,7 @@
     <Compile Include="Utilities\FlagsUtility.cs" />
     <Compile Include="Utilities\Deferred`1.cs" />
     <Compile Include="MethodInfo.cs" />
-    <Compile Include="Utilities\SemanticUtilities.cs" />
+    <Compile Include="SyntaxUtility.cs" />
     <Compile Include="SymbolUtility.cs" />
     <Compile Include="Text\SyntaxNodeTextBuilder.cs" />
     <Compile Include="CSharp\SyntaxRewriters\CommentRemover.cs" />
