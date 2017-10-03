@@ -125,7 +125,6 @@
     <Compile Include="CSharp\Syntax\IfStatement.cs" />
     <Compile Include="CSharp\IfStatementOrElseClause.cs" />
     <Compile Include="CSharp\Comparers\MemberDeclarationSortMode.cs" />
-    <Compile Include="CSharp\Negator.cs" />
     <Compile Include="CSharp\Syntax\MemberInvocationStatement.cs" />
     <Compile Include="CSharp\Syntax\SimpleAssignmentExpression.cs" />
     <Compile Include="CSharp\Syntax\MemberInvocationExpressionWithSingleParameter.cs" />
