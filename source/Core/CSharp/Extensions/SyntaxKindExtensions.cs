@@ -39,6 +39,23 @@ namespace Roslynator.CSharp
                 SyntaxKind.ParenthesizedLambdaExpression);
         }
 
+        internal static bool IsJumpStatement(this SyntaxKind kind)
+        {
+            return kind.IsKind(
+                SyntaxKind.BreakStatement,
+                SyntaxKind.ContinueStatement,
+                SyntaxKind.GotoCaseStatement,
+                SyntaxKind.GotoDefaultStatement,
+                SyntaxKind.ReturnStatement,
+                SyntaxKind.ThrowStatement);
+        }
+
+        internal static bool IsJumpStatementOrYieldBreakStatement(this SyntaxKind kind)
+        {
+            return kind.IsJumpStatement()
+                || kind == SyntaxKind.YieldBreakStatement;
+        }
+
         internal static bool IsBooleanLiteralExpression(this SyntaxKind kind)
         {
             return kind.IsKind(
