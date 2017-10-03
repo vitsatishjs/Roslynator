@@ -343,7 +343,10 @@ namespace Roslynator.CSharp.Refactorings.If
             IfStatementSyntax ifStatement,
             IfAnalysisOptions options)
         {
-            VariableDeclaratorSyntax declarator = localDeclarationStatement.Declaration?.SingleVariableOrDefault();
+            VariableDeclaratorSyntax declarator = localDeclarationStatement
+                .Declaration?
+                .Variables
+                .SingleOrDefault(throwException: false);
 
             if (declarator != null)
             {
