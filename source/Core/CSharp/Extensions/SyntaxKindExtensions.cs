@@ -31,7 +31,7 @@ namespace Roslynator.CSharp
                 SyntaxKind.ParenthesizedLambdaExpression);
         }
 
-        internal static bool IsAnonymousFunction(this SyntaxKind kind)
+        internal static bool IsAnonymousFunctionExpression(this SyntaxKind kind)
         {
             return kind.IsKind(
                 SyntaxKind.AnonymousMethodExpression,
