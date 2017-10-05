@@ -734,18 +734,6 @@ namespace Roslynator
             }
         }
 
-        public static IParameterSymbol SingleParameterOrDefault(this IMethodSymbol methodSymbol)
-        {
-            if (methodSymbol == null)
-                throw new ArgumentNullException(nameof(methodSymbol));
-
-            ImmutableArray<IParameterSymbol> parameters = methodSymbol.Parameters;
-
-            return (parameters.Length == 1)
-                ? parameters[0]
-                : null;
-        }
-
         public static IMethodSymbol ReducedFromOrSelf(this IMethodSymbol methodSymbol)
         {
             if (methodSymbol == null)
@@ -774,7 +762,7 @@ namespace Roslynator
             return false;
         }
 
-        public static bool IsReducedExtension(this IMethodSymbol methodSymbol)
+        public static bool IsReducedExtensionMethod(this IMethodSymbol methodSymbol)
         {
             return methodSymbol?.MethodKind == MethodKind.ReducedExtension;
         }
@@ -855,18 +843,6 @@ namespace Roslynator
         #endregion IParameterSymbol
 
         #region IPropertySymbol
-        public static IParameterSymbol SingleParameterOrDefault(this IPropertySymbol propertySymbol)
-        {
-            if (propertySymbol == null)
-                throw new ArgumentNullException(nameof(propertySymbol));
-
-            ImmutableArray<IParameterSymbol> parameters = propertySymbol.Parameters;
-
-            return (parameters.Length == 1)
-                ? parameters[0]
-                : null;
-        }
-
         public static IEnumerable<IPropertySymbol> OverriddenProperties(this IPropertySymbol propertySymbol)
         {
             if (propertySymbol == null)
@@ -1039,7 +1015,7 @@ namespace Roslynator
             {
                 var stack = new Stack<ITypeSymbol>(constraintTypes);
 
-                while (stack.Any())
+                while (stack.Count > 0)
                 {
                     ITypeSymbol type = stack.Pop();
 

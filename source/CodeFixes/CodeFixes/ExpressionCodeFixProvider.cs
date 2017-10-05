@@ -175,6 +175,7 @@ namespace Roslynator.CSharp.CodeFixes
                             SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
                             CodeFixRegistrator.ReplaceNullWithDefaultValue(context, diagnostic, expression, semanticModel);
+
                             break;
                         }
                     case CompilerDiagnosticIdentifiers.ResultOfExpressionIsAlwaysConstantSinceValueIsNeverEqualToNull:

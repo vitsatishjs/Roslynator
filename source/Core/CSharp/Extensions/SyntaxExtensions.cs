@@ -84,18 +84,6 @@ namespace Roslynator.CSharp
         #endregion AccessorListSyntax
 
         #region BlockSyntax
-        public static StatementSyntax SingleStatementOrDefault(this BlockSyntax body)
-        {
-            if (body == null)
-                throw new ArgumentNullException(nameof(body));
-
-            SyntaxList<StatementSyntax> statements = body.Statements;
-
-            return (statements.Count == 1)
-                ? statements[0]
-                : null;
-        }
-
         public static TextSpan BracesSpan(this BlockSyntax block)
         {
             if (block == null)
@@ -687,35 +675,6 @@ namespace Roslynator.CSharp
         internal static ExpressionSyntax WalkDownParenthesesIf(this ExpressionSyntax expression, bool condition)
         {
             return (condition) ? WalkDownParentheses(expression) : expression;
-        }
-
-        internal static bool IsIncrementOrDecrementExpression(this ExpressionSyntax expression)
-        {
-            return expression?.IsKind(
-                SyntaxKind.PreIncrementExpression,
-                SyntaxKind.PreDecrementExpression,
-                SyntaxKind.PostIncrementExpression,
-                SyntaxKind.PostDecrementExpression) == true;
-        }
-
-        internal static bool SupportsCompoundAssignment(this ExpressionSyntax expression)
-        {
-            switch (expression?.Kind())
-            {
-                case SyntaxKind.AddExpression:
-                case SyntaxKind.SubtractExpression:
-                case SyntaxKind.MultiplyExpression:
-                case SyntaxKind.DivideExpression:
-                case SyntaxKind.ModuloExpression:
-                case SyntaxKind.BitwiseAndExpression:
-                case SyntaxKind.ExclusiveOrExpression:
-                case SyntaxKind.BitwiseOrExpression:
-                case SyntaxKind.LeftShiftExpression:
-                case SyntaxKind.RightShiftExpression:
-                    return true;
-                default:
-                    return false;
-            }
         }
         #endregion ExpressionSyntax
 
@@ -2084,7 +2043,7 @@ namespace Roslynator.CSharp
         {
             if (statement?.IsKind(SyntaxKind.Block) == true)
             {
-                return ((BlockSyntax)statement).SingleStatementOrDefault();
+                return ((BlockSyntax)statement).Statements.SingleOrDefault(throwException: false);
             }
             else
             {
@@ -2259,18 +2218,6 @@ namespace Roslynator.CSharp
         #endregion StructDeclarationSyntax
 
         #region SwitchSectionSyntax
-        public static StatementSyntax SingleStatementOrDefault(this SwitchSectionSyntax switchSection)
-        {
-            if (switchSection == null)
-                throw new ArgumentNullException(nameof(switchSection));
-
-            SyntaxList<StatementSyntax> statements = switchSection.Statements;
-
-            return (statements.Count == 1)
-                ? statements[0]
-                : null;
-        }
-
         public static bool ContainsDefaultLabel(this SwitchSectionSyntax switchSection)
         {
             return switchSection?.Labels.Any(f => f.IsKind(SyntaxKind.DefaultSwitchLabel)) == true;
@@ -2439,43 +2386,6 @@ namespace Roslynator.CSharp
             }
         }
 
-        public static bool SupportsModifiers(this SyntaxNode node)
-        {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
-
-            switch (node.Kind())
-            {
-                case SyntaxKind.ClassDeclaration:
-                case SyntaxKind.ConstructorDeclaration:
-                case SyntaxKind.ConversionOperatorDeclaration:
-                case SyntaxKind.DelegateDeclaration:
-                case SyntaxKind.DestructorDeclaration:
-                case SyntaxKind.EnumDeclaration:
-                case SyntaxKind.EventDeclaration:
-                case SyntaxKind.EventFieldDeclaration:
-                case SyntaxKind.FieldDeclaration:
-                case SyntaxKind.IndexerDeclaration:
-                case SyntaxKind.InterfaceDeclaration:
-                case SyntaxKind.MethodDeclaration:
-                case SyntaxKind.OperatorDeclaration:
-                case SyntaxKind.PropertyDeclaration:
-                case SyntaxKind.StructDeclaration:
-                case SyntaxKind.IncompleteMember:
-                case SyntaxKind.GetAccessorDeclaration:
-                case SyntaxKind.SetAccessorDeclaration:
-                case SyntaxKind.AddAccessorDeclaration:
-                case SyntaxKind.RemoveAccessorDeclaration:
-                case SyntaxKind.UnknownAccessorDeclaration:
-                case SyntaxKind.LocalDeclarationStatement:
-                case SyntaxKind.LocalFunctionStatement:
-                case SyntaxKind.Parameter:
-                    return true;
-            }
-
-            return false;
-        }
-
         internal static TNode WithModifiers<TNode>(this TNode node, SyntaxTokenList modifiers) where TNode : SyntaxNode
         {
             if (node == null)
@@ -2532,27 +2442,6 @@ namespace Roslynator.CSharp
                         Debug.Fail(node.Kind().ToString());
                         return node;
                     }
-            }
-        }
-
-        public static bool SupportsExpressionBody(this SyntaxNode node)
-        {
-            switch (node?.Kind())
-            {
-                case SyntaxKind.MethodDeclaration:
-                case SyntaxKind.PropertyDeclaration:
-                case SyntaxKind.IndexerDeclaration:
-                case SyntaxKind.OperatorDeclaration:
-                case SyntaxKind.ConversionOperatorDeclaration:
-                case SyntaxKind.ConstructorDeclaration:
-                case SyntaxKind.DestructorDeclaration:
-                case SyntaxKind.GetAccessorDeclaration:
-                case SyntaxKind.SetAccessorDeclaration:
-                case SyntaxKind.AddAccessorDeclaration:
-                case SyntaxKind.RemoveAccessorDeclaration:
-                    return true;
-                default:
-                    return false;
             }
         }
 
@@ -2665,11 +2554,6 @@ namespace Roslynator.CSharp
                 throw new ArgumentNullException(nameof(node));
 
             return node.Ancestors(ascendOutOfTrivia).Any(f => f.IsKind(kind));
-        }
-
-        public static bool IsBooleanLiteralExpression(this SyntaxNode node)
-        {
-            return node?.IsKind(SyntaxKind.TrueLiteralExpression, SyntaxKind.FalseLiteralExpression) == true;
         }
 
         internal static bool IsNumericLiteralExpression(this SyntaxNode node, int value)
@@ -3716,20 +3600,6 @@ namespace Roslynator.CSharp
             return declaration ?? usingStatement.Expression;
         }
         #endregion UsingStatementSyntax
-
-        #region VariableDeclarationSyntax
-        public static VariableDeclaratorSyntax SingleVariableOrDefault(this VariableDeclarationSyntax declaration)
-        {
-            if (declaration == null)
-                throw new ArgumentNullException(nameof(declaration));
-
-            SeparatedSyntaxList<VariableDeclaratorSyntax> variables = declaration.Variables;
-
-            return (variables.Count == 1)
-                ? variables.First()
-                : null;
-        }
-        #endregion VariableDeclarationSyntax
 
         #region XmlElementSyntax
         internal static bool IsLocalName(this XmlElementSyntax xmlElement, string localName)
