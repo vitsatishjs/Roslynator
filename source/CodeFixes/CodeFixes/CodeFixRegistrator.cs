@@ -9,13 +9,44 @@ namespace Roslynator.CSharp.CodeFixes
 {
     internal static class CodeFixRegistrator
     {
-        public static void RemoveMember(CodeFixContext context, Diagnostic diagnostic, MemberDeclarationSyntax memberDeclaration, string additionalKey = null)
+        public static void RemoveMember(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            MemberDeclarationSyntax memberDeclaration,
+            string additionalKey = null)
         {
             Document document = context.Document;
 
             CodeAction codeAction = CodeAction.Create(
                 $"Remove {memberDeclaration.GetTitle()}",
                 cancellationToken => document.RemoveMemberAsync(memberDeclaration, cancellationToken),
+                EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
+
+            context.RegisterCodeFix(codeAction, diagnostic);
+        }
+
+        public static void ReplaceNullWithDefaultValue(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            ExpressionSyntax expression,
+            SemanticModel semanticModel,
+            string additionalKey = null)
+        {
+            ITypeSymbol typeSymbol = semanticModel.GetTypeInfo(expression, context.CancellationToken).ConvertedType;
+
+            if (typeSymbol?.SupportsExplicitDeclaration() != true)
+                return;
+
+            Document document = context.Document;
+
+            CodeAction codeAction = CodeAction.Create(
+                "Replace 'null' with default value",
+                cancellationToken =>
+                {
+                    ExpressionSyntax newNode = typeSymbol.ToDefaultValueSyntax(semanticModel, expression.SpanStart);
+
+                    return document.ReplaceNodeAsync(expression, newNode, cancellationToken);
+                },
                 EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
 
             context.RegisterCodeFix(codeAction, diagnostic);
