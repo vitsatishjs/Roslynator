@@ -42,7 +42,8 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                     DiagnosticDescriptors.CallThenByInsteadOfOrderBy,
                     DiagnosticDescriptors.UseMethodChaining,
                     DiagnosticDescriptors.AvoidNullReferenceException,
-                    DiagnosticDescriptors.UseStringComparison);
+                    DiagnosticDescriptors.UseStringComparison,
+                    DiagnosticDescriptors.UseNameOfOperator);
            }
         }
 
@@ -139,13 +140,12 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
             {
                 if (!invocation.SpanContainsDirectives())
                 {
-                    CallExtensionMethodAsInstanceMethodRefactoring.AnalysisResult result =
-                        CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocation, context.SemanticModel, context.CancellationToken);
+                    CallExtensionMethodAsInstanceMethodAnalysis analysis = CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocation, context.SemanticModel, context.CancellationToken);
 
-                    if (result.Success
+                    if (analysis.Success
                         && context.SemanticModel
-                            .GetEnclosingNamedType(result.InvocationExpression.SpanStart, context.CancellationToken)?
-                            .Equals(result.MethodSymbol.ContainingType) == false)
+                            .GetEnclosingNamedType(analysis.InvocationExpression.SpanStart, context.CancellationToken)?
+                            .Equals(analysis.MethodSymbol.ContainingType) == false)
                     {
                         context.ReportDiagnostic(DiagnosticDescriptors.CallExtensionMethodAsInstanceMethod, invocation);
                     }
@@ -192,6 +192,7 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                                     case "ToString":
                                         {
                                             RemoveRedundantToStringCallRefactoring.Analyze(context, memberInvocation);
+                                            UseNameOfOperatorRefactoring.Analyze(context, memberInvocation);
                                             break;
                                         }
                                     case "ToLower":
