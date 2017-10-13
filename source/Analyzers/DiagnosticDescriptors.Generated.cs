@@ -2059,7 +2059,7 @@ namespace Roslynator.CSharp
             id:                 DiagnosticIdentifiers.AvoidNullReferenceException, 
             title:              "Avoid NullReferenceException.", 
             messageFormat:      "Avoid NullReferenceException.", 
-            category:           DiagnosticCategories.Usage, 
+            category:           DiagnosticCategories.Reliability, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: true, 
             description:        null, 
@@ -2143,6 +2143,17 @@ namespace Roslynator.CSharp
             isEnabledByDefault: true, 
             description:        null, 
             helpLinkUri:        $"{HelpLinkUriRoot}{DiagnosticIdentifiers.ReorderTypeParameterConstraints}", 
+            customTags:         Array.Empty<string>());
+
+        public static readonly DiagnosticDescriptor ReturnTaskInsteadOfNull = new DiagnosticDescriptor(
+            id:                 DiagnosticIdentifiers.ReturnTaskInsteadOfNull, 
+            title:              "Return Task.FromResult instead of returning null.", 
+            messageFormat:      "Return Task.FromResult instead of returning null.", 
+            category:           DiagnosticCategories.Reliability, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        $"{HelpLinkUriRoot}{DiagnosticIdentifiers.ReturnTaskInsteadOfNull}", 
             customTags:         Array.Empty<string>());
 
     }
