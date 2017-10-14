@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Roslynator.CSharp.DiagnosticAnalyzers;
 using static Roslynator.CSharp.ReturnTaskInsteadOfNull.ReturnTaskInsteadOfNullRefactoring;
@@ -34,6 +35,11 @@ namespace Roslynator.CSharp.ReturnTaskInsteadOfNull
 
                 startContext.RegisterSymbolAction(nodeContext => AnalyzeMethodSymbol(nodeContext, taskOfTSymbol), SymbolKind.Method);
                 startContext.RegisterSymbolAction(nodeContext => AnalyzePropertySymbol(nodeContext, taskOfTSymbol), SymbolKind.Property);
+
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLocalFunction(nodeContext, taskOfTSymbol), SyntaxKind.LocalFunctionStatement);
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLambdaExpression(nodeContext, taskOfTSymbol), SyntaxKind.SimpleLambdaExpression);
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLambdaExpression(nodeContext, taskOfTSymbol), SyntaxKind.ParenthesizedLambdaExpression);
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeAnonymousMethod(nodeContext, taskOfTSymbol), SyntaxKind.AnonymousMethodExpression);
             });
         }
     }

@@ -24,12 +24,16 @@ namespace Roslynator.CSharp.ReturnTaskInsteadOfNull
         {
             SyntaxNode root = await context.GetSyntaxRootAsync().ConfigureAwait(false);
 
-            if (!TryFindFirstAncestorOrSelf(root, context.Span, out ReturnStatementSyntax returnStatement))
+            if (!TryFindNode(root, context.Span, out ExpressionSyntax expression))
                 return;
 
+            SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+            InvocationExpressionSyntax newExpression = ReturnTaskInsteadOfNullRefactoring.CreateNewExpression(expression, semanticModel, context.CancellationToken);
+
             CodeAction codeAction = CodeAction.Create(
-                "Return Task.FromResult",
-                cancellationToken => ReturnTaskInsteadOfNullRefactoring.RefactorAsync(context.Document, returnStatement, cancellationToken),
+                $"Replace '{expression}' with '{newExpression}'",
+                cancellationToken => context.Document.ReplaceNodeAsync(expression, newExpression, cancellationToken),
                 GetEquivalenceKey(DiagnosticIdentifiers.ReturnTaskInsteadOfNull));
 
             context.RegisterCodeFix(codeAction, context.Diagnostics[0]);
