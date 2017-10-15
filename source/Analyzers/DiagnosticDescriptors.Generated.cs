@@ -2059,7 +2059,7 @@ namespace Roslynator.CSharp
             id:                 DiagnosticIdentifiers.AvoidNullReferenceException, 
             title:              "Avoid NullReferenceException.", 
             messageFormat:      "Avoid NullReferenceException.", 
-            category:           DiagnosticCategories.Reliability, 
+            category:           DiagnosticCategories.Usage, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: true, 
             description:        null, 

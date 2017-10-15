@@ -33,9 +33,9 @@ namespace Roslynator.CSharp.ReturnTaskInsteadOfNull
                 if (taskOfTSymbol == null)
                     return;
 
-                startContext.RegisterSymbolAction(nodeContext => AnalyzeMethodSymbol(nodeContext, taskOfTSymbol), SymbolKind.Method);
-                startContext.RegisterSymbolAction(nodeContext => AnalyzePropertySymbol(nodeContext, taskOfTSymbol), SymbolKind.Property);
-
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeMethodDeclaration(nodeContext, taskOfTSymbol), SyntaxKind.MethodDeclaration);
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzePropertyDeclaration(nodeContext, taskOfTSymbol), SyntaxKind.PropertyDeclaration);
+                startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeIndexerDeclaration(nodeContext, taskOfTSymbol), SyntaxKind.IndexerDeclaration);
                 startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLocalFunction(nodeContext, taskOfTSymbol), SyntaxKind.LocalFunctionStatement);
                 startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLambdaExpression(nodeContext, taskOfTSymbol), SyntaxKind.SimpleLambdaExpression);
                 startContext.RegisterSyntaxNodeAction(nodeContext => AnalyzeLambdaExpression(nodeContext, taskOfTSymbol), SyntaxKind.ParenthesizedLambdaExpression);

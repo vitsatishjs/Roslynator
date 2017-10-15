@@ -2004,7 +2004,7 @@
     <Id>RCS1202</Id>
     <Title>Avoid NullReferenceException.</Title>
     <MessageFormat>Avoid NullReferenceException.</MessageFormat>
-    <Category>Reliability</Category>
+    <Category>Usage</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <SupportsFadeOut>false</SupportsFadeOut>
