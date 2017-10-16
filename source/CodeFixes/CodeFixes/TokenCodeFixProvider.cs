@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -23,7 +24,8 @@ namespace Roslynator.CSharp.CodeFixes
                 return ImmutableArray.Create(
                     CompilerDiagnosticIdentifiers.OperatorCannotBeAppliedToOperandOfType,
                     CompilerDiagnosticIdentifiers.PartialModifierCanOnlyAppearImmediatelyBeforeClassStructInterfaceOrVoid,
-                    CompilerDiagnosticIdentifiers.ValueCannotBeUsedAsDefaultParameter);
+                    CompilerDiagnosticIdentifiers.ValueCannotBeUsedAsDefaultParameter,
+                    CompilerDiagnosticIdentifiers.ObjectOfTypeConvertibleToTypeIsRequired);
             }
         }
 
@@ -32,7 +34,8 @@ namespace Roslynator.CSharp.CodeFixes
             if (!Settings.IsAnyCodeFixEnabled(
                 CodeFixIdentifiers.AddArgumentList,
                 CodeFixIdentifiers.ReorderModifiers,
-                CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue))
+                CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue,
+                CodeFixIdentifiers.ReturnDefaultValue))
             {
                 return;
             }
@@ -112,6 +115,67 @@ namespace Roslynator.CSharp.CodeFixes
                             SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
                             CodeFixRegistrator.ReplaceNullWithDefaultValue(context, diagnostic, value, semanticModel);
+                            break;
+                        }
+                    case CompilerDiagnosticIdentifiers.ObjectOfTypeConvertibleToTypeIsRequired:
+                        {
+                            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReturnDefaultValue))
+                                break;
+
+                            if (token.Kind() != SyntaxKind.ReturnKeyword)
+                                break;
+
+                            if (!token.IsParentKind(SyntaxKind.ReturnStatement))
+                                break;
+
+                            SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                            ISymbol symbol = semanticModel.GetEnclosingSymbol(token.SpanStart, context.CancellationToken);
+
+                            if (symbol == null)
+                                break;
+
+                            SymbolKind symbolKind = symbol.Kind;
+
+                            ITypeSymbol typeSymbol = null;
+
+                            if (symbolKind == SymbolKind.Method)
+                            {
+                                typeSymbol = ((IMethodSymbol)symbol).ReturnType;
+                            }
+                            else if (symbolKind == SymbolKind.Property)
+                            {
+                                typeSymbol = ((IPropertySymbol)symbol).Type;
+                            }
+                            else
+                            {
+                                Debug.Fail(symbolKind.ToString());
+                            }
+
+                            if (typeSymbol == null)
+                                break;
+
+                            if (typeSymbol.Kind == SymbolKind.ErrorType)
+                                break;
+
+                            if (!typeSymbol.SupportsExplicitDeclaration())
+                                break;
+
+                            var returnStatement = (ReturnStatementSyntax)token.Parent;
+
+                            CodeAction codeAction = CodeAction.Create(
+                                "Return default value",
+                                cancellationToken =>
+                                {
+                                    ExpressionSyntax expression = typeSymbol.ToDefaultValueSyntax(semanticModel, returnStatement.SpanStart);
+
+                                    ReturnStatementSyntax newNode = returnStatement.WithExpression(expression);
+
+                                    return context.Document.ReplaceNodeAsync(returnStatement, newNode, cancellationToken);
+                                },
+                                GetEquivalenceKey(diagnostic));
+
+                            context.RegisterCodeFix(codeAction, diagnostic);
                             break;
                         }
                 }
