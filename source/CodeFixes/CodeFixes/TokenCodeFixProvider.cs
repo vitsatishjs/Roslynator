@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -141,7 +142,18 @@ namespace Roslynator.CSharp.CodeFixes
 
                             if (symbolKind == SymbolKind.Method)
                             {
-                                typeSymbol = ((IMethodSymbol)symbol).ReturnType;
+                                var methodSymbol = (IMethodSymbol)symbol;
+
+                                typeSymbol = methodSymbol.ReturnType;
+
+                                if (methodSymbol.IsAsync
+                                    && (typeSymbol is INamedTypeSymbol namedTypeSymbol))
+                                {
+                                    ImmutableArray<ITypeSymbol> typeArguments = namedTypeSymbol.TypeArguments;
+
+                                    if (typeArguments.Any())
+                                        typeSymbol = typeArguments[0];
+                                }
                             }
                             else if (symbolKind == SymbolKind.Property)
                             {
