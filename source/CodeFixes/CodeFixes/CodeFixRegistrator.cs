@@ -46,6 +46,26 @@ namespace Roslynator.CSharp.CodeFixes
             context.RegisterCodeFix(codeAction, diagnostic);
         }
 
+        public static void RemoveStatement(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            StatementSyntax statement,
+            string title = null,
+            string additionalKey = null)
+        {
+            if (statement.IsEmbedded())
+                return;
+
+            Document document = context.Document;
+
+            CodeAction codeAction = CodeAction.Create(
+                title ?? $"Remove {statement.GetTitle()}",
+                cancellationToken => document.RemoveStatementAsync(statement, cancellationToken),
+                EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
+
+            context.RegisterCodeFix(codeAction, diagnostic);
+        }
+
         public static void ReplaceNullWithDefaultValue(
             CodeFixContext context,
             Diagnostic diagnostic,
@@ -68,26 +88,6 @@ namespace Roslynator.CSharp.CodeFixes
 
                     return document.ReplaceNodeAsync(expression, newNode, cancellationToken);
                 },
-                EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
-
-            context.RegisterCodeFix(codeAction, diagnostic);
-        }
-
-        public static void RemoveStatement(
-            CodeFixContext context,
-            Diagnostic diagnostic,
-            StatementSyntax statement,
-            string title = null,
-            string additionalKey = null)
-        {
-            if (statement.IsEmbedded())
-                return;
-
-            Document document = context.Document;
-
-            CodeAction codeAction = CodeAction.Create(
-                title ?? $"Remove {statement.GetTitle()}",
-                cancellationToken => document.RemoveStatementAsync(statement, cancellationToken),
                 EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
 
             context.RegisterCodeFix(codeAction, diagnostic);
