@@ -177,11 +177,6 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                                             RemoveRedundantCastRefactoring.Analyze(context, invocationInfo);
                                             break;
                                         }
-                                    case "Cast":
-                                        {
-                                            RemoveRedundantCastRefactoring.Analyze(context, memberInvocation);
-                                            break;
-                                        }
                                     case "Count":
                                         {
                                             UseInsteadOfCountMethodRefactoring.Analyze(context, invocationInfo);
