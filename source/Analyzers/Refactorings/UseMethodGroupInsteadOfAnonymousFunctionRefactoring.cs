@@ -381,7 +381,7 @@ namespace Roslynator.CSharp.Refactorings
             {
                 var block = (BlockSyntax)node;
 
-                StatementSyntax statement = block.Statements.SingleOrDefault(throwException: false);
+                StatementSyntax statement = block.Statements.SingleOrDefault(shouldThrow: false);
 
                 switch (statement?.Kind())
                 {
@@ -419,7 +419,7 @@ namespace Roslynator.CSharp.Refactorings
             {
                 context.ReportBraces(DiagnosticDescriptors.UseMethodGroupInsteadOfAnonymousFunctionFadeOut, block);
 
-                if (block.Statements.SingleOrDefault(throwException: false) is ReturnStatementSyntax returnStatement)
+                if (block.Statements.SingleOrDefault(shouldThrow: false) is ReturnStatementSyntax returnStatement)
                     context.ReportToken(DiagnosticDescriptors.UseMethodGroupInsteadOfAnonymousFunctionFadeOut, returnStatement.ReturnKeyword);
             }
 
