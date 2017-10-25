@@ -104,6 +104,7 @@ namespace Roslynator.CSharp
         public const string ExtensionMethodMustBeDefinedInNonGenericStaticClass = "CS1106";
         public const string CannotConvertArgumentType = "CS1503";
         public const string EmptySwitchBlock = "CS1522";
+        public const string NewExpressionRequiresParenthesesOrBracketsOrBracesAfterType = "CS1526";
         public const string ElementsDefinedInNamespaceCannotBeExplicitlyDeclaredAsPrivateProtectedOrProtectedInternal = "CS1527";
         public const string MissingXmlCommentForPubliclyVisibleTypeOrMember = "CS1591";
         public const string ModifiersCannotBePlacedOnEventAccessorDeclarations = "CS1609";
