@@ -24,7 +24,7 @@ namespace Roslynator.CSharp.Refactorings
             if (!CanRefactor(assignmentInfo, expression, semanticModel, context.CancellationToken))
                 return;
 
-            RegisterRefactoring(context, expression, assignmentInfo.Statement);
+            RegisterRefactoring(context, expression, assignmentInfo.ExpressionStatement);
         }
 
         private static bool CanRefactor(
@@ -45,7 +45,7 @@ namespace Roslynator.CSharp.Refactorings
             if (!CanBeEqualToNull(assignmentInfo.Right))
                 return false;
 
-            if (NullCheckExists(expression, assignmentInfo.Statement))
+            if (NullCheckExists(expression, assignmentInfo.ExpressionStatement))
                 return false;
 
             ITypeSymbol typeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);

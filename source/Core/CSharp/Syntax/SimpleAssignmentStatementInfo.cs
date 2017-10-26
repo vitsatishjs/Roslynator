@@ -27,7 +27,7 @@ namespace Roslynator.CSharp.Syntax
 
         public ExpressionSyntax Right { get; }
 
-        public ExpressionStatementSyntax Statement
+        public ExpressionStatementSyntax ExpressionStatement
         {
             get { return (ExpressionStatementSyntax)AssignmentExpression?.Parent; }
         }
@@ -107,7 +107,7 @@ namespace Roslynator.CSharp.Syntax
 
         public override string ToString()
         {
-            return Statement?.ToString() ?? base.ToString();
+            return ExpressionStatement?.ToString() ?? base.ToString();
         }
     }
 }
