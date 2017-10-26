@@ -25,13 +25,13 @@ namespace Roslynator.CSharp.Refactorings
                 || context.IsRefactoringEnabled(RefactoringIdentifiers.WrapInElseClause);
         }
 
-        public static async Task ComputeRefactoringAsync(RefactoringContext context, StatementContainerSelection selectedStatements)
+        public static async Task ComputeRefactoringAsync(RefactoringContext context, StatementsSelection selectedStatements)
         {
             if (selectedStatements.Any())
             {
                 if (context.IsRefactoringEnabled(RefactoringIdentifiers.WrapInUsingStatement))
                 {
-                    var refactoring = new WrapInUsingStatementRefactoring();
+                    var refactoring = new WrapStatements.WrapInUsingStatementRefactoring();
                     await refactoring.ComputeRefactoringAsync(context, selectedStatements).ConfigureAwait(false);
                 }
 
