@@ -20,7 +20,7 @@ namespace Roslynator.VisualStudio
             get;
         }
 
-        = CodeFixIdentifiers.ReturnDefaultValue;
+        = CodeFixIdentifiers.DefineObjectGetHashCode;
         protected override void Fill(ICollection<BaseModel> codeFixes)
         {
             codeFixes.Clear();
@@ -103,6 +103,9 @@ namespace Roslynator.VisualStudio
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ReplaceBreakWithContinue, "Replace 'break' with 'continue' (fixes CS0139)", IsEnabled(CodeFixIdentifiers.ReplaceBreakWithContinue)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeMemberTypeAccordingToReturnExpression, "Change member type according to return expression (fixes CS0029, CS0127, CS0201, CS0266, CS1997)", IsEnabled(CodeFixIdentifiers.ChangeMemberTypeAccordingToReturnExpression)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ReturnDefaultValue, "Return default value (fixes CS0126)", IsEnabled(CodeFixIdentifiers.ReturnDefaultValue)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineMatchingOperator, "Define matching operator (fixes CS0216)", IsEnabled(CodeFixIdentifiers.DefineMatchingOperator)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineObjectEquals, "Define object.Equals (fixes CS0660)", IsEnabled(CodeFixIdentifiers.DefineObjectEquals)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineObjectGetHashCode, "Define object.GetHashCode (fixes CS0661)", IsEnabled(CodeFixIdentifiers.DefineObjectGetHashCode)));
         }
     }
 }

@@ -455,4 +455,19 @@
       <Id>CS0126</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0082" Identifier="DefineMatchingOperator" Title="Define matching operator">
+    <FixableDiagnosticIds>
+      <Id>CS0216</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0083" Identifier="DefineObjectEquals" Title="Define object.Equals">
+    <FixableDiagnosticIds>
+      <Id>CS0660</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0084" Identifier="DefineObjectGetHashCode" Title="Define object.GetHashCode">
+    <FixableDiagnosticIds>
+      <Id>CS0661</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>
