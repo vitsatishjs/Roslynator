@@ -8,8 +8,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CSharp.Comparers;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static Roslynator.CSharp.CSharpFactory;
+using static Roslynator.CSharp.CSharpSyntaxParts;
 
 namespace Roslynator.CSharp.CodeFixes
 {
@@ -52,22 +51,19 @@ namespace Roslynator.CSharp.CodeFixes
 
                             SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
-                            MethodDeclarationSyntax methodDeclaration = MethodDeclaration(
-                                Modifiers.PublicOverride(),
-                                semanticModel.GetSpecialTypeSyntax(SpecialType.System_Boolean),
-                                "Equals",
-                                ParameterList(Parameter(semanticModel.GetSpecialTypeSyntax(SpecialType.System_Object), "obj")),
-                                Block(
-                                    ReturnStatement(
-                                        SimpleMemberInvocationExpression(
-                                            BaseExpression(),
-                                            IdentifierName("Equals"),
-                                            Argument(IdentifierName("obj")))))).WithSimplifierAnnotation();
+                            var typeSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration, context.CancellationToken) as ITypeSymbol;
+
+                            if (typeSymbol?.IsErrorType() != false)
+                                break;
 
                             CodeAction codeAction = CodeAction.Create(
                                 "Override object.Equals",
                                 cancellationToken =>
                                 {
+                                    TypeSyntax type = typeSymbol.ToMinimalTypeSyntax(semanticModel, typeDeclaration.Identifier.SpanStart);
+
+                                    MethodDeclarationSyntax methodDeclaration = ObjectEqualsMethodDeclaration(type, semanticModel);
+
                                     TypeDeclarationSyntax newNode = typeDeclaration.InsertMember(methodDeclaration, MemberDeclarationComparer.ByKind);
 
                                     return context.Document.ReplaceNodeAsync(typeDeclaration, newNode, cancellationToken);
@@ -84,17 +80,7 @@ namespace Roslynator.CSharp.CodeFixes
 
                             SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
-                            MethodDeclarationSyntax methodDeclaration = MethodDeclaration(
-                                Modifiers.PublicOverride(),
-                                semanticModel.GetSpecialTypeSyntax(SpecialType.System_Int32),
-                                "GetHashCode",
-                                ParameterList(),
-                                Block(
-                                    ReturnStatement(
-                                        SimpleMemberInvocationExpression(
-                                            BaseExpression(),
-                                            IdentifierName("GetHashCode"),
-                                            ArgumentList())))).WithSimplifierAnnotation();
+                            MethodDeclarationSyntax methodDeclaration = ObjectGetHashCodeMethodDeclaration(semanticModel);
 
                             CodeAction codeAction = CodeAction.Create(
                                 "Override object.GetHashCode",
