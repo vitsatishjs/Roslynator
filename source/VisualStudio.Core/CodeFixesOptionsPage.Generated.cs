@@ -105,7 +105,7 @@ namespace Roslynator.VisualStudio
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ReturnDefaultValue, "Return default value (fixes CS0126)", IsEnabled(CodeFixIdentifiers.ReturnDefaultValue)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineMatchingOperator, "Define matching operator (fixes CS0216)", IsEnabled(CodeFixIdentifiers.DefineMatchingOperator)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineObjectEquals, "Define object.Equals (fixes CS0660)", IsEnabled(CodeFixIdentifiers.DefineObjectEquals)));
-            codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineObjectGetHashCode, "Define object.GetHashCode (fixes CS0661)", IsEnabled(CodeFixIdentifiers.DefineObjectGetHashCode)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.DefineObjectGetHashCode, "Define object.GetHashCode (fixes CS0659, CS0661)", IsEnabled(CodeFixIdentifiers.DefineObjectGetHashCode)));
         }
     }
 }

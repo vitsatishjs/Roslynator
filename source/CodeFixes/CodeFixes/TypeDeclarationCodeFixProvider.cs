@@ -22,7 +22,8 @@ namespace Roslynator.CSharp.CodeFixes
             {
                 return ImmutableArray.Create(
                     CompilerDiagnosticIdentifiers.TypeDefinesEqualityOperatorButDoesNotOverrideObjectEquals,
-                    CompilerDiagnosticIdentifiers.TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode);
+                    CompilerDiagnosticIdentifiers.TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode,
+                    CompilerDiagnosticIdentifiers.TypeOverridesObjectEqualsButDoesNotOverrideObjectGetHashCode);
             }
         }
 
@@ -74,6 +75,7 @@ namespace Roslynator.CSharp.CodeFixes
                             break;
                         }
                     case CompilerDiagnosticIdentifiers.TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode:
+                    case CompilerDiagnosticIdentifiers.TypeOverridesObjectEqualsButDoesNotOverrideObjectGetHashCode:
                         {
                             if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.DefineObjectGetHashCode))
                                 break;

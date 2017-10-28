@@ -80,6 +80,7 @@ namespace Roslynator.CSharp
         public const string AttributeIsNotValidOnThisDeclarationType = "CS0592";
         public const string VirtualOrAbstractmembersCannotBePrivate  = "CS0621";
         public const string NewProtectedMemberDeclaredInSealedClass = "CS0628";
+        public const string TypeOverridesObjectEqualsButDoesNotOverrideObjectGetHashCode = "CS0659";
         public const string TypeDefinesEqualityOperatorButDoesNotOverrideObjectEquals = "CS0660";
         public const string TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode = "CS0661";
         public const string FieldCanNotBeBothVolatileAndReadOnly = "CS0678";

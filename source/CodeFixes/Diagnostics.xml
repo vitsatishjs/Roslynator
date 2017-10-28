@@ -74,6 +74,7 @@
   <Diagnostic Id="CS0592" Identifier="AttributeIsNotValidOnThisDeclarationType" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0592" />
   <Diagnostic Id="CS0621" Identifier="VirtualOrAbstractmembersCannotBePrivate " HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0621" />
   <Diagnostic Id="CS0628" Identifier="NewProtectedMemberDeclaredInSealedClass" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0628" />
+  <Diagnostic Id="CS0659" Identifier="TypeOverridesObjectEqualsButDoesNotOverrideObjectGetHashCode" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0659" />
   <Diagnostic Id="CS0660" Identifier="TypeDefinesEqualityOperatorButDoesNotOverrideObjectEquals" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0660" />
   <Diagnostic Id="CS0661" Identifier="TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0661" />
   <Diagnostic Id="CS0678" Identifier="FieldCanNotBeBothVolatileAndReadOnly" HelpUrl="http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0678" />
