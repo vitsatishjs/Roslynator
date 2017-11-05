@@ -1040,92 +1040,87 @@ namespace Roslynator.CSharp
         }
         #endregion Token
 
-        #region PredefinedType
-        public static PredefinedTypeSyntax BoolType()
+        #region Type
+        public static TypeSyntax BoolType()
         {
-            return PredefinedType(SyntaxKind.BoolKeyword);
+            return ParseTypeName("global::System.Boolean").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax ByteType()
+        public static TypeSyntax ByteType()
         {
-            return PredefinedType(SyntaxKind.ByteKeyword);
+            return ParseTypeName("global::System.Byte").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax SByteType()
+        public static TypeSyntax SByteType()
         {
-            return PredefinedType(SyntaxKind.SByteKeyword);
+            return ParseTypeName("global::System.SByte").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax IntType()
+        public static TypeSyntax IntType()
         {
-            return PredefinedType(SyntaxKind.IntKeyword);
+            return ParseTypeName("global::System.Int32").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax UIntType()
+        public static TypeSyntax UIntType()
         {
-            return PredefinedType(SyntaxKind.UIntKeyword);
+            return ParseTypeName("global::System.UInt32").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax ShortType()
+        public static TypeSyntax ShortType()
         {
-            return PredefinedType(SyntaxKind.ShortKeyword);
+            return ParseTypeName("global::System.Int16").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax UShortType()
+        public static TypeSyntax UShortType()
         {
-            return PredefinedType(SyntaxKind.UShortKeyword);
+            return ParseTypeName("global::System.UInt16").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax LongType()
+        public static TypeSyntax LongType()
         {
-            return PredefinedType(SyntaxKind.LongKeyword);
+            return ParseTypeName("global::System.Int64").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax ULongType()
+        public static TypeSyntax ULongType()
         {
-            return PredefinedType(SyntaxKind.ULongKeyword);
+            return ParseTypeName("global::System.UInt64").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax FloatType()
+        public static TypeSyntax FloatType()
         {
-            return PredefinedType(SyntaxKind.FloatKeyword);
+            return ParseTypeName("global::System.Single").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax DoubleType()
+        public static TypeSyntax DoubleType()
         {
-            return PredefinedType(SyntaxKind.DoubleKeyword);
+            return ParseTypeName("global::System.Double").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax DecimalType()
+        public static TypeSyntax DecimalType()
         {
-            return PredefinedType(SyntaxKind.DecimalKeyword);
+            return ParseTypeName("global::System.Decimal").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax StringType()
+        public static TypeSyntax StringType()
         {
-            return PredefinedType(SyntaxKind.StringKeyword);
+            return ParseTypeName("global::System.String").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax CharType()
+        public static TypeSyntax CharType()
         {
-            return PredefinedType(SyntaxKind.CharKeyword);
+            return ParseTypeName("global::System.Char").WithSimplifierAnnotation();
         }
 
-        public static PredefinedTypeSyntax ObjectType()
+        public static TypeSyntax ObjectType()
         {
-            return PredefinedType(SyntaxKind.ObjectKeyword);
+            return ParseTypeName("global::System.Object").WithSimplifierAnnotation();
         }
 
         public static PredefinedTypeSyntax VoidType()
         {
-            return PredefinedType(SyntaxKind.VoidKeyword);
+            return PredefinedType(Token(SyntaxKind.VoidKeyword));
         }
-
-        private static PredefinedTypeSyntax PredefinedType(SyntaxKind syntaxKind)
-        {
-            return SyntaxFactory.PredefinedType(Token(syntaxKind));
-        }
-        #endregion PredefinedType
+        #endregion Type
 
         #region List
         public static ArgumentListSyntax ArgumentList(params ArgumentSyntax[] arguments)
