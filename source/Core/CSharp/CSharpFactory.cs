@@ -1041,85 +1041,166 @@ namespace Roslynator.CSharp
         #endregion Token
 
         #region Type
-        public static TypeSyntax BoolType()
+        internal static TypeSyntax BoolType()
         {
             return ParseTypeName("global::System.Boolean").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax ByteType()
+        internal static TypeSyntax ByteType()
         {
             return ParseTypeName("global::System.Byte").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax SByteType()
+        internal static TypeSyntax SByteType()
         {
             return ParseTypeName("global::System.SByte").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax IntType()
+        internal static TypeSyntax IntType()
         {
             return ParseTypeName("global::System.Int32").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax UIntType()
+        internal static TypeSyntax UIntType()
         {
             return ParseTypeName("global::System.UInt32").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax ShortType()
+        internal static TypeSyntax ShortType()
         {
             return ParseTypeName("global::System.Int16").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax UShortType()
+        internal static TypeSyntax UShortType()
         {
             return ParseTypeName("global::System.UInt16").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax LongType()
+        internal static TypeSyntax LongType()
         {
             return ParseTypeName("global::System.Int64").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax ULongType()
+        internal static TypeSyntax ULongType()
         {
             return ParseTypeName("global::System.UInt64").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax FloatType()
+        internal static TypeSyntax FloatType()
         {
             return ParseTypeName("global::System.Single").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax DoubleType()
+        internal static TypeSyntax DoubleType()
         {
             return ParseTypeName("global::System.Double").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax DecimalType()
+        internal static TypeSyntax DecimalType()
         {
             return ParseTypeName("global::System.Decimal").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax StringType()
+        internal static TypeSyntax StringType()
         {
             return ParseTypeName("global::System.String").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax CharType()
+        internal static TypeSyntax CharType()
         {
             return ParseTypeName("global::System.Char").WithSimplifierAnnotation();
         }
 
-        public static TypeSyntax ObjectType()
+        internal static TypeSyntax ObjectType()
         {
             return ParseTypeName("global::System.Object").WithSimplifierAnnotation();
         }
 
+        public static PredefinedTypeSyntax BoolPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.BoolKeyword);
+        }
+
+        public static PredefinedTypeSyntax BytePredefinedType()
+        {
+            return PredefinedType(SyntaxKind.ByteKeyword);
+        }
+
+        public static PredefinedTypeSyntax SBytePredefinedType()
+        {
+            return PredefinedType(SyntaxKind.SByteKeyword);
+        }
+
+        public static PredefinedTypeSyntax IntPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.IntKeyword);
+        }
+
+        public static PredefinedTypeSyntax UIntPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.UIntKeyword);
+        }
+
+        public static PredefinedTypeSyntax ShortPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.ShortKeyword);
+        }
+
+        public static PredefinedTypeSyntax UShortPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.UShortKeyword);
+        }
+
+        public static PredefinedTypeSyntax LongPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.LongKeyword);
+        }
+
+        public static PredefinedTypeSyntax ULongPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.ULongKeyword);
+        }
+
+        public static PredefinedTypeSyntax FloatPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.FloatKeyword);
+        }
+
+        public static PredefinedTypeSyntax DoublePredefinedType()
+        {
+            return PredefinedType(SyntaxKind.DoubleKeyword);
+        }
+
+        public static PredefinedTypeSyntax DecimalPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.DecimalKeyword);
+        }
+
+        public static PredefinedTypeSyntax StringPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.StringKeyword);
+        }
+
+        public static PredefinedTypeSyntax CharPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.CharKeyword);
+        }
+
+        public static PredefinedTypeSyntax ObjectPredefinedType()
+        {
+            return PredefinedType(SyntaxKind.ObjectKeyword);
+        }
+
         public static PredefinedTypeSyntax VoidType()
         {
-            return PredefinedType(Token(SyntaxKind.VoidKeyword));
+            return PredefinedType(SyntaxKind.VoidKeyword);
         }
+
+        private static PredefinedTypeSyntax PredefinedType(SyntaxKind syntaxKind)
+        {
+            return SyntaxFactory.PredefinedType(Token(syntaxKind));
+        }
+
         #endregion Type
 
         #region List
