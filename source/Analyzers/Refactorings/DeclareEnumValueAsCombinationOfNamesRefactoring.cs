@@ -216,7 +216,7 @@ namespace Roslynator.CSharp.Refactorings
                 return null;
             }
 
-            private List<EnumFieldInfo> Decompose(long value, ImmutableArray<EnumFieldInfo> infos)
+            private static List<EnumFieldInfo> Decompose(long value, ImmutableArray<EnumFieldInfo> infos)
             {
                 List<EnumFieldInfo> values = null;
 
@@ -248,7 +248,7 @@ namespace Roslynator.CSharp.Refactorings
                 return null;
             }
 
-            private List<EnumFieldInfo> Decompose(ulong value, ImmutableArray<EnumFieldInfo> infos)
+            private static List<EnumFieldInfo> Decompose(ulong value, ImmutableArray<EnumFieldInfo> infos)
             {
                 List<EnumFieldInfo> values = null;
 
