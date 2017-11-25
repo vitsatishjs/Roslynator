@@ -1235,4 +1235,13 @@
       <Syntax>interpolated string</Syntax>
     </Syntaxes>
   </Refactoring>
+  <Refactoring Id="RR0194" Identifier="AddMemberToInterface" Title="Add member to interface">
+    <Syntaxes>
+      <Syntax>method</Syntax>
+      <Syntax>property</Syntax>
+      <Syntax>indexer</Syntax>
+      <Syntax>event</Syntax>
+    </Syntaxes>
+    <Scope>identifier</Scope>
+  </Refactoring>
 </Refactorings>
