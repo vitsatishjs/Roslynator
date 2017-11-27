@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Roslynator.CSharp.CodeFixes;
 using Roslynator.CSharp.Comparers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
@@ -22,9 +21,6 @@ namespace Roslynator.CSharp.Refactorings
             MethodDeclarationSyntax methodDeclaration,
             SemanticModel semanticModel)
         {
-            if (methodDeclaration.TypeParameterList?.Parameters.Any() == true)
-                return;
-
             ComputeRefactoring(context, methodDeclaration, methodDeclaration.Modifiers, methodDeclaration.ExplicitInterfaceSpecifier, semanticModel);
         }
 
@@ -41,6 +37,11 @@ namespace Roslynator.CSharp.Refactorings
         public static void ComputeRefactoring(RefactoringContext context, EventDeclarationSyntax eventDeclaration, SemanticModel semanticModel)
         {
             ComputeRefactoring(context, eventDeclaration, eventDeclaration.Modifiers, eventDeclaration.ExplicitInterfaceSpecifier, semanticModel);
+        }
+
+        internal static void ComputeRefactoring(RefactoringContext context, EventFieldDeclarationSyntax eventFieldDeclaration, SemanticModel semanticModel)
+        {
+            ComputeRefactoring(context, eventFieldDeclaration, eventFieldDeclaration.Modifiers, null, semanticModel);
         }
 
         private static void ComputeRefactoring(
@@ -69,14 +70,18 @@ namespace Roslynator.CSharp.Refactorings
             NameSyntax explicitInterfaceName = explicitInterfaceSpecifier?.Name;
 
             ITypeSymbol explicitInterfaceSymbol = (explicitInterfaceName != null)
-                ? semanticModel.GetTypeSymbol(explicitInterfaceName, context.CancellationToken)
+                ? semanticModel.GetTypeSymbol(explicitInterfaceName, context.CancellationToken)?.OriginalDefinition
                 : null;
 
-            if (!(semanticModel.GetDeclaredSymbol(memberDeclaration.Parent) is INamedTypeSymbol containingTypeSymbol))
+            ISymbol memberSymbol = (memberDeclaration is EventFieldDeclarationSyntax eventFieldDeclaration)
+                ? semanticModel.GetDeclaredSymbol(eventFieldDeclaration.Declaration.Variables.First())
+                : semanticModel.GetDeclaredSymbol(memberDeclaration);
+
+            if (memberSymbol == null)
                 return;
 
             foreach (BaseTypeSyntax baseType in types)
-                ComputeRefactoring(context, memberDeclaration, baseType, explicitInterfaceSymbol, containingTypeSymbol, semanticModel);
+                ComputeRefactoring(context, memberDeclaration, baseType, explicitInterfaceSymbol, memberSymbol, semanticModel);
         }
 
         private static void ComputeRefactoring(
@@ -84,7 +89,7 @@ namespace Roslynator.CSharp.Refactorings
             MemberDeclarationSyntax memberDeclaration,
             BaseTypeSyntax baseType,
             ITypeSymbol explicitInterfaceSymbol,
-            INamedTypeSymbol containingTypeSymbol,
+            ISymbol memberSymbol,
             SemanticModel semanticModel)
         {
             TypeSyntax type = baseType.Type;
@@ -92,10 +97,12 @@ namespace Roslynator.CSharp.Refactorings
             if (type == null)
                 return;
 
-            ITypeSymbol interfaceSymbol = semanticModel.GetTypeSymbol(type, context.CancellationToken);
+            var interfaceSymbol = semanticModel.GetTypeSymbol(type, context.CancellationToken) as INamedTypeSymbol;
 
             if (interfaceSymbol?.TypeKind != TypeKind.Interface)
                 return;
+
+            interfaceSymbol = interfaceSymbol.OriginalDefinition;
 
             if (!(interfaceSymbol.GetSyntaxOrDefault(context.CancellationToken) is InterfaceDeclarationSyntax interfaceDeclaration))
                 return;
@@ -111,10 +118,10 @@ namespace Roslynator.CSharp.Refactorings
             {
                 if (CheckKind(members[i], kind))
                 {
-                    ISymbol other = containingTypeSymbol.FindImplementationForInterfaceMember(members[i]);
+                    ISymbol symbol = memberSymbol.ContainingType.FindImplementationForInterfaceMember(members[i]);
 
-                    if (other != null
-                        && interfaceSymbol.Equals(other.ContainingType))
+                    if (memberSymbol.OriginalDefinition.Equals(symbol?.OriginalDefinition)
+                        && CheckTypeParameters(memberDeclaration, interfaceSymbol))
                     {
                         return;
                     }
@@ -127,6 +134,26 @@ namespace Roslynator.CSharp.Refactorings
                 $"Add to interface '{displayName}'",
                 cancellationToken => RefactorAsync(context.Document, memberDeclaration, interfaceDeclaration, cancellationToken),
                 RefactoringIdentifiers.AddMemberToInterface + "." + displayName);
+        }
+
+        private static bool CheckTypeParameters(
+            MemberDeclarationSyntax memberDeclaration,
+            INamedTypeSymbol interfaceSymbol)
+        {
+            if (!(memberDeclaration is MethodDeclarationSyntax methodDeclaration))
+                return true;
+
+            TypeParameterListSyntax typeParameterList = methodDeclaration.TypeParameterList;
+
+            if (typeParameterList == null)
+                return true;
+
+            SeparatedSyntaxList<TypeParameterSyntax> typeParameters = typeParameterList.Parameters;
+
+            if (typeParameters.Count == 0)
+                return true;
+
+            return typeParameters.Count == interfaceSymbol.TypeParameters.Length;
         }
 
         private static bool CheckKind(ISymbol symbol, SyntaxKind kind)
@@ -191,13 +218,14 @@ namespace Roslynator.CSharp.Refactorings
                         return MethodDeclaration(
                             default(SyntaxList<AttributeListSyntax>),
                             default(SyntaxTokenList),
-                            methodDeclaration.ReturnType,
+                            methodDeclaration.ReturnType.WithoutTrivia(),
                             default(ExplicitInterfaceSpecifierSyntax),
-                            methodDeclaration.Identifier,
-                            default(TypeParameterListSyntax),
-                            methodDeclaration.ParameterList,
+                            methodDeclaration.Identifier.WithoutTrivia(),
+                            methodDeclaration.TypeParameterList?.WithoutTrivia(),
+                            methodDeclaration.ParameterList.WithoutTrivia(),
                             default(SyntaxList<TypeParameterConstraintClauseSyntax>),
                             default(BlockSyntax),
+                            default(ArrowExpressionClauseSyntax),
                             SemicolonToken());
                     }
                 case PropertyDeclarationSyntax propertyDeclaration:
@@ -205,37 +233,38 @@ namespace Roslynator.CSharp.Refactorings
                         return PropertyDeclaration(
                             default(SyntaxList<AttributeListSyntax>),
                             default(SyntaxTokenList),
-                            propertyDeclaration.Type,
+                            propertyDeclaration.Type.WithoutTrivia(),
                             default(ExplicitInterfaceSpecifierSyntax),
-                            propertyDeclaration.Identifier,
-                            CreateInterfaceAccessorList(propertyDeclaration.AccessorList),
-                            default(ArrowExpressionClauseSyntax),
-                            default(EqualsValueClauseSyntax),
-                            SemicolonToken());
+                            propertyDeclaration.Identifier.WithoutTrivia(),
+                            CreateInterfaceAccessorList(propertyDeclaration.AccessorList));
                     }
                 case IndexerDeclarationSyntax indexerDeclaration:
                     {
                         return IndexerDeclaration(
                             default(SyntaxList<AttributeListSyntax>),
                             default(SyntaxTokenList),
-                            indexerDeclaration.Type,
+                            indexerDeclaration.Type.WithoutTrivia(),
                             default(ExplicitInterfaceSpecifierSyntax),
-                            indexerDeclaration.ThisKeyword,
-                            indexerDeclaration.ParameterList,
-                            CreateInterfaceAccessorList(indexerDeclaration.AccessorList),
-                            default(ArrowExpressionClauseSyntax),
-                            SemicolonToken());
+                            indexerDeclaration.ParameterList.WithoutTrivia(),
+                            CreateInterfaceAccessorList(indexerDeclaration.AccessorList));
                     }
                 case EventDeclarationSyntax eventDeclaration:
                     {
-                        return EventDeclaration(
+                        return EventFieldDeclaration(
                             default(SyntaxList<AttributeListSyntax>),
                             default(SyntaxTokenList),
-                            eventDeclaration.EventKeyword,
-                            eventDeclaration.Type,
-                            default(ExplicitInterfaceSpecifierSyntax),
-                            eventDeclaration.Identifier,
-                            CreateInterfaceAccessorList(eventDeclaration.AccessorList));
+                            EventKeyword(),
+                            VariableDeclaration(eventDeclaration.Type.WithoutTrivia(), eventDeclaration.Identifier.WithoutTrivia()),
+                            SemicolonToken());
+                    }
+                case EventFieldDeclarationSyntax eventFieldDeclaration:
+                    {
+                        return EventFieldDeclaration(
+                            default(SyntaxList<AttributeListSyntax>),
+                            default(SyntaxTokenList),
+                            EventKeyword(),
+                            eventFieldDeclaration.Declaration.WithoutTrivia(),
+                            SemicolonToken());
                     }
                 default:
                     {
@@ -246,10 +275,33 @@ namespace Roslynator.CSharp.Refactorings
 
         private static AccessorListSyntax CreateInterfaceAccessorList(AccessorListSyntax accessorList)
         {
-            return AccessorList(accessorList
-                .Accessors
-                .Select(f => f.WithBody(null).WithExpressionBody(null).WithSemicolonToken(SemicolonToken()))
-                .ToSyntaxList());
+            if (accessorList != null)
+            {
+                return AccessorList(accessorList
+                    .Accessors
+                    .Select(f =>
+                    {
+                        return AccessorDeclaration(
+                            f.Kind(),
+                            default(SyntaxList<AttributeListSyntax>),
+                            default(SyntaxTokenList),
+                            f.Keyword.WithoutTrivia(),
+                            default(ArrowExpressionClauseSyntax),
+                            SemicolonToken());
+                    })
+                    .ToSyntaxList());
+            }
+            else
+            {
+                return AccessorList(
+                    AccessorDeclaration(
+                        SyntaxKind.GetAccessorDeclaration,
+                        default(SyntaxList<AttributeListSyntax>),
+                        default(SyntaxTokenList),
+                        GetKeyword(),
+                        default(ArrowExpressionClauseSyntax),
+                        SemicolonToken()));
+            }
         }
     }
 }
