@@ -29,7 +29,7 @@ namespace Roslynator.CSharp.Refactorings.Tests
         {
         }
 
-        private class Foo<T> : BaseFoo, IFoo, IFoo2, IFoo<T>, IFoo2<T>
+        private class Foo<T> : BaseFoo, IFoo, IFoo2, IFoo<T>, IFoo2<T>, IDisposable
         {
             public void Bar() { }
 
@@ -63,9 +63,11 @@ namespace Roslynator.CSharp.Refactorings.Tests
             void IFoo.BarExplicit() { }
 
             void IFoo2.BarExplicit2() { }
+
+            public void Dispose() { }
         }
 
-        private class Foo : BaseFoo, IFoo, IFoo2, IFoo<string>, IFoo2<string>
+        private class Foo : BaseFoo, IFoo, IFoo2, IFoo<string>, IFoo2<string>, IDisposable
         {
             public void Bar() { }
 
@@ -76,6 +78,8 @@ namespace Roslynator.CSharp.Refactorings.Tests
             void IFoo.BarExplicit() { }
 
             void IFoo2.BarExplicit2() { }
+
+            public void Dispose() { }
         }
 
         private class BaseFoo
