@@ -1235,7 +1235,13 @@
       <Syntax>interpolated string</Syntax>
     </Syntaxes>
   </Refactoring>
-  <Refactoring Id="RR0194" Identifier="AddMemberToInterface" Title="Add member to interface">
+  <Refactoring Id="RR0194" Identifier="SplitDeclarationAndInitialization" Title="Split declaration and initialization">
+    <Syntaxes>
+      <Syntax>local variable declaration</Syntax>
+    </Syntaxes>
+    <Scope>equals token</Scope>
+  </Refactoring>
+  <Refactoring Id="RR0195" Identifier="AddMemberToInterface" Title="Add member to interface">
     <Syntaxes>
       <Syntax>method</Syntax>
       <Syntax>property</Syntax>
@@ -1243,5 +1249,5 @@
       <Syntax>event</Syntax>
     </Syntaxes>
     <Scope>identifier</Scope>
-  </Refactoring>
+  </Refactoring></Refactorings>
 </Refactorings>
