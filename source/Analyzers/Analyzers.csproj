@@ -85,6 +85,11 @@
     <Compile Include="DiagnosticAnalyzers\AvoidSingleLineBlockDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReduceIfNestingDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReorderTypeParameterConstraintsDiagnosticAnalyzer.cs" />
+    <Compile Include="UnusedMemberDeclaration\NodeSymbolInfo.cs" />
+    <Compile Include="UnusedMemberDeclaration\UnusedMemberDeclarationCodeFixProvider.cs" />
+    <Compile Include="UnusedMemberDeclaration\UnusedMemberDeclarationWalker.cs" />
+    <Compile Include="UnusedMemberDeclaration\UnusedMemberDeclarationWalkerCache.cs" />
+    <Compile Include="UnusedMemberDeclaration\UnusedMemberDeclarationDiagnosticAnalyzer.cs" />
     <Compile Include="MarkLocalVariableAsConst\MarkLocalVariableAsConstCodeFixProvider.cs" />
     <Compile Include="Refactorings\RemoveRedundantAssignmentRefactoring.cs" />
     <Compile Include="MarkLocalVariableAsConst\MarkLocalVariableAsConstWalker.cs" />
@@ -93,6 +98,7 @@
     <Compile Include="Refactorings\MakeMemberReadOnly\MakeMemberReadOnlyWalker.cs" />
     <Compile Include="Refactorings\MakeMemberReadOnly\MakeMemberReadOnlyWalkerCache.cs" />
     <Compile Include="Refactorings\RemoveUnnecessaryElseClauseRefactoring.cs" />
+    <Compile Include="UnusedMemberDeclaration\UnusedMemberDeclarationRefactoring.cs" />
     <Compile Include="ReturnTaskInsteadOfNull\ReturnTaskInsteadOfNullCodeFixProvider.cs" />
     <Compile Include="ReturnTaskInsteadOfNull\ReturnTaskInsteadOfNullDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\UseMethodGroupInsteadOfAnonymousFunctionDiagnosticAnalyzer.cs" />

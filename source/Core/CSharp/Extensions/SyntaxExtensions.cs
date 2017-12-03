@@ -2542,6 +2542,8 @@ namespace Roslynator.CSharp
                     return "event";
                 case SyntaxKind.FieldDeclaration:
                     return "field";
+                case SyntaxKind.DelegateDeclaration:
+                    return "delegate";
                 case SyntaxKind.NamespaceDeclaration:
                     return "namespace";
                 case SyntaxKind.ClassDeclaration:
