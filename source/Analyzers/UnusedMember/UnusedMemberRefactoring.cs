@@ -1,8 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -10,9 +7,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
-    internal static class UnusedMemberDeclarationRefactoring
+    internal static class UnusedMemberRefactoring
     {
         public static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
         {
@@ -30,9 +27,12 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
 
         private static void AnalyzeTypeDeclaration(SyntaxNodeAnalysisContext context, TypeDeclarationSyntax typeDeclaration)
         {
+            if (typeDeclaration.Modifiers.Contains(SyntaxKind.PartialKeyword))
+                return;
+
             SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
-            UnusedMemberDeclarationWalker walker = null;
+            UnusedMemberWalker walker = null;
 
             foreach (MemberDeclarationSyntax member in members)
             {
@@ -51,7 +51,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
                             }
@@ -65,7 +65,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
                             }
@@ -79,7 +79,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 foreach (VariableDeclaratorSyntax declarator in declaration.Declaration.Variables)
                                     walker.Symbols.Add(new NodeSymbolInfo(declarator.Identifier.ValueText, declarator));
@@ -94,7 +94,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 foreach (VariableDeclaratorSyntax declarator in declaration.Declaration.Variables)
                                     walker.Symbols.Add(new NodeSymbolInfo(declarator.Identifier.ValueText, declarator));
@@ -109,7 +109,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
                             }
@@ -123,7 +123,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                             if (IsPrivate(declaration, declaration.Modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberDeclarationWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
                                 walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
                             }
@@ -138,18 +138,28 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
 
             walker.Visit(typeDeclaration);
 
-            foreach (NodeSymbolInfo info in UnusedMemberDeclarationWalkerCache.GetExpressionsAndRelease(walker))
+            foreach (NodeSymbolInfo info in UnusedMemberWalkerCache.GetSymbolsAndRelease(walker))
             {
-                context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, info.Node, GetTitle(info.Node));
+                SyntaxNode node = info.Node;
+
+                if (node is VariableDeclaratorSyntax variableDeclarator)
+                {
+                    var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
+
+                    if (variableDeclaration.Variables.Count == 1)
+                    {
+                        context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, variableDeclaration.Parent, variableDeclaration.Parent.GetTitle());
+                    }
+                    else
+                    {
+                        context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, variableDeclarator, variableDeclaration.Parent.GetTitle());
+                    }
+                }
+                else
+                {
+                    context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, node, node.GetTitle());
+                }
             }
-        }
-
-        private static string GetTitle(SyntaxNode node)
-        {
-            if (node.Kind() == SyntaxKind.VariableDeclarator)
-                return node.Parent.Parent.GetTitle();
-
-            return node.GetTitle();
         }
 
         private static bool IsPrivate(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers)

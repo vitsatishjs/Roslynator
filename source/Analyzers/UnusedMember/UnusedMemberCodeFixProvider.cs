@@ -11,11 +11,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CSharp.CodeFixes;
 
-namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UnusedMemberDeclarationCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UnusedMemberCodeFixProvider))]
     [Shared]
-    public class UnusedMemberDeclarationCodeFixProvider : BaseCodeFixProvider
+    public class UnusedMemberCodeFixProvider : BaseCodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
@@ -26,12 +26,22 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
         {
             SyntaxNode root = await context.GetSyntaxRootAsync().ConfigureAwait(false);
 
-            if (!TryFindNode(root, context.Span, out SyntaxNode node, predicate: f => f.IsKind(
-                SyntaxKind.DelegateDeclaration,
-                SyntaxKind.EventDeclaration,
-                SyntaxKind.VariableDeclarator,
-                SyntaxKind.MethodDeclaration,
-                SyntaxKind.PropertyDeclaration)))
+            if (!TryFindNode(root, context.Span, out SyntaxNode node, predicate: f =>
+            {
+                switch (f.Kind())
+                {
+                    case SyntaxKind.DelegateDeclaration:
+                    case SyntaxKind.EventDeclaration:
+                    case SyntaxKind.EventFieldDeclaration:
+                    case SyntaxKind.FieldDeclaration:
+                    case SyntaxKind.MethodDeclaration:
+                    case SyntaxKind.PropertyDeclaration:
+                    case SyntaxKind.VariableDeclarator:
+                        return true;
+                    default:
+                        return false;
+                }
+            }))
             {
                 return;
             }
@@ -40,7 +50,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
 
             CodeAction codeAction = CodeAction.Create(
                 $"Remove '{identifier.ValueText}'",
-                cancellationToken => UnusedMemberDeclarationRefactoring.RefactorAsync(context.Document, node, cancellationToken),
+                cancellationToken => UnusedMemberRefactoring.RefactorAsync(context.Document, node, cancellationToken),
                 GetEquivalenceKey(DiagnosticIdentifiers.RemoveUnusedMemberDeclaration));
 
             context.RegisterCodeFix(codeAction, context.Diagnostics[0]);
@@ -54,6 +64,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                     return ((DelegateDeclarationSyntax)node).Identifier;
                 case SyntaxKind.EventDeclaration:
                     return ((EventDeclarationSyntax)node).Identifier;
+                case SyntaxKind.EventFieldDeclaration:
+                    return ((EventFieldDeclarationSyntax)node).Declaration.Variables.First().Identifier;
+                case SyntaxKind.FieldDeclaration:
+                    return ((FieldDeclarationSyntax)node).Declaration.Variables.First().Identifier;
                 case SyntaxKind.VariableDeclarator:
                     return ((VariableDeclaratorSyntax)node).Identifier;
                 case SyntaxKind.MethodDeclaration:

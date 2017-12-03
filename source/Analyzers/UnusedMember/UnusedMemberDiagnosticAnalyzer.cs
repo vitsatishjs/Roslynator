@@ -6,12 +6,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Roslynator.CSharp.DiagnosticAnalyzers;
-using static Roslynator.CSharp.Analyzers.UnusedMemberDeclaration.UnusedMemberDeclarationRefactoring;
+using static Roslynator.CSharp.Analyzers.UnusedMember.UnusedMemberRefactoring;
 
-namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class UnusedMemberDeclarationDiagnosticAnalyzer : BaseDiagnosticAnalyzer
+    public class UnusedMemberDiagnosticAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {

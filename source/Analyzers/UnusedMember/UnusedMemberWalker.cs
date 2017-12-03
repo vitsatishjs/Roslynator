@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
-    internal class UnusedMemberDeclarationWalker : CSharpSyntaxWalker
+    internal class UnusedMemberWalker : CSharpSyntaxWalker
     {
-        public List<NodeSymbolInfo> Symbols { get; } = new List<NodeSymbolInfo>();
+        public Collection<NodeSymbolInfo> Symbols { get; } = new Collection<NodeSymbolInfo>();
 
         public SemanticModel SemanticModel { get; set; }
 
@@ -42,7 +42,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
                         Symbols[i] = info;
                     }
 
-                    if (info.Symbol.Equals(SemanticModel.GetSymbol(node, CancellationToken)))
+                    if (info.Symbol.Equals(SemanticModel.GetSymbol(node, CancellationToken)?.OriginalDefinition))
                         Symbols.RemoveAt(i);
                 }
             }
@@ -718,8 +718,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
 
         public override void VisitNameColon(NameColonSyntax node)
         {
-            Debug.Fail(node.ToString());
-            base.VisitNameColon(node);
+            //base.VisitNameColon(node);
         }
 
         //public override void VisitNameEquals(NameEqualsSyntax node)

@@ -2,7 +2,7 @@
 
 using Microsoft.CodeAnalysis;
 
-namespace Roslynator.CSharp.Analyzers.UnusedMemberDeclaration
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
     internal struct NodeSymbolInfo
     {
