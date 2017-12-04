@@ -20,6 +20,8 @@ namespace Roslynator.CSharp.Analyzers.Tests
                 EventHandler eh = FooEvent3;
 
                 FooMethod<string>();
+
+                s.FooExtensionMethod<string>();
             }
 
             private static void FooMethod<T>()
@@ -39,6 +41,10 @@ namespace Roslynator.CSharp.Analyzers.Tests
             private static void FooMethod()
             {
             }
+        }
+
+        private static void FooExtensionMethod<T>(this T value)
+        {
         }
 
         private partial class FooPartial

@@ -27,22 +27,30 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                 {
                     if (info.Symbol == null)
                     {
-                        ISymbol symbol = SemanticModel.GetDeclaredSymbol(info.Node, CancellationToken);
+                        ISymbol declaredSymbol = SemanticModel.GetDeclaredSymbol(info.Node, CancellationToken);
 
-                        Debug.Assert(symbol != null, "");
+                        Debug.Assert(declaredSymbol != null, "");
 
-                        if (symbol == null)
+                        if (declaredSymbol == null)
                         {
                             Symbols.RemoveAt(i);
                             continue;
                         }
 
-                        info = new NodeSymbolInfo(info.Name, info.Node, symbol);
+                        info = new NodeSymbolInfo(info.Name, info.Node, declaredSymbol);
 
                         Symbols[i] = info;
                     }
 
-                    if (info.Symbol.Equals(SemanticModel.GetSymbol(node, CancellationToken)?.OriginalDefinition))
+                    ISymbol symbol = SemanticModel.GetSymbol(node, CancellationToken);
+
+                    if (symbol == null)
+                        continue;
+
+                    if (symbol is IMethodSymbol methodSymbol)
+                        symbol = methodSymbol.ReducedFrom ?? methodSymbol;
+
+                    if (info.Symbol.Equals(symbol.OriginalDefinition))
                         Symbols.RemoveAt(i);
                 }
             }
