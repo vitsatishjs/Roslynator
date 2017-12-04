@@ -148,18 +148,23 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
                     if (variableDeclaration.Variables.Count == 1)
                     {
-                        context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, variableDeclaration.Parent, variableDeclaration.Parent.GetTitle());
+                        ReportDiagnostic(context, variableDeclaration.Parent, variableDeclaration.Parent.GetTitle());
                     }
                     else
                     {
-                        context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, variableDeclarator, variableDeclaration.Parent.GetTitle());
+                        ReportDiagnostic(context, variableDeclarator, variableDeclaration.Parent.GetTitle());
                     }
                 }
                 else
                 {
-                    context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, node, node.GetTitle());
+                    ReportDiagnostic(context, node, node.GetTitle());
                 }
             }
+        }
+
+        private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node, string declarationName)
+        {
+            context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, node, declarationName);
         }
 
         private static bool IsPrivate(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers)
