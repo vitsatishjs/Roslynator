@@ -584,11 +584,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
         //    base.VisitImplicitElementAccess(node);
         //}
 
-        public override void VisitIncompleteMember(IncompleteMemberSyntax node)
-        {
-            Debug.Fail("");
-            base.VisitIncompleteMember(node);
-        }
+        //public override void VisitIncompleteMember(IncompleteMemberSyntax node)
+        //{
+        //    base.VisitIncompleteMember(node);
+        //}
 
         public override void VisitIndexerDeclaration(IndexerDeclarationSyntax node)
         {
