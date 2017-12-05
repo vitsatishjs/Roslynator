@@ -476,4 +476,9 @@
       <Id>CS0246</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0086" Identifier="AddMissingType" Title="Add missing type">
+    <FixableDiagnosticIds>
+      <Id>CS1031</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>

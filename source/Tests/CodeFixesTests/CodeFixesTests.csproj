@@ -81,6 +81,7 @@
     <Compile Include="CS0759_NoDefiningDeclarationFoundForImplementingDeclarationOfPartialMethod.cs" />
     <Compile Include="CS0766_PartialMethodsMustHaveVoidReturnType.cs" />
     <Compile Include="CS0766_PartialMethodsMustHaveVoidReturnType2.cs" />
+    <Compile Include="CS1031_TypeExpected.cs" />
     <Compile Include="CS1100_MethodHasParameterModifierThisWhichIsNotOnFirstParameter.cs" />
     <Compile Include="CS1105_ExtensionMethodMustBeStatic.cs" />
     <Compile Include="CS1106_ExtensionMethodMustBeDefinedInNonGenericStaticClass.cs" />
