@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -164,7 +165,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node, string declarationName)
         {
-            context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, node, declarationName);
+            context.ReportDiagnostic(DiagnosticDescriptors.RemoveUnusedMemberDeclaration, GetIdentifier(node), declarationName);
         }
 
         private static bool IsPrivate(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers)
@@ -175,6 +176,29 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                 accessibility = memberDeclaration.GetDefaultExplicitAccessibility();
 
             return accessibility == Accessibility.Private;
+        }
+
+        internal static SyntaxToken GetIdentifier(SyntaxNode node)
+        {
+            switch (node.Kind())
+            {
+                case SyntaxKind.DelegateDeclaration:
+                    return ((DelegateDeclarationSyntax)node).Identifier;
+                case SyntaxKind.EventDeclaration:
+                    return ((EventDeclarationSyntax)node).Identifier;
+                case SyntaxKind.EventFieldDeclaration:
+                    return ((EventFieldDeclarationSyntax)node).Declaration.Variables.First().Identifier;
+                case SyntaxKind.FieldDeclaration:
+                    return ((FieldDeclarationSyntax)node).Declaration.Variables.First().Identifier;
+                case SyntaxKind.VariableDeclarator:
+                    return ((VariableDeclaratorSyntax)node).Identifier;
+                case SyntaxKind.MethodDeclaration:
+                    return ((MethodDeclarationSyntax)node).Identifier;
+                case SyntaxKind.PropertyDeclaration:
+                    return ((PropertyDeclarationSyntax)node).Identifier;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         public static Task<Document> RefactorAsync(

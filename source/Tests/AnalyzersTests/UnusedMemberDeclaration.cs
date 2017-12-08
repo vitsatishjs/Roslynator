@@ -6,16 +6,16 @@ using System;
 
 namespace Roslynator.CSharp.Analyzers.Tests
 {
-    internal static class RemoveUnusedMemberDeclaration
+    internal static class UnusedMemberDeclaration
     {
-        private class Foo
+        private static class Foo
         {
             private static readonly string _f;
             private static readonly string _f2, _f3;
 
             private static void FooMethod()
             {
-                string s = _f3;
+                string s = _f2;
 
                 EventHandler eh = FooEvent3;
 
@@ -28,7 +28,7 @@ namespace Roslynator.CSharp.Analyzers.Tests
             {
             }
 
-            private static string FooProperty { get; }
+            private static string FooProperty { get; } = _f3;
 
             private static event EventHandler FooEvent;
             private static event EventHandler FooEvent2, FooEvent3;
@@ -36,15 +36,15 @@ namespace Roslynator.CSharp.Analyzers.Tests
             private delegate void FooDelegate();
         }
 
+        private static void FooExtensionMethod<T>(this T value)
+        {
+        }
+
         private partial class FooPartial
         {
             private static void FooMethod()
             {
             }
-        }
-
-        private static void FooExtensionMethod<T>(this T value)
-        {
         }
 
         private partial class FooPartial
