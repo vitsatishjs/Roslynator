@@ -136,7 +136,7 @@ namespace Roslynator.CSharp.Refactorings
 
         public void RegisterRefactoring(CodeAction codeAction)
         {
-            Debug.WriteLine($"REGISTERING REFACTORING \"{codeAction.Title}\"");
+            //Debug.WriteLine($"REGISTERING REFACTORING \"{codeAction.Title}\"");
 
             UnderlyingContext.RegisterRefactoring(codeAction);
         }
@@ -158,7 +158,7 @@ namespace Roslynator.CSharp.Refactorings
         {
             SyntaxTrivia trivia = Root.FindTrivia(Span.Start, findInsideTrivia: true);
 
-            Debug.WriteLine(trivia.Kind().ToString());
+            //Debug.WriteLine(trivia.Kind().ToString());
 
             if (trivia.IsPartOfStructuredTrivia())
                 CommentTriviaRefactoring.ComputeRefactorings(this, trivia);
@@ -179,7 +179,7 @@ namespace Roslynator.CSharp.Refactorings
                 {
                     node = en.Current;
 
-                    Debug.WriteLine(node.Kind().ToString());
+                    //Debug.WriteLine(node.Kind().ToString());
 
                     if (!fDirectiveTrivia
                         && (node is DirectiveTriviaSyntax directiveTrivia))
@@ -220,7 +220,7 @@ namespace Roslynator.CSharp.Refactorings
             if (kind != SyntaxKind.None
                 && token.Span.Contains(Span))
             {
-                Debug.WriteLine(kind.ToString());
+                //Debug.WriteLine(kind.ToString());
 
                 switch (kind)
                 {
@@ -264,7 +264,7 @@ namespace Roslynator.CSharp.Refactorings
         {
             SyntaxTrivia trivia = Root.FindTrivia(Span.Start);
 
-            Debug.WriteLine(trivia.Kind().ToString());
+            //Debug.WriteLine(trivia.Kind().ToString());
 
             switch (trivia.Kind())
             {
@@ -369,7 +369,7 @@ namespace Roslynator.CSharp.Refactorings
 
                     SyntaxKind kind = node.Kind();
 
-                    Debug.WriteLine(kind.ToString());
+                    //Debug.WriteLine(kind.ToString());
 
                     if (!fAccessor
                         && (node is AccessorDeclarationSyntax accessor))

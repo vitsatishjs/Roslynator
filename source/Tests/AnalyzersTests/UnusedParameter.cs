@@ -3,7 +3,7 @@
 using System;
 using System.ComponentModel;
 
-#pragma warning disable RCS1100, RCS1016, RCS1023, RCS1079, RCS1140, RCS1185, CS0168
+#pragma warning disable CS8321, RCS1100, RCS1016, RCS1021, RCS1023, RCS1079, RCS1140, RCS1185, CS0168
 
 namespace Roslynator.CSharp.Analyzers.Tests
 {
@@ -35,6 +35,18 @@ namespace Roslynator.CSharp.Analyzers.Tests
 
             public void Bar8(object parameter1, object parameter2) { Bar7(parameter1: null, parameter2: null); }
 
+            public void SimpleLambda()
+            {
+                Func<string, string> func = f => { return ""; };
+                Func<string, string> func2 = f => "";
+            }
+
+            public void ParenthesizedLambda()
+            {
+                Func<string, string, string> func = (f, f2) => { return f; };
+                Func<string, string, string> func2 = (f, f2) => f;
+            }
+
             // n
 
             public void Bar(object parameter) { }
@@ -43,13 +55,25 @@ namespace Roslynator.CSharp.Analyzers.Tests
 
             public abstract void Bar3(object parameter);
 
-            private void EventHandlerMethod(object sender, EventArgs args) { }
+            public void EventHandlerMethod(object sender, EventArgs args) { }
 
-            private void EventHandlerMethod2(object sender, ConsoleCancelEventArgs args) { }
+            public void EventHandlerMethod2(object sender, ConsoleCancelEventArgs args) { }
 
             public void Bar4(object parameter)
             {
                 Bar4(parameter);
+            }
+
+            public void SimpleLambda2()
+            {
+                Func<string, string> func = f => { return f; };
+                Func<string, string> func2 = f => f;
+            }
+
+            public void ParenthesizedLambda2()
+            {
+                Func<string, string, string> func = (f, f2) => { return f + f2; };
+                Func<string, string, string> func2 = (f, f2) => f + f2;
             }
         }
 

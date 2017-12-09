@@ -5,9 +5,10 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using static Roslynator.CSharp.Refactorings.UnusedSyntax.UnusedParameterRefactoring;
+using Roslynator.CSharp.DiagnosticAnalyzers;
+using static Roslynator.CSharp.Analyzers.UnusedParameter.UnusedParameterRefactoring;
 
-namespace Roslynator.CSharp.DiagnosticAnalyzers
+namespace Roslynator.CSharp.Analyzers.UnusedParameter
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class UnusedParameterDiagnosticAnalyzer : BaseDiagnosticAnalyzer
@@ -18,7 +19,8 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
             {
                 return ImmutableArray.Create(
                     DiagnosticDescriptors.UnusedParameter,
-                    DiagnosticDescriptors.UnusedThisParameter);
+                    DiagnosticDescriptors.UnusedThisParameter,
+                    DiagnosticDescriptors.UnusedTypeParameter);
             }
         }
 
@@ -34,6 +36,8 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
             context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeIndexerDeclaration, SyntaxKind.IndexerDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeLocalFunctionStatement, SyntaxKind.LocalFunctionStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeSimpleLambdaExpression, SyntaxKind.SimpleLambdaExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeParenthesizedLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
         }
     }
 }
