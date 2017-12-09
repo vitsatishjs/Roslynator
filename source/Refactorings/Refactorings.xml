@@ -1404,6 +1404,31 @@ s = GetValue();]]></After>
       <Syntax>indexer</Syntax>
       <Syntax>event</Syntax>
     </Syntaxes>
-    <Scope>identifier</Scope>
-  </Refactoring></Refactorings>
+    <Span>identifier</Span>
+    <Samples>
+      <Sample>
+        <Before><![CDATA[public class Foo : IFoo
+{
+    public void Bar()
+    {
+    }
+}
+
+public interface IFoo
+{
+}]]></Before>
+        <After><![CDATA[public class Foo : IFoo
+{
+    public void Bar()
+    {
+    }
+}
+
+public interface IFoo
+{
+    void Bar();
+}]]></After>
+      </Sample>
+    </Samples>
+  </Refactoring>
 </Refactorings>
