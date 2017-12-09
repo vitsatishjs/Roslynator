@@ -200,8 +200,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             {
                 context.ReportDiagnostic(DiagnosticDescriptors.UnusedTypeParameter, typeParameter, typeParameter.Identifier.ValueText);
             }
-
-            Debug.Fail(node.ToString());
+            else
+            {
+                Debug.Fail(node.ToString());
+            }
         }
 
         //TODO: UnusedMemberWalker
