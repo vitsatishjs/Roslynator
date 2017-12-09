@@ -30,7 +30,13 @@ namespace Roslynator.Metadata
                     bool.Parse(element.Element("IsEnabledByDefault").Value),
                     element.AttributeValueAsBooleanOrDefault("IsObsolete"),
                     bool.Parse(element.Element("SupportsFadeOut").Value),
-                    bool.Parse(element.Element("SupportsFadeOutAnalyzer").Value));
+                    bool.Parse(element.Element("SupportsFadeOutAnalyzer").Value),
+                    (element.Element("Samples") != null)
+                        ? element.Element("Samples")?
+                            .Elements("Sample")
+                            .Select(f => new SampleDescriptor(f.Element("Before").Value, f.Element("After")?.Value))
+                            .ToList()
+                        : new List<SampleDescriptor>());
             }
         }
 
@@ -51,7 +57,7 @@ namespace Roslynator.Metadata
                     element.Attribute("Title").Value,
                     element.AttributeValueAsBooleanOrDefault("IsEnabledByDefault", true),
                     element.AttributeValueAsBooleanOrDefault("IsObsolete", false),
-                    element.Element("Scope")?.Value,
+                    element.Element("Span")?.Value,
                     element.Element("Syntaxes")
                         .Elements("Syntax")
                         .Select(f => new SyntaxDescriptor(f.Value))
@@ -61,7 +67,13 @@ namespace Roslynator.Metadata
                             .Elements("Image")
                             .Select(f => new ImageDescriptor(f.Value))
                             .ToList()
-                        : new List<ImageDescriptor>());
+                        : new List<ImageDescriptor>(),
+                    (element.Element("Samples") != null)
+                        ? element.Element("Samples")?
+                            .Elements("Sample")
+                            .Select(f => new SampleDescriptor(f.Element("Before").Value, f.Element("After").Value))
+                            .ToList()
+                        : new List<SampleDescriptor>());
             }
         }
 
