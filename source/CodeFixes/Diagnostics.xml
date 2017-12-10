@@ -125,4 +125,5 @@
   <Diagnostic Id="CS1997" Identifier="SinceMethodIsAsyncMethodThatReturnsTaskReturnKeywordMustNotBeFollowedByObjectExpression" HelpUrl="" />
   <Diagnostic Id="CS1988" Identifier="AsyncMethodsCannotHaveRefOrOutParameters" HelpUrl="" />
   <Diagnostic Id="CS8070" Identifier="ControlCannotFallOutOfSwitchFromFinalCaseLabel" HelpUrl="" />
+  <Diagnostic Id="CS8112" Identifier="LocalFunctionMustAlwaysHaveBody" HelpUrl="" />
 </Diagnostics>

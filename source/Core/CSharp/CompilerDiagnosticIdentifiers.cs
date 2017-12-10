@@ -131,5 +131,6 @@ namespace Roslynator.CSharp
         public const string AsyncModifierCanOnlyBeUsedInMethodsThatHaveBody = "CS1994";
         public const string SinceMethodIsAsyncMethodThatReturnsTaskReturnKeywordMustNotBeFollowedByObjectExpression = "CS1997";
         public const string ControlCannotFallOutOfSwitchFromFinalCaseLabel = "CS8070";
+        public const string LocalFunctionMustAlwaysHaveBody = "CS8112";
     }
 }

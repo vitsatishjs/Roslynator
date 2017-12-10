@@ -133,6 +133,7 @@
     <FixableDiagnosticIds>
       <Id>CS0501</Id>
       <Id>CS0756</Id>
+      <Id>CS8112</Id>
     </FixableDiagnosticIds>
   </CodeFix>
   <CodeFix Id="RCF0027" Identifier="RemoveRefModifier" Title="Remove 'ref' modifier">
