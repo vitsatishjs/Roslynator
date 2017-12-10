@@ -43,8 +43,18 @@ namespace Roslynator.CSharp.Analyzers.Tests
 
             public void ParenthesizedLambda()
             {
-                Func<string, string, string> func = (f, f2) => { return f; };
-                Func<string, string, string> func2 = (f, f2) => f;
+                Func<string, string, string> func = (f, f2) => { return f2; };
+                Func<string, string, string> func2 = (f, f2) => f2;
+            }
+
+            public static Foo operator +(Foo left, Foo right)
+            {
+                return null;
+            }
+
+            public static explicit operator Foo(string value)
+            {
+                return null;
             }
 
             // n
@@ -115,6 +125,16 @@ namespace Roslynator.CSharp.Analyzers.Tests
             /// <param name="parameter1"></param>
             /// <param name="parameter2"></param>
             public void Bar2(object parameter1, object parameter2) { throw new NotImplementedException(); }
+
+            public static Foo2 operator +(Foo2 left, Foo2 right)
+            {
+                throw new NotImplementedException();
+            }
+
+            public static explicit operator Foo2(string value)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private partial class FooPartial : Foo

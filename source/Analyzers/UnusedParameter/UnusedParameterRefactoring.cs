@@ -78,6 +78,42 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                 ReportDiagnostic(context, node);
         }
 
+        public static void AnalyzeOperatorDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var operatorDeclaration = (OperatorDeclarationSyntax)context.Node;
+
+            if (operatorDeclaration.ContainsDiagnostics)
+                return;
+
+            ParametersInfo parametersInfo = ParametersInfo.Create(operatorDeclaration);
+
+            if (!parametersInfo.Success)
+                return;
+
+            if (ContainsOnlyThrowNewException(parametersInfo.Body, context.SemanticModel, context.CancellationToken))
+                return;
+
+            Analyze(context, parametersInfo);
+        }
+
+        public static void AnalyzeConversionOperatorDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var conversionOperatorDeclaration = (ConversionOperatorDeclarationSyntax)context.Node;
+
+            if (conversionOperatorDeclaration.ContainsDiagnostics)
+                return;
+
+            ParametersInfo parametersInfo = ParametersInfo.Create(conversionOperatorDeclaration);
+
+            if (!parametersInfo.Success)
+                return;
+
+            if (ContainsOnlyThrowNewException(parametersInfo.Body, context.SemanticModel, context.CancellationToken))
+                return;
+
+            Analyze(context, parametersInfo);
+        }
+
         public static void AnalyzeIndexerDeclaration(SyntaxNodeAnalysisContext context)
         {
             var indexerDeclaration = (IndexerDeclarationSyntax)context.Node;
