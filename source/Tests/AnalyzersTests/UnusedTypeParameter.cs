@@ -12,9 +12,9 @@ namespace Roslynator.CSharp.Analyzers.Tests
         {
             public void Bar<T>()
             {
-                void LocalFunction<T2>()
-                {
-                }
+                //void LocalFunction<T2>()
+                //{
+                //}
             }
 
             public T2 Bar<T1, T2>(T2 value)
@@ -31,10 +31,10 @@ namespace Roslynator.CSharp.Analyzers.Tests
             /// <returns></returns>
             public void Bar<T1, T2>()
             {
-                T3 LocalFunction<T3>()
-                {
-                    return default(T3);
-                }
+                //T3 LocalFunction<T3>()
+                //{
+                //    return default(T3);
+                //}
             }
 
             // n

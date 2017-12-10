@@ -23,6 +23,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             {
                 _cachedInstance = null;
                 walker.Symbols.Clear();
+                walker.IsAnyTypeParameter = false;
             }
             else
             {

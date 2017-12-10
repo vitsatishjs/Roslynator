@@ -30,16 +30,25 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                 throw new ArgumentNullException(nameof(context));
 
             base.Initialize(context);
-            context.EnableConcurrentExecution();
 
-            context.RegisterSyntaxNodeAction(AnalyzeConstructorDeclaration, SyntaxKind.ConstructorDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeOperatorDeclaration, SyntaxKind.OperatorDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeConversionOperatorDeclaration, SyntaxKind.ConversionOperatorDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeIndexerDeclaration, SyntaxKind.IndexerDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeLocalFunctionStatement, SyntaxKind.LocalFunctionStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeSimpleLambdaExpression, SyntaxKind.SimpleLambdaExpression);
-            context.RegisterSyntaxNodeAction(AnalyzeParenthesizedLambdaExpression, SyntaxKind.ParenthesizedLambdaExpression);
+            context.RegisterCompilationStartAction(startContext =>
+            {
+                startContext.RegisterSyntaxNodeAction(AnalyzeConstructorDeclaration, SyntaxKind.ConstructorDeclaration);
+                startContext.RegisterSyntaxNodeAction(AnalyzeOperatorDeclaration, SyntaxKind.OperatorDeclaration);
+                startContext.RegisterSyntaxNodeAction(AnalyzeConversionOperatorDeclaration, SyntaxKind.ConversionOperatorDeclaration);
+                startContext.RegisterSyntaxNodeAction(AnalyzeIndexerDeclaration, SyntaxKind.IndexerDeclaration);
+
+                INamedTypeSymbol eventArgsSymbol = startContext.Compilation.GetTypeByMetadataName(MetadataNames.System_EventArgs);
+
+                if (eventArgsSymbol != null)
+                {
+                    startContext.RegisterSyntaxNodeAction(f => AnalyzeMethodDeclaration(f, eventArgsSymbol), SyntaxKind.MethodDeclaration);
+                    startContext.RegisterSyntaxNodeAction(f => AnalyzeLocalFunctionStatement(f, eventArgsSymbol), SyntaxKind.LocalFunctionStatement);
+                    startContext.RegisterSyntaxNodeAction(f => AnalyzeSimpleLambdaExpression(f, eventArgsSymbol), SyntaxKind.SimpleLambdaExpression);
+                    startContext.RegisterSyntaxNodeAction(f => AnalyzeParenthesizedLambdaExpression(f, eventArgsSymbol), SyntaxKind.ParenthesizedLambdaExpression);
+                    startContext.RegisterSyntaxNodeAction(f => AnalyzeAnonymousMethodExpression(f, eventArgsSymbol), SyntaxKind.AnonymousMethodExpression);
+                }
+            });
         }
     }
 }

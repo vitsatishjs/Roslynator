@@ -14,8 +14,6 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
     {
         private static readonly StringComparer _ordinalComparer = StringComparer.Ordinal;
 
-        private bool _isInType;
-
         public Dictionary<string, NodeSymbolInfo> Symbols { get; } = new Dictionary<string, NodeSymbolInfo>(_ordinalComparer);
 
         public SemanticModel SemanticModel { get; set; }
@@ -23,6 +21,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
         public CancellationToken CancellationToken { get; set; }
 
         public bool IsIndexer { get; set; }
+
+        public bool IsAnyTypeParameter { get; set; }
 
         public void AddParameter(ParameterSyntax parameter)
         {
@@ -58,11 +58,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         private void VisitType(TypeSyntax type)
         {
-            Debug.Assert(!_isInType, $"{_isInType} should be equal to false");
-
-            _isInType = true;
-            Visit(type);
-            _isInType = false;
+            if (IsAnyTypeParameter)
+                Visit(type);
         }
 
         //public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)
@@ -542,17 +539,11 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
             if (Symbols.TryGetValue(name, out NodeSymbolInfo info))
             {
-                if (info.Node.Kind() == SyntaxKind.Parameter
-                    && _isInType)
-                {
-                    return;
-                }
-
                 if (info.Symbol == null)
                 {
                     ISymbol declaredSymbol = SemanticModel.GetDeclaredSymbol(info.Node, CancellationToken);
 
-                    Debug.Assert(declaredSymbol != null, "");
+                    Debug.Assert(declaredSymbol != null, $"Cannot obtain symbol for {info.Node}");
 
                     if (declaredSymbol == null)
                     {
@@ -678,11 +669,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
         //    base.VisitInvocationExpression(node);
         //}
 
-        public override void VisitIsPatternExpression(IsPatternExpressionSyntax node)
-        {
-            Visit(node.Expression);
-            //base.VisitIsPatternExpression(node);
-        }
+        //public override void VisitIsPatternExpression(IsPatternExpressionSyntax node)
+        //{
+        //    base.VisitIsPatternExpression(node);
+        //}
 
         public override void VisitJoinClause(JoinClauseSyntax node)
         {
@@ -1119,6 +1109,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
+            VisitType(node.Type);
+
             foreach (VariableDeclaratorSyntax variable in node.Variables)
                 Visit(variable);
         }

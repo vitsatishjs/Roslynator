@@ -23,7 +23,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (constructorDeclaration.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(constructorDeclaration);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(constructorDeclaration);
 
             if (!parametersInfo.Success)
                 return;
@@ -34,7 +34,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             Analyze(context, parametersInfo);
         }
 
-        public static void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
+        public static void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
         {
             var methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -47,7 +47,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (methodDeclaration.Modifiers.ContainsAny(SyntaxKind.AbstractKeyword, SyntaxKind.VirtualKeyword, SyntaxKind.OverrideKeyword))
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(methodDeclaration);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(methodDeclaration);
 
             if (!parametersInfo.Success)
                 return;
@@ -57,7 +57,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
             IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration, context.CancellationToken);
 
-            if (methodSymbol?.IsEventHandler(context.SemanticModel) != false)
+            if (methodSymbol == null)
+                return;
+
+            if (SymbolUtility.IsEventHandlerMethod(methodSymbol, eventArgsSymbol))
                 return;
 
             if (!methodSymbol.ExplicitInterfaceImplementations.IsDefaultOrEmpty)
@@ -85,7 +88,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (operatorDeclaration.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(operatorDeclaration);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(operatorDeclaration);
 
             if (!parametersInfo.Success)
                 return;
@@ -103,7 +106,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (conversionOperatorDeclaration.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(conversionOperatorDeclaration);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(conversionOperatorDeclaration);
 
             if (!parametersInfo.Success)
                 return;
@@ -127,7 +130,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (indexerDeclaration.Modifiers.ContainsAny(SyntaxKind.AbstractKeyword, SyntaxKind.VirtualKeyword, SyntaxKind.OverrideKeyword))
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(indexerDeclaration);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(indexerDeclaration);
 
             if (!parametersInfo.Success)
                 return;
@@ -146,46 +149,93 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             Analyze(context, parametersInfo, isIndexer: true);
         }
 
-        public static void AnalyzeLocalFunctionStatement(SyntaxNodeAnalysisContext context)
+        public static void AnalyzeLocalFunctionStatement(SyntaxNodeAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
         {
             var localFunctionStatement = (LocalFunctionStatementSyntax)context.Node;
 
             if (localFunctionStatement.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(localFunctionStatement);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(localFunctionStatement);
 
             if (!parametersInfo.Success)
+                return;
+
+            var methodSymbol = (IMethodSymbol)context.SemanticModel.GetDeclaredSymbol(localFunctionStatement, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            if (SymbolUtility.IsEventHandlerMethod(methodSymbol, eventArgsSymbol))
                 return;
 
             Analyze(context, parametersInfo);
         }
 
-        public static void AnalyzeSimpleLambdaExpression(SyntaxNodeAnalysisContext context)
+        public static void AnalyzeSimpleLambdaExpression(SyntaxNodeAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
         {
             var lambda = (SimpleLambdaExpressionSyntax)context.Node;
 
             if (lambda.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(lambda);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(lambda);
 
             if (!parametersInfo.Success)
+                return;
+
+            var methodSymbol = (IMethodSymbol)context.SemanticModel.GetSymbol(lambda, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            if (SymbolUtility.IsEventHandlerMethod(methodSymbol, eventArgsSymbol))
                 return;
 
             Analyze(context, parametersInfo);
         }
 
-        public static void AnalyzeParenthesizedLambdaExpression(SyntaxNodeAnalysisContext context)
+        public static void AnalyzeParenthesizedLambdaExpression(SyntaxNodeAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
         {
             var lambda = (ParenthesizedLambdaExpressionSyntax)context.Node;
 
             if (lambda.ContainsDiagnostics)
                 return;
 
-            ParametersInfo parametersInfo = ParametersInfo.Create(lambda);
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(lambda);
 
             if (!parametersInfo.Success)
+                return;
+
+            var methodSymbol = (IMethodSymbol)context.SemanticModel.GetSymbol(lambda, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            if (SymbolUtility.IsEventHandlerMethod(methodSymbol, eventArgsSymbol))
+                return;
+
+            Analyze(context, parametersInfo);
+        }
+
+        public static void AnalyzeAnonymousMethodExpression(SyntaxNodeAnalysisContext context, INamedTypeSymbol eventArgsSymbol)
+        {
+            var anonymousMethod = (AnonymousMethodExpressionSyntax)context.Node;
+
+            if (anonymousMethod.ContainsDiagnostics)
+                return;
+
+            ParametersInfo parametersInfo = SyntaxInfo.ParametersInfo(anonymousMethod);
+
+            if (!parametersInfo.Success)
+                return;
+
+            var methodSymbol = (IMethodSymbol)context.SemanticModel.GetSymbol(anonymousMethod, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            if (SymbolUtility.IsEventHandlerMethod(methodSymbol, eventArgsSymbol))
                 return;
 
             Analyze(context, parametersInfo);
@@ -211,8 +261,15 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                     walker.AddParameter(parameter);
             }
 
-            foreach (TypeParameterSyntax typeParameter in parametersInfo.TypeParameters)
-                walker.AddTypeParameter(typeParameter);
+            //TODO: http://github.com/dotnet/roslyn/issues/23699
+            if (parametersInfo.Node.Kind() != SyntaxKind.LocalFunctionStatement)
+            {
+                foreach (TypeParameterSyntax typeParameter in parametersInfo.TypeParameters)
+                {
+                    walker.AddTypeParameter(typeParameter);
+                    walker.IsAnyTypeParameter = true;
+                }
+            }
 
             walker.Visit(parametersInfo.Node);
 
@@ -319,8 +376,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                     {
                         return ((AccessorListSyntax)node)
                             .Accessors
-                            .All(f => ContainsOnlyThrowNewException(f.BodyOrExpressionBody(), semanticModel, cancellationToken)) == true;
-
+                            .All(f => ContainsOnlyThrowNewException(f.BodyOrExpressionBody(), semanticModel, cancellationToken));
                     }
             }
 
