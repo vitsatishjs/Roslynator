@@ -142,6 +142,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string ReplaceIfElseWithIfReturn = Prefix + "0190";
         public const string ReplaceIfWithSwitch = Prefix + "0133";
         public const string ReplaceIncrementOperatorWithDecrementOperator = Prefix + "0134";
+        public const string ReplaceInterpolatedStringWithConcatenation = Prefix + "0193";
         public const string ReplaceInterpolatedStringWithInterpolationExpression = Prefix + "0135";
         public const string ReplaceInterpolatedStringWithStringLiteral = Prefix + "0136";
         public const string ReplaceMethodGroupWithLambda = Prefix + "0137";
@@ -164,6 +165,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string SimplifyLambdaExpression = Prefix + "0154";
         public const string SortMemberDeclarations = Prefix + "0155";
         public const string SplitAttributes = Prefix + "0156";
+        public const string SplitDeclarationAndInitialization = Prefix + "0194";
         public const string SplitIfStatement = Prefix + "0184";
         public const string SplitSwitchLabels = Prefix + "0157";
         public const string SplitVariableDeclaration = Prefix + "0158";
