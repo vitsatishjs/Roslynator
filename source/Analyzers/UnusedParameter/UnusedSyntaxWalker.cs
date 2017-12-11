@@ -104,11 +104,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             //base.VisitArrayCreationExpression(node);
         }
 
-        public override void VisitArrayRankSpecifier(ArrayRankSpecifierSyntax node)
-        {
-            Debug.Fail(node.ToString());
-            base.VisitArrayRankSpecifier(node);
-        }
+        //public override void VisitArrayRankSpecifier(ArrayRankSpecifierSyntax node)
+        //{
+        //    base.VisitArrayRankSpecifier(node);
+        //}
 
         //public override void VisitArrayType(ArrayTypeSyntax node)
         //{
