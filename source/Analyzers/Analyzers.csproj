@@ -85,6 +85,11 @@
     <Compile Include="DiagnosticAnalyzers\AvoidSingleLineBlockDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReduceIfNestingDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReorderTypeParameterConstraintsDiagnosticAnalyzer.cs" />
+    <Compile Include="UnusedMember\NodeSymbolInfo.cs" />
+    <Compile Include="UnusedMember\UnusedMemberCodeFixProvider.cs" />
+    <Compile Include="UnusedMember\UnusedMemberWalker.cs" />
+    <Compile Include="UnusedMember\UnusedMemberWalkerCache.cs" />
+    <Compile Include="UnusedMember\UnusedMemberDiagnosticAnalyzer.cs" />
     <Compile Include="MarkLocalVariableAsConst\MarkLocalVariableAsConstCodeFixProvider.cs" />
     <Compile Include="Refactorings\RemoveRedundantAssignmentRefactoring.cs" />
     <Compile Include="MarkLocalVariableAsConst\MarkLocalVariableAsConstWalker.cs" />
