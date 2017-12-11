@@ -87,6 +87,7 @@
     <Compile Include="DiagnosticAnalyzers\ReorderTypeParameterConstraintsDiagnosticAnalyzer.cs" />
     <Compile Include="UnusedMember\NodeSymbolInfo.cs" />
     <Compile Include="UnusedMember\UnusedMemberCodeFixProvider.cs" />
+    <Compile Include="UnusedMember\UnusedMemberRefactoring.cs" />
     <Compile Include="UnusedMember\UnusedMemberWalker.cs" />
     <Compile Include="UnusedMember\UnusedMemberWalkerCache.cs" />
     <Compile Include="UnusedMember\UnusedMemberDiagnosticAnalyzer.cs" />
