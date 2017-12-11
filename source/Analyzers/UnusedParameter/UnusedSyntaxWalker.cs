@@ -719,6 +719,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
         {
+            Visit(node.ParameterList);
             VisitType(node.ReturnType);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitLocalFunctionStatement(node);
@@ -746,6 +747,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            Visit(node.ParameterList);
             VisitType(node.ReturnType);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitMethodDeclaration(node);
