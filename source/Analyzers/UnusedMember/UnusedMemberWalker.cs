@@ -305,6 +305,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
+            Visit(node.Initializer);
             //base.VisitConstructorDeclaration(node);
         }
 
