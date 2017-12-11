@@ -2,7 +2,7 @@
 
 using System;
 
-#pragma warning disable RCS1081, RCS1176
+#pragma warning disable RCS1016, RCS1081, RCS1163, RCS1164, RCS1175, RCS1176
 
 namespace Roslynator.CSharp.Analyzers.Tests
 {
@@ -40,15 +40,37 @@ namespace Roslynator.CSharp.Analyzers.Tests
         {
         }
 
+        // n
+
         private partial class FooPartial
         {
-            private static void FooMethod()
+            private void FooMethod()
             {
             }
         }
 
         private partial class FooPartial
         {
+        }
+
+        private class Base
+        {
+            public Base(string value)
+            {
+            }
+        }
+
+        private class Derived : Base
+        {
+            public Derived(string value)
+                : base(Bar())
+            {
+            }
+
+            private static string Bar()
+            {
+                return null;
+            }
         }
     }
 }
