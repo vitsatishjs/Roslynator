@@ -2,7 +2,7 @@
 
 using System;
 
-#pragma warning disable CS0168, CS8321, RCS1100, RCS1016, RCS1079, RCS1140, RCS1176
+#pragma warning disable CS0168, CS8321, RCS1100, RCS1016, RCS1079, RCS1140, RCS1163, RCS1176
 
 namespace Roslynator.CSharp.Analyzers.Tests
 {
@@ -46,6 +46,10 @@ namespace Roslynator.CSharp.Analyzers.Tests
             public abstract void Abstract<T>();
 
             public void InterfaceMethod<T>()
+            {
+            }
+
+            public void Bar<T>(T x)
             {
             }
 
