@@ -97,7 +97,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.ConstructorDeclaration:
@@ -122,7 +122,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.DestructorDeclaration:
@@ -147,7 +147,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.OperatorDeclaration:
@@ -172,7 +172,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.ConversionOperatorDeclaration:
@@ -197,7 +197,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.GetAccessorDeclaration:
@@ -224,7 +224,7 @@ namespace Roslynator.CSharp.CodeFixes
                             if (!keyword.HasTrailingTrivia)
                                 newNode = newNode.WithKeyword(keyword.WithTrailingTrivia(ElasticSpace));
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
                 case SyntaxKind.LocalFunctionStatement:
@@ -249,7 +249,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 .WithBody(Block())
                                 .WithFormatterAnnotation();
 
-                            return context.Document.ReplaceNodeAsync(node, newNode, context.CancellationToken);
+                            return context.Document.ReplaceNodeAsync(node, newNode, cancellationToken);
                         };
                     }
             }

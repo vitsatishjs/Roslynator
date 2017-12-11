@@ -119,7 +119,7 @@ namespace Roslynator.CSharp.CodeFixes
                                             .WithTriviaFrom(localDeclaration)
                                             .WithFormatterAnnotation();
 
-                                        return context.Document.ReplaceNodeAsync(localDeclaration, newNode, context.CancellationToken);
+                                        return context.Document.ReplaceNodeAsync(localDeclaration, newNode, cancellationToken);
                                     },
                                     GetEquivalenceKey(diagnostic));
                                 context.RegisterCodeFix(codeAction, diagnostic);

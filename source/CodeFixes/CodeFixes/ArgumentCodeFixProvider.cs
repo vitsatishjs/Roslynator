@@ -61,7 +61,7 @@ namespace Roslynator.CSharp.CodeFixes
                                    .WithRefOrOutKeyword(CSharpFactory.OutKeyword())
                                    .WithFormatterAnnotation();
 
-                               return context.Document.ReplaceNodeAsync(argument, newArgument, context.CancellationToken);
+                               return context.Document.ReplaceNodeAsync(argument, newArgument, cancellationToken);
                            },
                            GetEquivalenceKey(diagnostic));
 
@@ -83,7 +83,7 @@ namespace Roslynator.CSharp.CodeFixes
                                         .PrependToLeadingTrivia(argument.RefOrOutKeyword.GetLeadingAndTrailingTrivia())
                                         .WithFormatterAnnotation();
 
-                                    return context.Document.ReplaceNodeAsync(argument, newArgument, context.CancellationToken);
+                                    return context.Document.ReplaceNodeAsync(argument, newArgument, cancellationToken);
                                 },
                                 GetEquivalenceKey(diagnostic));
 
