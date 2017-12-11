@@ -782,6 +782,7 @@ namespace Roslynator.CSharp.Refactorings
                             AddBracesRefactoring.ComputeRefactoring(this, statement);
                             RemoveBracesRefactoring.ComputeRefactoring(this, statement);
                             ExtractStatementRefactoring.ComputeRefactoring(this, statement);
+                            EmbeddedStatementRefactoring.ComputeRefactoring(this, statement);
                             fStatement = true;
                         }
 

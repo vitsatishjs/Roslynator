@@ -198,7 +198,7 @@ namespace Roslynator.CodeGeneration.Markdown
             if (samples.Count > 0)
             {
                 sb.AppendLine();
-                sb.AppendHeader2("Examples");
+                sb.AppendHeader2((samples.Count == 1) ? "Example" : "Examples");
                 sb.AppendLine();
 
                 WriteSamples(sb, samples, new MarkdownHeader("Code with Diagnostic", 3), new MarkdownHeader("Code with Fix", 3));
@@ -286,7 +286,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 IEnumerable<MarkdownLink> links = codeFix
                     .FixableDiagnosticIds
-                    .Join(diagnostics, f => f, f => f.Id, (f, g) => new MarkdownLink(g.Id, g.HelpUrl));
+                    .Join(diagnostics, f => f, f => f.Id, (f, g) => new MarkdownLink(f, g.HelpUrl));
 
                 sb.AppendTableRow(
                     codeFix.Id,
