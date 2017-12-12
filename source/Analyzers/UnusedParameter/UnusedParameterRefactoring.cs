@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Roslynator.CSharp.Syntax;
+using System.Collections.Generic;
 
 namespace Roslynator.CSharp.Analyzers.UnusedParameter
 {
@@ -69,16 +70,16 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
             if (methodSymbol.ImplementsInterfaceMember())
                 return;
 
-            ImmutableArray<SyntaxNode> unusedNodes = FindUnusedNodes(context, parametersInfo);
+            Dictionary<string, NodeSymbolInfo> unusedNodes = FindUnusedNodes(context, parametersInfo);
 
-            if (!unusedNodes.Any())
+            if (unusedNodes.Count == 0)
                 return;
 
             if (IsReferencedAsMethodGroup(context, methodDeclaration))
                 return;
 
-            foreach (SyntaxNode node in unusedNodes)
-                ReportDiagnostic(context, node);
+            foreach (KeyValuePair<string, NodeSymbolInfo> kvp in unusedNodes)
+                ReportDiagnostic(context, kvp.Value.Node);
         }
 
         public static void AnalyzeOperatorDeclaration(SyntaxNodeAnalysisContext context)
@@ -243,13 +244,13 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         private static void Analyze(SyntaxNodeAnalysisContext context, ParametersInfo parametersInfo, bool isIndexer = false)
         {
-            foreach (SyntaxNode node in FindUnusedNodes(context, parametersInfo, isIndexer))
-                ReportDiagnostic(context, node);
+            foreach (KeyValuePair<string, NodeSymbolInfo> kvp in FindUnusedNodes(context, parametersInfo, isIndexer))
+                ReportDiagnostic(context, kvp.Value.Node);
         }
 
-        private static ImmutableArray<SyntaxNode> FindUnusedNodes(SyntaxNodeAnalysisContext context, ParametersInfo parametersInfo, bool isIndexer = false)
+        private static Dictionary<string, NodeSymbolInfo> FindUnusedNodes(SyntaxNodeAnalysisContext context, ParametersInfo parametersInfo, bool isIndexer = false)
         {
-            UnusedSyntaxWalker walker = UnusedSyntaxWalkerCache.Acquire(context.SemanticModel, context.CancellationToken, isIndexer);
+            UnusedParameterWalker walker = UnusedParameterWalkerCache.Acquire(context.SemanticModel, context.CancellationToken, isIndexer);
 
             if (parametersInfo.Parameter != null)
             {
@@ -261,19 +262,15 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                     walker.AddParameter(parameter);
             }
 
-            //TODO: http://github.com/dotnet/roslyn/issues/23699
-            if (parametersInfo.Node.Kind() != SyntaxKind.LocalFunctionStatement)
+            foreach (TypeParameterSyntax typeParameter in parametersInfo.TypeParameters)
             {
-                foreach (TypeParameterSyntax typeParameter in parametersInfo.TypeParameters)
-                {
-                    walker.AddTypeParameter(typeParameter);
-                    walker.IsAnyTypeParameter = true;
-                }
+                walker.AddTypeParameter(typeParameter);
+                walker.IsAnyTypeParameter = true;
             }
 
             walker.Visit(parametersInfo.Node);
 
-            return UnusedSyntaxWalkerCache.GetNodesAndRelease(walker);
+            return UnusedParameterWalkerCache.GetNodesAndRelease(walker);
         }
 
         private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node)
