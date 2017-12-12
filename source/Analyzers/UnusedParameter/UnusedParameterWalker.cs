@@ -74,24 +74,10 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                 Visit(type);
         }
 
-        private int _visitDepth;
-
         public override void Visit(SyntaxNode node)
         {
-            _visitDepth++;
-
-            Debug.WriteLine(new string(' ', _visitDepth) + node?.Kind());
-
-            if (_isEmpty)
-            {
-                Debug.WriteLine("END");
-            }
-            else
-            {
+            if (!_isEmpty)
                 base.Visit(node);
-            }
-
-            _visitDepth--;
         }
 
         //public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)
