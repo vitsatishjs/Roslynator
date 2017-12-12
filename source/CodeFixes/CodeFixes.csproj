@@ -58,6 +58,7 @@
     <Compile Include="CodeFixes\CodeFixRegistrator.cs" />
     <Compile Include="CodeFixes\ConditionalExpressionClauseCodeFixProvider.cs" />
     <Compile Include="CodeFixes\ElementAccessCodeFixProvider.cs" />
+    <Compile Include="CodeFixes\ObjectReferenceIsRequiredForNonStaticMemberCodeFixProvider.cs" />
     <Compile Include="CodeFixes\MemberHidesInheritedMemberCodeFixProvider.cs" />
     <Compile Include="CodeFixes\AddReturnStatementCodeFixProvider.cs" />
     <Compile Include="CodeFixes\BaseTypeCodeFixProvider.cs" />
