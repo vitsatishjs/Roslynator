@@ -100,8 +100,8 @@
     <Compile Include="Refactorings\MakeMemberReadOnly\MakeMemberReadOnlyWalkerCache.cs" />
     <Compile Include="Refactorings\RemoveUnnecessaryElseClauseRefactoring.cs" />
     <Compile Include="UnusedParameter\NodeSymbolInfo.cs" />
-    <Compile Include="UnusedParameter\UnusedSyntaxWalker.cs" />
-    <Compile Include="UnusedParameter\UnusedSyntaxWalkerCache.cs" />
+    <Compile Include="UnusedParameter\UnusedParameterWalker.cs" />
+    <Compile Include="UnusedParameter\UnusedParameterWalkerCache.cs" />
     <Compile Include="ReturnTaskInsteadOfNull\ReturnTaskInsteadOfNullCodeFixProvider.cs" />
     <Compile Include="ReturnTaskInsteadOfNull\ReturnTaskInsteadOfNullDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\UseMethodGroupInsteadOfAnonymousFunctionDiagnosticAnalyzer.cs" />

@@ -10,11 +10,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Roslynator.CSharp.Analyzers.UnusedParameter
 {
-    internal class UnusedSyntaxWalker : CSharpSyntaxWalker
+    internal class UnusedParameterWalker : CSharpSyntaxWalker
     {
         private static readonly StringComparer _ordinalComparer = StringComparer.Ordinal;
 
-        public Dictionary<string, NodeSymbolInfo> Symbols { get; } = new Dictionary<string, NodeSymbolInfo>(_ordinalComparer);
+        private bool _isEmpty;
+
+        public Dictionary<string, NodeSymbolInfo> Nodes { get; } = new Dictionary<string, NodeSymbolInfo>(_ordinalComparer);
 
         public SemanticModel SemanticModel { get; set; }
 
@@ -24,34 +26,44 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         public bool IsAnyTypeParameter { get; set; }
 
+        public void Reset()
+        {
+            Nodes.Clear();
+            IsAnyTypeParameter = false;
+            _isEmpty = false;
+        }
+
         public void AddParameter(ParameterSyntax parameter)
         {
-            string name = parameter.Identifier.ValueText;
-
-            Symbols.Add(name, new NodeSymbolInfo(name, parameter));
+            AddNode(parameter.Identifier.ValueText, parameter);
         }
 
         public void AddTypeParameter(TypeParameterSyntax typeParameter)
         {
-            string name = typeParameter.Identifier.ValueText;
+            AddNode(typeParameter.Identifier.ValueText, typeParameter);
+        }
 
-            Symbols.Add(name, new NodeSymbolInfo(name, typeParameter));
+        private void AddNode(string name, SyntaxNode node)
+        {
+            Nodes.Add(name, new NodeSymbolInfo(name, node));
+        }
+
+        private void RemoveNode(string name)
+        {
+            Nodes.Remove(name);
+
+            if (Nodes.Count == 0)
+                _isEmpty = true;
         }
 
         private void VisitBodyOrExpressionBody(BlockSyntax body, ArrowExpressionClauseSyntax expressionBody)
         {
-            if (Symbols.Count == 0)
-                return;
-
             Visit(body);
             Visit(expressionBody);
         }
 
         private void VisitAccessorListOrExpressionBody(AccessorListSyntax accessorList, ArrowExpressionClauseSyntax expressionBody)
         {
-            if (Symbols.Count == 0)
-                return;
-
             Visit(accessorList);
             Visit(expressionBody);
         }
@@ -60,6 +72,12 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
         {
             if (IsAnyTypeParameter)
                 Visit(type);
+        }
+
+        public override void Visit(SyntaxNode node)
+        {
+            if (!_isEmpty)
+                base.Visit(node);
         }
 
         //public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)
@@ -536,23 +554,21 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
         {
             string name = node.Identifier.ValueText;
 
-            if (Symbols.TryGetValue(name, out NodeSymbolInfo info))
+            if (Nodes.TryGetValue(name, out NodeSymbolInfo info))
             {
                 if (info.Symbol == null)
                 {
                     ISymbol declaredSymbol = SemanticModel.GetDeclaredSymbol(info.Node, CancellationToken);
 
-                    Debug.Assert(declaredSymbol != null, $"Cannot obtain symbol for {info.Node}");
-
                     if (declaredSymbol == null)
                     {
-                        Symbols.Remove(name);
+                        RemoveNode(name);
                         return;
                     }
 
                     info = new NodeSymbolInfo(info.Name, info.Node, declaredSymbol);
 
-                    Symbols[name] = info;
+                    Nodes[name] = info;
                 }
 
                 ISymbol symbol = SemanticModel.GetSymbol(node, CancellationToken);
@@ -561,7 +577,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
                     symbol = GetIndexerParameterSymbol(node, symbol);
 
                 if (info.Symbol.Equals(symbol))
-                    Symbols.Remove(name);
+                    RemoveNode(name);
             }
 
             //base.VisitIdentifierName(node);
