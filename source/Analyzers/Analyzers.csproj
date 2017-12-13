@@ -85,6 +85,7 @@
     <Compile Include="DiagnosticAnalyzers\AvoidSingleLineBlockDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReduceIfNestingDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReorderTypeParameterConstraintsDiagnosticAnalyzer.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="UnusedMember\NodeSymbolInfo.cs" />
     <Compile Include="UnusedMember\UnusedMemberCodeFixProvider.cs" />
     <Compile Include="UnusedMember\UnusedMemberWalker.cs" />

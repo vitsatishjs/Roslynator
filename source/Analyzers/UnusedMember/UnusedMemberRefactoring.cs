@@ -54,7 +54,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
+                                walker.AddNode(declaration.Identifier.ValueText, declaration);
                             }
 
                             break;
@@ -68,7 +68,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
+                                walker.AddNode(declaration.Identifier.ValueText, declaration);
                             }
 
                             break;
@@ -82,8 +82,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                foreach (VariableDeclaratorSyntax declarator in declaration.Declaration.Variables)
-                                    walker.Symbols.Add(new NodeSymbolInfo(declarator.Identifier.ValueText, declarator));
+                                walker.AddNodes(declaration.Declaration);
                             }
 
                             break;
@@ -97,8 +96,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                foreach (VariableDeclaratorSyntax declarator in declaration.Declaration.Variables)
-                                    walker.Symbols.Add(new NodeSymbolInfo(declarator.Identifier.ValueText, declarator));
+                                walker.AddNodes(declaration.Declaration);
                             }
 
                             break;
@@ -112,7 +110,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
+                                walker.AddNode(declaration.Identifier.ValueText, declaration);
                             }
 
                             break;
@@ -126,7 +124,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                                 if (walker == null)
                                     walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
 
-                                walker.Symbols.Add(new NodeSymbolInfo(declaration.Identifier.ValueText, declaration));
+                                walker.AddNode(declaration.Identifier.ValueText, declaration);
                             }
 
                             break;
@@ -139,7 +137,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
             walker.Visit(typeDeclaration);
 
-            foreach (NodeSymbolInfo info in UnusedMemberWalkerCache.GetSymbolsAndRelease(walker))
+            foreach (NodeSymbolInfo info in UnusedMemberWalkerCache.GetNodesAndRelease(walker))
             {
                 SyntaxNode node = info.Node;
 

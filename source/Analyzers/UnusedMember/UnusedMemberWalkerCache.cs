@@ -19,7 +19,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
             if (walker != null)
             {
                 _cachedInstance = null;
-                walker.Symbols.Clear();
+                walker.Reset();
             }
             else
             {
@@ -37,13 +37,13 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
             _cachedInstance = walker;
         }
 
-        public static Collection<NodeSymbolInfo> GetSymbolsAndRelease(UnusedMemberWalker walker)
+        public static Collection<NodeSymbolInfo> GetNodesAndRelease(UnusedMemberWalker walker)
         {
-            Collection<NodeSymbolInfo> names = walker.Symbols;
+            Collection<NodeSymbolInfo> nodes = walker.Nodes;
 
             Release(walker);
 
-            return names;
+            return nodes;
         }
     }
 }

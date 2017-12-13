@@ -11,17 +11,25 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
     internal class UnusedMemberWalker : CSharpSyntaxWalker
     {
-        public Collection<NodeSymbolInfo> Symbols { get; } = new Collection<NodeSymbolInfo>();
+        private bool _isEmpty;
+
+        public Collection<NodeSymbolInfo> Nodes { get; } = new Collection<NodeSymbolInfo>();
 
         public SemanticModel SemanticModel { get; set; }
 
         public CancellationToken CancellationToken { get; set; }
 
+        public void Reset()
+        {
+            Nodes.Clear();
+            _isEmpty = false;
+        }
+
         private void CheckName(string name, SimpleNameSyntax node)
         {
-            for (int i = Symbols.Count - 1; i >= 0; i--)
+            for (int i = Nodes.Count - 1; i >= 0; i--)
             {
-                NodeSymbolInfo info = Symbols[i];
+                NodeSymbolInfo info = Nodes[i];
 
                 if (info.Name == name)
                 {
@@ -33,13 +41,13 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
                         if (declaredSymbol == null)
                         {
-                            Symbols.RemoveAt(i);
+                            RemoveNodeAt(i);
                             continue;
                         }
 
                         info = new NodeSymbolInfo(info.Name, info.Node, declaredSymbol);
 
-                        Symbols[i] = info;
+                        Nodes[i] = info;
                     }
 
                     ISymbol symbol = SemanticModel.GetSymbol(node, CancellationToken);
@@ -51,36 +59,52 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                         symbol = methodSymbol.ReducedFrom ?? methodSymbol;
 
                     if (info.Symbol.Equals(symbol.OriginalDefinition))
-                        Symbols.RemoveAt(i);
+                        RemoveNodeAt(i);
                 }
             }
         }
 
+        public void AddNode(string name, SyntaxNode node)
+        {
+            Nodes.Add(new NodeSymbolInfo(name, node));
+        }
+
+        public void AddNodes(VariableDeclarationSyntax declaration)
+        {
+            foreach (VariableDeclaratorSyntax declarator in declaration.Variables)
+                AddNode(declarator.Identifier.ValueText, declarator);
+        }
+
+        private void RemoveNodeAt(int index)
+        {
+            Nodes.RemoveAt(index);
+
+            if (Nodes.Count == 0)
+                _isEmpty = true;
+        }
+
         private void VisitMembers(SyntaxList<MemberDeclarationSyntax> members)
         {
-            if (Symbols.Count == 0)
-                return;
-
             foreach (MemberDeclarationSyntax member in members)
                 Visit(member);
         }
 
         private void VisitBodyOrExpressionBody(BlockSyntax body, ArrowExpressionClauseSyntax expressionBody)
         {
-            if (Symbols.Count == 0)
-                return;
-
             Visit(body);
             Visit(expressionBody);
         }
 
         private void VisitAccessorListOrExpressionBody(AccessorListSyntax accessorList, ArrowExpressionClauseSyntax expressionBody)
         {
-            if (Symbols.Count == 0)
-                return;
-
             Visit(accessorList);
             Visit(expressionBody);
+        }
+
+        public override void Visit(SyntaxNode node)
+        {
+            if (!_isEmpty)
+                base.Visit(node);
         }
 
         //public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)

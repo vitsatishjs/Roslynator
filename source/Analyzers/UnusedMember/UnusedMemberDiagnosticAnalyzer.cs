@@ -24,7 +24,6 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                 throw new ArgumentNullException(nameof(context));
 
             base.Initialize(context);
-            context.EnableConcurrentExecution();
 
             context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
