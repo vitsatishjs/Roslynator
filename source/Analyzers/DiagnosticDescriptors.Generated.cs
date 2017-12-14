@@ -2371,5 +2371,17 @@ namespace Roslynator.CSharp
             helpLinkUri:        $"{HelpLinkUriRoot}{DiagnosticIdentifiers.RemoveRedundantAssignment}", 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS1213</summary>
+        public static readonly DiagnosticDescriptor ExpressionIsAlwaysEqualToTrueOrFalse = new DiagnosticDescriptor(
+            id:                 DiagnosticIdentifiers.ExpressionIsAlwaysEqualToTrueOrFalse, 
+            title:              "Expression is always equal to true/false.", 
+            messageFormat:      "Expression is always equal to '{0}'.", 
+            category:           DiagnosticCategories.Redundancy, 
+            defaultSeverity:    DiagnosticSeverity.Warning, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        $"{HelpLinkUriRoot}{DiagnosticIdentifiers.ExpressionIsAlwaysEqualToTrueOrFalse}", 
+            customTags:         Array.Empty<string>());
+
     }
 }

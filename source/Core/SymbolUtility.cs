@@ -39,7 +39,8 @@ namespace Roslynator
 
             if (typeSymbol.ImplementsAny(
                 SpecialType.System_Collections_Generic_IList_T,
-                SpecialType.System_Collections_Generic_IReadOnlyList_T))
+                SpecialType.System_Collections_Generic_IReadOnlyList_T,
+                allInterfaces: true))
             {
                 if (typeSymbol.TypeKind == TypeKind.Interface)
                     return true;
