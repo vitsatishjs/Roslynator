@@ -77,6 +77,7 @@
     <Compile Include="DiagnosticAnalyzers\ExpressionIsAlwaysEqualToTrueOrFalseDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\MergeIfStatementWithNestedIfStatementDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\RemoveRedundantAssignmentDiagnosticAnalyzer.cs" />
+    <Compile Include="DiagnosticAnalyzers\AvoidInterpolatedStringWithNoInterpolatedTextStringDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\ReorderNamedArgumentsDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\AddOrRemoveRegionNameDiagnosticAnalyzer.cs" />
     <Compile Include="DiagnosticAnalyzers\AsExpressionDiagnosticAnalyzer.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Refactorings\MakeMemberReadOnly\MakeMemberReadOnlyWalker.cs" />
     <Compile Include="Refactorings\MakeMemberReadOnly\MakeMemberReadOnlyWalkerCache.cs" />
     <Compile Include="Refactorings\RemoveUnnecessaryElseClauseRefactoring.cs" />
+    <Compile Include="Refactorings\AvoidInterpolatedStringWithNoInterpolatedTextRefactoring.cs" />
     <Compile Include="UnusedParameter\NodeSymbolInfo.cs" />
     <Compile Include="UnusedParameter\UnusedParameterWalker.cs" />
     <Compile Include="UnusedParameter\UnusedParameterWalkerCache.cs" />
