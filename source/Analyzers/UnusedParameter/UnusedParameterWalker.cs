@@ -45,7 +45,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedParameter
 
         private void AddNode(string name, SyntaxNode node)
         {
-            Nodes.Add(name, new NodeSymbolInfo(name, node));
+            Nodes[name] = new NodeSymbolInfo(name, node);
         }
 
         private void RemoveNode(string name)
