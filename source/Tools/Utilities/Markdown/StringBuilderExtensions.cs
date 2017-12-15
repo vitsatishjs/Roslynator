@@ -7,20 +7,20 @@ namespace Roslynator.Utilities.Markdown
 {
     public static class StringBuilderExtensions
     {
-        public static StringBuilder AppendItalic(this StringBuilder sb, string value, char character = '*')
+        public static StringBuilder AppendItalic(this StringBuilder sb, string value, char delimiter = '*')
         {
             return sb
-                .Append(character)
+                .Append(delimiter)
                 .Append(value)
-                .Append(character);
+                .Append(delimiter);
         }
 
-        public static StringBuilder AppendBold(this StringBuilder sb, string value, char character = '*')
+        public static StringBuilder AppendBold(this StringBuilder sb, string value, char delimiter = '*')
         {
             return sb
-                .Append(character, 2)
+                .Append(delimiter, 2)
                 .Append(value)
-                .Append(character, 2);
+                .Append(delimiter, 2);
         }
 
         public static StringBuilder AppendStrikethrough(this StringBuilder sb, string value)
@@ -118,6 +118,11 @@ namespace Roslynator.Utilities.Markdown
             return sb.AppendLine();
         }
 
+        public static StringBuilder AppendHeader1(this StringBuilder sb, string value = null)
+        {
+            return AppendHeader(sb, value, 1);
+        }
+
         public static StringBuilder AppendHeader2(this StringBuilder sb, string value = null)
         {
             return AppendHeader(sb, value, 2);
@@ -143,7 +148,7 @@ namespace Roslynator.Utilities.Markdown
             return AppendHeader(sb, value, 6);
         }
 
-        public static StringBuilder AppendHeader(this StringBuilder sb, string value, int level = 1)
+        public static StringBuilder AppendHeader(this StringBuilder sb, string value, int level)
         {
             if (level < 1
                 || level > 6)
@@ -243,6 +248,7 @@ namespace Roslynator.Utilities.Markdown
             return Append(sb, value, escape: true);
         }
 
+        //TODO: AppendMarkdown
         internal static StringBuilder Append(this StringBuilder sb, string value, bool escape)
         {
             if (value == null)
@@ -297,6 +303,19 @@ namespace Roslynator.Utilities.Markdown
         {
             if (condition)
                 sb.AppendLine(value, escape);
+
+            return sb;
+        }
+
+        internal static StringBuilder AppendMany(this StringBuilder sb, string value, uint repeatCount)
+        {
+            uint i = 1;
+
+            while (i <= repeatCount)
+            {
+                sb.Append(value);
+                i++;
+            }
 
             return sb;
         }

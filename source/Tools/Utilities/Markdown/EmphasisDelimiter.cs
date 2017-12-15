@@ -2,10 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public enum Alignment
+    public enum EmphasisDelimiter
     {
-        Left = 0,
-        Center = 1,
-        Right = 2
+        Asterisk = 0,
+        Underscore = 1
     }
 }

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IAppendable
+    public struct StrikethroughText : IAppendable
     {
-        public static MarkdownText Empty { get; } = new MarkdownText("");
+        public const string Delimiter = "~~";
 
-        internal MarkdownText(string text)
+        internal StrikethroughText(string text)
         {
             OriginalText = text;
         }
@@ -22,12 +22,15 @@ namespace Roslynator.Utilities.Markdown
 
         public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
         {
-            return sb.AppendEscape(OriginalText);
+            return sb
+                .Append(Delimiter)
+                .AppendEscape(OriginalText)
+                .Append(Delimiter);
         }
 
         public override string ToString()
         {
-            return OriginalText?.EscapeMarkdown();
+            return Delimiter + OriginalText?.EscapeMarkdown() + Delimiter;
         }
     }
 }

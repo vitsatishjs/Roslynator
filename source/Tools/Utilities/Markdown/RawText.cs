@@ -4,11 +4,12 @@ using System.Text;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IAppendable
+    //TODO: MarkdownRawText
+    public struct RawText : IAppendable
     {
-        public static MarkdownText Empty { get; } = new MarkdownText("");
+        public static RawText Empty { get; } = new RawText("");
 
-        internal MarkdownText(string text)
+        internal RawText(string text)
         {
             OriginalText = text;
         }
@@ -22,12 +23,12 @@ namespace Roslynator.Utilities.Markdown
 
         public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
         {
-            return sb.AppendEscape(OriginalText);
+            return sb.Append(OriginalText);
         }
 
         public override string ToString()
         {
-            return OriginalText?.EscapeMarkdown();
+            return OriginalText;
         }
     }
 }

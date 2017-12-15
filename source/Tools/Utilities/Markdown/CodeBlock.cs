@@ -4,30 +4,32 @@ using System.Text;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IAppendable
+    public struct CodeBlock : IAppendable
     {
-        public static MarkdownText Empty { get; } = new MarkdownText("");
-
-        internal MarkdownText(string text)
+        internal CodeBlock(string text, string language = null)
         {
             OriginalText = text;
+            Language = language;
         }
 
         public string OriginalText { get; }
 
-        public string Text
-        {
-            get { return ToString(); }
-        }
+        public string Language { get; }
 
         public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
         {
-            return sb.AppendEscape(OriginalText);
+            return sb
+                .Append("```")
+                .AppendLine(Language)
+                .Append(OriginalText)
+                .AppendLineIf(!OriginalText.EndsWith("\n"))
+                .AppendLine("```");
         }
 
+        //TODO: 
         public override string ToString()
         {
-            return OriginalText?.EscapeMarkdown();
+            return base.ToString();
         }
     }
 }

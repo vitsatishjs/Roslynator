@@ -2,10 +2,11 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public enum Alignment
+    //TODO: přejmenovat
+    public enum HorizontalRuleCharacter
     {
-        Left = 0,
-        Center = 1,
-        Right = 2
+        Asterisk = 0,
+        Hyphen = 1,
+        Underscore = 2
     }
 }

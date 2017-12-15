@@ -6,17 +6,18 @@ namespace Roslynator.Utilities.Markdown
 {
     public struct MarkdownLink : IAppendable
     {
-        public MarkdownLink(string text, string url)
+        internal MarkdownLink(string text, string url)
         {
             Text = text;
             Url = url;
         }
 
+        //TODO: Text vs. OriginalText
         public string Text { get; }
 
         public string Url { get; }
 
-        public StringBuilder Append(StringBuilder sb)
+        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
         {
             if (string.IsNullOrEmpty(Url))
                 return sb.AppendEscape(Text);
@@ -32,9 +33,9 @@ namespace Roslynator.Utilities.Markdown
         public override string ToString()
         {
             if (string.IsNullOrEmpty(Url))
-                return Text.EscapeMarkdown();
+                return Text?.EscapeMarkdown();
 
-            return $"[{Text.EscapeMarkdown()}]({Url})";
+            return $"[{Text?.EscapeMarkdown()}]({Url})";
         }
     }
 }

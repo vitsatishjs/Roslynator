@@ -135,12 +135,26 @@
   <ItemGroup>
     <Compile Include="Markdown\Alignment.cs" />
     <Compile Include="FileHelper.cs" />
+    <Compile Include="Markdown\BoldText.cs" />
+    <Compile Include="Markdown\CodeBlock.cs" />
+    <Compile Include="Markdown\EmphasisDelimiter.cs" />
+    <Compile Include="Markdown\HeaderLevel.cs" />
+    <Compile Include="Markdown\HorizontalRule.cs" />
+    <Compile Include="Markdown\HorizontalRuleCharacter.cs" />
+    <Compile Include="Markdown\InlineCode.cs" />
+    <Compile Include="Markdown\ItalicText.cs" />
+    <Compile Include="Markdown\LanguageIdentifiers.cs" />
+    <Compile Include="Markdown\MarkdownFactory.cs" />
     <Compile Include="Markdown\MarkdownHeader.cs" />
     <Compile Include="Markdown\IAppendable.cs" />
     <Compile Include="Markdown\MarkdownImage.cs" />
     <Compile Include="Markdown\MarkdownLink.cs" />
+    <Compile Include="Markdown\MarkdownSettings.cs" />
     <Compile Include="Markdown\MarkdownUtility.cs" />
     <Compile Include="Markdown\MarkdownText.cs" />
+    <Compile Include="Markdown\RawText.cs" />
+    <Compile Include="Markdown\StrikethroughText.cs" />
+    <Compile Include="Markdown\UnorderedListItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Markdown\StringBuilderExtensions.cs" />
     <Compile Include="Markdown\StringExtensions.cs" />

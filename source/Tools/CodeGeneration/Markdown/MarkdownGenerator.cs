@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Roslynator.Metadata;
 using Roslynator.Utilities.Markdown;
+using static Roslynator.Utilities.Markdown.MarkdownFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
 {
@@ -97,7 +98,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             if (refactoring.Samples.Count > 0)
             {
-                WriteSamples(sb, refactoring.Samples, new MarkdownHeader("Before", 4), new MarkdownHeader("After", 4));
+                WriteSamples(sb, refactoring.Samples, Header4("Before"), Header4("After"));
             }
             else if (refactoring.Images.Count > 0)
             {
@@ -151,7 +152,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var sb = new StringBuilder();
 
-            sb.AppendHeader2($"{refactoring.Title}");
+            sb.AppendHeader2(refactoring.Title);
             sb.AppendLine();
 
             sb.AppendTableHeader("Property", "Value");
@@ -182,7 +183,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var sb = new StringBuilder();
 
             string title = analyzer.Title.TrimEnd('.');
-            sb.AppendHeader($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {title}");
+            sb.AppendHeader1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {title}");
             sb.AppendLine();
 
             sb.AppendTableHeader("Property", "Value");
@@ -201,7 +202,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 sb.AppendHeader2((samples.Count == 1) ? "Example" : "Examples");
                 sb.AppendLine();
 
-                WriteSamples(sb, samples, new MarkdownHeader("Code with Diagnostic", 3), new MarkdownHeader("Code with Fix", 3));
+                WriteSamples(sb, samples, Header3("Code with Diagnostic"), Header3("Code with Fix"));
             }
 
             sb.AppendLine();
@@ -239,15 +240,15 @@ namespace Roslynator.CodeGeneration.Markdown
             sb.AppendHeader2("Roslynator Analyzers");
             sb.AppendLine();
 
-            sb.AppendTableHeader("Id", "Title", "Category", new MarkdownTableHeader("Enabled by Default", Alignment.Center));
+            sb.AppendTableHeader("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center));
 
             foreach (AnalyzerDescriptor analyzer in analyzers.OrderBy(f => f.Id, comparer))
             {
                 sb.AppendTableRow(
                     analyzer.Id,
-                    new MarkdownLink(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
+                    Link(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
                     analyzer.Category,
-                    (analyzer.IsEnabledByDefault) ? "x" : "");
+                    (analyzer.IsEnabledByDefault) ? RawText("x") : default(RawText));
             }
 
             return sb.ToString();
@@ -260,14 +261,14 @@ namespace Roslynator.CodeGeneration.Markdown
             sb.AppendHeader2("Roslynator Refactorings");
             sb.AppendLine();
 
-            sb.AppendTableHeader("Id", "Title", new MarkdownTableHeader("Enabled by Default", Alignment.Center));
+            sb.AppendTableHeader("Id", "Title", TableHeader("Enabled by Default", Alignment.Center));
 
             foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
             {
                 sb.AppendTableRow(
                     refactoring.Id,
-                    new MarkdownLink(refactoring.Title.TrimEnd('.'), $"../../docs/refactorings/{refactoring.Id}.md"),
-                    (refactoring.IsEnabledByDefault) ? "x" : "");
+                    Link(refactoring.Title.TrimEnd('.'), $"../../docs/refactorings/{refactoring.Id}.md"),
+                    (refactoring.IsEnabledByDefault) ? RawText("x") : default(RawText));
             }
 
             return sb.ToString();
@@ -280,19 +281,19 @@ namespace Roslynator.CodeGeneration.Markdown
             sb.AppendHeader2("Roslynator Code Fixes");
             sb.AppendLine();
 
-            sb.AppendTableHeader("Id", "Title", "Fixable Diagnostics", new MarkdownTableHeader("Enabled by Default", Alignment.Center));
+            sb.AppendTableHeader("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center));
 
             foreach (CodeFixDescriptor codeFix in codeFixes.OrderBy(f => f.Title, comparer))
             {
                 IEnumerable<MarkdownLink> links = codeFix
                     .FixableDiagnosticIds
-                    .Join(diagnostics, f => f, f => f.Id, (f, g) => new MarkdownLink(f, g.HelpUrl));
+                    .Join(diagnostics, f => f, f => f.Id, (f, g) => Link(f, g.HelpUrl));
 
                 sb.AppendTableRow(
                     codeFix.Id,
                     codeFix.Title.TrimEnd('.'),
-                    new MarkdownText(string.Join(", ", links), shouldEscape: false),
-                    (codeFix.IsEnabledByDefault) ? "x" : "");
+                    RawText(string.Join(", ", links)),
+                    (codeFix.IsEnabledByDefault) ? RawText("x") : default(RawText));
             }
 
             return sb.ToString();
@@ -339,7 +340,7 @@ namespace Roslynator.CodeGeneration.Markdown
             sb.AppendHeader2("Roslynator Analyzers by Category");
             sb.AppendLine();
 
-            sb.AppendTableHeader("Category", "Title", "Id", new MarkdownTableHeader("Enabled by Default", Alignment.Center));
+            sb.AppendTableHeader("Category", "Title", "Id", TableHeader("Enabled by Default", Alignment.Center));
 
             foreach (IGrouping<string, AnalyzerDescriptor> grouping in analyzers
                 .GroupBy(f => f.Category.EscapeMarkdown())
@@ -349,9 +350,9 @@ namespace Roslynator.CodeGeneration.Markdown
                 {
                     sb.AppendTableRow(
                         grouping.Key,
-                        new MarkdownLink(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
+                        Link(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
                         analyzer.Id,
-                        (analyzer.IsEnabledByDefault) ? "x" : "");
+                        (analyzer.IsEnabledByDefault) ? RawText("x") : default(RawText));
                 }
             }
 

@@ -2,10 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public enum Alignment
+    //TODO: add identifiers
+    public static class LanguageIdentifiers
     {
-        Left = 0,
-        Center = 1,
-        Right = 2
+        public const string CSharp = "csharp";
     }
 }

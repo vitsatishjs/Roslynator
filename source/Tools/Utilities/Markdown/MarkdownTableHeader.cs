@@ -2,9 +2,10 @@
 
 namespace Roslynator.Utilities.Markdown
 {
+    //TODO: escape?
     public struct MarkdownTableHeader
     {
-        public MarkdownTableHeader(string name, Alignment alignment = Alignment.Left)
+        internal MarkdownTableHeader(string name, Alignment alignment = Alignment.Left)
         {
             Name = name;
             Alignment = alignment;

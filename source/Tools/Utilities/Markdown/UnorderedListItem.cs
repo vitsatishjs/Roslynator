@@ -6,9 +6,12 @@ using static Roslynator.Utilities.Markdown.MarkdownFactory;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownHeader : IAppendable
+    //TODO: TaskListItem
+
+    //TODO: UnorderedListItem
+    public struct UnorderedListItem : IAppendable
     {
-        internal MarkdownHeader(string text, HeaderLevel level = HeaderLevel.Header1)
+        internal UnorderedListItem(string text, byte level = 1)
         {
             OriginalText = text;
             Level = level;
@@ -16,24 +19,21 @@ namespace Roslynator.Utilities.Markdown
 
         public string OriginalText { get; }
 
-        public HeaderLevel Level { get; }
+        public byte Level { get; }
 
         public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
         {
             return sb
-                .Append(HeaderStart(Level))
+                .AppendMany(settings.Indentation, Level)
+                .Append(MarkdownSettings.UnorderedListItemText)
                 .Append(" ")
                 .AppendLineIf(!string.IsNullOrEmpty(OriginalText), OriginalText, escape: true);
         }
 
+        //TODO: 
         public override string ToString()
         {
-            string s = HeaderStart(Level) + " ";
-
-            if (!string.IsNullOrEmpty(OriginalText))
-                s = s + OriginalText?.EscapeMarkdown() + Environment.NewLine;
-
-            return s;
+            return base.ToString();
         }
     }
 }

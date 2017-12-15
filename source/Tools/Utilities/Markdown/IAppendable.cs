@@ -6,6 +6,6 @@ namespace Roslynator.Utilities.Markdown
 {
     public interface IAppendable
     {
-        StringBuilder Append(StringBuilder sb);
+        StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null);
     }
 }

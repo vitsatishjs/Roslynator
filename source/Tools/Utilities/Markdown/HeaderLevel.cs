@@ -2,10 +2,14 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public enum Alignment
+    //TODO: None
+    public enum HeaderLevel
     {
-        Left = 0,
-        Center = 1,
-        Right = 2
+        Header1 = 1,
+        Header2 = 2,
+        Header3 = 3,
+        Header4 = 4,
+        Header5 = 5,
+        Header6 = 6
     }
 }
