@@ -1,41 +1,21 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text;
-
 namespace Roslynator.Utilities.Markdown
 {
-    public struct BoldText : IAppendable
+    public struct BoldText : IMarkdown
     {
         internal BoldText(string text)
         {
-            OriginalText = text;
+            Text = text;
         }
 
-        public string OriginalText { get; }
+        public string Text { get; }
 
-        public string Text
+        public void WriteTo(MarkdownWriter mw)
         {
-            get { return ToString(); }
-        }
-
-        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
-        {
-            settings = settings ?? MarkdownSettings.Default;
-
-            return sb
-                .Append(settings.BoldDelimiterText)
-                .AppendEscape(OriginalText)
-                .Append(settings.BoldDelimiterText);
-        }
-
-        public override string ToString()
-        {
-            return ToString(MarkdownSettings.Default);
-        }
-
-        public string ToString(MarkdownSettings settings)
-        {
-            return settings.BoldDelimiterText + OriginalText?.EscapeMarkdown() + settings.BoldDelimiterText;
+            mw.WriteBoldDelimiter();
+            mw.WriteMarkdown(Text);
+            mw.WriteBoldDelimiter();
         }
     }
 }

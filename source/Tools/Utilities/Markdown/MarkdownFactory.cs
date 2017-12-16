@@ -4,22 +4,21 @@ using System;
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: UnicodeChar
     public static class MarkdownFactory
     {
         public static MarkdownText EmptyText
         {
-            get { return MarkdownText.Empty; }
+            get { return Markdown.MarkdownText.Empty; }
         }
 
-        public static MarkdownText Text(string text)
+        public static MarkdownText MarkdownText(string text)
         {
-            return new MarkdownText(text);
+            return new MarkdownText(text, escape: true);
         }
 
-        public static RawText RawText(string text)
+        public static MarkdownText RawText(string text)
         {
-            return new RawText(text);
+            return new MarkdownText(text, escape: false);
         }
 
         public static ItalicText Italic(string text)
@@ -42,81 +41,71 @@ namespace Roslynator.Utilities.Markdown
             return new MarkdownTableHeader(name, alignment);
         }
 
-        internal static string HeaderStart(HeaderLevel level = HeaderLevel.Header1)
+        internal static string HeaderStart(int level = 1)
         {
             switch (level)
             {
-                case HeaderLevel.Header1:
+                case 1:
                     return "# ";
-                case HeaderLevel.Header2:
+                case 2:
                     return "## ";
-                case HeaderLevel.Header3:
+                case 3:
                     return "### ";
-                case HeaderLevel.Header4:
+                case 4:
                     return "#### ";
-                case HeaderLevel.Header5:
+                case 5:
                     return "##### ";
-                case HeaderLevel.Header6:
+                case 6:
                     return "###### ";
                 default:
-                    throw new ArgumentException("", nameof(level));
+                    throw new ArgumentOutOfRangeException(nameof(level), level, "Header level cannot be less than 1 or greater than 6");
             }
         }
 
-        public static MarkdownHeader Header(string text, HeaderLevel level)
+        public static MarkdownHeader Header(string text, int level)
         {
             return new MarkdownHeader(text, level);
         }
 
         public static MarkdownHeader Header1(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header1);
+            return new MarkdownHeader(text, 1);
         }
 
         public static MarkdownHeader Header2(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header2);
+            return new MarkdownHeader(text, 2);
         }
 
         public static MarkdownHeader Header3(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header3);
+            return new MarkdownHeader(text, 3);
         }
 
         public static MarkdownHeader Header4(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header4);
+            return new MarkdownHeader(text, 4);
         }
 
         public static MarkdownHeader Header5(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header5);
+            return new MarkdownHeader(text, 5);
         }
 
         public static MarkdownHeader Header6(string text = null)
         {
-            return new MarkdownHeader(text, HeaderLevel.Header6);
+            return new MarkdownHeader(text, 6);
         }
 
-        //TODO: 
-        //public static UnorderedListItem UnorderedListItem1(string value = null, string indentation = "\t")
-        //{
-        //    return UnorderedListItem(sb, value, indentation, 2);
-        //}
+        public static ListItem ListItem(string value = null)
+        {
+            return new ListItem(value);
+        }
 
-        //public static UnorderedListItem UnorderedListItem2(string value = null, string indentation = "\t")
-        //{
-        //    return UnorderedListItem(sb, value, indentation, 2);
-        //}
-
-        //public static UnorderedListItem UnorderedListItem3(string value = null, string indentation = "\t")
-        //{
-        //    return UnorderedListItem(sb, value, indentation, 3);
-        //}
-
-        //public static UnorderedListItem UnorderedListItem(string value = null, string indentation = "\t", int level = 1)
-        //{
-        //}
+        public static TaskListItem TaskListItem(string value = null)
+        {
+            return new TaskListItem(value);
+        }
 
         public static MarkdownLink Link(string text, string url)
         {
@@ -128,9 +117,9 @@ namespace Roslynator.Utilities.Markdown
             return new MarkdownImage(text, url);
         }
 
-        public static HorizontalRule HorizonalRule(HorizontalRuleCharacter character = HorizontalRule.DefaultCharacter, int length = HorizontalRule.DefaultLength)
+        public static MarkdownText HorizontalRule()
         {
-            return new HorizontalRule(character, length);
+            return RawText(MarkdownSettings.DefaultHorizontalRule);
         }
 
         public static InlineCode InlineCode(string text)

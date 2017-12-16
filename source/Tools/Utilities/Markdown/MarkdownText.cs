@@ -1,33 +1,29 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text;
-
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IAppendable
+    public struct MarkdownText : IMarkdown
     {
-        public static MarkdownText Empty { get; } = new MarkdownText("");
+        public static MarkdownText Empty { get; } = new MarkdownText("", escape: false);
 
-        internal MarkdownText(string text)
+        internal MarkdownText(string text, bool escape)
         {
-            OriginalText = text;
+            Text = text;
+            Escape = escape;
         }
 
-        public string OriginalText { get; }
+        public string Text { get; }
 
-        public string Text
+        public bool Escape { get; }
+
+        public static implicit operator MarkdownText(string value)
         {
-            get { return ToString(); }
+            return new MarkdownText(value, escape: true);
         }
 
-        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
+        public void WriteTo(MarkdownWriter mw)
         {
-            return sb.AppendEscape(OriginalText);
-        }
-
-        public override string ToString()
-        {
-            return OriginalText?.EscapeMarkdown();
+            mw.WriteMarkdown(Text, Escape);
         }
     }
 }

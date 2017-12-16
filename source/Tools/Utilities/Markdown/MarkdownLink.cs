@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text;
-
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownLink : IAppendable
+    public struct MarkdownLink : IMarkdown
     {
         internal MarkdownLink(string text, string url)
         {
@@ -12,30 +10,20 @@ namespace Roslynator.Utilities.Markdown
             Url = url;
         }
 
-        //TODO: Text vs. OriginalText
         public string Text { get; }
 
         public string Url { get; }
 
-        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
+        public void WriteTo(MarkdownWriter mw)
         {
             if (string.IsNullOrEmpty(Url))
-                return sb.AppendEscape(Text);
+                mw.WriteMarkdown(Text);
 
-            return sb
-                .Append("[")
-                .AppendEscape(Text)
-                .Append("](")
-                .Append(Url)
-                .Append(")");
-        }
-
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(Url))
-                return Text?.EscapeMarkdown();
-
-            return $"[{Text?.EscapeMarkdown()}]({Url})";
+            mw.Write("[");
+            mw.WriteMarkdown(Text, f => f == '[' || f == ']');
+            mw.Write("](");
+            mw.WriteMarkdown(Url, f => f == '(' || f == ')');
+            mw.Write(")");
         }
     }
 }

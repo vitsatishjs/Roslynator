@@ -2,9 +2,10 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: add identifiers
     public static class LanguageIdentifiers
     {
         public const string CSharp = "csharp";
+        public const string JavaScript = "javascript";
+        public const string VisualBasic = "vb";
     }
 }

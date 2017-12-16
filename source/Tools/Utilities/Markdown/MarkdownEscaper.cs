@@ -4,9 +4,11 @@ using System.Text;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public static class MarkdownUtility
+    public class MarkdownEscaper
     {
-        public static string Escape(string value)
+        public static MarkdownEscaper Default { get; } = new MarkdownEscaper();
+
+        public virtual string Escape(string value)
         {
             for (int i = 0; i < value.Length; i++)
             {
@@ -46,7 +48,7 @@ namespace Roslynator.Utilities.Markdown
             return value;
         }
 
-        public static bool ShouldBeEscaped(char value)
+        public virtual bool ShouldBeEscaped(char value)
         {
             switch (value)
             {

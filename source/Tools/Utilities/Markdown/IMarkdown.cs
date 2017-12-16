@@ -2,11 +2,8 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: přejmenovat
-    public enum HorizontalRuleCharacter
+    public interface IMarkdown
     {
-        Asterisk = 0,
-        Hyphen = 1,
-        Underscore = 2
+        void WriteTo(MarkdownWriter mw);
     }
 }

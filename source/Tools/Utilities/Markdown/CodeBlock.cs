@@ -1,35 +1,27 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text;
-
 namespace Roslynator.Utilities.Markdown
 {
-    public struct CodeBlock : IAppendable
+    public struct CodeBlock : IMarkdown
     {
         internal CodeBlock(string text, string language = null)
         {
-            OriginalText = text;
+            Text = text;
             Language = language;
         }
 
-        public string OriginalText { get; }
+        public string Text { get; }
 
         public string Language { get; }
 
-        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
+        public void WriteTo(MarkdownWriter mw)
         {
-            return sb
-                .Append("```")
-                .AppendLine(Language)
-                .Append(OriginalText)
-                .AppendLineIf(!OriginalText.EndsWith("\n"))
-                .AppendLine("```");
-        }
-
-        //TODO: 
-        public override string ToString()
-        {
-            return base.ToString();
+            mw.WriteCodeBlockChars();
+            mw.WriteLine(Language);
+            mw.Write(Text);
+            mw.WriteLineIf(!Text.EndsWith("\n"));
+            mw.WriteCodeBlockChars();
+            mw.WriteLine();
         }
     }
 }

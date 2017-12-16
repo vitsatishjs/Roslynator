@@ -1,39 +1,23 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Text;
-using static Roslynator.Utilities.Markdown.MarkdownFactory;
-
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownHeader : IAppendable
+    public struct MarkdownHeader : IMarkdown
     {
-        internal MarkdownHeader(string text, HeaderLevel level = HeaderLevel.Header1)
+        internal MarkdownHeader(string text, int level = 1)
         {
-            OriginalText = text;
+            Text = text;
             Level = level;
         }
 
-        public string OriginalText { get; }
+        public string Text { get; }
 
-        public HeaderLevel Level { get; }
+        public int Level { get; }
 
-        public StringBuilder Append(StringBuilder sb, MarkdownSettings settings = null)
+        public void WriteTo(MarkdownWriter mw)
         {
-            return sb
-                .Append(HeaderStart(Level))
-                .Append(" ")
-                .AppendLineIf(!string.IsNullOrEmpty(OriginalText), OriginalText, escape: true);
-        }
-
-        public override string ToString()
-        {
-            string s = HeaderStart(Level) + " ";
-
-            if (!string.IsNullOrEmpty(OriginalText))
-                s = s + OriginalText?.EscapeMarkdown() + Environment.NewLine;
-
-            return s;
+            mw.Write(MarkdownFactory.HeaderStart(Level));
+            mw.WriteLineMarkdownIf(!string.IsNullOrEmpty(Text), Text);
         }
     }
 }

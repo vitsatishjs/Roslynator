@@ -2,7 +2,6 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: escape?
     public struct MarkdownTableHeader
     {
         internal MarkdownTableHeader(string name, Alignment alignment = Alignment.Left)
@@ -18,11 +17,6 @@ namespace Roslynator.Utilities.Markdown
         public static implicit operator MarkdownTableHeader(string value)
         {
             return new MarkdownTableHeader(value);
-        }
-
-        public override string ToString()
-        {
-            return Name;
         }
     }
 }
