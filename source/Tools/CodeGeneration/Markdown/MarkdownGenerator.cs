@@ -166,7 +166,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 if (!string.IsNullOrEmpty(refactoring.Span))
                     mw.WriteTableRow("Span", refactoring.Span);
 
-                mw.WriteTableRow("Enabled by Default", GetBooleanAsText(refactoring.IsEnabledByDefault));
+                mw.WriteTableRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)));
 
                 mw.WriteLine();
                 mw.WriteHeader3("Usage");
@@ -194,9 +194,9 @@ namespace Roslynator.CodeGeneration.Markdown
                 mw.WriteTableRow("Id", analyzer.Id);
                 mw.WriteTableRow("Category", analyzer.Category);
                 mw.WriteTableRow("Default Severity", analyzer.DefaultSeverity);
-                mw.WriteTableRow("Enabled by Default", GetBooleanAsText(analyzer.IsEnabledByDefault));
-                mw.WriteTableRow("Supports Fade-Out", GetBooleanAsText(analyzer.SupportsFadeOut));
-                mw.WriteTableRow("Supports Fade-Out Analyzer", GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer));
+                mw.WriteTableRow("Enabled by Default", RawText(GetBooleanAsText(analyzer.IsEnabledByDefault)));
+                mw.WriteTableRow("Supports Fade-Out", RawText(GetBooleanAsText(analyzer.SupportsFadeOut)));
+                mw.WriteTableRow("Supports Fade-Out Analyzer", RawText(GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer)));
 
                 ReadOnlyCollection<SampleDescriptor> samples = analyzer.Samples;
 
@@ -303,7 +303,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     mw.WriteTableRowSeparator();
                     mw.WriteJoin(", ", links);
                     mw.WriteTableRowSeparator();
-                    mw.Write((codeFix.IsEnabledByDefault) ? RawText("&#x2713;") : EmptyText);
+                    mw.WriteMarkdown((codeFix.IsEnabledByDefault) ? RawText("&#x2713;") : EmptyText);
                     mw.WriteTableRowEnd();
                 }
 

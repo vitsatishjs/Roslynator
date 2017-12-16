@@ -17,7 +17,10 @@ namespace Roslynator.Utilities.Markdown
         public void WriteTo(MarkdownWriter mw)
         {
             if (string.IsNullOrEmpty(Url))
+            {
                 mw.WriteMarkdown(Text);
+                return;
+            }
 
             mw.Write("[");
             mw.WriteMarkdown(Text, f => f == '[' || f == ']');

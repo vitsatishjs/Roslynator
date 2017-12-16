@@ -8,6 +8,8 @@ using static Roslynator.Utilities.Markdown.MarkdownFactory;
 
 namespace Roslynator.Utilities.Markdown
 {
+    //TODO: Escape |
+
     public class MarkdownWriter : StringWriter, IMarkdownWriter
     {
         public void WriteMarkdown(MarkdownText text)
@@ -544,6 +546,18 @@ namespace Roslynator.Utilities.Markdown
                 }
 
                 value.WriteTo(this);
+            }
+        }
+
+        public override void Write(object value)
+        {
+            if (value is IMarkdown markdown)
+            {
+                markdown.WriteTo(this);
+            }
+            else
+            {
+                base.Write(value);
             }
         }
 
