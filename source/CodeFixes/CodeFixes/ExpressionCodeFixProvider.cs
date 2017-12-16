@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CSharp.Refactorings;
 using Roslynator.CSharp.Syntax;
 using static Roslynator.CSharp.CSharpFactory;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Roslynator.CSharp.CodeFixes
 {
@@ -48,7 +49,8 @@ namespace Roslynator.CSharp.CodeFixes
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceStringLiteralWithCharacterLiteral)
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.UseYieldReturnInsteadOfReturn)
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ChangeMemberTypeAccordingToReturnExpression)
-                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList))
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse))
             {
                 return;
             }
@@ -236,6 +238,39 @@ namespace Roslynator.CSharp.CodeFixes
                                             "Add argument list",
                                             cancellationToken => context.Document.ReplaceNodeAsync(expression, invocationExpression, cancellationToken),
                                             GetEquivalenceKey(diagnostic, CodeFixIdentifiers.AddArgumentList));
+
+                                        context.RegisterCodeFix(codeAction, diagnostic);
+                                    }
+                                }
+
+                                if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse)
+                                    && (expression is ConditionalExpressionSyntax conditionalExpression)
+                                    && conditionalExpression.Condition != null)
+                                {
+                                    ExpressionSyntax whenTrue = conditionalExpression.WhenTrue;
+                                    ExpressionSyntax whenFalse = conditionalExpression.WhenFalse;
+
+                                    if (whenTrue != null
+                                        && whenFalse != null
+                                        && semanticModel.GetTypeSymbol(whenTrue, context.CancellationToken)?.IsVoid() == true
+                                        && semanticModel.GetTypeSymbol(whenFalse, context.CancellationToken)?.IsVoid() == true)
+                                    {
+                                        CodeAction codeAction = CodeAction.Create(
+                                            "Replace ?: with if-else",
+                                            cancellationToken =>
+                                            {
+                                                IfStatementSyntax newNode = IfStatement(
+                                                    conditionalExpression.Condition.WalkDownParentheses(),
+                                                    Block(ExpressionStatement(whenTrue)),
+                                                    ElseClause(Block(ExpressionStatement(whenFalse))));
+
+                                                newNode = newNode
+                                                    .WithTriviaFrom(expressionStatement)
+                                                    .WithFormatterAnnotation();
+
+                                                return context.Document.ReplaceNodeAsync(expressionStatement, newNode, cancellationToken);
+                                            },
+                                            GetEquivalenceKey(diagnostic, CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse));
 
                                         context.RegisterCodeFix(codeAction, diagnostic);
                                     }

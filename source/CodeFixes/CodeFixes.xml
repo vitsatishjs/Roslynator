@@ -482,4 +482,9 @@
       <Id>CS1031</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0087" Identifier="ReplaceConditionalExpressionWithIfElse" Title="Replace conditional expression with if-else">
+    <FixableDiagnosticIds>
+      <Id>CS0201</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>
