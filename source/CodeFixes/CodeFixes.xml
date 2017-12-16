@@ -487,4 +487,9 @@
       <Id>CS0201</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0088" Identifier="RemoveSemicolon" Title="Remove semicolon">
+    <FixableDiagnosticIds>
+      <Id>CS1597</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>

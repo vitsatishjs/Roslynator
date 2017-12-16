@@ -113,6 +113,7 @@ namespace Roslynator.CSharp
         public const string NewExpressionRequiresParenthesesOrBracketsOrBracesAfterType = "CS1526";
         public const string ElementsDefinedInNamespaceCannotBeExplicitlyDeclaredAsPrivateProtectedOrProtectedInternal = "CS1527";
         public const string MissingXmlCommentForPubliclyVisibleTypeOrMember = "CS1591";
+        public const string SemicolonAfterMethodOrAccessorBlockIsNotValid = "CS1597";
         public const string ModifiersCannotBePlacedOnEventAccessorDeclarations = "CS1609";
         public const string ArgumentMayNotBePassedWithRefKeyword = "CS1615";
         public const string ArgumentMustBePassedWithOutKeyword = "CS1620";

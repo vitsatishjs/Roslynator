@@ -27,7 +27,8 @@ namespace Roslynator.CSharp.CodeFixes
                     CompilerDiagnosticIdentifiers.PartialModifierCanOnlyAppearImmediatelyBeforeClassStructInterfaceOrVoid,
                     CompilerDiagnosticIdentifiers.ValueCannotBeUsedAsDefaultParameter,
                     CompilerDiagnosticIdentifiers.ObjectOfTypeConvertibleToTypeIsRequired,
-                    CompilerDiagnosticIdentifiers.TypeExpected);
+                    CompilerDiagnosticIdentifiers.TypeExpected,
+                    CompilerDiagnosticIdentifiers.SemicolonAfterMethodOrAccessorBlockIsNotValid);
             }
         }
 
@@ -38,7 +39,8 @@ namespace Roslynator.CSharp.CodeFixes
                 CodeFixIdentifiers.ReorderModifiers,
                 CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue,
                 CodeFixIdentifiers.ReturnDefaultValue,
-                CodeFixIdentifiers.AddMissingType))
+                CodeFixIdentifiers.AddMissingType,
+                CodeFixIdentifiers.RemoveSemicolon))
             {
                 return;
             }
@@ -233,6 +235,76 @@ namespace Roslynator.CSharp.CodeFixes
                                 GetEquivalenceKey(diagnostic));
 
                             context.RegisterCodeFix(codeAction, diagnostic);
+                            break;
+                        }
+                    case CompilerDiagnosticIdentifiers.SemicolonAfterMethodOrAccessorBlockIsNotValid:
+                        {
+                            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveSemicolon))
+                                break;
+
+                            if (token.Kind() != SyntaxKind.SemicolonToken)
+                                break;
+
+                            switch (token.Parent)
+                            {
+                                case MethodDeclarationSyntax methodDeclaration:
+                                    {
+                                        BlockSyntax body = methodDeclaration.Body;
+
+                                        if (body == null)
+                                            break;
+
+                                        CodeAction codeAction = CodeAction.Create(
+                                            "Remove semicolon",
+                                            cancellationToken =>
+                                            {
+                                                SyntaxTriviaList trivia = body
+                                                    .GetTrailingTrivia()
+                                                    .EmptyIfWhitespace()
+                                                    .AddRange(token.LeadingTrivia.EmptyIfWhitespace())
+                                                    .AddRange(token.TrailingTrivia);
+
+                                                MethodDeclarationSyntax newNode = methodDeclaration
+                                                    .WithBody(body.WithTrailingTrivia(trivia))
+                                                    .WithSemicolonToken(default(SyntaxToken));
+
+                                                return context.Document.ReplaceNodeAsync(methodDeclaration, newNode, cancellationToken);
+                                            },
+                                            GetEquivalenceKey(diagnostic));
+
+                                        context.RegisterCodeFix(codeAction, diagnostic);
+                                        break;
+                                    }
+                                case AccessorDeclarationSyntax accessorDeclaration:
+                                    {
+                                        BlockSyntax body = accessorDeclaration.Body;
+
+                                        if (body == null)
+                                            break;
+
+                                        CodeAction codeAction = CodeAction.Create(
+                                            "Remove semicolon",
+                                            cancellationToken =>
+                                            {
+                                                SyntaxTriviaList trivia = body
+                                                    .GetTrailingTrivia()
+                                                    .EmptyIfWhitespace()
+                                                    .AddRange(token.LeadingTrivia.EmptyIfWhitespace())
+                                                    .AddRange(token.TrailingTrivia);
+
+                                                AccessorDeclarationSyntax newNode = accessorDeclaration
+                                                    .WithBody(body.WithTrailingTrivia(trivia))
+                                                    .WithSemicolonToken(default(SyntaxToken));
+
+                                                return context.Document.ReplaceNodeAsync(accessorDeclaration, newNode, cancellationToken);
+                                            },
+                                            GetEquivalenceKey(diagnostic));
+
+                                        context.RegisterCodeFix(codeAction, diagnostic);
+                                        break;
+                                    }
+                            }
+
                             break;
                         }
                 }
