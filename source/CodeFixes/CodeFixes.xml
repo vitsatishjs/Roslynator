@@ -492,4 +492,9 @@
       <Id>CS1597</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0089" Identifier="RemoveConditionalAccess" Title="Remove conditional access">
+    <FixableDiagnosticIds>
+      <Id>CS0023</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>

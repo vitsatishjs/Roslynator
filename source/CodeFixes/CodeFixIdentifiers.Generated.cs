@@ -92,5 +92,6 @@ namespace Roslynator.CSharp.CodeFixes
         public const string AddMissingType = Prefix + "0086";
         public const string ReplaceConditionalExpressionWithIfElse = Prefix + "0087";
         public const string RemoveSemicolon = Prefix + "0088";
+        public const string RemoveConditionalAccess = Prefix + "0089";
     }
 }

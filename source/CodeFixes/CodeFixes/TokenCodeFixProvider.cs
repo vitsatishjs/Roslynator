@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Roslynator.CSharp.CodeFixes
 {
@@ -34,13 +35,13 @@ namespace Roslynator.CSharp.CodeFixes
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            if (!Settings.IsAnyCodeFixEnabled(
-                CodeFixIdentifiers.AddArgumentList,
-                CodeFixIdentifiers.ReorderModifiers,
-                CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue,
-                CodeFixIdentifiers.ReturnDefaultValue,
-                CodeFixIdentifiers.AddMissingType,
-                CodeFixIdentifiers.RemoveSemicolon))
+            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReorderModifiers)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReturnDefaultValue)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddMissingType)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveSemicolon)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveConditionalAccess))
             {
                 return;
             }
@@ -58,39 +59,62 @@ namespace Roslynator.CSharp.CodeFixes
                 {
                     case CompilerDiagnosticIdentifiers.OperatorCannotBeAppliedToOperandOfType:
                         {
-                            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList))
-                                break;
-
-                            if (kind != SyntaxKind.QuestionToken)
-                                break;
-
-                            if (!token.IsParentKind(SyntaxKind.ConditionalAccessExpression))
-                                break;
-
-                            var conditionalAccess = (ConditionalAccessExpressionSyntax)token.Parent;
-
-                            SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
-
-                            ITypeSymbol typeSymbol = semanticModel.GetTypeSymbol(conditionalAccess.Expression, context.CancellationToken);
-
-                            if (typeSymbol == null
-                                || typeSymbol.IsErrorType()
-                                || !typeSymbol.IsValueType
-                                || typeSymbol.IsConstructedFrom(SpecialType.System_Nullable_T))
+                            if (kind == SyntaxKind.QuestionToken
+                                && token.Parent is ConditionalAccessExpressionSyntax conditionalAccess)
                             {
-                                break;
+                                SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                                ITypeSymbol typeSymbol = semanticModel.GetTypeSymbol(conditionalAccess.Expression, context.CancellationToken);
+
+                                if (typeSymbol?.IsErrorType() == false
+                                    && !typeSymbol.IsConstructedFrom(SpecialType.System_Nullable_T))
+                                {
+                                    if (typeSymbol.IsValueType)
+                                    {
+                                        if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveConditionalAccess))
+                                        {
+                                            CodeAction codeAction = CodeAction.Create(
+                                                "Remove '?' operator",
+                                                cancellationToken =>
+                                                {
+                                                    var textChange = new TextChange(token.Span, "");
+                                                    return context.Document.WithTextChangeAsync(textChange, cancellationToken);
+                                                },
+                                                GetEquivalenceKey(diagnostic));
+
+                                            context.RegisterCodeFix(codeAction, diagnostic);
+                                        }
+                                    }
+                                    else if (typeSymbol.IsReferenceType)
+                                    {
+                                        if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList)
+                                            && conditionalAccess.WhenNotNull is MemberBindingExpressionSyntax memberBindingExpression)
+                                        {
+                                            ConditionalAccessExpressionSyntax newNode = conditionalAccess.WithWhenNotNull(
+                                                InvocationExpression(
+                                                    memberBindingExpression.WithoutTrailingTrivia(),
+                                                    ArgumentList().WithTrailingTrivia(memberBindingExpression.GetTrailingTrivia())));
+
+                                            CodeAction codeAction = CodeAction.Create(
+                                                "Add argument list",
+                                                cancellationToken => context.Document.ReplaceNodeAsync(conditionalAccess, newNode, cancellationToken),
+                                                GetEquivalenceKey(diagnostic));
+
+                                            context.RegisterCodeFix(codeAction, diagnostic);
+                                        }
+                                    }
+                                }
+
+                                if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList))
+                                {
+                                    break;
+                                }
+
+                                if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveConditionalAccess))
+                                {
+                                }
                             }
 
-                            CodeAction codeAction = CodeAction.Create(
-                                "Remove '?' operator",
-                                cancellationToken =>
-                                {
-                                    var textChange = new TextChange(token.Span, "");
-                                    return context.Document.WithTextChangeAsync(textChange, cancellationToken);
-                                },
-                                GetEquivalenceKey(diagnostic));
-
-                            context.RegisterCodeFix(codeAction, diagnostic);
                             break;
                         }
                     case CompilerDiagnosticIdentifiers.PartialModifierCanOnlyAppearImmediatelyBeforeClassStructInterfaceOrVoid:

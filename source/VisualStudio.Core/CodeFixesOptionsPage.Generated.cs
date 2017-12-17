@@ -20,7 +20,7 @@ namespace Roslynator.VisualStudio
             get;
         }
 
-        = CodeFixIdentifiers.RemoveSemicolon;
+        = CodeFixIdentifiers.RemoveConditionalAccess;
         protected override void Fill(ICollection<BaseModel> codeFixes)
         {
             codeFixes.Clear();
@@ -110,6 +110,7 @@ namespace Roslynator.VisualStudio
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.AddMissingType, "Add missing type (fixes CS1031)", IsEnabled(CodeFixIdentifiers.AddMissingType)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse, "Replace conditional expression with if-else (fixes CS0201)", IsEnabled(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.RemoveSemicolon, "Remove semicolon (fixes CS1597)", IsEnabled(CodeFixIdentifiers.RemoveSemicolon)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.RemoveConditionalAccess, "Remove conditional access (fixes CS0023)", IsEnabled(CodeFixIdentifiers.RemoveConditionalAccess)));
         }
     }
 }
