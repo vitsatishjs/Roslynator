@@ -16,6 +16,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string AddDefaultValueToParameter = Prefix + "0007";
         public const string AddExceptionToDocumentationComment = Prefix + "0009";
         public const string AddIdentifierToVariableDeclaration = Prefix + "0010";
+        public const string AddMemberToInterface = Prefix + "0195";
         public const string AddParameterNameToArgument = Prefix + "0011";
         public const string AddParameterNameToParameter = Prefix + "0012";
         public const string AddTypeParameter = Prefix + "0178";
@@ -76,12 +77,14 @@ namespace Roslynator.CSharp.Refactorings
         public const string IntroduceConstructor = Prefix + "0066";
         public const string IntroduceFieldToLockOn = Prefix + "0067";
         public const string IntroduceLocalVariable = Prefix + "0068";
+        public const string InvertPrefixOrPostfixUnaryOperator = Prefix + "0134";
         public const string JoinStringExpressions = Prefix + "0078";
         public const string MakeMemberAbstract = Prefix + "0069";
         public const string MakeMemberVirtual = Prefix + "0070";
         public const string MergeAssignmentExpressionWithReturnStatement = Prefix + "0073";
         public const string MergeAttributes = Prefix + "0074";
         public const string MergeIfStatements = Prefix + "0075";
+        public const string MergeIfWithParentIf = Prefix + "0196";
         public const string MergeInterpolationIntoInterpolatedString = Prefix + "0076";
         public const string MergeLocalDeclarations = Prefix + "0077";
         public const string NegateBinaryExpression = Prefix + "0079";
@@ -140,7 +143,6 @@ namespace Roslynator.CSharp.Refactorings
         public const string ReplaceHexadecimalLiteralWithDecimalLiteral = Prefix + "0132";
         public const string ReplaceIfElseWithIfReturn = Prefix + "0190";
         public const string ReplaceIfWithSwitch = Prefix + "0133";
-        public const string ReplaceIncrementOperatorWithDecrementOperator = Prefix + "0134";
         public const string ReplaceInterpolatedStringWithConcatenation = Prefix + "0193";
         public const string ReplaceInterpolatedStringWithInterpolationExpression = Prefix + "0135";
         public const string ReplaceInterpolatedStringWithStringLiteral = Prefix + "0136";

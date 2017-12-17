@@ -43,6 +43,7 @@
     <Compile Include="AddBracesToDeclarationOrLabeledStatement.cs" />
     <Compile Include="AddBreakStatementToSwitchSection.cs" />
     <Compile Include="CS0029_CannotImplicitlyConvertType.cs" />
+    <Compile Include="CS0120_ObjectReferenceIsRequiredForNonStaticMember2.cs" />
     <Compile Include="CS0030_CannotConvertType.cs" />
     <Compile Include="CS0120_ObjectReferenceIsRequiredForNonStaticMember2.cs" />
     <Compile Include="CS0126_ObjectOfTypeConvertibleToTypeIsRequired.cs" />

@@ -203,6 +203,8 @@ namespace Roslynator.CSharp.CodeFixes
                                 "Remove condition",
                                 cancellationToken =>
                                 {
+                                    cancellationToken.ThrowIfCancellationRequested();
+
                                     SyntaxNode newRoot = RemoveHelper.RemoveCondition(root, expression, nullCheck.Kind == NullCheckKind.NotEqualsToNull);
 
                                     cancellationToken.ThrowIfCancellationRequested();

@@ -927,10 +927,29 @@ switch (ch)
       </Sample>
     </Samples>
   </Refactoring>
-  <Refactoring Id="RR0134" Identifier="ReplaceIncrementOperatorWithDecrementOperator" Title="Replace increment operator with decrement operator">
+  <Refactoring Id="RR0134" Identifier="InvertPrefixOrPostfixUnaryOperator" Title="Invert prefix/postfix unary operator">
     <Syntaxes>
       <Syntax>prefix/postfix unary expression</Syntax>
     </Syntaxes>
+    <Span>operator token</Span>
+    <Samples>
+      <Sample>
+        <Before><![CDATA[int i = 0;
+
+i++;]]></Before>
+        <After><![CDATA[int i = 0;
+
+i--;]]></After>
+      </Sample>
+      <Sample>
+        <Before><![CDATA[int i = 0;
+
+++i;]]></Before>
+        <After><![CDATA[int i = 0;
+
+--i;]]></After>
+      </Sample>
+    </Samples>
   </Refactoring>
   <Refactoring Id="RR0135" Identifier="ReplaceInterpolatedStringWithInterpolationExpression" Title="Replace interpolated string with interpolation expression">
     <Syntaxes>
@@ -1394,6 +1413,65 @@ public class Foo
         <Before><![CDATA[var s = GetValue();]]></Before>
         <After><![CDATA[string s;
 s = GetValue();]]></After>
+      </Sample>
+    </Samples>
+  </Refactoring>
+  <Refactoring Id="RR0195" Identifier="AddMemberToInterface" Title="Add member to interface">
+    <Syntaxes>
+      <Syntax>method</Syntax>
+      <Syntax>property</Syntax>
+      <Syntax>indexer</Syntax>
+      <Syntax>event</Syntax>
+    </Syntaxes>
+    <Span>identifier</Span>
+    <Samples>
+      <Sample>
+        <Before><![CDATA[public class Foo : IFoo
+{
+    public void Bar()
+    {
+    }
+}
+
+public interface IFoo
+{
+}]]></Before>
+        <After><![CDATA[public class Foo : IFoo
+{
+    public void Bar()
+    {
+    }
+}
+
+public interface IFoo
+{
+    void Bar();
+}]]></After>
+      </Sample>
+    </Samples>
+  </Refactoring>
+  <Refactoring Id="RR0196" Identifier="MergeIfWithParentIf" Title="Merge if with parent if">
+    <Syntaxes>
+      <Syntax>if statement</Syntax>
+    </Syntaxes>
+    <Span>if keyword</Span>
+    <Samples>
+      <Sample>
+        <Before><![CDATA[if (x)
+{
+    if (y)
+    {
+    }
+}
+else
+{
+}]]></Before>
+        <After><![CDATA[if (x && y)
+{
+}
+else
+{
+}]]></After>
       </Sample>
     </Samples>
   </Refactoring>
