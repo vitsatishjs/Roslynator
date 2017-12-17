@@ -204,6 +204,8 @@ namespace Roslynator.CSharp.CodeFixes
                                 {
                                     SyntaxNode newRoot = RemoveHelper.RemoveCondition(root, expression, nullCheck.Kind == NullCheckKind.NotEqualsToNull);
 
+                                    cancellationToken.ThrowIfCancellationRequested();
+
                                     return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
                                 },
                                 GetEquivalenceKey(diagnostic));
