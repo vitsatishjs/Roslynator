@@ -29,7 +29,8 @@ namespace Roslynator.CSharp.CodeFixes
                     CompilerDiagnosticIdentifiers.ValueCannotBeUsedAsDefaultParameter,
                     CompilerDiagnosticIdentifiers.ObjectOfTypeConvertibleToTypeIsRequired,
                     CompilerDiagnosticIdentifiers.TypeExpected,
-                    CompilerDiagnosticIdentifiers.SemicolonAfterMethodOrAccessorBlockIsNotValid);
+                    CompilerDiagnosticIdentifiers.SemicolonAfterMethodOrAccessorBlockIsNotValid,
+                    CompilerDiagnosticIdentifiers.CannotConvertType);
             }
         }
 
@@ -41,7 +42,8 @@ namespace Roslynator.CSharp.CodeFixes
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReturnDefaultValue)
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddMissingType)
                 && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveSemicolon)
-                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveConditionalAccess))
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveConditionalAccess)
+                && !Settings.IsCodeFixEnabled(CodeFixIdentifiers.ChangeForEachType))
             {
                 return;
             }
@@ -329,6 +331,29 @@ namespace Roslynator.CSharp.CodeFixes
                                     }
                             }
 
+                            break;
+                        }
+                    case CompilerDiagnosticIdentifiers.CannotConvertType:
+                        {
+                            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.ChangeForEachType))
+                                break;
+
+                            if (token.Kind() != SyntaxKind.ForEachKeyword)
+                                break;
+
+                            if (!(token.Parent is ForEachStatementSyntax forEachStatement))
+                                break;
+
+                            SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                            ForEachStatementInfo info = semanticModel.GetForEachStatementInfo(forEachStatement);
+
+                            ITypeSymbol typeSymbol = info.ElementType;
+
+                            if (typeSymbol.SupportsExplicitDeclaration())
+                                CodeFixRegistrator.ChangeType(context, diagnostic, forEachStatement.Type, typeSymbol, semanticModel, CodeFixIdentifiers.ChangeForEachType);
+
+                            CodeFixRegistrator.ChangeTypeToVar(context, diagnostic, forEachStatement.Type, CodeFixIdentifiers.ChangeTypeToVar);
                             break;
                         }
                 }

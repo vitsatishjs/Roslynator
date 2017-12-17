@@ -10,6 +10,7 @@ namespace Roslynator.CSharp
         public const string CannotApplyIndexingToExpression = "CS0021";
         public const string OperatorCannotBeAppliedToOperandOfType = "CS0023";
         public const string CannotImplicitlyConvertType = "CS0029";
+        public const string CannotConvertType = "CS0030";
         public const string CannotConvertNullToTypeBecauseItIsNonNullableValueType = "CS0037";
         public const string EventInInterfaceCannotHaveAddOrRemoveAccessors = "CS0069";
         public const string AsOperatorMustBeUsedWithReferenceTypeOrNullableType = "CS0077";

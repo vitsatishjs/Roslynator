@@ -20,7 +20,7 @@ namespace Roslynator.VisualStudio
             get;
         }
 
-        = CodeFixIdentifiers.RemoveConditionalAccess;
+        = CodeFixIdentifiers.ChangeTypeToVar;
         protected override void Fill(ICollection<BaseModel> codeFixes)
         {
             codeFixes.Clear();
@@ -111,6 +111,9 @@ namespace Roslynator.VisualStudio
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse, "Replace conditional expression with if-else (fixes CS0201)", IsEnabled(CodeFixIdentifiers.ReplaceConditionalExpressionWithIfElse)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.RemoveSemicolon, "Remove semicolon (fixes CS1597)", IsEnabled(CodeFixIdentifiers.RemoveSemicolon)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.RemoveConditionalAccess, "Remove conditional access (fixes CS0023)", IsEnabled(CodeFixIdentifiers.RemoveConditionalAccess)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeTypeAccordingToInitializer, "Change type according to initializer (fixes CS0029)", IsEnabled(CodeFixIdentifiers.ChangeTypeAccordingToInitializer)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeForEachType, "Change foreach type (fixes CS0030)", IsEnabled(CodeFixIdentifiers.ChangeForEachType)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeTypeToVar, "Change type to var (fixes CS0029, CS0030)", IsEnabled(CodeFixIdentifiers.ChangeTypeToVar)));
         }
     }
 }
