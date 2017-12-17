@@ -22,7 +22,18 @@ namespace Roslynator.Utilities.Markdown
         void WriteItalic(string value);
         void WriteLink(string text, string url);
         void WriteListItem(string value = null);
+        void WriteMarkdown(BoldText text);
+        void WriteMarkdown(CodeBlock codeBlock);
+        void WriteMarkdown(InlineCode  inlineCode);
+        void WriteMarkdown(ItalicText text);
+        void WriteMarkdown(ListItem item);
+        void WriteMarkdown(MarkdownHeader header);
+        void WriteMarkdown(MarkdownImage image);
+        void WriteMarkdown(MarkdownLink link);
         void WriteMarkdown(MarkdownText text);
+        void WriteMarkdown(OrderedListItem item);
+        void WriteMarkdown(StrikethroughText text);
+        void WriteMarkdown(TaskListItem item);
         void WriteOrderedListItem(int number, string value = null);
         void WriteStrikethrough(string value);
         void WriteTableHeader(params MarkdownTableHeader[] headers);

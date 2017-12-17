@@ -150,6 +150,8 @@
     <Compile Include="Markdown\MarkdownLink.cs" />
     <Compile Include="Markdown\MarkdownSettings.cs" />
     <Compile Include="Markdown\MarkdownEscaper.cs" />
+    <Compile Include="Markdown\MarkdownTableBuilder.cs" />
+    <Compile Include="Markdown\MarkdownTableFormatting.cs" />
     <Compile Include="Markdown\MarkdownText.cs" />
     <Compile Include="Markdown\MarkdownWriter.cs" />
     <Compile Include="Markdown\OrderedListItem.cs" />

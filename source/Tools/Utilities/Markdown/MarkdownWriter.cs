@@ -8,15 +8,8 @@ using static Roslynator.Utilities.Markdown.MarkdownFactory;
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: Escape |
-
     public class MarkdownWriter : StringWriter, IMarkdownWriter
     {
-        public void WriteMarkdown(MarkdownText text)
-        {
-            text.WriteTo(this);
-        }
-
         public MarkdownWriter(MarkdownSettings settings = null)
         {
             Settings = settings ?? MarkdownSettings.Default;
@@ -322,6 +315,11 @@ namespace Roslynator.Utilities.Markdown
             if (length == 0)
                 return;
 
+            WriteTableHeader(headers, length);
+        }
+
+        internal void WriteTableHeader(IList<MarkdownTableHeader> headers, int length, List<int> widths = null)
+        {
             for (int i = 0; i < length; i++)
             {
                 WriteTableRowStart(i);
@@ -332,11 +330,15 @@ namespace Roslynator.Utilities.Markdown
 
                 WriteMarkdown(name);
 
-                if (Settings.AlignTableHeader
-                    && name.Length < 3)
+                if (Settings.FormatTableHeader)
                 {
-                    for (int j = name.Length; j < 3; j++)
-                        Write(" ");
+                    int width = name.Length;
+                    int minimalWidth = width;
+
+                    if (Settings.FormatTableHeader)
+                        minimalWidth = Math.Max(minimalWidth, 3);
+
+                    WritePadRight(width, widths?[i], minimalWidth);
                 }
 
                 WriteTableCellEnd(i, length);
@@ -359,16 +361,10 @@ namespace Roslynator.Utilities.Markdown
                     WriteTablePadding();
                 }
 
-                if (!Settings.AlignTableHeader
-                    || header.Name.Length < 3)
-                {
-                    Write("---");
-                }
-                else
-                {
-                    for (int j = 0; j < header.Name.Length; j++)
-                        Write("-");
-                }
+                Write("---");
+
+                if (Settings.FormatTableHeader)
+                    WritePadRight(3, widths?[i] ?? headers[i].Name.Length, 3, '-');
 
                 if (header.Alignment != Alignment.Left)
                 {
@@ -380,16 +376,26 @@ namespace Roslynator.Utilities.Markdown
                 }
 
                 if (i == length - 1)
-                    WriteOuterPipe();
+                    WriteTableOuterPipe();
             }
 
             WriteLine();
         }
 
-        private void WriteOuterPipe()
+        private void WritePadRight(int width, int? proposedwidth, int minimalwidth = 0, char paddingChar = ' ')
         {
-            if (Settings.UseOuterPipe)
-                Write("|");
+            int totalWidth = Math.Max(proposedwidth ?? width, minimalwidth);
+
+            for (int j = width; j < totalWidth; j++)
+            {
+                base.Write(paddingChar);
+            }
+        }
+
+        private void WriteTableOuterPipe()
+        {
+            if (Settings.UseTableOuterPipe)
+                WriteTableDelimiter();
         }
 
         private void WriteTablePadding()
@@ -408,6 +414,11 @@ namespace Roslynator.Utilities.Markdown
             if (length == 0)
                 return;
 
+            WriteTableRow(values, length);
+        }
+
+        internal void WriteTableRow(IList<object> values, int length, List<int> widths = null)
+        {
             for (int i = 0; i < length; i++)
             {
                 WriteTableRowStart(i);
@@ -415,11 +426,15 @@ namespace Roslynator.Utilities.Markdown
 
                 if (values[i] is IMarkdown markdown)
                 {
-                    markdown.WriteTo(this);
+                    WriteTableCellContent(markdown, widths?[i]);
                 }
                 else
                 {
-                    WriteMarkdown(values[i]?.ToString());
+                    string value = values[i]?.ToString() ?? "";
+                    WriteMarkdown(value);
+
+                    if (Settings.FormatTableContent)
+                        WritePadRight(value.Length, widths?[i]);
                 }
 
                 WriteTableCellEnd(i, length);
@@ -438,32 +453,58 @@ namespace Roslynator.Utilities.Markdown
             if (length == 0)
                 return;
 
+            WriteTableRow(values, length);
+        }
+
+        internal void WriteTableRow(IList<MarkdownText> values, int length, List<int> widths = null)
+        {
             for (int i = 0; i < length; i++)
             {
                 WriteTableRowStart(i);
                 WriteTablePadding();
-                values[i].WriteTo(this);
+
+                WriteTableCellContent(values[i], widths?[i]);
+
                 WriteTableCellEnd(i, length);
             }
 
             WriteLine();
         }
 
+        private void WriteTableCellContent<T>(T value, int? proposedWidth) where T : IMarkdown
+        {
+            StringBuilder sb = GetStringBuilder();
+
+            int length = sb.Length;
+
+            value.WriteTo(this);
+
+            length = sb.Length - length;
+
+            if (Settings.FormatTableContent)
+                WritePadRight(length, proposedWidth);
+        }
+
         public void WriteTableRowStart()
         {
-            if (Settings.UseOuterPipe)
+            if (Settings.UseTableOuterPipe)
             {
-                Write("|");
+                WriteTableDelimiter();
                 WriteTablePadding();
             }
         }
 
+        private void WriteTableDelimiter()
+        {
+            Write(Settings.TableDelimiter);
+        }
+
         public void WriteTableRowEnd()
         {
-            if (Settings.UseOuterPipe)
+            if (Settings.UseTableOuterPipe)
             {
                 WriteTablePadding();
-                Write("|");
+                WriteTableDelimiter();
             }
 
             WriteLine();
@@ -472,7 +513,7 @@ namespace Roslynator.Utilities.Markdown
         public void WriteTableRowSeparator()
         {
             WriteTablePadding();
-            Write("|");
+            WriteTableDelimiter();
             WriteTablePadding();
         }
 
@@ -480,11 +521,11 @@ namespace Roslynator.Utilities.Markdown
         {
             if (index == 0)
             {
-                WriteOuterPipe();
+                WriteTableOuterPipe();
             }
             else
             {
-                Write("|");
+                WriteTableDelimiter();
             }
         }
 
@@ -492,10 +533,10 @@ namespace Roslynator.Utilities.Markdown
         {
             if (index == length - 1)
             {
-                if (Settings.UseOuterPipe)
+                if (Settings.UseTableOuterPipe)
                 {
                     WriteTablePadding();
-                    Write("|");
+                    WriteTableDelimiter();
                 }
             }
             else
@@ -525,6 +566,73 @@ namespace Roslynator.Utilities.Markdown
             {
                 Write("- [ ] ");
             }
+        }
+
+        public void WriteComment(string value)
+        {
+            Write("<!-- ");
+            Write(value);
+            Write(" -->");
+        }
+
+        public void WriteMarkdown(BoldText text)
+        {
+            text.WriteTo(this);
+        }
+
+        public void WriteMarkdown(CodeBlock codeBlock)
+        {
+            codeBlock.WriteTo(this);
+        }
+
+        public void WriteMarkdown(InlineCode inlineCode)
+        {
+            inlineCode.WriteTo(this);
+        }
+
+        public void WriteMarkdown(ItalicText text)
+        {
+            text.WriteTo(this);
+        }
+
+        public void WriteMarkdown(ListItem item)
+        {
+            item.WriteTo(this);
+        }
+
+        public void WriteMarkdown(MarkdownHeader header)
+        {
+            header.WriteTo(this);
+        }
+
+        public void WriteMarkdown(MarkdownImage image)
+        {
+            image.WriteTo(this);
+        }
+
+        public void WriteMarkdown(MarkdownLink link)
+        {
+            link.WriteTo(this);
+        }
+
+        public void WriteMarkdown(MarkdownText text)
+        {
+            text.WriteTo(this);
+        }
+
+        public void WriteMarkdown(OrderedListItem item)
+        {
+            item.WriteTo(this);
+        }
+
+        public void WriteMarkdown(StrikethroughText text)
+        {
+            text.WriteTo(this);
+        }
+
+        public void WriteMarkdown(TaskListItem item)
+        {
+            item.WriteTo(this);
         }
 
         public void WriteJoin<T>(string separator, IEnumerable<T> values) where T : IMarkdown

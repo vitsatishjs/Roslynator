@@ -14,6 +14,8 @@ namespace Roslynator.Utilities.Markdown
 
         public const string DefaultListItemStart = "*";
 
+        public const string DefaultTableDelimiter = "|";
+
         public const string DefaultIndentChars = "\t";
 
         public const string DefaultHorizontalRule = "___";
@@ -23,12 +25,13 @@ namespace Roslynator.Utilities.Markdown
             string italicDelimiter = DefaultEmphasisDelimiter,
             string strikethroughDelimiter = DefaultStrikethoughDelimiter,
             string listItemStart = DefaultListItemStart,
+            string tableDelimiter = DefaultTableDelimiter,
             string inlineCodeDelimiter = DefaultInlineCodeDelimiter,
             string codeBlockChars = DefaultBlockCodeChars,
             string horizontalRule = DefaultHorizontalRule,
-            bool alignTableHeader = true,
             bool useTablePadding = true,
-            bool useOuterPipe = true,
+            bool useTableOuterPipe = true,
+            MarkdownTableFormatting tableFormatting = MarkdownTableFormatting.Header,
             string indentChars = DefaultIndentChars,
             MarkdownEscaper escaper = null)
         {
@@ -36,12 +39,13 @@ namespace Roslynator.Utilities.Markdown
             ItalicDelimiter = italicDelimiter;
             StrikethroughDelimiter = strikethroughDelimiter;
             ListItemStart = listItemStart;
+            TableDelimiter = tableDelimiter;
             InlineCodeDelimiter = inlineCodeDelimiter;
             CodeBlockChars = codeBlockChars;
             HorizontalRule = horizontalRule;
-            AlignTableHeader = alignTableHeader;
+            TableFormatting = tableFormatting;
             UseTablePadding = useTablePadding;
-            UseOuterPipe = useOuterPipe;
+            UseTableOuterPipe = useTableOuterPipe;
             IndentChars = indentChars;
             Escaper = escaper ?? MarkdownEscaper.Default;
         }
@@ -56,17 +60,29 @@ namespace Roslynator.Utilities.Markdown
 
         public string ListItemStart { get; }
 
+        public string TableDelimiter { get; }
+
         public string InlineCodeDelimiter { get; }
 
         public string CodeBlockChars { get; }
 
         public string HorizontalRule { get; }
 
-        public bool AlignTableHeader { get; }
+        public MarkdownTableFormatting TableFormatting { get; }
+
+        internal bool FormatTableHeader
+        {
+            get { return (TableFormatting & MarkdownTableFormatting.Header) != 0; }
+        }
+
+        internal bool FormatTableContent
+        {
+            get { return (TableFormatting & MarkdownTableFormatting.Content) != 0; }
+        }
 
         public bool UseTablePadding { get; }
 
-        public bool UseOuterPipe { get; }
+        public bool UseTableOuterPipe { get; }
 
         public string IndentChars { get; }
 

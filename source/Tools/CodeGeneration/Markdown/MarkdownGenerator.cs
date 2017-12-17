@@ -153,20 +153,24 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateRefactoringMarkdown(RefactoringDescriptor refactoring)
         {
-            using (var mw = new MarkdownWriter())
+            using (var mw = new MarkdownWriter(new MarkdownSettings(tableFormatting: MarkdownTableFormatting.All)))
             {
                 mw.WriteHeader2(refactoring.Title);
                 mw.WriteLine();
 
-                mw.WriteTableHeader("Property", "Value");
-                mw.WriteTableRow("Id", refactoring.Id);
-                mw.WriteTableRow("Title", refactoring.Title);
-                mw.WriteTableRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
+                var tb = new MarkdownTableBuilder();
+
+                tb.AddHeaders("Property", "Value");
+                tb.AddRow("Id", refactoring.Id);
+                tb.AddRow("Title", refactoring.Title);
+                tb.AddRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
 
                 if (!string.IsNullOrEmpty(refactoring.Span))
-                    mw.WriteTableRow("Span", refactoring.Span);
+                    tb.AddRow("Span", refactoring.Span);
 
-                mw.WriteTableRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)));
+                tb.AddRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)));
+
+                tb.WriteTo(mw);
 
                 mw.WriteLine();
                 mw.WriteHeader3("Usage");
@@ -184,19 +188,22 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateAnalyzerMarkdown(AnalyzerDescriptor analyzer)
         {
-            using (var mw = new MarkdownWriter())
+            using (var mw = new MarkdownWriter(new MarkdownSettings(tableFormatting: MarkdownTableFormatting.All)))
             {
                 string title = analyzer.Title.TrimEnd('.');
                 mw.WriteHeader1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {title}");
                 mw.WriteLine();
 
-                mw.WriteTableHeader("Property", "Value");
-                mw.WriteTableRow("Id", analyzer.Id);
-                mw.WriteTableRow("Category", analyzer.Category);
-                mw.WriteTableRow("Default Severity", analyzer.DefaultSeverity);
-                mw.WriteTableRow("Enabled by Default", RawText(GetBooleanAsText(analyzer.IsEnabledByDefault)));
-                mw.WriteTableRow("Supports Fade-Out", RawText(GetBooleanAsText(analyzer.SupportsFadeOut)));
-                mw.WriteTableRow("Supports Fade-Out Analyzer", RawText(GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer)));
+                var tb = new MarkdownTableBuilder();
+
+                tb.AddHeaders("Property", "Value");
+                tb.AddRow("Id", analyzer.Id);
+                tb.AddRow("Category", analyzer.Category);
+                tb.AddRow("Default Severity", analyzer.DefaultSeverity);
+                tb.AddRow("Enabled by Default", RawText(GetBooleanAsText(analyzer.IsEnabledByDefault)));
+                tb.AddRow("Supports Fade-Out", RawText(GetBooleanAsText(analyzer.SupportsFadeOut)));
+                tb.AddRow("Supports Fade-Out Analyzer", RawText(GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer)));
+                tb.WriteTo(mw);
 
                 ReadOnlyCollection<SampleDescriptor> samples = analyzer.Samples;
 
@@ -383,7 +390,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         private static string GetBooleanAsText(bool value)
         {
-            return (value) ? "&#x2713;" : "";
+            return (value) ? "&#x2713;" : "-";
         }
     }
 }
