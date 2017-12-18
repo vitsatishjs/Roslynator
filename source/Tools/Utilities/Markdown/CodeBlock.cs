@@ -16,12 +16,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteCodeBlockChars();
-            mw.WriteLine(Language);
-            mw.Write(Text);
-            mw.WriteLineIf(!Text.EndsWith("\n"));
-            mw.WriteCodeBlockChars();
-            mw.WriteLine();
+            mw.WriteCodeBlock(Text, Language);
         }
     }
 }

@@ -13,9 +13,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteListItemStart();
-            mw.Write(" ");
-            mw.WriteLineMarkdownIf(!string.IsNullOrEmpty(Text), Text, escape: true);
+            mw.WriteListItem(Text);
         }
     }
 }

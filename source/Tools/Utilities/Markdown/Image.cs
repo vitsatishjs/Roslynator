@@ -2,9 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownImage : IMarkdown
+    public struct Image : IMarkdown
     {
-        internal MarkdownImage(string text, string url)
+        internal Image(string text, string url)
         {
             Text = text;
             Url = url;
@@ -16,11 +16,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.Write("![");
-            mw.WriteMarkdown(Text, f => f == '[' || f == ']');
-            mw.Write("](");
-            mw.WriteMarkdown(Url, f => f == '(' || f == ')');
-            mw.Write(")");
+            mw.WriteImage(Text, Url);
         }
     }
 }

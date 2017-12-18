@@ -2,26 +2,18 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IMarkdown
+    public struct BlockQuote : IMarkdown
     {
-        internal MarkdownText(string text, bool escape)
+        internal BlockQuote(string text)
         {
             Text = text;
-            Escape = escape;
         }
 
         public string Text { get; }
 
-        public bool Escape { get; }
-
-        public static implicit operator MarkdownText(string value)
-        {
-            return new MarkdownText(value, escape: true);
-        }
-
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteMarkdown(Text, Escape);
+            mw.WriteBlockQuote(Text);
         }
     }
 }

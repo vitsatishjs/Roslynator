@@ -13,9 +13,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteStrikethroughDelimiter();
-            mw.WriteMarkdown(Text);
-            mw.WriteStrikethroughDelimiter();
+            mw.WriteStrikethrough(Text);
         }
     }
 }

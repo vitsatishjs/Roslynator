@@ -2,9 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownTableHeader
+    public struct TableHeader
     {
-        internal MarkdownTableHeader(string name, Alignment alignment = Alignment.Left)
+        internal TableHeader(string name, Alignment alignment = Alignment.Left)
         {
             Name = name;
             Alignment = alignment;
@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public Alignment Alignment { get; }
 
-        public static implicit operator MarkdownTableHeader(string value)
+        public static implicit operator TableHeader(string value)
         {
-            return new MarkdownTableHeader(value);
+            return new TableHeader(value);
         }
     }
 }

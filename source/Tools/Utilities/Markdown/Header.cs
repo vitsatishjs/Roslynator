@@ -2,9 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownHeader : IMarkdown
+    public struct Header : IMarkdown
     {
-        internal MarkdownHeader(string text, int level = 1)
+        internal Header(string text, int level = 1)
         {
             Text = text;
             Level = level;
@@ -16,8 +16,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.Write(MarkdownFactory.HeaderStart(Level));
-            mw.WriteLineMarkdownIf(!string.IsNullOrEmpty(Text), Text);
+            mw.WriteHeader(Level, Text);
         }
     }
 }

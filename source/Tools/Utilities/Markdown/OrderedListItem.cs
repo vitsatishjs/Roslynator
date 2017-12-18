@@ -16,9 +16,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.Write(Number);
-            mw.Write(". ");
-            mw.WriteLineMarkdownIf(!string.IsNullOrEmpty(Text), Text);
+            mw.WriteOrderedListItem(Number, Text);
         }
     }
 }

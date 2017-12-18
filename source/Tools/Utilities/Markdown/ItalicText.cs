@@ -13,9 +13,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteItalicDelimiter();
-            mw.WriteMarkdown(Text);
-            mw.WriteItalicDelimiter();
+            mw.WriteItalic(Text);
         }
     }
 }

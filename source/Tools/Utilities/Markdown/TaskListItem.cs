@@ -16,10 +16,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.Write("- [");
-            mw.Write((IsCompleted) ? "x" : " ");
-            mw.Write("] ");
-            mw.WriteLineMarkdownIf(!string.IsNullOrEmpty(Text), Text);
+            mw.WriteTaskListItem(Text, IsCompleted);
         }
     }
 }

@@ -2,26 +2,21 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct MarkdownText : IMarkdown
+    public struct Link : IMarkdown
     {
-        internal MarkdownText(string text, bool escape)
+        internal Link(string text, string url)
         {
             Text = text;
-            Escape = escape;
+            Url = url;
         }
 
         public string Text { get; }
 
-        public bool Escape { get; }
-
-        public static implicit operator MarkdownText(string value)
-        {
-            return new MarkdownText(value, escape: true);
-        }
+        public string Url { get; }
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteMarkdown(Text, Escape);
+            mw.WriteLink(Text, Url);
         }
     }
 }

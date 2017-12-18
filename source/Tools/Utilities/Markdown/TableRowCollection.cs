@@ -1,19 +1,18 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 namespace Roslynator.Utilities.Markdown
 {
-    public struct BoldText : IMarkdown
+    public class TableRowCollection : Collection<TableRow>
     {
-        internal BoldText(string text)
+        public TableRowCollection()
         {
-            Text = text;
         }
 
-        public string Text { get; }
-
-        public void WriteTo(MarkdownWriter mw)
+        public TableRowCollection(IList<TableRow> list) : base(list)
         {
-            mw.WriteBold(Text);
         }
     }
 }
