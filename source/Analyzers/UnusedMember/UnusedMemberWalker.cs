@@ -19,9 +19,12 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public CancellationToken CancellationToken { get; set; }
 
+        public bool IsConst { get; set; }
+
         public void Reset()
         {
             Nodes.Clear();
+            IsConst = false;
             _isEmpty = false;
         }
 
@@ -101,16 +104,27 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
             Visit(expressionBody);
         }
 
+        private void VisitAttributeLists(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            if (!IsConst)
+                return;
+
+            foreach (AttributeListSyntax attributeList in attributeLists)
+                Visit(attributeList);
+        }
+
         public override void Visit(SyntaxNode node)
         {
             if (!_isEmpty)
                 base.Visit(node);
         }
 
-        //public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)
-        //{
-        //    base.VisitAccessorDeclaration(node);
-        //}
+        public override void VisitAccessorDeclaration(AccessorDeclarationSyntax node)
+        {
+            VisitAttributeLists(node.AttributeLists);
+
+            //base.VisitAccessorDeclaration(node);
+        }
 
         //public override void VisitAccessorList(AccessorListSyntax node)
         //{
@@ -171,25 +185,24 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitAttribute(AttributeSyntax node)
         {
-            Debug.Fail(node.ToString());
-            base.VisitAttribute(node);
+            Visit(node.ArgumentList);
+            //base.VisitAttribute(node);
         }
 
-        public override void VisitAttributeArgument(AttributeArgumentSyntax node)
-        {
-            Debug.Fail(node.ToString());
-            base.VisitAttributeArgument(node);
-        }
+        //public override void VisitAttributeArgument(AttributeArgumentSyntax node)
+        //{
+        //    base.VisitAttributeArgument(node);
+        //}
 
-        public override void VisitAttributeArgumentList(AttributeArgumentListSyntax node)
-        {
-            //base.VisitAttributeArgumentList(node);
-        }
+        //public override void VisitAttributeArgumentList(AttributeArgumentListSyntax node)
+        //{
+        //    base.VisitAttributeArgumentList(node);
+        //}
 
-        public override void VisitAttributeList(AttributeListSyntax node)
-        {
-            //base.VisitAttributeList(node);
-        }
+        //public override void VisitAttributeList(AttributeListSyntax node)
+        //{
+        //    base.VisitAttributeList(node);
+        //}
 
         public override void VisitAttributeTargetSpecifier(AttributeTargetSpecifierSyntax node)
         {
@@ -235,7 +248,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitBracketedParameterList(BracketedParameterListSyntax node)
         {
-            //base.VisitBracketedParameterList(node);
+            if (IsConst)
+                base.VisitBracketedParameterList(node);
         }
 
         public override void VisitBreakStatement(BreakStatementSyntax node)
@@ -289,6 +303,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             VisitMembers(node.Members);
             //base.VisitClassDeclaration(node);
         }
@@ -328,6 +343,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             Visit(node.Initializer);
             //base.VisitConstructorDeclaration(node);
@@ -345,6 +362,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitConversionOperatorDeclaration(node);
         }
@@ -401,11 +420,15 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitDelegateDeclaration(DelegateDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             //base.VisitDelegateDeclaration(node);
         }
 
         public override void VisitDestructorDeclaration(DestructorDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitDestructorDeclaration(node);
         }
@@ -472,13 +495,23 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+
+            if (IsConst)
+            {
+                foreach (EnumMemberDeclarationSyntax member in node.Members)
+                    Visit(member);
+            }
+
             //base.VisitEnumDeclaration(node);
         }
 
         public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
         {
-            Debug.Fail(node.ToString());
-            base.VisitEnumMemberDeclaration(node);
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.EqualsValue);
+
+            //base.VisitEnumMemberDeclaration(node);
         }
 
         //public override void VisitEqualsValueClause(EqualsValueClauseSyntax node)
@@ -494,11 +527,13 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitEventDeclaration(EventDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             //base.VisitEventDeclaration(node);
         }
 
         public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             //base.VisitEventFieldDeclaration(node);
         }
 
@@ -521,6 +556,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             Visit(node.Declaration);
             //base.VisitFieldDeclaration(node);
         }
@@ -616,6 +652,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitIndexerDeclaration(IndexerDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitAccessorListOrExpressionBody(node.AccessorList, node.ExpressionBody);
             //base.VisitIndexerDeclaration(node);
         }
@@ -633,6 +671,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             VisitMembers(node.Members);
             //base.VisitInterfaceDeclaration(node);
         }
@@ -718,6 +757,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
         {
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitLocalFunctionStatement(node);
         }
@@ -744,6 +784,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitMethodDeclaration(node);
         }
@@ -796,6 +838,8 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitOperatorDeclaration(OperatorDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.ParameterList);
             VisitBodyOrExpressionBody(node.Body, node.ExpressionBody);
             //base.VisitOperatorDeclaration(node);
         }
@@ -818,12 +862,17 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitParameter(ParameterSyntax node)
         {
-            Debug.Fail(node.ToString());
-            base.VisitParameter(node);
+            VisitAttributeLists(node.AttributeLists);
+            Visit(node.Default);
+
+            //base.VisitParameter(node);
         }
 
         public override void VisitParameterList(ParameterListSyntax node)
         {
+            if (IsConst)
+                base.VisitParameterList(node);
+
             //base.VisitParameterList(node);
         }
 
@@ -877,6 +926,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             Visit(node.Initializer);
             VisitAccessorListOrExpressionBody(node.AccessorList, node.ExpressionBody);
             //base.VisitPropertyDeclaration(node);
@@ -993,6 +1043,7 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
+            VisitAttributeLists(node.AttributeLists);
             VisitMembers(node.Members);
             //base.VisitStructDeclaration(node);
         }
