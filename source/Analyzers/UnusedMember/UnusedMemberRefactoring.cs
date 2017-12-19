@@ -90,11 +90,12 @@ namespace Roslynator.CSharp.Analyzers.UnusedMember
                     case SyntaxKind.FieldDeclaration:
                         {
                             var declaration = (FieldDeclarationSyntax)member;
+                            SyntaxTokenList modifiers = declaration.Modifiers;
 
-                            if (IsPrivate(declaration, declaration.Modifiers))
+                            if (IsPrivate(declaration, modifiers))
                             {
                                 if (walker == null)
-                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken);
+                                    walker = UnusedMemberWalkerCache.Acquire(context.SemanticModel, context.CancellationToken, isConst: modifiers.Contains(SyntaxKind.ConstKeyword));
 
                                 walker.AddNodes(declaration.Declaration);
                             }

@@ -10,7 +10,7 @@ namespace Roslynator.CSharp.Analyzers.Tests
     {
         private static class Foo
         {
-            private static readonly string _f;
+            private const string _f = "";
             private static readonly string _f2, _f3;
 
             private static void FooMethod()
@@ -70,6 +70,33 @@ namespace Roslynator.CSharp.Analyzers.Tests
             private static string Bar()
             {
                 return null;
+            }
+        }
+
+        [FooAttribute(A)]
+        public class Foo2
+        {
+            private const string A = "";
+            private const string B = "";
+            private const string C = "";
+            private const int D = 0;
+
+            [FooAttribute(B)]
+            public Foo2(string x = C)
+            {
+            }
+
+            public enum FooEnum
+            {
+                None = D
+            }
+        }
+
+        [AttributeUsageAttribute(AttributeTargets.All, AllowMultiple = false)]
+        private sealed class FooAttribute : Attribute
+        {
+            public FooAttribute(string value)
+            {
             }
         }
     }

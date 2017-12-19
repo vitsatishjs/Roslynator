@@ -2541,7 +2541,7 @@ namespace Roslynator.CSharp
                 case SyntaxKind.EventFieldDeclaration:
                     return "event";
                 case SyntaxKind.FieldDeclaration:
-                    return "field";
+                    return (((FieldDeclarationSyntax)node).Modifiers.Contains(SyntaxKind.ConstKeyword)) ? "const" : "field";
                 case SyntaxKind.DelegateDeclaration:
                     return "delegate";
                 case SyntaxKind.NamespaceDeclaration:
