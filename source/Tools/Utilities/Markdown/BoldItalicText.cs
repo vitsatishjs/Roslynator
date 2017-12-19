@@ -2,9 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct BlockQuote : IMarkdown
+    public struct BoldItalicText : IMarkdown
     {
-        internal BlockQuote(string text)
+        internal BoldItalicText(string text)
         {
             Text = text;
         }
@@ -13,7 +13,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteBlockQuote(Text);
+            mw.WriteBoldItalic(Text);
         }
     }
 }

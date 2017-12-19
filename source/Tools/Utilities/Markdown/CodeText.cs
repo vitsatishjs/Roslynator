@@ -2,9 +2,9 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    public struct InlineCode : IMarkdown
+    public struct CodeText : IMarkdown
     {
-        internal InlineCode(string text)
+        internal CodeText(string text)
         {
             Text = text;
         }
@@ -13,7 +13,7 @@ namespace Roslynator.Utilities.Markdown
 
         public void WriteTo(MarkdownWriter mw)
         {
-            mw.WriteInlineCode(Text);
+            mw.WriteCode(Text);
         }
     }
 }

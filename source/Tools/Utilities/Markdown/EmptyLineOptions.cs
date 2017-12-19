@@ -8,8 +8,8 @@ namespace Roslynator.Utilities.Markdown
     public enum EmptyLineOptions
     {
         None = 0,
-        AddEmptyLineBefore = 1,
-        AddEmptyLineAfter = 2,
-        AddEmptyLineBeforeAndAfter = AddEmptyLineBefore | AddEmptyLineAfter
+        EmptyLineBefore = 1,
+        EmptyLineAfter = 2,
+        EmptyLineBeforeAndAfter = EmptyLineBefore | EmptyLineAfter
     }
 }

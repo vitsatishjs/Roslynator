@@ -136,12 +136,13 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Markdown\Alignment.cs" />
     <Compile Include="FileHelper.cs" />
-    <Compile Include="Markdown\BlockQuote.cs" />
+    <Compile Include="Markdown\QuoteBlock.cs" />
+    <Compile Include="Markdown\BoldItalicText.cs" />
     <Compile Include="Markdown\BoldText.cs" />
     <Compile Include="Markdown\CodeBlock.cs" />
     <Compile Include="Markdown\Emojis.cs" />
     <Compile Include="Markdown\EmptyLineOptions.cs" />
-    <Compile Include="Markdown\InlineCode.cs" />
+    <Compile Include="Markdown\CodeText.cs" />
     <Compile Include="Markdown\ItalicText.cs" />
     <Compile Include="Markdown\MarkdownJoin.cs" />
     <Compile Include="Markdown\LanguageIdentifiers.cs" />

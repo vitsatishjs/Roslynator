@@ -2,19 +2,20 @@
 
 namespace Roslynator.Utilities.Markdown
 {
+    //TODO: EmptyLineBetweenListItems
     public class MarkdownSettings
     {
         public MarkdownSettings(
-            string boldDelimiter = "*",
+            string boldDelimiter = "**",
             string italicDelimiter = "*",
             string strikethroughDelimiter = "~~",
-            string listItemStart = "*",
+            string listItemStart = "* ",
             string tableDelimiter = "|",
-            string inlineCodeDelimiter = "`",
+            string codeDelimiter = "`",
             string codeBlockChars = "```",
             string horizontalRule = "___",
-            EmptyLineOptions headerOptions = EmptyLineOptions.AddEmptyLineBeforeAndAfter,
-            EmptyLineOptions codeBlockOptions =  EmptyLineOptions.AddEmptyLineBeforeAndAfter,
+            EmptyLineOptions headerOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
+            EmptyLineOptions codeBlockOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
             bool useTablePadding = true,
             bool useTableOuterPipe = true,
             TableFormatting tableFormatting = TableFormatting.Header,
@@ -26,7 +27,7 @@ namespace Roslynator.Utilities.Markdown
             StrikethroughDelimiter = strikethroughDelimiter;
             ListItemStart = listItemStart;
             TableDelimiter = tableDelimiter;
-            InlineCodeDelimiter = inlineCodeDelimiter;
+            CodeDelimiter = codeDelimiter;
             CodeBlockChars = codeBlockChars;
             HorizontalRule = horizontalRule;
             HeaderOptions = headerOptions;
@@ -42,7 +43,17 @@ namespace Roslynator.Utilities.Markdown
 
         public string BoldDelimiter { get; }
 
+        public string AlternativeBoldDelimiter
+        {
+            get { return (BoldDelimiter == "**") ? "__" : "**"; }
+        }
+
         public string ItalicDelimiter { get; }
+
+        public string AlternativeItalicDelimiter
+        {
+            get { return (ItalicDelimiter == "*") ? "_" : "*"; }
+        }
 
         public string StrikethroughDelimiter { get; }
 
@@ -50,7 +61,7 @@ namespace Roslynator.Utilities.Markdown
 
         public string TableDelimiter { get; }
 
-        public string InlineCodeDelimiter { get; }
+        public string CodeDelimiter { get; }
 
         public string CodeBlockChars { get; }
 
@@ -60,24 +71,24 @@ namespace Roslynator.Utilities.Markdown
 
         internal bool AddEmptyLineBeforeHeader
         {
-            get { return (HeaderOptions & EmptyLineOptions.AddEmptyLineBefore) != 0; }
+            get { return (HeaderOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
         }
 
         internal bool AddEmptyLineAfterHeader
         {
-            get { return (HeaderOptions & EmptyLineOptions.AddEmptyLineAfter) != 0; }
+            get { return (HeaderOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }
 
         public EmptyLineOptions CodeBlockOptions { get; }
 
         internal bool AddEmptyLineBeforeCodeBlock
         {
-            get { return (CodeBlockOptions & EmptyLineOptions.AddEmptyLineBefore) != 0; }
+            get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
         }
 
         internal bool AddEmptyLineAfterCodeBlock
         {
-            get { return (CodeBlockOptions & EmptyLineOptions.AddEmptyLineAfter) != 0; }
+            get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }
 
         public TableFormatting TableFormatting { get; }

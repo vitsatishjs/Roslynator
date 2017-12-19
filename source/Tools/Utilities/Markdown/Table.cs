@@ -8,6 +8,35 @@ namespace Roslynator.Utilities.Markdown
 {
     public class Table : IMarkdown
     {
+        public Table()
+        {
+        }
+
+        public Table(TableHeader header)
+        {
+            Headers.Add(header);
+        }
+
+        public Table(TableHeader header1, TableHeader header2)
+        {
+            AddHeaders(header1, header2);
+        }
+
+        public Table(TableHeader header1, TableHeader header2, TableHeader header3)
+        {
+            AddHeaders(header1, header2, header3);
+        }
+
+        public Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
+        {
+            AddHeaders(header1, header2, header3, header4);
+        }
+
+        public Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
+        {
+            AddHeaders(header1, header2, header3, header4, header5);
+        }
+
         public TableHeaderCollection Headers { get; } = new TableHeaderCollection();
 
         public TableRowCollection Rows { get; } = new TableRowCollection();
@@ -121,16 +150,6 @@ namespace Roslynator.Utilities.Markdown
             Headers.Add(header5);
         }
 
-        public void AddHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5, TableHeader header6)
-        {
-            Headers.Add(header1);
-            Headers.Add(header2);
-            Headers.Add(header3);
-            Headers.Add(header4);
-            Headers.Add(header5);
-            Headers.Add(header6);
-        }
-
         public void AddRow(params object[] values)
         {
             var rowValues = new TableRow();
@@ -164,11 +183,6 @@ namespace Roslynator.Utilities.Markdown
         public void AddRow(object value1, object value2, object value3, object value4, object value5)
         {
             Rows.Add(new TableRow() { value1, value2, value3, value4, value5 });
-        }
-
-        public void AddRow(object value1, object value2, object value3, object value4, object value5, object value6)
-        {
-            Rows.Add(new TableRow() { value1, value2, value3, value4, value5, value6 });
         }
     }
 }

@@ -23,11 +23,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
                 foreach (AnalyzerDescriptor analyzer in analyzers.OrderBy(f => f.Id, comparer))
                 {
-                    mw.WriteListItem();
-                    mw.Write(analyzer.Id);
-                    mw.Write(" - ");
-                    mw.WriteLink(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md");
-                    mw.WriteLine();
+                    mw.WriteListItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"));
                 }
 
                 mw.WriteHeader3("List of Refactorings");
@@ -74,11 +70,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
                     if (!string.IsNullOrEmpty(refactoring.Span))
                     {
-                        mw.WriteListItem();
-                        mw.WriteBold("Span");
-                        mw.Write(": ");
-                        mw.WriteMarkdown(refactoring.Span);
-                        mw.WriteLine();
+                        mw.WriteListItem(Bold("Span"), ": ", refactoring.Span);
                     }
 
                     WriteRefactoringSamples(mw, refactoring);
@@ -131,12 +123,12 @@ namespace Roslynator.CodeGeneration.Markdown
                     isFirst = false;
                 }
 
-                mw.WriteHeader(beforeHeader);
+                mw.Write(beforeHeader);
                 mw.WriteCSharpCodeBlock(sample.Before);
 
                 if (!string.IsNullOrEmpty(sample.After))
                 {
-                    mw.WriteHeader(afterHeader);
+                    mw.Write(afterHeader);
                     mw.WriteCSharpCodeBlock(sample.After);
                 }
             }
@@ -148,9 +140,8 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2(refactoring.Title);
 
-                var table = new Table();
+                var table = new Table("Property", "Value");
 
-                table.AddHeaders("Property", "Value");
                 table.AddRow("Id", refactoring.Id);
                 table.AddRow("Title", refactoring.Title);
                 table.AddRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
@@ -160,7 +151,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
                 table.AddRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)));
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 mw.WriteHeader3("Usage");
 
@@ -179,16 +170,14 @@ namespace Roslynator.CodeGeneration.Markdown
                 string title = analyzer.Title.TrimEnd('.');
                 mw.WriteHeader1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {title}");
 
-                var table = new Table();
-
-                table.AddHeaders("Property", "Value");
+                var table = new Table("Property", "Value");
                 table.AddRow("Id", analyzer.Id);
                 table.AddRow("Category", analyzer.Category);
                 table.AddRow("Default Severity", analyzer.DefaultSeverity);
                 table.AddRow("Enabled by Default", RawText(GetBooleanAsText(analyzer.IsEnabledByDefault)));
                 table.AddRow("Supports Fade-Out", RawText(GetBooleanAsText(analyzer.SupportsFadeOut)));
                 table.AddRow("Supports Fade-Out Analyzer", RawText(GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer)));
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 ReadOnlyCollection<SampleDescriptor> samples = analyzer.Samples;
 
@@ -224,9 +213,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2("Roslynator Analyzers");
 
-                var table = new Table();
-
-                table.AddHeaders("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center));
+                var table = new Table("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center));
 
                 foreach (AnalyzerDescriptor analyzer in analyzers.OrderBy(f => f.Id, comparer))
                 {
@@ -237,7 +224,7 @@ namespace Roslynator.CodeGeneration.Markdown
                         (analyzer.IsEnabledByDefault) ? RawText("&#x2713;") : null);
                 }
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 return mw.ToString();
             }
@@ -249,9 +236,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2("Roslynator Refactorings");
 
-                var table = new Table();
-
-                table.AddHeaders("Id", "Title", TableHeader("Enabled by Default", Alignment.Center));
+                var table = new Table("Id", "Title", TableHeader("Enabled by Default", Alignment.Center));
 
                 foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
                 {
@@ -261,7 +246,7 @@ namespace Roslynator.CodeGeneration.Markdown
                         (refactoring.IsEnabledByDefault) ? RawText("&#x2713;") : null);
                 }
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 return mw.ToString();
             }
@@ -273,9 +258,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2("Roslynator Code Fixes");
 
-                var table = new Table();
-
-                table.AddHeaders("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center));
+                var table = new Table("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center));
 
                 foreach (CodeFixDescriptor codeFix in codeFixes.OrderBy(f => f.Title, comparer))
                 {
@@ -290,7 +273,7 @@ namespace Roslynator.CodeGeneration.Markdown
                         (codeFix.IsEnabledByDefault) ? RawText("&#x2713;") : null);
                 }
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 return mw.ToString();
             }
@@ -302,9 +285,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2("Roslynator Code Fixes by Diagnostic Id");
 
-                var table = new Table();
-
-                table.AddHeaders("Diagnostic", "Code Fixes");
+                var table = new Table("Diagnostic", "Code Fixes");
 
                 foreach (var grouping in codeFixes
                     .SelectMany(codeFix => codeFix.FixableDiagnosticIds.Select(diagnosticId => new { DiagnosticId = diagnosticId, CodeFixDescriptor = codeFix }))
@@ -329,7 +310,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     table.Rows.Add(row);
                 }
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 return mw.ToString();
             }
@@ -341,9 +322,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 mw.WriteHeader2("Roslynator Analyzers by Category");
 
-                var table = new Table();
-
-                table.AddHeaders("Category", "Title", "Id", TableHeader("Enabled by Default", Alignment.Center));
+                var table = new Table("Category", "Title", "Id", TableHeader("Enabled by Default", Alignment.Center));
 
                 foreach (IGrouping<string, AnalyzerDescriptor> grouping in analyzers
                     .GroupBy(f => mw.Settings.Escape(f.Category))
@@ -359,7 +338,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     }
                 }
 
-                mw.WriteTable(table);
+                mw.Write(table);
 
                 return mw.ToString();
             }
