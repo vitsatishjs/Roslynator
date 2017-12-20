@@ -17,7 +17,7 @@ namespace Roslynator.Utilities.Markdown
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.Append(this);
+            return mb.AppendTable(Headers, Rows);
         }
 
         public Table AddHeaders(params TableHeader[] headers)

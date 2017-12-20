@@ -2,6 +2,8 @@
 
 namespace Roslynator.Utilities.Markdown
 {
+    // https://www.webpagefx.com/tools/emoji-cheat-sheet/
+
     public static class Emojis
     {
         public const string Bowtie = ":bowtie:";

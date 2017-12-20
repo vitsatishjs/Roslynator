@@ -2,7 +2,7 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    //http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html
+    // http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html
 
     public static class LanguageIdentifiers
     {

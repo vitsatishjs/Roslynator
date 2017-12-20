@@ -98,90 +98,6 @@ namespace Roslynator.Utilities.Markdown
             return this;
         }
 
-        public MarkdownBuilder Append(BoldText text)
-        {
-            text.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(ItalicText text)
-        {
-            text.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(BoldItalicText text)
-        {
-            text.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(StrikethroughText text)
-        {
-            text.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(CodeText code)
-        {
-            code.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(Header header)
-        {
-            header.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(ListItem item)
-        {
-            item.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(OrderedListItem item)
-        {
-            item.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(TaskListItem item)
-        {
-            item.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(Image image)
-        {
-            image.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(Link link)
-        {
-            link.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(CodeBlock codeBlock)
-        {
-            codeBlock.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(QuoteBlock blockQuote)
-        {
-            blockQuote.AppendTo(this);
-            return this;
-        }
-
-        public MarkdownBuilder Append(Table table)
-        {
-            AppendTable(table.Headers, table.Rows);
-            return this;
-        }
-
         public MarkdownBuilder AppendBold(string value)
         {
             AppendDelimiter(BoldDelimiter, value);
@@ -400,7 +316,7 @@ namespace Roslynator.Utilities.Markdown
 
         public MarkdownBuilder AppendOrderedListItemStart(int number)
         {
-            Append(number);
+            StringBuilder.Append(number);
             AppendRaw(". ");
             return this;
         }
@@ -894,7 +810,7 @@ namespace Roslynator.Utilities.Markdown
         private void AppendDelimiter(string delimiter, params object[] values)
         {
             AppendRaw(delimiter);
-            Append(values);
+            AppendRange(values);
             AppendRaw(delimiter);
         }
 
@@ -920,7 +836,7 @@ namespace Roslynator.Utilities.Markdown
         {
             AppendRaw(delimiter);
             AppendRaw(delimiter2);
-            Append(values);
+            AppendRange(values);
             AppendRaw(delimiter2);
             AppendRaw(delimiter);
         }
@@ -966,11 +882,21 @@ namespace Roslynator.Utilities.Markdown
         internal bool AppendInternal(params object[] values)
         {
             int length = Length;
-            Append(values);
+            AppendRange(values);
             return length != Length;
         }
 
-        public MarkdownBuilder Append(char value, bool escape = true)
+        public MarkdownBuilder Append<TMarkdown>(TMarkdown markdown) where TMarkdown : IMarkdown
+        {
+            return markdown.AppendTo(this);
+        }
+
+        public MarkdownBuilder Append(char value)
+        {
+            return Append(value, escape: true);
+        }
+
+        public MarkdownBuilder Append(char value, bool escape)
         {
             if (escape
                 && Settings.ShouldBeEscaped(value))
@@ -981,7 +907,12 @@ namespace Roslynator.Utilities.Markdown
             return AppendRaw(value);
         }
 
-        public MarkdownBuilder Append(string value, bool escape = true)
+        public MarkdownBuilder Append(string value)
+        {
+            return Append(value, escape: true);
+        }
+
+        public MarkdownBuilder Append(string value, bool escape)
         {
             if (escape)
             {
@@ -1000,23 +931,30 @@ namespace Roslynator.Utilities.Markdown
             return this;
         }
 
-        public MarkdownBuilder Append(object value, bool escape = true)
+        public MarkdownBuilder Append(object value)
+        {
+            return Append(value, escape: true);
+        }
+
+        public MarkdownBuilder Append(object value, bool escape)
         {
             if (value == null)
                 return this;
 
             if (value is IMarkdown markdown)
             {
-                markdown.AppendTo(this);
-            }
-            else if (value is IFormattable formattable)
-            {
-                Append(formattable.ToString(format: null, formatProvider: null), escape: escape);
+                return markdown.AppendTo(this);
             }
             else
             {
-                Append(value.ToString(), escape: escape);
+                return Append(value.ToString(), escape: escape);
             }
+        }
+
+        internal MarkdownBuilder AppendRange(params object[] values)
+        {
+            foreach (object value in values)
+                Append(value);
 
             return this;
         }
