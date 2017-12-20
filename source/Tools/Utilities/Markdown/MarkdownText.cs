@@ -14,14 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public bool Escape { get; }
 
-        public static implicit operator MarkdownText(string value)
+        public MarkdownWriter WriteTo(MarkdownWriter mw)
         {
-            return new MarkdownText(value, escape: true);
-        }
-
-        public void WriteTo(MarkdownWriter mw)
-        {
-            mw.WriteMarkdown(Text, Escape);
+            return mw.WriteMarkdown(Text, Escape);
         }
     }
 }

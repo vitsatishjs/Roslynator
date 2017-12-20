@@ -121,6 +121,7 @@
 | RR0114 | [Rename parameter according to its type name](../../docs/refactorings/RR0114.md) | &#x2713; |
 | RR0115 | [Rename property according to type name](../../docs/refactorings/RR0115.md) | &#x2713; |
 | RR0143 | [Replace (yield) return statement with if-else](../../docs/refactorings/RR0143.md) | &#x2713; |
+| RR0120 | [Replace ?: with if-else](../../docs/refactorings/RR0120.md) | &#x2713; |
 | RR0116 | [Replace Any with All (or All with Any)](../../docs/refactorings/RR0116.md) | &#x2713; |
 | RR0117 | [Replace as expression with cast expression](../../docs/refactorings/RR0117.md) | &#x2713; |
 | RR0118 | [Replace cast expression with as expression](../../docs/refactorings/RR0118.md) | &#x2713; |
@@ -137,7 +138,7 @@
 | RR0129 | [Replace foreach statement with for statement](../../docs/refactorings/RR0129.md) | &#x2713; |
 | RR0188 | [Replace foreach with for and reverse loop](../../docs/refactorings/RR0188.md) |  |
 | RR0132 | [Replace hexadecimal literal with decimal literal](../../docs/refactorings/RR0132.md) | &#x2713; |
-| RR0133 | [Replace if statement with switch statement](../../docs/refactorings/RR0133.md) | &#x2713; |
+| RR0133 | [Replace if with switch](../../docs/refactorings/RR0133.md) | &#x2713; |
 | RR0190 | [Replace if-else with if-return](../../docs/refactorings/RR0190.md) | &#x2713; |
 | RR0193 | [Replace interpolated string with concatenation](../../docs/refactorings/RR0193.md) | &#x2713; |
 | RR0135 | [Replace interpolated string with interpolation expression](../../docs/refactorings/RR0135.md) | &#x2713; |
@@ -151,7 +152,7 @@
 | RR0142 | [Replace regular string literal with verbatim string literal](../../docs/refactorings/RR0142.md) | &#x2713; |
 | RR0144 | [Replace string.Contains with string.IndexOf](../../docs/refactorings/RR0144.md) | &#x2713; |
 | RR0145 | [Replace string.Format with interpolated string](../../docs/refactorings/RR0145.md) | &#x2713; |
-| RR0147 | [Replace switch statement with if-else](../../docs/refactorings/RR0147.md) | &#x2713; |
+| RR0147 | [Replace switch with if](../../docs/refactorings/RR0147.md) | &#x2713; |
 | RR0148 | [Replace verbatim string literal with regular string literal](../../docs/refactorings/RR0148.md) | &#x2713; |
 | RR0149 | [Replace verbatim string literal with regular string literals](../../docs/refactorings/RR0149.md) | &#x2713; |
 | RR0150 | [Replace while statement with do statement](../../docs/refactorings/RR0150.md) | &#x2713; |
@@ -178,7 +179,6 @@
 | RR0128 | [Use constant instead of field](../../docs/refactorings/RR0128.md) | &#x2713; |
 | RR0167 | [Use element access instead of 'First/Last'ElementAt' method](../../docs/refactorings/RR0167.md) | &#x2713; |
 | RR0169 | [Use expression-bodied member](../../docs/refactorings/RR0169.md) | &#x2713; |
-| RR0120 | [Use if-else instead of conditional expression](../../docs/refactorings/RR0120.md) | &#x2713; |
 | RR0170 | [Use lambda expression instead of anonymous method](../../docs/refactorings/RR0170.md) | &#x2713; |
 | RR0183 | [Use List<T> instead of yield](../../docs/refactorings/RR0183.md) | &#x2713; |
 | RR0171 | [Use string.Empty instead of ""](../../docs/refactorings/RR0171.md) |  |

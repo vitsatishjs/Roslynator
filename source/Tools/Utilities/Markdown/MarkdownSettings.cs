@@ -2,7 +2,6 @@
 
 namespace Roslynator.Utilities.Markdown
 {
-    //TODO: EmptyLineBetweenListItems
     public class MarkdownSettings
     {
         public MarkdownSettings(
@@ -19,7 +18,7 @@ namespace Roslynator.Utilities.Markdown
             bool useTablePadding = true,
             bool useTableOuterPipe = true,
             TableFormatting tableFormatting = TableFormatting.Header,
-            string indentChars = "\t",
+            string indentChars = "  ",
             MarkdownEscaper escaper = null)
         {
             BoldDelimiter = boldDelimiter;
@@ -69,24 +68,24 @@ namespace Roslynator.Utilities.Markdown
 
         public EmptyLineOptions HeaderOptions { get; }
 
-        internal bool AddEmptyLineBeforeHeader
+        internal bool EmptyLineBeforeHeader
         {
             get { return (HeaderOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
         }
 
-        internal bool AddEmptyLineAfterHeader
+        internal bool EmptyLineAfterHeader
         {
             get { return (HeaderOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }
 
         public EmptyLineOptions CodeBlockOptions { get; }
 
-        internal bool AddEmptyLineBeforeCodeBlock
+        internal bool EmptyLineBeforeCodeBlock
         {
             get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
         }
 
-        internal bool AddEmptyLineAfterCodeBlock
+        internal bool EmptyLineAfterCodeBlock
         {
             get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }

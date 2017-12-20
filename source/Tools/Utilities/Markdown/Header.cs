@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public int Level { get; }
 
-        public void WriteTo(MarkdownWriter mw)
+        public MarkdownWriter WriteTo(MarkdownWriter mw)
         {
-            mw.WriteHeader(Level, Text);
+            return mw.WriteHeader(Level, Text);
         }
     }
 }

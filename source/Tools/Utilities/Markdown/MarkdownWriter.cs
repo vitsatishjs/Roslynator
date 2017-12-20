@@ -59,13 +59,13 @@ namespace Roslynator.Utilities.Markdown
 
         private string IndentChars => Settings.IndentChars;
 
-        private bool AddEmptyLineBeforeHeader => Settings.AddEmptyLineBeforeHeader;
+        private bool AddEmptyLineBeforeHeader => Settings.EmptyLineBeforeHeader;
 
-        private bool AddEmptyLineAfterHeader => Settings.AddEmptyLineAfterHeader;
+        private bool AddEmptyLineAfterHeader => Settings.EmptyLineAfterHeader;
 
-        private bool AddEmptyLineBeforeCodeBlock => Settings.AddEmptyLineBeforeCodeBlock;
+        private bool AddEmptyLineBeforeCodeBlock => Settings.EmptyLineBeforeCodeBlock;
 
-        private bool AddEmptyLineAfterCodeBlock => Settings.AddEmptyLineAfterCodeBlock;
+        private bool AddEmptyLineAfterCodeBlock => Settings.EmptyLineAfterCodeBlock;
 
         private bool FormatTableHeader => Settings.FormatTableHeader;
 
@@ -75,302 +75,411 @@ namespace Roslynator.Utilities.Markdown
 
         private bool UseTablePadding => Settings.UseTablePadding;
 
-        public void IncreaseIndent()
+        public MarkdownWriter IncreaseIndent()
         {
             IndentLevel++;
+            return this;
         }
 
-        public void DecreaseIndent()
+        public MarkdownWriter DecreaseIndent()
         {
             if (IndentLevel == 0)
                 throw new InvalidOperationException($"{nameof(IndentLevel)} cannot be less than 0.");
 
             IndentLevel++;
+            return this;
         }
 
-        internal void WriteIndentationIf(bool condition)
+        internal MarkdownWriter WriteIndentationIf(bool condition)
         {
             if (condition)
                 WriteIndentation();
+
+            return this;
         }
 
-        public void WriteIndentation()
+        public MarkdownWriter WriteIndentation()
         {
             for (int i = 0; i < IndentLevel; i++)
                 Write(IndentChars);
+
+            return this;
         }
 
-        public void WriteBold(object value)
-        {
-            WriteDelimiter(BoldDelimiter, value);
-        }
-
-        public void WriteBold(object value1, object value2)
-        {
-            WriteDelimiter(BoldDelimiter, value1, value2);
-        }
-
-        public void WriteBold(object value1, object value2, object value3)
-        {
-            WriteDelimiter(BoldDelimiter, value1, value2, value3);
-        }
-
-        public void Write(BoldText text)
+        public MarkdownWriter Write(BoldText text)
         {
             text.WriteTo(this);
+            return this;
         }
 
-        public void WriteBoldDelimiter()
-        {
-            Write(BoldDelimiter);
-        }
-
-        public void WriteItalic(object value)
-        {
-            WriteDelimiter(ItalicDelimiter, value);
-        }
-
-        public void WriteItalic(object value1, object value2)
-        {
-            WriteDelimiter(ItalicDelimiter, value1, value2);
-        }
-
-        public void WriteItalic(object value1, object value2, object value3)
-        {
-            WriteDelimiter(ItalicDelimiter, value1, value2, value3);
-        }
-
-        public void Write(ItalicText text)
+        public MarkdownWriter Write(ItalicText text)
         {
             text.WriteTo(this);
+            return this;
         }
 
-        public void WriteItalicDelimiter()
-        {
-            Write(ItalicDelimiter);
-        }
-
-        public void WriteBoldItalic(object value)
-        {
-            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value);
-        }
-
-        public void WriteBoldItalic(object value1, object value2)
-        {
-            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value1, value2);
-        }
-
-        public void WriteBoldItalic(object value1, object value2, object value3)
-        {
-            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value1, value2, value3);
-        }
-
-        public void Write(BoldItalicText text)
+        public MarkdownWriter Write(BoldItalicText text)
         {
             text.WriteTo(this);
+            return this;
         }
 
-        public void WriteStrikethrough(object value)
-        {
-            WriteDelimiter(StrikethroughDelimiter, value);
-        }
-
-        public void WriteStrikethrough(object value1, object value2)
-        {
-            WriteDelimiter(StrikethroughDelimiter, value1, value2);
-        }
-
-        public void WriteStrikethrough(object value1, object value2, object value3)
-        {
-            WriteDelimiter(StrikethroughDelimiter, value1, value2, value3);
-        }
-
-        public void Write(StrikethroughText text)
+        public MarkdownWriter Write(StrikethroughText text)
         {
             text.WriteTo(this);
+            return this;
         }
 
-        public void WriteStrikethroughDelimiter()
+        public MarkdownWriter Write(CodeText code)
         {
-            Write(StrikethroughDelimiter);
+            code.WriteTo(this);
+            return this;
         }
 
-        public void WriteHeader1(object value = null)
-        {
-            WriteHeader(1, value);
-        }
-
-        public void WriteHeader2(object value = null)
-        {
-            WriteHeader(2, value);
-        }
-
-        public void WriteHeader3(object value = null)
-        {
-            WriteHeader(3, value);
-        }
-
-        public void WriteHeader4(object value = null)
-        {
-            WriteHeader(4, value);
-        }
-
-        public void WriteHeader5(object value = null)
-        {
-            WriteHeader(5, value);
-        }
-
-        public void WriteHeader6(object value = null)
-        {
-            WriteHeader(6, value);
-        }
-
-        public void WriteHeader(int level, object value = null)
-        {
-            WriteLineMarkdown(HeaderStart(level), value, indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader);
-        }
-
-        public void WriteHeader(int level, object value1, object value2)
-        {
-            WriteLineMarkdown(HeaderStart(level), value1, value2, indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader);
-        }
-
-        public void WriteHeader(int level, object value1, object value2, object value3)
-        {
-            WriteLineMarkdown(HeaderStart(level), value1, value2, value3, indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader);
-        }
-
-        public void Write(Header header)
+        public MarkdownWriter Write(Header header)
         {
             header.WriteTo(this);
+            return this;
         }
 
-        public void WriteHeaderStart(int level)
+        public MarkdownWriter Write(ListItem item)
+        {
+            item.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(OrderedListItem item)
+        {
+            item.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(TaskListItem item)
+        {
+            item.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(Image image)
+        {
+            image.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(Link link)
+        {
+            link.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(CodeBlock codeBlock)
+        {
+            codeBlock.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(QuoteBlock blockQuote)
+        {
+            blockQuote.WriteTo(this);
+            return this;
+        }
+
+        public MarkdownWriter Write(Table table)
+        {
+            WriteTable(table.Headers, table.Rows);
+            return this;
+        }
+
+        public MarkdownWriter WriteBold(string value)
+        {
+            WriteDelimiter(BoldDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteBold(object value)
+        {
+            WriteDelimiter(BoldDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteBold(params object[] values)
+        {
+            WriteDelimiter(BoldDelimiter, values);
+            return this;
+        }
+
+        public MarkdownWriter WriteBoldDelimiter()
+        {
+            Write(BoldDelimiter);
+            return this;
+        }
+
+        public MarkdownWriter WriteItalic(string value)
+        {
+            WriteDelimiter(ItalicDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteItalic(object value)
+        {
+            WriteDelimiter(ItalicDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteItalic(params object[] values)
+        {
+            WriteDelimiter(ItalicDelimiter, values);
+            return this;
+        }
+
+        public MarkdownWriter WriteItalicDelimiter()
+        {
+            Write(ItalicDelimiter);
+            return this;
+        }
+
+        public MarkdownWriter WriteBoldItalic(string value)
+        {
+            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteBoldItalic(object value)
+        {
+            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteBoldItalic(params object[] values)
+        {
+            WriteDelimiters(BoldDelimiter, AlternativeItalicDelimiter, values);
+            return this;
+        }
+
+        public MarkdownWriter WriteStrikethrough(string value)
+        {
+            WriteDelimiter(StrikethroughDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteStrikethrough(object value)
+        {
+            WriteDelimiter(StrikethroughDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteStrikethrough(params object[] values)
+        {
+            WriteDelimiter(StrikethroughDelimiter, values);
+            return this;
+        }
+
+        public MarkdownWriter WriteStrikethroughDelimiter()
+        {
+            Write(StrikethroughDelimiter);
+            return this;
+        }
+
+        public MarkdownWriter WriteCode(string value)
+        {
+            WriteDelimiter(CodeDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteCode(object value)
+        {
+            WriteDelimiter(CodeDelimiter, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteCode(params object[] values)
+        {
+            WriteDelimiter(CodeDelimiter, values);
+            return this;
+        }
+
+        public MarkdownWriter WriteCodeDelimiter()
+        {
+            Write(CodeDelimiter);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader1(object value = null)
+        {
+            WriteHeader(1, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader2(object value = null)
+        {
+            WriteHeader(2, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader3(object value = null)
+        {
+            WriteHeader(3, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader4(object value = null)
+        {
+            WriteHeader(4, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader5(object value = null)
+        {
+            WriteHeader(5, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader6(object value = null)
+        {
+            WriteHeader(6, value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader(int level, string value = null)
+        {
+            WriteLineMarkdown(HeaderStart(level), indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader, value: value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader(int level, object value = null)
+        {
+            WriteLineMarkdown(HeaderStart(level), indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader, value: value);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeader(int level, params object[] values)
+        {
+            WriteLineMarkdown(HeaderStart(level), indent: false, emptyLineBefore: AddEmptyLineBeforeHeader, emptyLineAfter: AddEmptyLineAfterHeader, values: values);
+            return this;
+        }
+
+        public MarkdownWriter WriteHeaderStart(int level)
         {
             Write(HeaderStart(level));
+            return this;
         }
 
-        public void WriteListItem(object value = null)
+        public MarkdownWriter WriteListItem(string value)
         {
             WriteItem(ListItemStart, value);
+            return this;
         }
 
-        public void WriteListItem(object value1, object value2)
+        public MarkdownWriter WriteListItem(object value)
         {
-            WriteItem(ListItemStart, value1, value2);
+            WriteItem(ListItemStart, value);
+            return this;
         }
 
-        public void WriteListItem(object value1, object value2, object value3)
+        public MarkdownWriter WriteListItem(params object[] values)
         {
-            WriteItem(ListItemStart, value1, value2, value3);
+            WriteItem(ListItemStart, values);
+            return this;
         }
 
-        public void Write(ListItem item)
-        {
-            item.WriteTo(this);
-        }
-
-        public void WriteListItemStart()
+        public MarkdownWriter WriteListItemStart()
         {
             Write(ListItemStart);
+            return this;
         }
 
-        public void WriteOrderedListItem(int number, object value = null)
+        public MarkdownWriter WriteOrderedListItem(int number, string value)
         {
             WriteItem(OrderedListItemStart(number), value);
+            return this;
         }
 
-        public void WriteOrderedListItem(int number, object value1, object value2)
+        public MarkdownWriter WriteOrderedListItem(int number, object value)
         {
-            WriteItem(OrderedListItemStart(number), value1, value2);
+            WriteItem(OrderedListItemStart(number), value);
+            return this;
         }
 
-        public void WriteOrderedListItem(int number, object value1, object value2, object value3)
+        public MarkdownWriter WriteOrderedListItem(int number, params object[] values)
         {
-            WriteItem(OrderedListItemStart(number), value1, value2, value3);
+            WriteItem(OrderedListItemStart(number), values);
+            return this;
         }
 
-        public void Write(OrderedListItem item)
-        {
-            item.WriteTo(this);
-        }
-
-        public void WriteOrderedListItemStart(int number)
+        public MarkdownWriter WriteOrderedListItemStart(int number)
         {
             Write(number);
             Write(". ");
+            return this;
         }
 
-        public void WriteTaskListItem(object value = null, bool isCompleted = false)
+        public MarkdownWriter WriteTaskListItem(string value)
         {
-            WriteItem(TaskListItemStart(isCompleted), value);
+            WriteItem(TaskListItemStart(), value);
+            return this;
         }
 
-        public void WriteTaskListItem(object value1, object value2, bool isCompleted = false)
+        public MarkdownWriter WriteTaskListItem(object value)
         {
-            WriteItem(TaskListItemStart(isCompleted), value1, value2);
+            WriteItem(TaskListItemStart(), value);
+            return this;
         }
 
-        public void WriteTaskListItem(object value1, object value2, object value3, bool isCompleted = false)
+        public MarkdownWriter WriteTaskListItem(params object[] values)
         {
-            WriteItem(TaskListItemStart(isCompleted), value1, value2, value3);
+            WriteItem(TaskListItemStart(), values);
+            return this;
         }
 
-        public void Write(TaskListItem item)
+        public MarkdownWriter WriteCompletedTaskListItem(string value)
         {
-            item.WriteTo(this);
+            WriteItem(TaskListItemStart(isCompleted: true), value);
+            return this;
         }
 
-        public void WriteCompletedTaskListItem(object value = null)
+        public MarkdownWriter WriteCompletedTaskListItem(object value)
         {
-            WriteTaskListItem(value, isCompleted: true);
+            WriteItem(TaskListItemStart(isCompleted: true), value);
+            return this;
         }
 
-        public void WriteCompletedTaskListItem(object value1, object value2)
+        public MarkdownWriter WriteCompletedTaskListItem(params object[] values)
         {
-            WriteTaskListItem(value1, value2, isCompleted: true);
+            WriteItem(TaskListItemStart(isCompleted: true), values);
+            return this;
         }
 
-        public void WriteCompletedTaskListItem(object value1, object value2, object value3)
-        {
-            WriteTaskListItem(value1, value2, value3, isCompleted: true);
-        }
-
-        public void WriteTaskListItemStart(bool isCompleted = false)
+        public MarkdownWriter WriteTaskListItemStart(bool isCompleted = false)
         {
             Write(TaskListItemStart(isCompleted));
+            return this;
         }
 
-        public void WriteItem(string prefix, object value)
+        public MarkdownWriter WriteItem(string prefix, string value)
         {
-            WriteLineMarkdown(prefix, value, indent: true, emptyLineBefore: false, emptyLineAfter: false);
+            WriteLineMarkdown(prefix, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
+            return this;
         }
 
-        public void WriteItem(string prefix, object value1, object value2)
+        public MarkdownWriter WriteItem(string prefix, object value)
         {
-            WriteLineMarkdown(prefix, value1, value2, indent: true, emptyLineBefore: false, emptyLineAfter: false);
+            WriteLineMarkdown(prefix, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
+            return this;
         }
 
-        public void WriteItem(string prefix, object value1, object value2, object value3)
+        public MarkdownWriter WriteItem(string prefix, params object[] values)
         {
-            WriteLineMarkdown(prefix, value1, value2, value3, indent: true, emptyLineBefore: false, emptyLineAfter: false);
+            WriteLineMarkdown(prefix, indent: true, emptyLineBefore: false, emptyLineAfter: false, values: values);
+            return this;
         }
 
-        public void WriteImage(string text, string url)
+        public MarkdownWriter WriteImage(string text, string url)
         {
-            Write("![");
-            WriteMarkdown(text, shouldBeEscaped: f => f == '[' || f == ']');
-            Write("](");
-            WriteMarkdown(url, shouldBeEscaped: f => f == '(' || f == ')');
-            Write(")");
+            WriteImageOrLink(text, url, isImage: true);
+            return this;
         }
 
-        public void Write(Image image)
-        {
-            image.WriteTo(this);
-        }
-
-        public void WriteLink(string text, string url)
+        public MarkdownWriter WriteLink(string text, string url)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -378,45 +487,25 @@ namespace Roslynator.Utilities.Markdown
             }
             else
             {
-                Write("[");
-                WriteMarkdown(text, shouldBeEscaped: f => f == '[' || f == ']');
-                Write("](");
-                WriteMarkdown(url, shouldBeEscaped: f => f == '(' || f == ')');
-                Write(")");
+                WriteImageOrLink(text, url, isImage: false);
             }
+
+            return this;
         }
 
-        public void Write(Link link)
+        private void WriteImageOrLink(string text, string url, bool isImage)
         {
-            link.WriteTo(this);
+            if (isImage)
+                Write("!");
+
+            Write("[");
+            WriteMarkdown(text, shouldBeEscaped: f => f == '[' || f == ']');
+            Write("](");
+            WriteMarkdown(url, shouldBeEscaped: f => f == '(' || f == ')');
+            Write(")");
         }
 
-        public void WriteCode(object value)
-        {
-            WriteDelimiter(CodeDelimiter, value);
-        }
-
-        public void WriteCode(object value1, object value2)
-        {
-            WriteDelimiter(CodeDelimiter, value1, value2);
-        }
-
-        public void WriteCode(object value1, object value2, object value3)
-        {
-            WriteDelimiter(CodeDelimiter, value1, value2, value3);
-        }
-
-        public void Write(CodeText code)
-        {
-            code.WriteTo(this);
-        }
-
-        public void WriteCodeDelimiter()
-        {
-            Write(CodeDelimiter);
-        }
-
-        public void WriteCodeBlock(string code, string language = null)
+        public MarkdownWriter WriteCodeBlock(string code, string language = null)
         {
             WriteEmptyLineIf(AddEmptyLineBeforeCodeBlock);
             WriteIndentation();
@@ -427,37 +516,32 @@ namespace Roslynator.Utilities.Markdown
             WriteCodeBlockChars();
             WriteLine();
             WriteEmptyLineIf(AddEmptyLineAfterCodeBlock);
+            return this;
         }
 
-        public void Write(CodeBlock codeBlock)
+        public MarkdownWriter WriteQuoteBlock(string value = null)
         {
-            codeBlock.WriteTo(this);
+            WriteWithIndentation(value, prefix: "> ");
+            return this;
         }
 
-        public void WriteQuoteBlock(string text = null)
+        private void WriteWithIndentation(string value, string prefix = null, bool shouldEndWithNewLine = true)
         {
-            WriteWithIndentation(text, prefix: "> ");
-        }
+            if (string.IsNullOrEmpty(value))
+                return;
 
-        public void Write(QuoteBlock blockQuote)
-        {
-            blockQuote.WriteTo(this);
-        }
-
-        private void WriteWithIndentation(string code, string prefix = null, bool shouldEndWithNewLine = true)
-        {
             if (IndentLevel == 0
                 && prefix == null)
             {
-                Write(code);
+                Write(value);
             }
             else
             {
-                int length = code.Length;
+                int length = value.Length;
 
                 for (int i = 0; i < length; i++)
                 {
-                    char ch = code[i];
+                    char ch = value[i];
 
                     if (ch == 10)
                     {
@@ -476,7 +560,7 @@ namespace Roslynator.Utilities.Markdown
 
                         if (i + 1 < length)
                         {
-                            ch = code[i + 1];
+                            ch = value[i + 1];
 
                             if (ch == 10)
                             {
@@ -493,7 +577,7 @@ namespace Roslynator.Utilities.Markdown
 
             if (shouldEndWithNewLine)
             {
-                char last = code[code.Length - 1];
+                char last = value[value.Length - 1];
 
                 if (last != 10
                     && last != 13)
@@ -503,22 +587,128 @@ namespace Roslynator.Utilities.Markdown
             }
         }
 
-        public void WriteCodeBlockChars()
+        public MarkdownWriter WriteCodeBlockChars()
         {
             Write(CodeBlockChars);
+            return this;
         }
 
-        public void WriteHorizonalRule()
+        public MarkdownWriter WriteHorizonalRule()
         {
             WriteLine(Settings.HorizontalRule);
+            return this;
         }
 
-        public void Write(Table table)
+        public MarkdownWriter WriteTable(TableHeader header1, TableHeader header2, IEnumerable<TableRow> rows)
         {
-            table.WriteTo(this);
+            WriteTable(new TableHeaderCollection() { header1, header2 }, rows);
+            return this;
         }
 
-        public void WriteTableHeader(params TableHeader[] headers)
+        public MarkdownWriter WriteTable(TableHeader header1, TableHeader header2, TableHeader header3, IEnumerable<TableRow> rows)
+        {
+            WriteTable(new TableHeaderCollection() { header1, header2, header3 }, rows);
+            return this;
+        }
+
+        public MarkdownWriter WriteTable(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, IEnumerable<TableRow> rows)
+        {
+            WriteTable(new TableHeaderCollection() { header1, header2, header3, header4 }, rows);
+            return this;
+        }
+
+        public MarkdownWriter WriteTable(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5, IEnumerable<TableRow> rows)
+        {
+            WriteTable(new TableHeaderCollection() { header1, header2, header3, header4, header5 }, rows);
+            return this;
+        }
+
+        public MarkdownWriter WriteTable(IEnumerable<TableHeader> headers, IEnumerable<TableRow> rows)
+        {
+            WriteTable(new TableHeaderCollection(headers), new TableRowCollection(rows));
+            return this;
+        }
+
+        public MarkdownWriter WriteTable(TableHeaderCollection headers, IEnumerable<TableRow> rows)
+        {
+            WriteTable(headers, new TableRowCollection(rows));
+            return this;
+        }
+
+        public MarkdownWriter WriteTable(TableHeaderCollection headers, TableRowCollection rows)
+        {
+            int columnCount = headers.Count;
+
+            if (columnCount == 0)
+                return this;
+
+            if (!FormatTableContent)
+            {
+                WriteTableHeader(headers, columnCount);
+                WriteTableRows(rows, columnCount);
+            }
+            else
+            {
+                bool formatHeader = FormatTableHeader;
+
+                List<int> widths = CalculateWidths((formatHeader) ? headers : null, rows, columnCount);
+
+                WriteTableHeader(headers, columnCount, (formatHeader) ? widths : null);
+                WriteTableRows(rows, columnCount, widths);
+            }
+
+            return this;
+        }
+
+        private List<int> CalculateWidths(TableHeaderCollection headers, TableRowCollection rows, int columnCount)
+        {
+            var widths = new List<int>();
+
+            var sb = new StringBuilder();
+
+            int index = 0;
+
+            using (var mw = new MarkdownWriter(sb, FormatProvider, Settings))
+            {
+                if (headers != null)
+                {
+                    foreach (TableHeader header in headers)
+                    {
+                        mw.WriteMarkdown(header.Name);
+                        widths.Add(sb.Length - index);
+                        index = sb.Length;
+                    }
+                }
+
+                foreach (TableRow row in rows)
+                {
+                    for (int i = 0; i < row.Count; i++)
+                    {
+                        mw.Write(row[i]);
+                        widths.Add(sb.Length - index);
+                        index = sb.Length;
+                    }
+                }
+
+                int count = widths.Count;
+
+                var maxWidths = new List<int>();
+
+                for (int i = 0; i < columnCount; i++)
+                {
+                    maxWidths.Add(0);
+
+                    for (int j = i; j < count; j += columnCount)
+                    {
+                        maxWidths[i] = Math.Max(maxWidths[i], widths[j]);
+                    }
+                }
+
+                return maxWidths;
+            }
+        }
+
+        public MarkdownWriter WriteTableHeader(params TableHeader[] headers)
         {
             if (headers == null)
                 throw new ArgumentNullException(nameof(headers));
@@ -526,12 +716,13 @@ namespace Roslynator.Utilities.Markdown
             int length = headers.Length;
 
             if (length == 0)
-                return;
+                return this;
 
             WriteTableHeader(headers, length);
+            return this;
         }
 
-        public void WriteTableHeader(IList<TableHeader> headers)
+        public MarkdownWriter WriteTableHeader(IList<TableHeader> headers)
         {
             if (headers == null)
                 throw new ArgumentNullException(nameof(headers));
@@ -539,9 +730,10 @@ namespace Roslynator.Utilities.Markdown
             int count = headers.Count;
 
             if (count == 0)
-                return;
+                return this;
 
             WriteTableHeader(headers, count);
+            return this;
         }
 
         internal void WriteTableHeader(IList<TableHeader> headers, int columnCount, IList<int> widths = null)
@@ -694,22 +886,40 @@ namespace Roslynator.Utilities.Markdown
             }
         }
 
-        public void WriteComment(string value)
+        public MarkdownWriter WriteComment(string value)
         {
             Write("<!-- ");
             Write(value);
             Write(" -->");
+            return this;
+        }
+
+        public MarkdownWriter WriteMarkdown(string value, bool escape = true)
+        {
+            if (string.IsNullOrEmpty(value))
+                return this;
+
+            if (escape)
+            {
+                WriteMarkdown(value, Settings.ShouldBeEscaped);
+            }
+            else
+            {
+                Write(value);
+            }
+
+            return this;
         }
 
         public override void Write(object value)
         {
-            Write(value, escape: true);
+            WriteMarkdown(value, escape: true);
         }
 
-        public void Write(object value, bool escape)
+        public MarkdownWriter WriteMarkdown(object value, bool escape = true)
         {
             if (value == null)
-                return;
+                return this;
 
             if (value is IMarkdown markdown)
             {
@@ -723,21 +933,15 @@ namespace Roslynator.Utilities.Markdown
             {
                 WriteMarkdown(value.ToString(), escape: escape);
             }
+
+            return this;
         }
 
-        public void Write(string value, bool escape)
+        private void WriteDelimiter(string delimiter, string value)
         {
-            if (string.IsNullOrEmpty(value))
-                return;
-
-            if (escape)
-            {
-                WriteMarkdown(value, Settings.ShouldBeEscaped);
-            }
-            else
-            {
-                Write(value);
-            }
+            Write(delimiter);
+            WriteMarkdown(value);
+            Write(delimiter);
         }
 
         private void WriteDelimiter(string delimiter, object value)
@@ -747,17 +951,19 @@ namespace Roslynator.Utilities.Markdown
             Write(delimiter);
         }
 
-        private void WriteDelimiter(string delimiter, object value1, object value2)
+        private void WriteDelimiter(string delimiter, params object[] values)
         {
             Write(delimiter);
-            WriteMarkdown(value1, value2);
+            WriteMarkdown(values);
             Write(delimiter);
         }
 
-        private void WriteDelimiter(string delimiter, object value1, object value2, object value3)
+        private void WriteDelimiters(string delimiter, string delimiter2, string value)
         {
             Write(delimiter);
-            WriteMarkdown(value1, value2, value3);
+            Write(delimiter2);
+            WriteMarkdown(value);
+            Write(delimiter2);
             Write(delimiter);
         }
 
@@ -770,25 +976,16 @@ namespace Roslynator.Utilities.Markdown
             Write(delimiter);
         }
 
-        private void WriteDelimiters(string delimiter, string delimiter2, object value1, object value2)
+        private void WriteDelimiters(string delimiter, string delimiter2, params object[] values)
         {
             Write(delimiter);
             Write(delimiter2);
-            WriteMarkdown(value1, value2);
+            WriteMarkdown(values);
             Write(delimiter2);
             Write(delimiter);
         }
 
-        private void WriteDelimiters(string delimiter, string delimiter2, object value1, object value2, object value3)
-        {
-            Write(delimiter);
-            Write(delimiter2);
-            WriteMarkdown(value1, value2, value3);
-            Write(delimiter2);
-            Write(delimiter);
-        }
-
-        public void WriteLineMarkdown(string prefix, object value, bool indent = false, bool emptyLineBefore = false, bool emptyLineAfter = false)
+        private void WriteLineMarkdown(string prefix, bool indent, bool emptyLineBefore, bool emptyLineAfter, string value)
         {
             WriteEmptyLineIf(emptyLineBefore);
             WriteIndentationIf(indent);
@@ -796,76 +993,47 @@ namespace Roslynator.Utilities.Markdown
             WriteLineIf(WriteMarkdownInternal(value), emptyLineAfter);
         }
 
-        public void WriteLineMarkdown(string prefix, object value1, object value2, bool indent = false, bool emptyLineBefore = false, bool emptyLineAfter = false)
+        private void WriteLineMarkdown(string prefix, bool indent, bool emptyLineBefore, bool emptyLineAfter, object value)
         {
             WriteEmptyLineIf(emptyLineBefore);
             WriteIndentationIf(indent);
             Write(prefix);
-            WriteLineIf(WriteMarkdownInternal(value1, value2), emptyLineAfter);
+            WriteLineIf(WriteMarkdownInternal(value), emptyLineAfter);
         }
 
-        public void WriteLineMarkdown(string prefix, object value1, object value2, object value3, bool indent = false, bool emptyLineBefore = false, bool emptyLineAfter = false)
+        private void WriteLineMarkdown(string prefix, bool indent, bool emptyLineBefore, bool emptyLineAfter, params object[] values)
         {
             WriteEmptyLineIf(emptyLineBefore);
             WriteIndentationIf(indent);
             Write(prefix);
-            WriteLineIf(WriteMarkdownInternal(value1, value2, value3), emptyLineAfter);
+            WriteLineIf(WriteMarkdownInternal(values), emptyLineAfter);
         }
 
-        public void WriteMarkdown(string value, bool escape = true)
+        internal bool WriteMarkdownInternal(string value)
         {
-            Write(value, escape: escape);
-        }
-
-        public void WriteMarkdown(object value, bool escape = true)
-        {
-            Write(value, escape: escape);
-        }
-
-        public void WriteMarkdown(object value1, object value2, bool escape = true)
-        {
-            Write(value1, escape: escape);
-            Write(value2, escape: escape);
-        }
-
-        public void WriteMarkdown(object value1, object value2, object value3, bool escape = true)
-        {
-            Write(value1, escape: escape);
-            Write(value2, escape: escape);
-            Write(value3, escape: escape);
+            int length = Length;
+            WriteMarkdown(value);
+            return length != Length;
         }
 
         internal bool WriteMarkdownInternal(object value)
         {
             int length = Length;
-
             WriteMarkdown(value);
-
             return length != Length;
         }
 
-        internal bool WriteMarkdownInternal(object value1, object value2)
+        internal bool WriteMarkdownInternal(params object[] values)
         {
             int length = Length;
-
-            WriteMarkdown(value1, value2);
-
+            WriteMarkdown(values);
             return length != Length;
         }
 
-        internal bool WriteMarkdownInternal(object value1, object value2, object value3)
-        {
-            int length = Length;
-
-            WriteMarkdown(value1, value2, value3);
-
-            return length != Length;
-        }
-
-        public void WriteMarkdown(string value, Func<char, bool> shouldBeEscaped)
+        internal MarkdownWriter WriteMarkdown(string value, Func<char, bool> shouldBeEscaped)
         {
             if (string.IsNullOrEmpty(value))
-                return;
+                return this;
 
             int length = value.Length;
 
@@ -886,7 +1054,7 @@ namespace Roslynator.Utilities.Markdown
             if (firstIndex == -1)
             {
                 Write(value);
-                return;
+                return this;
             }
 
             i = 0;
@@ -909,6 +1077,8 @@ namespace Roslynator.Utilities.Markdown
                 Write(value[i]);
                 i++;
             }
+
+            return this;
         }
 
         private void WriteEmptyLineIf(bool condition)

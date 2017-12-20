@@ -191,5 +191,95 @@ namespace Roslynator.Utilities.Markdown
         {
             return RawText(MarkdownSettings.Default.HorizontalRule);
         }
+
+        public static Table Table()
+        {
+            return new Table();
+        }
+
+        public static Table Table(params TableHeader[] headers)
+        {
+            Table table = Table();
+
+            table.AddHeaders(headers);
+
+            return table;
+        }
+
+        public static Table Table(TableHeader header1, TableHeader header2)
+        {
+            Table table = Table();
+
+            table.AddHeaders(header1, header2);
+
+            return table;
+        }
+
+        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3)
+        {
+            Table table = Table();
+
+            table.AddHeaders(header1, header2, header3);
+
+            return table;
+        }
+
+        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
+        {
+            Table table = Table();
+
+            table.AddHeaders(header1, header2, header3, header4);
+
+            return table;
+        }
+
+        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
+        {
+            var table = new Table();
+
+            table.AddHeaders(header1, header2, header3, header4, header5);
+
+            return table;
+        }
+
+        public static TableRow TableRow()
+        {
+            return new TableRow();
+        }
+
+        public static TableRow TableRow(params object[] values)
+        {
+            TableRow row = TableRow();
+
+            foreach (object value in values)
+                row.Add(value);
+
+            return row;
+        }
+
+        public static TableRow TableRow(object value)
+        {
+            return new TableRow() { value };
+        }
+
+        public static TableRow TableRow(object value1, object value2)
+        {
+            return new TableRow() { value1, value2 };
+        }
+
+        public static TableRow TableRow(object value1, object value2, object value3)
+        {
+            return new TableRow() { value1, value2, value3 };
+        }
+
+        public static TableRow TableRow(object value1, object value2, object value3, object value4)
+        {
+            return new TableRow() { value1, value2, value3, value4 };
+        }
+
+        public static TableRow TableRow(object value1, object value2, object value3, object value4, object value5)
+        {
+            return new TableRow() { value1, value2, value3, value4, value5 };
+        }
     }
 }

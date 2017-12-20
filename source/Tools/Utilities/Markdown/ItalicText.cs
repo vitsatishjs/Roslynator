@@ -11,9 +11,9 @@ namespace Roslynator.Utilities.Markdown
 
         public string Text { get; }
 
-        public void WriteTo(MarkdownWriter mw)
+        public MarkdownWriter WriteTo(MarkdownWriter mw)
         {
-            mw.WriteItalic(Text);
+            return mw.WriteItalic(Text);
         }
     }
 }

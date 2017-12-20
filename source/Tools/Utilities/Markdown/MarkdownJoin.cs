@@ -19,7 +19,7 @@ namespace Roslynator.Utilities.Markdown
 
         public bool Escape { get; }
 
-        public void WriteTo(MarkdownWriter mw)
+        public MarkdownWriter WriteTo(MarkdownWriter mw)
         {
             bool isFirst = true;
 
@@ -34,8 +34,10 @@ namespace Roslynator.Utilities.Markdown
                     mw.WriteMarkdown(Separator, escape: Escape);
                 }
 
-                mw.Write(value, escape: Escape);
+                mw.WriteMarkdown(value, escape: Escape);
             }
+
+            return mw;
         }
     }
 }
