@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public bool IsCompleted { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteTaskListItem(Text, IsCompleted);
+            return mb.AppendTaskListItem(Text, IsCompleted);
         }
     }
 }

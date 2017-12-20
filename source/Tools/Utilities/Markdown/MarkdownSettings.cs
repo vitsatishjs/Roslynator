@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
+using System.Text;
+
 namespace Roslynator.Utilities.Markdown
 {
     public class MarkdownSettings
@@ -19,7 +22,7 @@ namespace Roslynator.Utilities.Markdown
             bool useTableOuterPipe = true,
             TableFormatting tableFormatting = TableFormatting.Header,
             string indentChars = "  ",
-            MarkdownEscaper escaper = null)
+            Func<char, bool> shouldBeEscaped = null)
         {
             BoldDelimiter = boldDelimiter;
             ItalicDelimiter = italicDelimiter;
@@ -35,7 +38,7 @@ namespace Roslynator.Utilities.Markdown
             UseTablePadding = useTablePadding;
             UseTableOuterPipe = useTableOuterPipe;
             IndentChars = indentChars;
-            Escaper = escaper ?? MarkdownEscaper.Default;
+            ShouldBeEscaped = shouldBeEscaped ?? MarkdownEscaper.ShouldBeEscaped;
         }
 
         public static MarkdownSettings Default { get; } = new MarkdownSettings();
@@ -108,21 +111,6 @@ namespace Roslynator.Utilities.Markdown
 
         public string IndentChars { get; }
 
-        public MarkdownEscaper Escaper { get; }
-
-        public string Escape(string value)
-        {
-            return Escaper.Escape(value);
-        }
-
-        internal string EscapeIf(bool condition, string value)
-        {
-            return (condition) ? Escaper.Escape(value) : value;
-        }
-
-        public bool ShouldBeEscaped(char value)
-        {
-            return Escaper.ShouldBeEscaped(value);
-        }
+        public Func<char, bool> ShouldBeEscaped { get; }
     }
 }

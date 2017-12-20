@@ -15,9 +15,9 @@ namespace Roslynator.Utilities.Markdown
 
         public TableRowCollection Rows { get; } = new TableRowCollection();
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.Write(this);
+            return mb.Append(this);
         }
 
         public Table AddHeaders(params TableHeader[] headers)

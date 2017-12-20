@@ -4,11 +4,11 @@ using Roslynator.Utilities.Markdown;
 
 namespace Roslynator.CodeGeneration.Markdown
 {
-    internal static class MarkdownWriterExtensions
+    internal static class MarkdownBuilderExtensions
     {
-        public static void WriteCSharpCodeBlock(this MarkdownWriter mw, string code)
+        public static void AppendCSharpCodeBlock(this MarkdownBuilder mb, string code)
         {
-            mw.WriteCodeBlock(code, LanguageIdentifiers.CSharp);
+            mb.AppendCodeBlock(code, LanguageIdentifiers.CSharp);
         }
     }
 }

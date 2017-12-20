@@ -1,20 +1,28 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Text;
 
 namespace Roslynator.Utilities.Markdown
 {
-    public class MarkdownEscaper
+    public static class MarkdownEscaper
     {
-        public static MarkdownEscaper Default { get; } = new MarkdownEscaper();
-
-        public virtual string Escape(string value)
+        public static string Escape(string value, Func<char, bool> shouldBeEscaped)
         {
+            return Escape(value, shouldBeEscaped, null);
+        }
+
+        internal static string Escape(string value, Func<char, bool> shouldBeEscaped, StringBuilder sb)
+        {
+            bool fAppend = sb != null;
+
             for (int i = 0; i < value.Length; i++)
             {
-                if (ShouldBeEscaped(value[i]))
+                if (shouldBeEscaped(value[i]))
                 {
-                    var sb = new StringBuilder();
+                    if (!fAppend)
+                        sb = new StringBuilder();
+
                     sb.Append(value, 0, i);
                     sb.Append('\\');
                     sb.Append(value[i]);
@@ -24,7 +32,7 @@ namespace Roslynator.Utilities.Markdown
 
                     while (i < value.Length)
                     {
-                        if (ShouldBeEscaped(value[i]))
+                        if (shouldBeEscaped(value[i]))
                         {
                             sb.Append(value, lastIndex, i - lastIndex);
                             sb.Append('\\');
@@ -41,14 +49,22 @@ namespace Roslynator.Utilities.Markdown
 
                     sb.Append(value, lastIndex, value.Length - lastIndex);
 
-                    return sb.ToString();
+                    return (fAppend) ? null : sb.ToString();
                 }
             }
 
-            return value;
+            if (fAppend)
+            {
+                sb.Append(value);
+                return null;
+            }
+            else
+            {
+                return value;
+            }
         }
 
-        public virtual bool ShouldBeEscaped(char value)
+        public static bool ShouldBeEscaped(char value)
         {
             switch (value)
             {

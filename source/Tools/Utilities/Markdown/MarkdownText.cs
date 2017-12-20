@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public bool Escape { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteMarkdown(Text, Escape);
+            return mb.Append(Text, Escape);
         }
     }
 }

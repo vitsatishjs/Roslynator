@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public string Text { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteOrderedListItem(Number, Text);
+            return mb.AppendOrderedListItem(Number, Text);
         }
     }
 }

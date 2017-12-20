@@ -159,7 +159,7 @@
     <Compile Include="Markdown\TableFormatting.cs" />
     <Compile Include="Markdown\MarkdownText.cs" />
     <Compile Include="Markdown\TableRow.cs" />
-    <Compile Include="Markdown\MarkdownWriter.cs" />
+    <Compile Include="Markdown\MarkdownBuilder.cs" />
     <Compile Include="Markdown\OrderedListItem.cs" />
     <Compile Include="Markdown\StrikethroughText.cs" />
     <Compile Include="Markdown\TableRowCollection.cs" />

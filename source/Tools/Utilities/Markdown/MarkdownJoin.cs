@@ -19,7 +19,7 @@ namespace Roslynator.Utilities.Markdown
 
         public bool Escape { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             bool isFirst = true;
 
@@ -31,13 +31,13 @@ namespace Roslynator.Utilities.Markdown
                 }
                 else
                 {
-                    mw.WriteMarkdown(Separator, escape: Escape);
+                    mb.Append(Separator, escape: Escape);
                 }
 
-                mw.WriteMarkdown(value, escape: Escape);
+                mb.Append(value, escape: Escape);
             }
 
-            return mw;
+            return mb;
         }
     }
 }

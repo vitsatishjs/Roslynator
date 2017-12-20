@@ -4,6 +4,6 @@ namespace Roslynator.Utilities.Markdown
 {
     public interface IMarkdown
     {
-        MarkdownWriter WriteTo(MarkdownWriter mw);
+        MarkdownBuilder AppendTo(MarkdownBuilder mb);
     }
 }

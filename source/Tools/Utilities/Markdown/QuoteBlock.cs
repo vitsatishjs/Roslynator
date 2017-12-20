@@ -11,9 +11,9 @@ namespace Roslynator.Utilities.Markdown
 
         public string Text { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteQuoteBlock(Text);
+            return mb.AppendQuoteBlock(Text);
         }
     }
 }

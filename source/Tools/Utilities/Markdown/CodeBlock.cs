@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public string Language { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteCodeBlock(Text, Language);
+            return mb.AppendCodeBlock(Text, Language);
         }
     }
 }

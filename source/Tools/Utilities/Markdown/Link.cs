@@ -14,9 +14,9 @@ namespace Roslynator.Utilities.Markdown
 
         public string Url { get; }
 
-        public MarkdownWriter WriteTo(MarkdownWriter mw)
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mw.WriteLink(Text, Url);
+            return mb.AppendLink(Text, Url);
         }
     }
 }
