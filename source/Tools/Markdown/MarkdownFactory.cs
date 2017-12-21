@@ -7,39 +7,34 @@ namespace Roslynator.Markdown
 {
     public static class MarkdownFactory
     {
-        public static MarkdownText Text(string text, EmphasisOptions options = EmphasisOptions.None)
+        public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
         {
-            return new MarkdownText(text, options, escape: true);
+            return new MarkdownText(value, options, escape: true);
         }
 
-        public static MarkdownText RawText(string text, EmphasisOptions options = EmphasisOptions.None)
+        public static MarkdownText RawText(string value, EmphasisOptions options = EmphasisOptions.None)
         {
-            return new MarkdownText(text, options, escape: false);
+            return new MarkdownText(value, options, escape: false);
         }
 
-        public static MarkdownText Bold(string text)
+        public static MarkdownText Bold(string value)
         {
-            return Text(text, EmphasisOptions.Bold);
+            return Text(value, EmphasisOptions.Bold);
         }
 
-        public static MarkdownText Italic(string text)
+        public static MarkdownText Italic(string value)
         {
-            return Text(text, EmphasisOptions.Italic);
+            return Text(value, EmphasisOptions.Italic);
         }
 
-        public static MarkdownText BoldItalic(string text)
+        public static MarkdownText Strikethrough(string value)
         {
-            return Text(text, EmphasisOptions.BoldItalic);
+            return Text(value, EmphasisOptions.Strikethrough);
         }
 
-        public static MarkdownText Strikethrough(string text)
+        public static MarkdownText Code(string value)
         {
-            return Text(text, EmphasisOptions.Strikethrough);
-        }
-
-        public static MarkdownText Code(string text)
-        {
-            return Text(text, EmphasisOptions.Code);
+            return Text(value, EmphasisOptions.Code);
         }
 
         public static MarkdownJoin Join(string separator, IEnumerable<object> values, bool escape = true)
@@ -47,39 +42,39 @@ namespace Roslynator.Markdown
             return new MarkdownJoin(separator, values, escape);
         }
 
-        public static Header Header(string text, int level)
+        public static Header Header(string value, int level)
         {
-            return new Header(text, level);
+            return new Header(value, level);
         }
 
-        public static Header Header1(string text = null)
+        public static Header Header1(string value = null)
         {
-            return new Header(text, 1);
+            return new Header(value, 1);
         }
 
-        public static Header Header2(string text = null)
+        public static Header Header2(string value = null)
         {
-            return new Header(text, 2);
+            return new Header(value, 2);
         }
 
-        public static Header Header3(string text = null)
+        public static Header Header3(string value = null)
         {
-            return new Header(text, 3);
+            return new Header(value, 3);
         }
 
-        public static Header Header4(string text = null)
+        public static Header Header4(string value = null)
         {
-            return new Header(text, 4);
+            return new Header(value, 4);
         }
 
-        public static Header Header5(string text = null)
+        public static Header Header5(string value = null)
         {
-            return new Header(text, 5);
+            return new Header(value, 5);
         }
 
-        public static Header Header6(string text = null)
+        public static Header Header6(string value = null)
         {
-            return new Header(text, 6);
+            return new Header(value, 6);
         }
 
         public static string HeaderStart(int level)
@@ -177,14 +172,14 @@ namespace Roslynator.Markdown
             return new Image(text, url);
         }
 
-        public static CodeBlock CodeBlock(string text, string language = null)
+        public static CodeBlock CodeBlock(string value, string language = null)
         {
-            return new CodeBlock(text, language);
+            return new CodeBlock(value, language);
         }
 
-        public static QuoteBlock QuoteBlock(string text)
+        public static QuoteBlock QuoteBlock(string value)
         {
-            return new QuoteBlock(text);
+            return new QuoteBlock(value);
         }
 
         public static MarkdownText HorizontalRule()

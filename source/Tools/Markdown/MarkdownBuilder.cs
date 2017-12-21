@@ -148,24 +148,6 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendBoldItalic(string value)
-        {
-            AppendDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value);
-            return this;
-        }
-
-        public MarkdownBuilder AppendBoldItalic(object value)
-        {
-            AppendDelimiters(BoldDelimiter, AlternativeItalicDelimiter, value);
-            return this;
-        }
-
-        public MarkdownBuilder AppendBoldItalic(params object[] values)
-        {
-            AppendDelimiters(BoldDelimiter, AlternativeItalicDelimiter, values);
-            return this;
-        }
-
         public MarkdownBuilder AppendStrikethrough(string value)
         {
             AppendDelimiter(StrikethroughDelimiter, value);
@@ -802,16 +784,22 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        private void AppendDelimiter(EmphasisOptions options)
+        public void AppendDelimiter(EmphasisOptions options)
         {
             if (options == EmphasisOptions.None)
                 return;
 
             if ((options & EmphasisOptions.Bold) != 0)
+            {
                 Append(BoldDelimiter);
 
-            if ((options & EmphasisOptions.Italic) != 0)
+                if ((options & EmphasisOptions.Italic) != 0)
+                    Append(AlternativeItalicDelimiter);
+            }
+            else if ((options & EmphasisOptions.Italic) != 0)
+            {
                 Append(ItalicDelimiter);
+            }
 
             if ((options & EmphasisOptions.Strikethrough) != 0)
                 Append(StrikethroughDelimiter);
@@ -838,33 +826,6 @@ namespace Roslynator.Markdown
         {
             AppendRaw(delimiter);
             AppendRange(values);
-            AppendRaw(delimiter);
-        }
-
-        private void AppendDelimiters(string delimiter, string delimiter2, string value)
-        {
-            AppendRaw(delimiter);
-            AppendRaw(delimiter2);
-            Append(value);
-            AppendRaw(delimiter2);
-            AppendRaw(delimiter);
-        }
-
-        private void AppendDelimiters(string delimiter, string delimiter2, object value)
-        {
-            AppendRaw(delimiter);
-            AppendRaw(delimiter2);
-            Append(value);
-            AppendRaw(delimiter2);
-            AppendRaw(delimiter);
-        }
-
-        private void AppendDelimiters(string delimiter, string delimiter2, params object[] values)
-        {
-            AppendRaw(delimiter);
-            AppendRaw(delimiter2);
-            AppendRange(values);
-            AppendRaw(delimiter2);
             AppendRaw(delimiter);
         }
 
@@ -951,19 +912,15 @@ namespace Roslynator.Markdown
             }
         }
 
+        public MarkdownBuilder Append(string value, EmphasisOptions options)
+        {
+            return Append(value, options, escape: true);
+        }
+
         public MarkdownBuilder Append(string value, EmphasisOptions options, bool escape)
         {
             AppendDelimiter(options);
-
-            if (escape)
-            {
-                Append(value, Settings.ShouldBeEscaped);
-            }
-            else
-            {
-                AppendRaw(value);
-            }
-
+            Append(value, escape);
             AppendDelimiter(options);
             return this;
         }
