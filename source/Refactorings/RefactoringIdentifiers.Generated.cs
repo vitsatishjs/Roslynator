@@ -130,6 +130,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string ReplaceCastWithAs = Prefix + "0118";
         public const string ReplaceCommentWithDocumentationComment = Prefix + "0192";
         public const string ReplaceConditionalExpressionWithExpression = Prefix + "0119";
+        public const string ReplaceConditionalExpressionWithIfElse = Prefix + "0120";
         public const string ReplaceConstantWithField = Prefix + "0121";
         public const string ReplaceDoWithWhile = Prefix + "0123";
         public const string ReplaceEqualsExpressionWithStringEquals = Prefix + "0124";
@@ -156,7 +157,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string ReplaceStatementWithIfElse = Prefix + "0143";
         public const string ReplaceStringContainsWithStringIndexOf = Prefix + "0144";
         public const string ReplaceStringFormatWithInterpolatedString = Prefix + "0145";
-        public const string ReplaceSwitchWithIfElse = Prefix + "0147";
+        public const string ReplaceSwitchWithIf = Prefix + "0147";
         public const string ReplaceVerbatimStringLiteralWithRegularStringLiteral = Prefix + "0148";
         public const string ReplaceVerbatimStringLiteralWithRegularStringLiterals = Prefix + "0149";
         public const string ReplaceWhileWithDo = Prefix + "0150";
@@ -183,7 +184,6 @@ namespace Roslynator.CSharp.Refactorings
         public const string UseElementAccessInsteadOfEnumerableMethod = Prefix + "0167";
         public const string UseEmptyStringLiteralInsteadOfStringEmpty = Prefix + "0168";
         public const string UseExpressionBodiedMember = Prefix + "0169";
-        public const string UseIfElseInsteadOfConditionalExpression = Prefix + "0120";
         public const string UseLambdaExpressionInsteadOfAnonymousMethod = Prefix + "0170";
         public const string UseListInsteadOfYield = Prefix + "0183";
         public const string UseStringBuilderInsteadOfConcatenation = Prefix + "0182";
