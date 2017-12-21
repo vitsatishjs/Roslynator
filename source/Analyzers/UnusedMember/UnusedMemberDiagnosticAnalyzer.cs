@@ -5,16 +5,17 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using static Roslynator.CSharp.Refactorings.UnusedSyntax.UnusedTypeParameterRefactoring;
+using Roslynator.CSharp.DiagnosticAnalyzers;
+using static Roslynator.CSharp.Analyzers.UnusedMember.UnusedMemberRefactoring;
 
-namespace Roslynator.CSharp.DiagnosticAnalyzers
+namespace Roslynator.CSharp.Analyzers.UnusedMember
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class UnusedTypeParameterDiagnosticAnalyzer : BaseDiagnosticAnalyzer
+    public class UnusedMemberDiagnosticAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get { return ImmutableArray.Create(DiagnosticDescriptors.UnusedTypeParameter); }
+            get { return ImmutableArray.Create(DiagnosticDescriptors.RemoveUnusedMemberDeclaration); }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -23,10 +24,9 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                 throw new ArgumentNullException(nameof(context));
 
             base.Initialize(context);
-            context.EnableConcurrentExecution();
 
-            context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeLocalFunctionStatement, SyntaxKind.LocalFunctionStatement);
+            context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
         }
     }
 }

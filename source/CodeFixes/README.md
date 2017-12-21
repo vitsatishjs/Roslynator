@@ -86,3 +86,9 @@
 | RCF0031 | Use unchecked expression | [CS0221](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0221) | &#x2713; |
 | RCF0021 | Use yield return instead of return | [CS0029](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0029), [CS1622](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1622) | &#x2713; |
 | RCF0050 | Wrap in unsafe statement | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | &#x2713; |
+| RCF0017 | Unreachable code detected | [CS0162](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0162) | &#x2713; |
+| RCF0073 | Use coalesce expression | [CS0266](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0266) | &#x2713; |
+| RCF0048 | Use explicit type instead of 'var' | [CS0819](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0819), [CS0822](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0822) | &#x2713; |
+| RCF0031 | Use unchecked expression | [CS0221](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0221) | &#x2713; |
+| RCF0021 | Use yield return instead of return | [CS0029](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0029), [CS1622](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1622) | &#x2713; |
+| RCF0050 | Wrap in unsafe statement | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | &#x2713; |
