@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Roslynator.Metadata;
-using Roslynator.Utilities.Markdown;
-using static Roslynator.Utilities.Markdown.MarkdownFactory;
+using Roslynator.Markdown;
+using static Roslynator.Markdown.MarkdownFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
 {
