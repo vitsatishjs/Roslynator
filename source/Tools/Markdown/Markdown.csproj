@@ -72,8 +72,6 @@
     <Compile Include="TableFormatting.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="TableHeaderCollection.cs" />
-    <Compile Include="TableRow.cs" />
-    <Compile Include="TableRowCollection.cs" />
     <Compile Include="TaskListItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

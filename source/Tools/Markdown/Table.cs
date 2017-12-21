@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using static Roslynator.Markdown.MarkdownFactory;
 
 namespace Roslynator.Markdown
@@ -13,7 +14,7 @@ namespace Roslynator.Markdown
 
         public TableHeaderCollection Headers { get; } = new TableHeaderCollection();
 
-        public TableRowCollection Rows { get; } = new TableRowCollection();
+        public Collection<IList<object>> Rows { get; } = new Collection<IList<object>>();
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
@@ -75,7 +76,7 @@ namespace Roslynator.Markdown
 
         public Table AddRow(params object[] values)
         {
-            Rows.Add(TableRow(values));
+            Rows.Add(values);
             return this;
         }
 
@@ -106,12 +107,6 @@ namespace Roslynator.Markdown
         public Table AddRow(object value1, object value2, object value3, object value4, object value5)
         {
             Rows.Add(TableRow(value1, value2, value3, value4, value5));
-            return this;
-        }
-
-        public Table AddRows(IEnumerable<TableRow> rows)
-        {
-            Rows.AddRange(rows);
             return this;
         }
     }

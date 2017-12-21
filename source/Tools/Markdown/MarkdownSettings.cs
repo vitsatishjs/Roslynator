@@ -96,16 +96,6 @@ namespace Roslynator.Markdown
 
         public TableFormatting TableFormatting { get; }
 
-        internal bool FormatTableHeader
-        {
-            get { return (TableFormatting & TableFormatting.Header) != 0; }
-        }
-
-        internal bool FormatTableContent
-        {
-            get { return (TableFormatting & TableFormatting.Content) != 0; }
-        }
-
         public bool UseTablePadding { get; }
 
         public bool UseTableOuterPipe { get; }

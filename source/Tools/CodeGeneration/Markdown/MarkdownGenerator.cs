@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Roslynator.Metadata;
 using Roslynator.Markdown;
+using Roslynator.Metadata;
 using static Roslynator.Markdown.MarkdownFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
@@ -181,18 +182,16 @@ namespace Roslynator.CodeGeneration.Markdown
 
             mb.AppendHeader2("Roslynator Analyzers");
 
-            Table table = Table("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center));
-
-            foreach (AnalyzerDescriptor analyzer in analyzers.OrderBy(f => f.Id, comparer))
-            {
-                table.AddRow(
-                    analyzer.Id,
-                    Link(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
-                    analyzer.Category,
-                    RawText((analyzer.IsEnabledByDefault) ? "&#x2713;" : ""));
-            }
-
-            mb.Append(table);
+            mb.AppendTable(
+                TableHeaders("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center)),
+                analyzers.OrderBy(f => f.Id, comparer),
+                new Func<AnalyzerDescriptor, object>[]
+                {
+                    f => f.Id,
+                    f => Link(f.Title.TrimEnd('.'), $"../../docs/analyzers/{f.Id}.md"),
+                    f => f.Category,
+                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                });
 
             return mb.ToString();
         }
@@ -203,17 +202,15 @@ namespace Roslynator.CodeGeneration.Markdown
 
             mb.AppendHeader2("Roslynator Refactorings");
 
-            Table table = Table("Id", "Title", TableHeader("Enabled by Default", Alignment.Center));
-
-            foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
-            {
-                table.AddRow(
-                    refactoring.Id,
-                    Link(refactoring.Title.TrimEnd('.'), $"../../docs/refactorings/{refactoring.Id}.md"),
-                    RawText((refactoring.IsEnabledByDefault) ? "&#x2713;" : ""));
-            }
-
-            mb.Append(table);
+            mb.AppendTable(
+                TableHeaders("Id", "Title", TableHeader("Enabled by Default", Alignment.Center)),
+                refactorings.OrderBy(f => f.Title, comparer),
+                new Func<RefactoringDescriptor, object>[]
+                {
+                    f => f.Id,
+                    f => Link(f.Title.TrimEnd('.'), $"../../docs/refactorings/{f.Id}.md"),
+                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                });
 
             return mb.ToString();
         }
@@ -224,18 +221,16 @@ namespace Roslynator.CodeGeneration.Markdown
 
             mb.AppendHeader2("Roslynator Code Fixes");
 
-            Table table = Table("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center));
-
-            foreach (CodeFixDescriptor codeFix in codeFixes.OrderBy(f => f.Title, comparer))
-            {
-                table.AddRow(
-                    codeFix.Id,
-                    codeFix.Title.TrimEnd('.'),
-                    Join(", ", codeFix.FixableDiagnosticIds.Join(diagnostics, f => f, f => f.Id, (f, g) => (object)Link(f, g.HelpUrl))),
-                    RawText((codeFix.IsEnabledByDefault) ? "&#x2713;" : ""));
-            }
-
-            mb.Append(table);
+            mb.AppendTable(
+                TableHeaders("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center)),
+                codeFixes.OrderBy(f => f.Title, comparer),
+                new Func<CodeFixDescriptor, object>[]
+                {
+                    f => f.Id,
+                    f => f.Title.TrimEnd('.'),
+                    f => Join(", ", f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => (object)Link(x, y.HelpUrl))),
+                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                });
 
             return mb.ToString();
         }

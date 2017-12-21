@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using static Roslynator.Markdown.MarkdownFactory;
 
@@ -54,9 +55,11 @@ namespace Roslynator.Markdown
 
         private bool AddEmptyLineAfterCodeBlock => Settings.EmptyLineAfterCodeBlock;
 
-        private bool FormatTableHeader => Settings.FormatTableHeader;
+        private TableFormatting TableFormatting => Settings.TableFormatting;
 
-        private bool FormatTableContent => Settings.FormatTableContent;
+        private bool FormatTableHeader => TableFormatting == TableFormatting.Header || TableFormatting == TableFormatting.All;
+
+        private bool FormatTableContent => TableFormatting == TableFormatting.All;
 
         private bool UseTableOuterPipe => Settings.UseTableOuterPipe;
 
@@ -494,66 +497,90 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendHorizonalRule()
         {
-            AppendLineRaw(Settings.HorizontalRule);
-            return this;
+            return AppendLineRaw(Settings.HorizontalRule);
         }
 
-        public MarkdownBuilder AppendTable(TableHeader header1, TableHeader header2, IEnumerable<TableRow> rows)
+        public MarkdownBuilder AppendTable(IEnumerable<TableHeader> headers, IEnumerable<IList<object>> rows)
         {
-            AppendTable(new TableHeaderCollection() { header1, header2 }, rows);
-            return this;
+            return AppendTable(new TableHeaderCollection(headers), rows.ToList());
         }
 
-        public MarkdownBuilder AppendTable(TableHeader header1, TableHeader header2, TableHeader header3, IEnumerable<TableRow> rows)
-        {
-            AppendTable(new TableHeaderCollection() { header1, header2, header3 }, rows);
-            return this;
-        }
-
-        public MarkdownBuilder AppendTable(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, IEnumerable<TableRow> rows)
-        {
-            AppendTable(new TableHeaderCollection() { header1, header2, header3, header4 }, rows);
-            return this;
-        }
-
-        public MarkdownBuilder AppendTable(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5, IEnumerable<TableRow> rows)
-        {
-            AppendTable(new TableHeaderCollection() { header1, header2, header3, header4, header5 }, rows);
-            return this;
-        }
-
-        public MarkdownBuilder AppendTable(TableHeaderCollection headers, IEnumerable<TableRow> rows)
-        {
-            AppendTable(headers, new TableRowCollection(rows));
-            return this;
-        }
-
-        public MarkdownBuilder AppendTable(TableHeaderCollection headers, TableRowCollection rows)
+        public MarkdownBuilder AppendTable(IList<TableHeader> headers, IList<IList<object>> rows)
         {
             int columnCount = headers.Count;
 
             if (columnCount == 0)
                 return this;
 
-            if (!FormatTableContent)
+            if (FormatTableContent)
             {
-                AppendTableHeader(headers, columnCount);
-                AppendTableRows(rows, columnCount);
+                List<int> widths = CalculateWidths(headers, rows, columnCount);
+
+                AppendTableHeader(headers, columnCount, widths);
+                AppendTableRows(rows, columnCount, widths);
             }
             else
             {
-                bool formatHeader = FormatTableHeader;
-
-                List<int> widths = CalculateWidths((formatHeader) ? headers : null, rows, columnCount);
-
-                AppendTableHeader(headers, columnCount, (formatHeader) ? widths : null);
-                AppendTableRows(rows, columnCount, widths);
+                AppendTableHeader(headers, columnCount);
+                AppendTableRows(rows, columnCount);
             }
 
             return this;
         }
 
-        private List<int> CalculateWidths(TableHeaderCollection headers, TableRowCollection rows, int columnCount)
+        private List<int> CalculateWidths<T>(IList<TableHeader> headers, IList<T> items, IList<Func<T, object>> valueProviders)
+        {
+            List<int> widths = GetHeadersWidths(headers);
+
+            int index = 0;
+
+            var mb = new MarkdownBuilder(Settings);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                for (int j = 0; j < items.Count; j++)
+                {
+                    mb.Append(valueProviders[j](items[j]));
+                    widths[i] = Math.Max(widths[i], mb.Length - index);
+                    index = mb.Length;
+                }
+            }
+
+            return widths;
+        }
+
+        public MarkdownBuilder AppendTable<T>(
+            IEnumerable<TableHeader> headers,
+            IEnumerable<T> rows,
+            IEnumerable<Func<T, object>> valueProviders)
+        {
+            return AppendTable(new TableHeaderCollection(headers), rows.ToList(), valueProviders.ToList());
+        }
+
+        public MarkdownBuilder AppendTable<T>(IList<TableHeader> headers, IList<T> items, IList<Func<T, object>> valueProviders)
+        {
+            int columnCount = headers.Count;
+
+            if (columnCount == 0)
+                return this;
+
+            if (FormatTableContent)
+            {
+                List<int> widths = CalculateWidths(headers, items, valueProviders);
+
+                AppendTableHeader(headers, columnCount, widths);
+                AppendTableRows(items, valueProviders, columnCount, widths);
+            }
+            else
+            {
+                AppendTableHeader(headers, columnCount);
+                AppendTableRows(items, valueProviders, columnCount);
+            }
+
+            return this;
+        }
+
+        private List<int> CalculateWidths(IList<TableHeader> headers, IList<IList<object>> rows, int columnCount)
         {
             var widths = new List<int>();
 
@@ -561,19 +588,9 @@ namespace Roslynator.Markdown
 
             var mb = new MarkdownBuilder(Settings);
 
-            if (headers != null)
+            foreach (IList<object> row in rows)
             {
-                foreach (TableHeader header in headers)
-                {
-                    mb.Append(header.Name);
-                    widths.Add(mb.Length - index);
-                    index = mb.Length;
-                }
-            }
-
-            foreach (TableRow row in rows)
-            {
-                for (int i = 0; i < row.Count; i++)
+                for (int i = 0; i < columnCount; i++)
                 {
                     mb.Append(row[i]);
                     widths.Add(mb.Length - index);
@@ -583,12 +600,10 @@ namespace Roslynator.Markdown
 
             int count = widths.Count;
 
-            var maxWidths = new List<int>();
+            List<int> maxWidths = GetHeadersWidths(headers);
 
             for (int i = 0; i < columnCount; i++)
             {
-                maxWidths.Add(0);
-
                 for (int j = i; j < count; j += columnCount)
                 {
                     maxWidths[i] = Math.Max(maxWidths[i], widths[j]);
@@ -596,6 +611,16 @@ namespace Roslynator.Markdown
             }
 
             return maxWidths;
+        }
+
+        private static List<int> GetHeadersWidths(IList<TableHeader> headers)
+        {
+            var widths = new List<int>(headers.Count);
+
+            foreach (TableHeader header in headers)
+                widths.Add(header.Name.Length);
+
+            return widths;
         }
 
         public MarkdownBuilder AppendTableHeader(params TableHeader[] headers)
@@ -690,35 +715,46 @@ namespace Roslynator.Markdown
             AppendLine();
         }
 
-        internal void AppendTableRows(IList<TableRow> rows, int columnCount, List<int> widths = null)
+        internal void AppendTableRows(IList<IList<object>> rows, int columnCount, List<int> widths = null)
         {
-            foreach (TableRow row in rows)
-                AppendTableRow(row, columnCount, widths);
+            foreach (IList<object> row in rows)
+            {
+                for (int i = 0; i < columnCount; i++)
+                {
+                    AppendTableRowStart(i);
+                    AppendTablePadding();
+
+                    int length = AppendInternal(row[i]);
+
+                    if (FormatTableContent)
+                        AppendPadRight(length, widths?[i]);
+
+                    AppendTableCellEnd(i, columnCount);
+                }
+
+                AppendLine();
+            }
         }
 
-        internal void AppendTableRow(TableRow row, int columnCount, IList<int> widths = null)
+        internal void AppendTableRows<T>(IList<T> items, IList<Func<T, object>> valueProviders, int columnCount, List<int> widths = null)
         {
-            for (int i = 0; i < columnCount; i++)
+            foreach (T item in items)
             {
-                AppendTableRowStart(i);
-                AppendTablePadding();
+                for (int i = 0; i < columnCount; i++)
+                {
+                    AppendTableRowStart(i);
+                    AppendTablePadding();
 
-                object value = row[i];
-                int? proposedWidth = widths?[i];
+                    int length = AppendInternal(valueProviders[i](item));
 
-                int length = Length;
+                    if (FormatTableContent)
+                        AppendPadRight(length, widths?[i]);
 
-                Append(value);
+                    AppendTableCellEnd(i, columnCount);
+                }
 
-                length = Length - length;
-
-                if (FormatTableContent)
-                    AppendPadRight(length, proposedWidth);
-
-                AppendTableCellEnd(i, columnCount);
+                AppendLine();
             }
-
-            AppendLine();
         }
 
         private void AppendTableRowStart(int index)
@@ -834,7 +870,7 @@ namespace Roslynator.Markdown
             AppendEmptyLineIf(emptyLineBefore);
             AppendIndentationIf(indent);
             AppendRaw(prefix);
-            AppendLineIf(AppendInternal(value), emptyLineAfter);
+            AppendLineIf(AppendInternal(value) > 0, emptyLineAfter);
         }
 
         private void AppendLineMarkdown(string prefix, bool indent, bool emptyLineBefore, bool emptyLineAfter, object value)
@@ -842,7 +878,7 @@ namespace Roslynator.Markdown
             AppendEmptyLineIf(emptyLineBefore);
             AppendIndentationIf(indent);
             AppendRaw(prefix);
-            AppendLineIf(AppendInternal(value), emptyLineAfter);
+            AppendLineIf(AppendInternal(value) > 0, emptyLineAfter);
         }
 
         private void AppendLineMarkdown(string prefix, bool indent, bool emptyLineBefore, bool emptyLineAfter, params object[] values)
@@ -850,28 +886,28 @@ namespace Roslynator.Markdown
             AppendEmptyLineIf(emptyLineBefore);
             AppendIndentationIf(indent);
             AppendRaw(prefix);
-            AppendLineIf(AppendInternal(values), emptyLineAfter);
+            AppendLineIf(AppendInternal(values) > 0, emptyLineAfter);
         }
 
-        internal bool AppendInternal(string value)
+        internal int AppendInternal(string value)
         {
             int length = Length;
             Append(value);
-            return length != Length;
+            return Length - length;
         }
 
-        internal bool AppendInternal(object value)
+        internal int AppendInternal(object value)
         {
             int length = Length;
             Append(value);
-            return length != Length;
+            return Length - length;
         }
 
-        internal bool AppendInternal(params object[] values)
+        internal int AppendInternal(params object[] values)
         {
             int length = Length;
             AppendRange(values);
-            return length != Length;
+            return Length - length;
         }
 
         public MarkdownBuilder Append<TMarkdown>(TMarkdown markdown) where TMarkdown : IMarkdown

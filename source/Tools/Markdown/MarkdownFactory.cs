@@ -98,11 +98,6 @@ namespace Roslynator.Markdown
             }
         }
 
-        public static TableHeader TableHeader(string name, Alignment alignment = Alignment.Left)
-        {
-            return new TableHeader(name, alignment);
-        }
-
         public static ListItem ListItem(string value = null)
         {
             return new ListItem(value);
@@ -237,44 +232,54 @@ namespace Roslynator.Markdown
             return table;
         }
 
-        public static TableRow TableRow()
+        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2)
         {
-            return new TableRow();
+            return new TableHeaderCollection() { header1, header2 };
         }
 
-        public static TableRow TableRow(params object[] values)
+        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3)
         {
-            TableRow row = TableRow();
-
-            foreach (object value in values)
-                row.Add(value);
-
-            return row;
+            return new TableHeaderCollection() { header1, header2, header3 };
         }
 
-        public static TableRow TableRow(object value)
+        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
         {
-            return new TableRow() { value };
+            return new TableHeaderCollection() { header1, header2, header3, header4 };
         }
 
-        public static TableRow TableRow(object value1, object value2)
+        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
         {
-            return new TableRow() { value1, value2 };
+            return new TableHeaderCollection() { header1, header2, header3, header4, header5 };
         }
 
-        public static TableRow TableRow(object value1, object value2, object value3)
+        public static TableHeader TableHeader(string name, Alignment alignment = Alignment.Left)
         {
-            return new TableRow() { value1, value2, value3 };
+            return new TableHeader(name, alignment);
         }
 
-        public static TableRow TableRow(object value1, object value2, object value3, object value4)
+        public static List<object> TableRow(object value)
         {
-            return new TableRow() { value1, value2, value3, value4 };
+            return new List<object>() { value };
         }
 
-        public static TableRow TableRow(object value1, object value2, object value3, object value4, object value5)
+        public static List<object> TableRow(object value1, object value2)
         {
-            return new TableRow() { value1, value2, value3, value4, value5 };
+            return new List<object>() { value1, value2 };
+        }
+
+        public static List<object> TableRow(object value1, object value2, object value3)
+        {
+            return new List<object>() { value1, value2, value3 };
+        }
+
+        public static List<object> TableRow(object value1, object value2, object value3, object value4)
+        {
+            return new List<object>() { value1, value2, value3, value4 };
+        }
+
+        public static List<object> TableRow(object value1, object value2, object value3, object value4, object value5)
+        {
+            return new List<object>() { value1, value2, value3, value4, value5 };
         }
     }
 }
