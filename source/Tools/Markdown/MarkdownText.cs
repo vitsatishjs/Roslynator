@@ -4,19 +4,22 @@ namespace Roslynator.Markdown
 {
     public struct MarkdownText : IMarkdown
     {
-        internal MarkdownText(string text, bool escape)
+        internal MarkdownText(string text, EmphasisOptions options, bool escape)
         {
             Text = text;
+            Options = options;
             Escape = escape;
         }
 
         public string Text { get; }
 
+        public EmphasisOptions Options { get; }
+
         public bool Escape { get; }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.Append(Text, Escape);
+            return mb.Append(Text, Options, Escape);
         }
     }
 }

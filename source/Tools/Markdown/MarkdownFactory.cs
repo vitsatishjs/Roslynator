@@ -7,34 +7,39 @@ namespace Roslynator.Markdown
 {
     public static class MarkdownFactory
     {
-        public static MarkdownText Text(string text)
+        public static MarkdownText Text(string text, EmphasisOptions options = EmphasisOptions.None)
         {
-            return new MarkdownText(text, escape: true);
+            return new MarkdownText(text, options, escape: true);
         }
 
-        public static MarkdownText RawText(string text)
+        public static MarkdownText RawText(string text, EmphasisOptions options = EmphasisOptions.None)
         {
-            return new MarkdownText(text, escape: false);
+            return new MarkdownText(text, options, escape: false);
         }
 
-        public static BoldText Bold(string text)
+        public static MarkdownText Bold(string text)
         {
-            return new BoldText(text);
+            return Text(text, EmphasisOptions.Bold);
         }
 
-        public static ItalicText Italic(string text)
+        public static MarkdownText Italic(string text)
         {
-            return new ItalicText(text);
+            return Text(text, EmphasisOptions.Italic);
         }
 
-        public static BoldItalicText BoldItalic(string text)
+        public static MarkdownText BoldItalic(string text)
         {
-            return new BoldItalicText(text);
+            return Text(text, EmphasisOptions.BoldItalic);
         }
 
-        public static StrikethroughText Strikethrough(string text)
+        public static MarkdownText Strikethrough(string text)
         {
-            return new StrikethroughText(text);
+            return Text(text, EmphasisOptions.Strikethrough);
+        }
+
+        public static MarkdownText Code(string text)
+        {
+            return Text(text, EmphasisOptions.Code);
         }
 
         public static MarkdownJoin Join(string separator, IEnumerable<object> values, bool escape = true)
@@ -170,11 +175,6 @@ namespace Roslynator.Markdown
         public static Image Image(string text, string url)
         {
             return new Image(text, url);
-        }
-
-        public static CodeText Code(string text)
-        {
-            return new CodeText(text);
         }
 
         public static CodeBlock CodeBlock(string text, string language = null)

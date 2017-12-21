@@ -802,6 +802,24 @@ namespace Roslynator.Markdown
             return this;
         }
 
+        private void AppendDelimiter(EmphasisOptions options)
+        {
+            if (options == EmphasisOptions.None)
+                return;
+
+            if ((options & EmphasisOptions.Bold) != 0)
+                Append(BoldDelimiter);
+
+            if ((options & EmphasisOptions.Italic) != 0)
+                Append(ItalicDelimiter);
+
+            if ((options & EmphasisOptions.Strikethrough) != 0)
+                Append(StrikethroughDelimiter);
+
+            if ((options & EmphasisOptions.Code) != 0)
+                Append(CodeDelimiter);
+        }
+
         private void AppendDelimiter(string delimiter, string value)
         {
             AppendRaw(delimiter);
@@ -931,6 +949,23 @@ namespace Roslynator.Markdown
             {
                 return AppendRaw(value);
             }
+        }
+
+        public MarkdownBuilder Append(string value, EmphasisOptions options, bool escape)
+        {
+            AppendDelimiter(options);
+
+            if (escape)
+            {
+                Append(value, Settings.ShouldBeEscaped);
+            }
+            else
+            {
+                AppendRaw(value);
+            }
+
+            AppendDelimiter(options);
+            return this;
         }
 
         internal MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped)
