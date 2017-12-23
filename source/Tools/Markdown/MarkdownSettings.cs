@@ -14,14 +14,14 @@ namespace Roslynator.Markdown
             string tableDelimiter = "|",
             string codeDelimiter = "`",
             string codeBlockChars = "```",
-            string horizontalRule = "- - -",
+            string horizontalRule = "___",
             EmptyLineOptions headerOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
             EmptyLineOptions codeBlockOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
             bool useTablePadding = true,
             bool useTableOuterPipe = true,
             TableFormatting tableFormatting = TableFormatting.Header,
             bool allowLinkWithoutUrl = true,
-            bool closeHeading = true,
+            bool closeHeading = false,
             string indentChars = "  ",
             Func<char, bool> shouldBeEscaped = null)
         {
