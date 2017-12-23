@@ -10,35 +10,37 @@ namespace Roslynator.Markdown
             string boldDelimiter = "**",
             string italicDelimiter = "*",
             string strikethroughDelimiter = "~~",
-            string listItemStart = "* ",
+            ListItemStyle listItemStyle = ListItemStyle.Asterisk,
             string tableDelimiter = "|",
             string codeDelimiter = "`",
             string codeBlockChars = "```",
-            string horizontalRule = "___",
+            string horizontalRule = "- - -",
             EmptyLineOptions headerOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
             EmptyLineOptions codeBlockOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
             bool useTablePadding = true,
             bool useTableOuterPipe = true,
             TableFormatting tableFormatting = TableFormatting.Header,
             bool allowLinkWithoutUrl = true,
+            bool closeHeading = true,
             string indentChars = "  ",
             Func<char, bool> shouldBeEscaped = null)
         {
             BoldDelimiter = boldDelimiter;
             ItalicDelimiter = italicDelimiter;
             StrikethroughDelimiter = strikethroughDelimiter;
-            ListItemStart = listItemStart;
+            ListItemStyle = listItemStyle;
             TableDelimiter = tableDelimiter;
             CodeDelimiter = codeDelimiter;
             CodeBlockChars = codeBlockChars;
             HorizontalRule = horizontalRule;
-            HeaderOptions = headerOptions;
+            HeadingOptions = headerOptions;
             CodeBlockOptions = codeBlockOptions;
             TableFormatting = tableFormatting;
             UseTablePadding = useTablePadding;
             UseTableOuterPipe = useTableOuterPipe;
-            IndentChars = indentChars;
             AllowLinkWithoutUrl = allowLinkWithoutUrl;
+            CloseHeading = closeHeading;
+            IndentChars = indentChars;
             ShouldBeEscaped = shouldBeEscaped ?? MarkdownEscaper.ShouldBeEscaped;
         }
 
@@ -60,7 +62,7 @@ namespace Roslynator.Markdown
 
         public string StrikethroughDelimiter { get; }
 
-        public string ListItemStart { get; }
+        public ListItemStyle ListItemStyle { get; }
 
         public string TableDelimiter { get; }
 
@@ -70,16 +72,16 @@ namespace Roslynator.Markdown
 
         public string HorizontalRule { get; }
 
-        public EmptyLineOptions HeaderOptions { get; }
+        public EmptyLineOptions HeadingOptions { get; }
 
-        internal bool EmptyLineBeforeHeader
+        internal bool EmptyLineBeforeHeading
         {
-            get { return (HeaderOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
+            get { return (HeadingOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
         }
 
-        internal bool EmptyLineAfterHeader
+        internal bool EmptyLineAfterHeading
         {
-            get { return (HeaderOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
+            get { return (HeadingOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }
 
         public EmptyLineOptions CodeBlockOptions { get; }
@@ -101,6 +103,8 @@ namespace Roslynator.Markdown
         public bool UseTableOuterPipe { get; }
 
         public bool AllowLinkWithoutUrl { get; }
+
+        public bool CloseHeading { get; }
 
         public string IndentChars { get; }
 

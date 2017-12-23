@@ -2,10 +2,9 @@
 
 namespace Roslynator.Markdown
 {
-    //TODO: Heading
-    public struct Header : IMarkdown
+    public struct Heading : IMarkdown
     {
-        internal Header(string text, int level = 1)
+        internal Heading(string text, int level = 1)
         {
             Text = text;
             Level = level;
@@ -17,7 +16,7 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendHeader(Level, Text);
+            return mb.AppendHeading(Level, Text);
         }
     }
 }

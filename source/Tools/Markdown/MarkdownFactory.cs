@@ -42,42 +42,42 @@ namespace Roslynator.Markdown
             return new MarkdownJoin(separator, values, escape);
         }
 
-        public static Header Header(string value, int level)
+        public static Heading Heading(string value, int level)
         {
-            return new Header(value, level);
+            return new Heading(value, level);
         }
 
-        public static Header Header1(string value = null)
+        public static Heading Heading1(string value = null)
         {
-            return new Header(value, 1);
+            return new Heading(value, 1);
         }
 
-        public static Header Header2(string value = null)
+        public static Heading Heading2(string value = null)
         {
-            return new Header(value, 2);
+            return new Heading(value, 2);
         }
 
-        public static Header Header3(string value = null)
+        public static Heading Heading3(string value = null)
         {
-            return new Header(value, 3);
+            return new Heading(value, 3);
         }
 
-        public static Header Header4(string value = null)
+        public static Heading Heading4(string value = null)
         {
-            return new Header(value, 4);
+            return new Heading(value, 4);
         }
 
-        public static Header Header5(string value = null)
+        public static Heading Heading5(string value = null)
         {
-            return new Header(value, 5);
+            return new Heading(value, 5);
         }
 
-        public static Header Header6(string value = null)
+        public static Heading Heading6(string value = null)
         {
-            return new Header(value, 6);
+            return new Heading(value, 6);
         }
 
-        public static string HeaderStart(int level)
+        public static string HeadingStart(int level)
         {
             switch (level)
             {
@@ -98,9 +98,44 @@ namespace Roslynator.Markdown
             }
         }
 
+        public static string HeadingEnd(int level)
+        {
+            switch (level)
+            {
+                case 1:
+                    return " #";
+                case 2:
+                    return " ##";
+                case 3:
+                    return " ###";
+                case 4:
+                    return " ####";
+                case 5:
+                    return " #####";
+                case 6:
+                    return " ######";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(level), level, "Header level cannot be less than 1 or greater than 6");
+            }
+        }
+
         public static ListItem ListItem(string value = null)
         {
             return new ListItem(value);
+        }
+
+        public static string ListItemStart(ListItemStyle style)
+        {
+            if (style == ListItemStyle.Asterisk)
+                return "* ";
+
+            if (style == ListItemStyle.Plus)
+                return "+ ";
+
+            if (style == ListItemStyle.Minus)
+                return "- ";
+
+            throw new ArgumentException("", nameof(style));
         }
 
         public static OrderedListItem OrderedListItem(int number, string value = null)

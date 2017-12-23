@@ -20,14 +20,14 @@ namespace Roslynator.CodeGeneration.Markdown
 
             mb.AppendLineRaw(File.ReadAllText(@"..\text\ReadMe.txt", Encoding.UTF8));
 
-            mb.AppendHeader3("List of Analyzers");
+            mb.AppendHeading3("List of Analyzers");
 
             foreach (AnalyzerDescriptor analyzer in analyzers.OrderBy(f => f.Id, comparer))
             {
                 mb.AppendListItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"));
             }
 
-            mb.AppendHeader3("List of Refactorings");
+            mb.AppendHeading3("List of Refactorings");
 
             foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
             {
@@ -41,11 +41,11 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.Append(Header2("Roslynator Refactorings"));
+            mb.Append(Heading2("Roslynator Refactorings"));
 
             foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
             {
-                mb.AppendHeader4($"{refactoring.Title} ({refactoring.Id})");
+                mb.AppendHeading4($"{refactoring.Title} ({refactoring.Id})");
                 mb.AppendListItem(Bold("Syntax"), ": ", Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
 
                 if (!string.IsNullOrEmpty(refactoring.Span))
@@ -61,7 +61,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             if (refactoring.Samples.Count > 0)
             {
-                AppendSamples(mb, refactoring.Samples, Header4("Before"), Header4("After"));
+                AppendSamples(mb, refactoring.Samples, Heading4("Before"), Heading4("After"));
             }
             else if (refactoring.Images.Count > 0)
             {
@@ -85,7 +85,7 @@ namespace Roslynator.CodeGeneration.Markdown
             }
         }
 
-        private static void AppendSamples(MarkdownBuilder mb, IEnumerable<SampleDescriptor> samples, Header beforeHeader, Header afterHeader)
+        private static void AppendSamples(MarkdownBuilder mb, IEnumerable<SampleDescriptor> samples, Heading beforeHeader, Heading afterHeader)
         {
             bool isFirst = true;
 
@@ -115,7 +115,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder(new MarkdownSettings(tableFormatting: TableFormatting.All));
 
-            mb.AppendHeader2(refactoring.Title);
+            mb.AppendHeading2(refactoring.Title);
 
             Table("Property", "Value")
                 .AddRow("Id", refactoring.Id)
@@ -125,7 +125,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 .AddRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)))
                 .AppendTo(mb);
 
-            mb.AppendHeader3("Usage");
+            mb.AppendHeading3("Usage");
 
             AppendRefactoringSamples(mb, refactoring);
 
@@ -138,7 +138,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder(new MarkdownSettings(tableFormatting: TableFormatting.All));
 
-            mb.AppendHeader1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}");
+            mb.AppendHeading1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}");
 
             Table table = Table("Property", "Value")
                 .AddRow("Id", analyzer.Id)
@@ -154,22 +154,22 @@ namespace Roslynator.CodeGeneration.Markdown
 
             if (samples.Count > 0)
             {
-                mb.AppendHeader2((samples.Count == 1) ? "Example" : "Examples");
+                mb.AppendHeading2((samples.Count == 1) ? "Example" : "Examples");
 
-                AppendSamples(mb, samples, Header3("Code with Diagnostic"), Header3("Code with Fix"));
+                AppendSamples(mb, samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix"));
             }
 
-            mb.AppendHeader2("How to Suppress");
+            mb.AppendHeading2("How to Suppress");
 
-            mb.AppendHeader3("SuppressMessageAttribute");
+            mb.AppendHeading3("SuppressMessageAttribute");
 
             mb.AppendCSharpCodeBlock($"[assembly: SuppressMessage(\"{analyzer.Category}\", \"{analyzer.Id}:{analyzer.Title}\", Justification = \"<Pending>\")]");
 
-            mb.AppendHeader3("#pragma");
+            mb.AppendHeading3("#pragma");
 
             mb.AppendCSharpCodeBlock($"#pragma warning disable {analyzer.Id} // {analyzer.Title}\r\n#pragma warning restore {analyzer.Id} // {analyzer.Title}");
 
-            mb.AppendHeader3("Ruleset");
+            mb.AppendHeading3("Ruleset");
 
             mb.AppendListItem(Link("How to configure rule set", "../HowToConfigureAnalyzers.md"));
 
@@ -180,7 +180,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.AppendHeader2("Roslynator Analyzers");
+            mb.AppendHeading2("Roslynator Analyzers");
 
             mb.AppendTable(
                 TableHeaders("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center)),
@@ -200,7 +200,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.AppendHeader2("Roslynator Refactorings");
+            mb.AppendHeading2("Roslynator Refactorings");
 
             mb.AppendTable(
                 TableHeaders("Id", "Title", TableHeader("Enabled by Default", Alignment.Center)),
@@ -219,7 +219,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.AppendHeader2("Roslynator Code Fixes");
+            mb.AppendHeading2("Roslynator Code Fixes");
 
             mb.AppendTable(
                 TableHeaders("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center)),
@@ -239,7 +239,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.AppendHeader2("Roslynator Code Fixes by Diagnostic Id");
+            mb.AppendHeading2("Roslynator Code Fixes by Diagnostic Id");
 
             Table table = Table("Diagnostic", "Code Fixes");
 
@@ -265,7 +265,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var mb = new MarkdownBuilder();
 
-            mb.AppendHeader2("Roslynator Analyzers by Category");
+            mb.AppendHeading2("Roslynator Analyzers by Category");
 
             Table table = Table("Category", "Title", "Id", TableHeader("Enabled by Default", Alignment.Center));
 

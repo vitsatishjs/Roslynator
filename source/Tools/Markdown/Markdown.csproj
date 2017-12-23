@@ -53,12 +53,13 @@
     <Compile Include="Emojis.cs" />
     <Compile Include="EmphasisOptions.cs" />
     <Compile Include="EmptyLineOptions.cs" />
-    <Compile Include="Header.cs" />
+    <Compile Include="Heading.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="IMarkdown.cs" />
     <Compile Include="LanguageIdentifiers.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="ListItem.cs" />
+    <Compile Include="ListItemStyle.cs" />
     <Compile Include="MarkdownBuilder.cs" />
     <Compile Include="MarkdownEscaper.cs" />
     <Compile Include="MarkdownFactory.cs" />
