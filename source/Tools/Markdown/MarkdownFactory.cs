@@ -7,6 +7,14 @@ namespace Roslynator.Markdown
 {
     public static class MarkdownFactory
     {
+        public static string StrikethroughDelimiter => "~~";
+
+        public static string CodeDelimiter => "`";
+
+        public static string TableDelimiter => "|";
+
+        public static string CodeBlockChars => "```";
+
         public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
         {
             return new MarkdownText(value, options, escape: true);
@@ -22,9 +30,31 @@ namespace Roslynator.Markdown
             return Text(value, EmphasisOptions.Bold);
         }
 
+        public static string BoldDelimiter(EmphasisStyle style)
+        {
+            if (style == EmphasisStyle.Asterisk)
+                return "**";
+
+            if (style == EmphasisStyle.Underscore)
+                return "__";
+
+            throw new ArgumentException("", nameof(style));
+        }
+
         public static MarkdownText Italic(string value)
         {
             return Text(value, EmphasisOptions.Italic);
+        }
+
+        public static string ItalicDelimiter(EmphasisStyle style)
+        {
+            if (style == EmphasisStyle.Asterisk)
+                return "*";
+
+            if (style == EmphasisStyle.Underscore)
+                return "_";
+
+            throw new ArgumentException("", nameof(style));
         }
 
         public static MarkdownText Strikethrough(string value)

@@ -52,8 +52,10 @@
     <Compile Include="CodeBlock.cs" />
     <Compile Include="Emojis.cs" />
     <Compile Include="EmphasisOptions.cs" />
+    <Compile Include="EmphasisStyle.cs" />
     <Compile Include="EmptyLineOptions.cs" />
     <Compile Include="Heading.cs" />
+    <Compile Include="HeadingOptions.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="IMarkdown.cs" />
     <Compile Include="LanguageIdentifiers.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="TableFormatting.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="TableHeaderCollection.cs" />
+    <Compile Include="TableOptions.cs" />
     <Compile Include="TaskListItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

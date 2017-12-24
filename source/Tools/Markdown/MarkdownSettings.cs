@@ -4,84 +4,63 @@ using System;
 
 namespace Roslynator.Markdown
 {
+    //TODO: EmptyLineBetweenListItems
     public class MarkdownSettings
     {
         public MarkdownSettings(
-            string boldDelimiter = "**",
-            string italicDelimiter = "*",
-            string strikethroughDelimiter = "~~",
+            EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
+            EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
-            string tableDelimiter = "|",
-            string codeDelimiter = "`",
-            string codeBlockChars = "```",
             string horizontalRule = "___",
-            EmptyLineOptions headerOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
+            HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
+            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             EmptyLineOptions codeBlockOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
-            bool useTablePadding = true,
-            bool useTableOuterPipe = true,
-            TableFormatting tableFormatting = TableFormatting.Header,
             bool allowLinkWithoutUrl = true,
-            bool closeHeading = false,
             string indentChars = "  ",
             Func<char, bool> shouldBeEscaped = null)
         {
-            BoldDelimiter = boldDelimiter;
-            ItalicDelimiter = italicDelimiter;
-            StrikethroughDelimiter = strikethroughDelimiter;
+            BoldStyle = boldStyle;
+            ItalicStyle = italicStyle;
             ListItemStyle = listItemStyle;
-            TableDelimiter = tableDelimiter;
-            CodeDelimiter = codeDelimiter;
-            CodeBlockChars = codeBlockChars;
             HorizontalRule = horizontalRule;
-            HeadingOptions = headerOptions;
+            HeadingOptions = headingOptions;
             CodeBlockOptions = codeBlockOptions;
-            TableFormatting = tableFormatting;
-            UseTablePadding = useTablePadding;
-            UseTableOuterPipe = useTableOuterPipe;
+            TableOptions = tableOptions;
             AllowLinkWithoutUrl = allowLinkWithoutUrl;
-            CloseHeading = closeHeading;
             IndentChars = indentChars;
             ShouldBeEscaped = shouldBeEscaped ?? MarkdownEscaper.ShouldBeEscaped;
         }
 
         public static MarkdownSettings Default { get; } = new MarkdownSettings();
 
-        public string BoldDelimiter { get; }
+        public EmphasisStyle BoldStyle { get; }
 
-        public string AlternativeBoldDelimiter
+        public EmphasisStyle AlternativeBoldStyle
         {
-            get { return (BoldDelimiter == "**") ? "__" : "**"; }
+            get { return GetAlternativeEmphasisStyle(BoldStyle); }
         }
 
-        public string ItalicDelimiter { get; }
+        public EmphasisStyle ItalicStyle { get; }
 
-        public string AlternativeItalicDelimiter
+        public EmphasisStyle AlternativeItalicStyle
         {
-            get { return (ItalicDelimiter == "*") ? "_" : "*"; }
+            get { return GetAlternativeEmphasisStyle(ItalicStyle); }
         }
-
-        public string StrikethroughDelimiter { get; }
 
         public ListItemStyle ListItemStyle { get; }
 
-        public string TableDelimiter { get; }
-
-        public string CodeDelimiter { get; }
-
-        public string CodeBlockChars { get; }
-
         public string HorizontalRule { get; }
 
-        public EmptyLineOptions HeadingOptions { get; }
+        public HeadingOptions HeadingOptions { get; }
 
         internal bool EmptyLineBeforeHeading
         {
-            get { return (HeadingOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
+            get { return (HeadingOptions & HeadingOptions.EmptyLineBefore) != 0; }
         }
 
         internal bool EmptyLineAfterHeading
         {
-            get { return (HeadingOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
+            get { return (HeadingOptions & HeadingOptions.EmptyLineAfter) != 0; }
         }
 
         public EmptyLineOptions CodeBlockOptions { get; }
@@ -96,18 +75,38 @@ namespace Roslynator.Markdown
             get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
         }
 
-        public TableFormatting TableFormatting { get; }
+        public TableOptions TableOptions { get; }
 
-        public bool UseTablePadding { get; }
+        internal bool TablePadding
+        {
+            get { return (TableOptions & TableOptions.Padding) != 0; }
+        }
 
-        public bool UseTableOuterPipe { get; }
+        internal bool TableOuterPipe
+        {
+            get { return (TableOptions & TableOptions.OuterPipe) != 0; }
+        }
 
         public bool AllowLinkWithoutUrl { get; }
 
-        public bool CloseHeading { get; }
+        internal bool CloseHeading
+        {
+            get { return (HeadingOptions & HeadingOptions.Close) != 0; }
+        }
 
         public string IndentChars { get; }
 
         public Func<char, bool> ShouldBeEscaped { get; }
+
+        private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
+        {
+            if (style == EmphasisStyle.Asterisk)
+                return EmphasisStyle.Underscore;
+
+            if (style == EmphasisStyle.Underscore)
+                return EmphasisStyle.Asterisk;
+
+            throw new ArgumentException("", nameof(style));
+        }
     }
 }

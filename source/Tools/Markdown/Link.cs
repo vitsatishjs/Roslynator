@@ -4,19 +4,22 @@ namespace Roslynator.Markdown
 {
     public struct Link : IMarkdown
     {
-        internal Link(string text, string url)
+        internal Link(string text, string url, string title = null)
         {
             Text = text;
             Url = url;
+            Title = title;
         }
 
         public string Text { get; }
 
         public string Url { get; }
 
+        public string Title { get; }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendLink(Text, Url);
+            return mb.AppendLink(Text, Url, Title);
         }
     }
 }

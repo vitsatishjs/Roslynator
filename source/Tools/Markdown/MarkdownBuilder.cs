@@ -8,7 +8,6 @@ using static Roslynator.Markdown.MarkdownFactory;
 
 namespace Roslynator.Markdown
 {
-    //TODO: AppendOrderedListItems
     public class MarkdownBuilder
     {
         public MarkdownBuilder(MarkdownSettings settings = null)
@@ -32,23 +31,15 @@ namespace Roslynator.Markdown
 
         public int Length => StringBuilder.Length;
 
-        private string BoldDelimiter => Settings.BoldDelimiter;
+        private string BoldDelimiter => BoldDelimiter(Settings.BoldStyle);
 
-        private string ItalicDelimiter => Settings.ItalicDelimiter;
+        private string ItalicDelimiter => ItalicDelimiter(Settings.ItalicStyle);
 
-        private string AlternativeItalicDelimiter => Settings.AlternativeItalicDelimiter;
-
-        private string StrikethroughDelimiter => Settings.StrikethroughDelimiter;
-
-        private string CodeDelimiter => Settings.CodeDelimiter;
-
-        private string TableDelimiter => Settings.TableDelimiter;
+        private string AlternativeItalicDelimiter => ItalicDelimiter(Settings.AlternativeItalicStyle);
 
         private ListItemStyle ListItemStyle => Settings.ListItemStyle;
 
         private string ListItemStart => ListItemStart(ListItemStyle);
-
-        private string CodeBlockChars => Settings.CodeBlockChars;
 
         private string IndentChars => Settings.IndentChars;
 
@@ -60,15 +51,15 @@ namespace Roslynator.Markdown
 
         private bool AddEmptyLineAfterCodeBlock => Settings.EmptyLineAfterCodeBlock;
 
-        private TableFormatting TableFormatting => Settings.TableFormatting;
+        private TableOptions TableOptions => Settings.TableOptions;
 
-        private bool FormatTableHeader => TableFormatting == TableFormatting.Header || TableFormatting == TableFormatting.All;
+        private bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
 
-        private bool FormatTableContent => TableFormatting == TableFormatting.All;
+        private bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
 
-        private bool UseTableOuterPipe => Settings.UseTableOuterPipe;
+        private bool TableOuterPipe => Settings.TableOuterPipe;
 
-        private bool UseTablePadding => Settings.UseTablePadding;
+        private bool TablePadding => Settings.TablePadding;
 
         private bool AllowLinkWithoutUrl => Settings.AllowLinkWithoutUrl;
 
@@ -189,6 +180,7 @@ namespace Roslynator.Markdown
             return this;
         }
 
+        //TODO: code contains `
         public MarkdownBuilder AppendCode(string value)
         {
             AppendDelimiter(CodeDelimiter, value);
@@ -290,20 +282,17 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendListItem(string value)
         {
-            AppendItem(ListItemStart, value);
-            return this;
+            return AppendItem(ListItemStart, value);
         }
 
         public MarkdownBuilder AppendListItem(object value)
         {
-            AppendItem(ListItemStart, value);
-            return this;
+            return AppendItem(ListItemStart, value);
         }
 
         public MarkdownBuilder AppendListItem(params object[] values)
         {
-            AppendItem(ListItemStart, values);
-            return this;
+            return AppendItem(ListItemStart, values);
         }
 
         public MarkdownBuilder AppendListItemStart()
@@ -314,20 +303,17 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
         {
-            AppendItem(OrderedListItemStart(number), value);
-            return this;
+            return AppendItem(OrderedListItemStart(number), value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, object value)
         {
-            AppendItem(OrderedListItemStart(number), value);
-            return this;
+            return AppendItem(OrderedListItemStart(number), value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
         {
-            AppendItem(OrderedListItemStart(number), values);
-            return this;
+            return AppendItem(OrderedListItemStart(number), values);
         }
 
         public MarkdownBuilder AppendOrderedListItemStart(int number)
@@ -339,38 +325,32 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendTaskListItem(string value)
         {
-            AppendItem(TaskListItemStart(), value);
-            return this;
+            return AppendItem(TaskListItemStart(), value);
         }
 
         public MarkdownBuilder AppendTaskListItem(object value)
         {
-            AppendItem(TaskListItemStart(), value);
-            return this;
+            return AppendItem(TaskListItemStart(), value);
         }
 
         public MarkdownBuilder AppendTaskListItem(params object[] values)
         {
-            AppendItem(TaskListItemStart(), values);
-            return this;
+            return AppendItem(TaskListItemStart(), values);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(string value)
         {
-            AppendItem(TaskListItemStart(isCompleted: true), value);
-            return this;
+            return AppendItem(TaskListItemStart(isCompleted: true), value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(object value)
         {
-            AppendItem(TaskListItemStart(isCompleted: true), value);
-            return this;
+            return AppendItem(TaskListItemStart(isCompleted: true), value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(params object[] values)
         {
-            AppendItem(TaskListItemStart(isCompleted: true), values);
-            return this;
+            return AppendItem(TaskListItemStart(isCompleted: true), values);
         }
 
         public MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
@@ -397,14 +377,14 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendImage(string text, string url)
+        public MarkdownBuilder AppendImage(string text, string url, string title = null)
         {
             AppendRaw("!");
-            AppendLinkCore(text, url);
+            AppendLinkCore(text, url, title);
             return this;
         }
 
-        public MarkdownBuilder AppendLink(string text, string url)
+        public MarkdownBuilder AppendLink(string text, string url, string title = null)
         {
             if (url == null)
             {
@@ -413,26 +393,89 @@ namespace Roslynator.Markdown
 
                 return Append(text);
             }
-            else if (url.Length == 0)
+
+            if (url.Length == 0)
             {
                 if (!AllowLinkWithoutUrl)
                     throw new ArgumentException("Url cannot be empty.", nameof(url));
 
                 return Append(text);
             }
-            else
+
+            return AppendLinkCore(text, url, title);
+        }
+
+        private MarkdownBuilder AppendLinkCore(string text, string url, string title)
+        {
+            AppendSquareBrackets(text);
+            AppendRaw("(");
+            Append(url, shouldBeEscaped: f => f == '(' || f == ')');
+            AppendLinkTitle(title);
+            AppendRaw(")");
+            return this;
+        }
+
+        public MarkdownBuilder AppendImageReference(string text, string label)
+        {
+            AppendRaw("!");
+            AppendLinkReference(text, label);
+            return this;
+        }
+
+        public MarkdownBuilder AppendLinkReference(string text, string label = null)
+        {
+            AppendSquareBrackets(text);
+            AppendSquareBrackets(label);
+            return this;
+        }
+
+        public MarkdownBuilder AppendLabel(string label, string url, string title = null)
+        {
+            AppendSquareBrackets(label);
+            AppendRaw(": ");
+            AppendAngleBrackets(url);
+            AppendLinkTitle(title);
+            return this;
+        }
+
+        private void AppendLinkTitle(string title)
+        {
+            if (!string.IsNullOrEmpty(title))
             {
-                return AppendLinkCore(text, url);
+                AppendRaw(" ");
+                AppendDoubleQuotes(title);
             }
         }
 
-        private MarkdownBuilder AppendLinkCore(string text, string url)
+        private void AppendDoubleQuotes(string value)
+        {
+            AppendRaw("\"");
+            Append(value, shouldBeEscaped: f => f == '"');
+            AppendRaw("\"");
+        }
+
+        private void AppendSquareBrackets(string value)
         {
             AppendRaw("[");
-            Append(text, shouldBeEscaped: f => f == '[' || f == ']');
-            AppendRaw("](");
-            Append(url, shouldBeEscaped: f => f == '(' || f == ')');
-            AppendRaw(")");
+            Append(value, shouldBeEscaped: f => f == '[' || f == ']');
+            AppendRaw("]");
+        }
+
+        private void AppendAngleBrackets(string value)
+        {
+            AppendRaw("<");
+            Append(value, shouldBeEscaped: f => f == '<' || f == '>');
+            AppendRaw(">");
+        }
+
+        public MarkdownBuilder AppendCodeBlock(string code, bool indent)
+        {
+            if (!indent)
+                return AppendCodeBlock(code, language: null);
+
+            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix: "    ");
+            AppendBlock(code, prefix: "    ", escape: false);
+            AppendEmptyLineIf(AddEmptyLineAfterCodeBlock);
             return this;
         }
 
@@ -798,7 +841,7 @@ namespace Roslynator.Markdown
         {
             if (index == length - 1)
             {
-                if (UseTableOuterPipe)
+                if (TableOuterPipe)
                 {
                     AppendTablePadding();
                     AppendTableDelimiter();
@@ -812,13 +855,13 @@ namespace Roslynator.Markdown
 
         private void AppendTableOuterPipe()
         {
-            if (UseTableOuterPipe)
+            if (TableOuterPipe)
                 AppendTableDelimiter();
         }
 
         private void AppendTablePadding()
         {
-            if (UseTablePadding)
+            if (TablePadding)
                 AppendRaw(" ");
         }
 
