@@ -12,60 +12,60 @@ namespace Roslynator.Markdown
         {
         }
 
-        public TableHeaderCollection Headers { get; } = new TableHeaderCollection();
+        public TableColumnCollection Columns { get; } = new TableColumnCollection();
 
         public Collection<IList<object>> Rows { get; } = new Collection<IList<object>>();
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendTable(Headers, Rows);
+            return mb.AppendTable(Columns, Rows);
         }
 
-        public Table AddHeaders(params TableHeader[] headers)
+        public Table AddColumns(params TableColumn[] columns)
         {
-            foreach (TableHeader header in headers)
-                Headers.Add(header);
+            foreach (TableColumn column in columns)
+                Columns.Add(column);
 
             return this;
         }
 
-        public Table AddHeader(TableHeader header)
+        public Table AddColumn(TableColumn column)
         {
-            Headers.Add(header);
+            Columns.Add(column);
             return this;
         }
 
-        public Table AddHeaders(TableHeader header1, TableHeader header2)
+        public Table AddColumns(TableColumn column1, TableColumn column2)
         {
-            Headers.Add(header1);
-            Headers.Add(header2);
+            Columns.Add(column1);
+            Columns.Add(column2);
             return this;
         }
 
-        public Table AddHeaders(TableHeader header1, TableHeader header2, TableHeader header3)
+        public Table AddColumns(TableColumn column1, TableColumn column2, TableColumn column3)
         {
-            Headers.Add(header1);
-            Headers.Add(header2);
-            Headers.Add(header3);
+            Columns.Add(column1);
+            Columns.Add(column2);
+            Columns.Add(column3);
             return this;
         }
 
-        public Table AddHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
+        public Table AddColumns(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
         {
-            Headers.Add(header1);
-            Headers.Add(header2);
-            Headers.Add(header3);
-            Headers.Add(header4);
+            Columns.Add(column1);
+            Columns.Add(column2);
+            Columns.Add(column3);
+            Columns.Add(column4);
             return this;
         }
 
-        public Table AddHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
+        public Table AddColumns(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
         {
-            Headers.Add(header1);
-            Headers.Add(header2);
-            Headers.Add(header3);
-            Headers.Add(header4);
-            Headers.Add(header5);
+            Columns.Add(column1);
+            Columns.Add(column2);
+            Columns.Add(column3);
+            Columns.Add(column4);
+            Columns.Add(column5);
             return this;
         }
 

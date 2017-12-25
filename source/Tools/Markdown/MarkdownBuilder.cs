@@ -110,135 +110,174 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendBold(string value)
         {
-            AppendDelimiter(BoldDelimiter, value);
-            return this;
+            return AppendDelimiter(BoldDelimiter, value);
         }
 
         public MarkdownBuilder AppendBold(object value)
         {
-            AppendDelimiter(BoldDelimiter, value);
-            return this;
+            return AppendDelimiter(BoldDelimiter, value);
         }
 
         public MarkdownBuilder AppendBold(params object[] values)
         {
-            AppendDelimiter(BoldDelimiter, values);
-            return this;
+            return AppendDelimiter(BoldDelimiter, values);
         }
 
         public MarkdownBuilder AppendBoldDelimiter()
         {
-            AppendRaw(BoldDelimiter);
-            return this;
+            return AppendRaw(BoldDelimiter);
         }
 
         public MarkdownBuilder AppendItalic(string value)
         {
-            AppendDelimiter(ItalicDelimiter, value);
-            return this;
+            return AppendDelimiter(ItalicDelimiter, value);
         }
 
         public MarkdownBuilder AppendItalic(object value)
         {
-            AppendDelimiter(ItalicDelimiter, value);
-            return this;
+            return AppendDelimiter(ItalicDelimiter, value);
         }
 
         public MarkdownBuilder AppendItalic(params object[] values)
         {
-            AppendDelimiter(ItalicDelimiter, values);
-            return this;
+            return AppendDelimiter(ItalicDelimiter, values);
         }
 
         public MarkdownBuilder AppendItalicDelimiter()
         {
-            AppendRaw(ItalicDelimiter);
-            return this;
+            return AppendRaw(ItalicDelimiter);
         }
 
         public MarkdownBuilder AppendStrikethrough(string value)
         {
-            AppendDelimiter(StrikethroughDelimiter, value);
-            return this;
+            return AppendDelimiter(StrikethroughDelimiter, value);
         }
 
         public MarkdownBuilder AppendStrikethrough(object value)
         {
-            AppendDelimiter(StrikethroughDelimiter, value);
-            return this;
+            return AppendDelimiter(StrikethroughDelimiter, value);
         }
 
         public MarkdownBuilder AppendStrikethrough(params object[] values)
         {
-            AppendDelimiter(StrikethroughDelimiter, values);
-            return this;
+            return AppendDelimiter(StrikethroughDelimiter, values);
         }
 
         public MarkdownBuilder AppendStrikethroughDelimiter()
         {
-            AppendRaw(StrikethroughDelimiter);
-            return this;
+            return AppendRaw(StrikethroughDelimiter);
         }
 
         //TODO: code contains `
+        //TODO: first char is `
         public MarkdownBuilder AppendCode(string value)
         {
-            AppendDelimiter(CodeDelimiter, value);
-            return this;
+            return AppendDelimiter(CodeDelimiter, value);
         }
 
         public MarkdownBuilder AppendCode(object value)
         {
-            AppendDelimiter(CodeDelimiter, value);
-            return this;
+            return AppendDelimiter(CodeDelimiter, value);
         }
 
         public MarkdownBuilder AppendCode(params object[] values)
         {
-            AppendDelimiter(CodeDelimiter, values);
-            return this;
+            return AppendDelimiter(CodeDelimiter, values);
         }
 
         public MarkdownBuilder AppendCodeDelimiter()
         {
-            AppendRaw(CodeDelimiter);
-            return this;
+            return AppendRaw(CodeDelimiter);
+        }
+
+        public MarkdownBuilder AppendHeading1(string value)
+        {
+            return AppendHeading(1, value);
         }
 
         public MarkdownBuilder AppendHeading1(object value = null)
         {
-            AppendHeading(1, value);
-            return this;
+            return AppendHeading(1, value);
+        }
+
+        public MarkdownBuilder AppendHeading1(params object[] value)
+        {
+            return AppendHeading(1, value);
+        }
+
+        public MarkdownBuilder AppendHeading2(string value)
+        {
+            return AppendHeading(2, value);
         }
 
         public MarkdownBuilder AppendHeading2(object value = null)
         {
-            AppendHeading(2, value);
-            return this;
+            return AppendHeading(2, value);
+        }
+
+        public MarkdownBuilder AppendHeading2(params object[] value)
+        {
+            return AppendHeading(2, value);
+        }
+
+        public MarkdownBuilder AppendHeading3(string value)
+        {
+            return AppendHeading(3, value);
         }
 
         public MarkdownBuilder AppendHeading3(object value = null)
         {
-            AppendHeading(3, value);
-            return this;
+            return AppendHeading(3, value);
+        }
+
+        public MarkdownBuilder AppendHeading3(params object[] value)
+        {
+            return AppendHeading(3, value);
+        }
+
+        public MarkdownBuilder AppendHeading4(string value)
+        {
+            return AppendHeading(4, value);
         }
 
         public MarkdownBuilder AppendHeading4(object value = null)
         {
-            AppendHeading(4, value);
-            return this;
+            return AppendHeading(4, value);
+        }
+
+        public MarkdownBuilder AppendHeading4(params object[] value)
+        {
+            return AppendHeading(4, value);
+        }
+
+        public MarkdownBuilder AppendHeading5(string value)
+        {
+            return AppendHeading(5, value);
         }
 
         public MarkdownBuilder AppendHeading5(object value = null)
         {
-            AppendHeading(5, value);
-            return this;
+            return AppendHeading(5, value);
+        }
+
+        public MarkdownBuilder AppendHeading5(params object[] value)
+        {
+            return AppendHeading(5, value);
+        }
+
+        public MarkdownBuilder AppendHeading6(string value)
+        {
+            return AppendHeading(6, value);
         }
 
         public MarkdownBuilder AppendHeading6(object value = null)
         {
-            AppendHeading(6, value);
-            return this;
+            return AppendHeading(6, value);
+        }
+
+        public MarkdownBuilder AppendHeading6(params object[] value)
+        {
+            return AppendHeading(6, value);
         }
 
         public MarkdownBuilder AppendHeading(int level, string value = null)
@@ -276,8 +315,7 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendHeadingStart(int level)
         {
-            AppendRaw(HeadingStart(level));
-            return this;
+            return AppendRaw(HeadingStart(level));
         }
 
         public MarkdownBuilder AppendListItem(string value)
@@ -297,8 +335,7 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendListItemStart()
         {
-            AppendRaw(ListItemStart);
-            return this;
+            return AppendRaw(ListItemStart);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
@@ -319,8 +356,7 @@ namespace Roslynator.Markdown
         public MarkdownBuilder AppendOrderedListItemStart(int number)
         {
             StringBuilder.Append(number);
-            AppendRaw(". ");
-            return this;
+            return AppendRaw(". ");
         }
 
         public MarkdownBuilder AppendTaskListItem(string value)
@@ -355,26 +391,22 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
         {
-            AppendRaw(TaskListItemStart(isCompleted));
-            return this;
+            return AppendRaw(TaskListItemStart(isCompleted));
         }
 
-        public MarkdownBuilder AppendItem(string prefix, string value)
+        private MarkdownBuilder AppendItem(string prefix, string value)
         {
-            AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
-            return this;
+            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
         }
 
-        public MarkdownBuilder AppendItem(string prefix, object value)
+        private MarkdownBuilder AppendItem(string prefix, object value)
         {
-            AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
-            return this;
+            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
         }
 
-        public MarkdownBuilder AppendItem(string prefix, params object[] values)
+        private MarkdownBuilder AppendItem(string prefix, params object[] values)
         {
-            AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, values: values);
-            return this;
+            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, values: values);
         }
 
         public MarkdownBuilder AppendImage(string text, string url, string title = null)
@@ -489,6 +521,7 @@ namespace Roslynator.Markdown
             return this;
         }
 
+        //TODO: overload
         public MarkdownBuilder AppendQuoteBlock(string value = null)
         {
             AppendBlock(value, prefix: "> ");
@@ -556,8 +589,7 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendCodeBlockChars()
         {
-            AppendRaw(CodeBlockChars);
-            return this;
+            return AppendRaw(CodeBlockChars);
         }
 
         public MarkdownBuilder AppendHorizonalRule()
@@ -567,37 +599,37 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendTable(IEnumerable<TableHeader> headers, IEnumerable<IList<object>> rows)
+        public MarkdownBuilder AppendTable(IEnumerable<TableColumn> columns, IEnumerable<IList<object>> rows)
         {
-            return AppendTable(new TableHeaderCollection(headers), rows.ToList());
+            return AppendTable(new TableColumnCollection(columns), rows.ToList());
         }
 
-        public MarkdownBuilder AppendTable(IList<TableHeader> headers, IList<IList<object>> rows)
+        public MarkdownBuilder AppendTable(IList<TableColumn> columns, IList<IList<object>> rows)
         {
-            int columnCount = headers.Count;
+            int columnCount = columns.Count;
 
             if (columnCount == 0)
                 return this;
 
             if (FormatTableContent)
             {
-                List<int> widths = CalculateWidths(headers, rows, columnCount);
+                List<int> widths = CalculateWidths(columns, rows, columnCount);
 
-                AppendTableHeader(headers, columnCount, widths);
+                AppendTableHeader(columns, columnCount, widths);
                 AppendTableRows(rows, columnCount, widths);
             }
             else
             {
-                AppendTableHeader(headers, columnCount);
+                AppendTableHeader(columns, columnCount);
                 AppendTableRows(rows, columnCount);
             }
 
             return this;
         }
 
-        private List<int> CalculateWidths<T>(IList<TableHeader> headers, IList<T> items, IList<Func<T, object>> valueProviders)
+        private List<int> CalculateWidths<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> valueProviders)
         {
-            List<int> widths = GetHeadersWidths(headers);
+            List<int> widths = GetColumnsWidths(columns);
 
             int index = 0;
 
@@ -617,37 +649,37 @@ namespace Roslynator.Markdown
         }
 
         public MarkdownBuilder AppendTable<T>(
-            IEnumerable<TableHeader> headers,
+            IEnumerable<TableColumn> columns,
             IEnumerable<T> rows,
             IEnumerable<Func<T, object>> valueProviders)
         {
-            return AppendTable(new TableHeaderCollection(headers), rows.ToList(), valueProviders.ToList());
+            return AppendTable(new TableColumnCollection(columns), rows.ToList(), valueProviders.ToList());
         }
 
-        public MarkdownBuilder AppendTable<T>(IList<TableHeader> headers, IList<T> items, IList<Func<T, object>> valueProviders)
+        public MarkdownBuilder AppendTable<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> valueProviders)
         {
-            int columnCount = headers.Count;
+            int columnCount = columns.Count;
 
             if (columnCount == 0)
                 return this;
 
             if (FormatTableContent)
             {
-                List<int> widths = CalculateWidths(headers, items, valueProviders);
+                List<int> widths = CalculateWidths(columns, items, valueProviders);
 
-                AppendTableHeader(headers, columnCount, widths);
+                AppendTableHeader(columns, columnCount, widths);
                 AppendTableRows(items, valueProviders, columnCount, widths);
             }
             else
             {
-                AppendTableHeader(headers, columnCount);
+                AppendTableHeader(columns, columnCount);
                 AppendTableRows(items, valueProviders, columnCount);
             }
 
             return this;
         }
 
-        private List<int> CalculateWidths(IList<TableHeader> headers, IList<IList<object>> rows, int columnCount)
+        private List<int> CalculateWidths(IList<TableColumn> columns, IList<IList<object>> rows, int columnCount)
         {
             var widths = new List<int>();
 
@@ -667,7 +699,7 @@ namespace Roslynator.Markdown
 
             int count = widths.Count;
 
-            List<int> maxWidths = GetHeadersWidths(headers);
+            List<int> maxWidths = GetColumnsWidths(columns);
 
             for (int i = 0; i < columnCount; i++)
             {
@@ -680,45 +712,45 @@ namespace Roslynator.Markdown
             return maxWidths;
         }
 
-        private static List<int> GetHeadersWidths(IList<TableHeader> headers)
+        private static List<int> GetColumnsWidths(IList<TableColumn> columns)
         {
-            var widths = new List<int>(headers.Count);
+            var widths = new List<int>(columns.Count);
 
-            foreach (TableHeader header in headers)
-                widths.Add(header.Name.Length);
+            foreach (TableColumn column in columns)
+                widths.Add(column.Name.Length);
 
             return widths;
         }
 
-        public MarkdownBuilder AppendTableHeader(params TableHeader[] headers)
+        public MarkdownBuilder AppendTableHeader(params TableColumn[] columns)
         {
-            if (headers == null)
-                throw new ArgumentNullException(nameof(headers));
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
 
-            int length = headers.Length;
+            int length = columns.Length;
 
             if (length == 0)
                 return this;
 
-            AppendTableHeader(headers, length);
+            AppendTableHeader(columns, length);
             return this;
         }
 
-        public MarkdownBuilder AppendTableHeader(IList<TableHeader> headers)
+        public MarkdownBuilder AppendTableHeader(IList<TableColumn> columns)
         {
-            if (headers == null)
-                throw new ArgumentNullException(nameof(headers));
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
 
-            int count = headers.Count;
+            int count = columns.Count;
 
             if (count == 0)
                 return this;
 
-            AppendTableHeader(headers, count);
+            AppendTableHeader(columns, count);
             return this;
         }
 
-        internal void AppendTableHeader(IList<TableHeader> headers, int columnCount, IList<int> widths = null)
+        internal void AppendTableHeader(IList<TableColumn> columns, int columnCount, IList<int> widths = null)
         {
             for (int i = 0; i < columnCount; i++)
             {
@@ -726,7 +758,7 @@ namespace Roslynator.Markdown
 
                 AppendTablePadding();
 
-                string name = headers[i].Name;
+                string name = columns[i].Name;
 
                 Append(name);
 
@@ -748,11 +780,11 @@ namespace Roslynator.Markdown
 
             for (int i = 0; i < columnCount; i++)
             {
-                TableHeader header = headers[i];
+                TableColumn column = columns[i];
 
                 AppendTableRowStart(i);
 
-                if (header.Alignment == Alignment.Center)
+                if (column.Alignment == Alignment.Center)
                 {
                     AppendRaw(":");
                 }
@@ -764,9 +796,9 @@ namespace Roslynator.Markdown
                 AppendRaw("---");
 
                 if (FormatTableHeader)
-                    AppendPadRight(3, widths?[i] ?? headers[i].Name.Length, 3, '-');
+                    AppendPadRight(3, widths?[i] ?? columns[i].Name.Length, 3, '-');
 
-                if (header.Alignment != Alignment.Left)
+                if (column.Alignment != Alignment.Left)
                 {
                     AppendRaw(":");
                 }
@@ -880,6 +912,7 @@ namespace Roslynator.Markdown
             }
         }
 
+        //TODO: contains -->
         public MarkdownBuilder AppendComment(string value)
         {
             AppendRaw("<!-- ");
@@ -912,25 +945,28 @@ namespace Roslynator.Markdown
                 Append(CodeDelimiter);
         }
 
-        private void AppendDelimiter(string delimiter, string value)
+        private MarkdownBuilder AppendDelimiter(string delimiter, string value)
         {
             AppendRaw(delimiter);
             Append(value);
             AppendRaw(delimiter);
+            return this;
         }
 
-        private void AppendDelimiter(string delimiter, object value)
+        private MarkdownBuilder AppendDelimiter(string delimiter, object value)
         {
             AppendRaw(delimiter);
             Append(value);
             AppendRaw(delimiter);
+            return this;
         }
 
-        private void AppendDelimiter(string delimiter, params object[] values)
+        private MarkdownBuilder AppendDelimiter(string delimiter, params object[] values)
         {
             AppendRaw(delimiter);
             AppendRange(values);
             AppendRaw(delimiter);
+            return this;
         }
 
         private MarkdownBuilder AppendLineMarkdown(string prefix, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, string value)
@@ -1022,12 +1058,7 @@ namespace Roslynator.Markdown
             }
         }
 
-        public MarkdownBuilder Append(string value, EmphasisOptions options)
-        {
-            return Append(value, options, escape: true);
-        }
-
-        public MarkdownBuilder Append(string value, EmphasisOptions options, bool escape)
+        public MarkdownBuilder Append(string value, EmphasisOptions options, bool escape = true)
         {
             AppendDelimiter(options);
             Append(value, escape);
@@ -1038,7 +1069,6 @@ namespace Roslynator.Markdown
         internal MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped)
         {
             MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder);
-
             return this;
         }
 

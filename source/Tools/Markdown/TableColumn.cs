@@ -2,9 +2,10 @@
 
 namespace Roslynator.Markdown
 {
-    public struct TableHeader
+    //TODO: TableColumnDefinition
+    public struct TableColumn
     {
-        internal TableHeader(string name, Alignment alignment = Alignment.Left)
+        internal TableColumn(string name, Alignment alignment = Alignment.Left)
         {
             Name = name;
             Alignment = alignment;
@@ -14,9 +15,9 @@ namespace Roslynator.Markdown
 
         public Alignment Alignment { get; }
 
-        public static implicit operator TableHeader(string value)
+        public static implicit operator TableColumn(string value)
         {
-            return new TableHeader(value);
+            return new TableColumn(value);
         }
     }
 }

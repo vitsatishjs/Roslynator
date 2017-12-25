@@ -5,7 +5,7 @@ using System;
 namespace Roslynator.Markdown
 {
     [Flags]
-    public enum EmptyLineOptions
+    public enum CodeBlockOptions
     {
         None = 0,
         EmptyLineBefore = 1,

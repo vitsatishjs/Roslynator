@@ -14,7 +14,7 @@ namespace Roslynator.Markdown
             string horizontalRule = "___",
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
-            EmptyLineOptions codeBlockOptions = EmptyLineOptions.EmptyLineBeforeAndAfter,
+            CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             bool allowLinkWithoutUrl = true,
             string indentChars = "  ",
             Func<char, bool> shouldBeEscaped = null)
@@ -35,17 +35,11 @@ namespace Roslynator.Markdown
 
         public EmphasisStyle BoldStyle { get; }
 
-        public EmphasisStyle AlternativeBoldStyle
-        {
-            get { return GetAlternativeEmphasisStyle(BoldStyle); }
-        }
+        public EmphasisStyle AlternativeBoldStyle => GetAlternativeEmphasisStyle(BoldStyle);
 
         public EmphasisStyle ItalicStyle { get; }
 
-        public EmphasisStyle AlternativeItalicStyle
-        {
-            get { return GetAlternativeEmphasisStyle(ItalicStyle); }
-        }
+        public EmphasisStyle AlternativeItalicStyle => GetAlternativeEmphasisStyle(ItalicStyle);
 
         public ListItemStyle ListItemStyle { get; }
 
@@ -53,46 +47,25 @@ namespace Roslynator.Markdown
 
         public HeadingOptions HeadingOptions { get; }
 
-        internal bool EmptyLineBeforeHeading
-        {
-            get { return (HeadingOptions & HeadingOptions.EmptyLineBefore) != 0; }
-        }
+        internal bool EmptyLineBeforeHeading => (HeadingOptions & HeadingOptions.EmptyLineBefore) != 0;
 
-        internal bool EmptyLineAfterHeading
-        {
-            get { return (HeadingOptions & HeadingOptions.EmptyLineAfter) != 0; }
-        }
+        internal bool EmptyLineAfterHeading => (HeadingOptions & HeadingOptions.EmptyLineAfter) != 0;
 
-        public EmptyLineOptions CodeBlockOptions { get; }
+        public CodeBlockOptions CodeBlockOptions { get; }
 
-        internal bool EmptyLineBeforeCodeBlock
-        {
-            get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineBefore) != 0; }
-        }
+        internal bool EmptyLineBeforeCodeBlock => (CodeBlockOptions & CodeBlockOptions.EmptyLineBefore) != 0;
 
-        internal bool EmptyLineAfterCodeBlock
-        {
-            get { return (CodeBlockOptions & EmptyLineOptions.EmptyLineAfter) != 0; }
-        }
+        internal bool EmptyLineAfterCodeBlock => (CodeBlockOptions & CodeBlockOptions.EmptyLineAfter) != 0;
 
         public TableOptions TableOptions { get; }
 
-        internal bool TablePadding
-        {
-            get { return (TableOptions & TableOptions.Padding) != 0; }
-        }
+        internal bool TablePadding => (TableOptions & TableOptions.Padding) != 0;
 
-        internal bool TableOuterPipe
-        {
-            get { return (TableOptions & TableOptions.OuterPipe) != 0; }
-        }
+        internal bool TableOuterPipe => (TableOptions & TableOptions.OuterPipe) != 0;
 
         public bool AllowLinkWithoutUrl { get; }
 
-        internal bool CloseHeading
-        {
-            get { return (HeadingOptions & HeadingOptions.Close) != 0; }
-        }
+        internal bool CloseHeading => (HeadingOptions & HeadingOptions.Close) != 0;
 
         public string IndentChars { get; }
 

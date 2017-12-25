@@ -252,74 +252,79 @@ namespace Roslynator.Markdown
             return new Table();
         }
 
-        public static Table Table(params TableHeader[] headers)
+        public static Table Table(params TableColumn[] columns)
         {
             Table table = Table();
 
-            table.AddHeaders(headers);
+            table.AddColumns(columns);
 
             return table;
         }
 
-        public static Table Table(TableHeader header1, TableHeader header2)
+        public static Table Table(TableColumn column1, TableColumn column2)
         {
             Table table = Table();
 
-            table.AddHeaders(header1, header2);
+            table.AddColumns(column1, column2);
 
             return table;
         }
 
-        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3)
+        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3)
         {
             Table table = Table();
 
-            table.AddHeaders(header1, header2, header3);
+            table.AddColumns(column1, column2, column3);
 
             return table;
         }
 
-        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
+        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
         {
             Table table = Table();
 
-            table.AddHeaders(header1, header2, header3, header4);
+            table.AddColumns(column1, column2, column3, column4);
 
             return table;
         }
 
-        public static Table Table(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
+        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
         {
             var table = new Table();
 
-            table.AddHeaders(header1, header2, header3, header4, header5);
+            table.AddColumns(column1, column2, column3, column4, column5);
 
             return table;
         }
 
-        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2)
+        public static TableColumnCollection TableHeader(TableColumn column)
         {
-            return new TableHeaderCollection() { header1, header2 };
+            return new TableColumnCollection() { column };
         }
 
-        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3)
+        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2)
         {
-            return new TableHeaderCollection() { header1, header2, header3 };
+            return new TableColumnCollection() { column1, column2 };
         }
 
-        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4)
+        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3)
         {
-            return new TableHeaderCollection() { header1, header2, header3, header4 };
+            return new TableColumnCollection() { column1, column2, column3 };
         }
 
-        public static TableHeaderCollection TableHeaders(TableHeader header1, TableHeader header2, TableHeader header3, TableHeader header4, TableHeader header5)
+        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
         {
-            return new TableHeaderCollection() { header1, header2, header3, header4, header5 };
+            return new TableColumnCollection() { column1, column2, column3, column4 };
         }
 
-        public static TableHeader TableHeader(string name, Alignment alignment = Alignment.Left)
+        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
         {
-            return new TableHeader(name, alignment);
+            return new TableColumnCollection() { column1, column2, column3, column4, column5 };
+        }
+
+        public static TableColumn TableHeader(string name, Alignment alignment = Alignment.Left)
+        {
+            return new TableColumn(name, alignment);
         }
 
         public static List<object> TableRow(object value)

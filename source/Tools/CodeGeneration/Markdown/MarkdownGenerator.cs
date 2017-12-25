@@ -183,7 +183,7 @@ namespace Roslynator.CodeGeneration.Markdown
             mb.AppendHeading2("Roslynator Analyzers");
 
             mb.AppendTable(
-                TableHeaders("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center)),
+                TableHeader("Id", "Title", "Category", TableHeader("Enabled by Default", Alignment.Center)),
                 analyzers.OrderBy(f => f.Id, comparer),
                 new Func<AnalyzerDescriptor, object>[]
                 {
@@ -203,7 +203,7 @@ namespace Roslynator.CodeGeneration.Markdown
             mb.AppendHeading2("Roslynator Refactorings");
 
             mb.AppendTable(
-                TableHeaders("Id", "Title", TableHeader("Enabled by Default", Alignment.Center)),
+                TableHeader("Id", "Title", TableHeader("Enabled by Default", Alignment.Center)),
                 refactorings.OrderBy(f => f.Title, comparer),
                 new Func<RefactoringDescriptor, object>[]
                 {
@@ -222,7 +222,7 @@ namespace Roslynator.CodeGeneration.Markdown
             mb.AppendHeading2("Roslynator Code Fixes");
 
             mb.AppendTable(
-                TableHeaders("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center)),
+                TableHeader("Id", "Title", "Fixable Diagnostics", TableHeader("Enabled by Default", Alignment.Center)),
                 codeFixes.OrderBy(f => f.Title, comparer),
                 new Func<CodeFixDescriptor, object>[]
                 {
