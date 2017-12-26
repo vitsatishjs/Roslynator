@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,8 +56,9 @@ namespace Roslynator.CSharp.Refactorings
             SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
             string name = variableDeclarator.Identifier.ValueText;
+            string camelCaseName = StringUtility.ToCamelCase(name);
 
-            string parameterName = GetUniqueParameterName(StringUtility.ToCamelCase(name.TrimStart('.')), members);
+            HashSet<string> reservedNames = null;
 
             for (int i = 0; i < members.Count; i++)
             {
@@ -78,11 +80,13 @@ namespace Roslynator.CSharp.Refactorings
 
                 SeparatedSyntaxList<ParameterSyntax> parameters = parameterList.Parameters;
 
+                reservedNames?.Clear();
+
+                string parameterName = GetParameterName(camelCaseName, parameters, ref reservedNames);
+
                 ParameterSyntax parameter = Parameter(((VariableDeclarationSyntax)variableDeclarator.Parent).Type.WithoutTrivia(), parameterName);
 
-                constructorDeclaration = constructorDeclaration.WithParameterList(
-                    parameterList.WithParameters(
-                        parameters.Add(parameter))).WithFormatterAnnotation();
+                parameterList = parameterList.WithParameters(parameters.Add(parameter)).WithFormatterAnnotation();
 
                 ConstructorInitializerSyntax initializer = constructorDeclaration.Initializer;
 
@@ -94,21 +98,26 @@ namespace Roslynator.CSharp.Refactorings
                     {
                         SeparatedSyntaxList<ArgumentSyntax> arguments = argumentList.Arguments;
 
-                        constructorDeclaration = constructorDeclaration.WithInitializer(
-                            initializer.WithArgumentList(
-                                argumentList.WithArguments(
-                                    arguments.Add(Argument(IdentifierName(parameterName))))).WithFormatterAnnotation());
+                        initializer = initializer.WithArgumentList(
+                            argumentList.WithArguments(
+                                arguments.Add(Argument(IdentifierName(parameterName))))).WithFormatterAnnotation();
                     }
                 }
 
-                SyntaxList<StatementSyntax> statements = body.Statements;
+                body = body.WithStatements(
+                    body.Statements.Add(
+                        SimpleAssignmentStatement(
+                            SimpleMemberAccessExpression(ThisExpression(), IdentifierName(name)).WithSimplifierAnnotation(),
+                            IdentifierName(parameterName)).WithFormatterAnnotation()));
 
-                constructorDeclaration = constructorDeclaration.WithBody(
-                    body.WithStatements(
-                        statements.Add(
-                            SimpleAssignmentStatement(
-                                SimpleMemberAccessExpression(ThisExpression(), IdentifierName(name)).WithSimplifierAnnotation(),
-                                IdentifierName(parameterName)).WithFormatterAnnotation())));
+                constructorDeclaration = constructorDeclaration.Update(
+                    constructorDeclaration.AttributeLists,
+                    constructorDeclaration.Modifiers,
+                    constructorDeclaration.Identifier,
+                    parameterList,
+                    initializer,
+                    body,
+                    constructorDeclaration.SemicolonToken);
 
                 members = members.ReplaceAt(i, constructorDeclaration);
             }
@@ -118,31 +127,32 @@ namespace Roslynator.CSharp.Refactorings
             return document.ReplaceNodeAsync(typeDeclaration, newNode, cancellationToken);
         }
 
-        private static string GetUniqueParameterName(string name, SyntaxList<MemberDeclarationSyntax> members)
+        private static string GetParameterName(
+            string name,
+            SeparatedSyntaxList<ParameterSyntax> parameters,
+            ref HashSet<string> reservedNames)
         {
-            HashSet<string> reservedNames = null;
+            bool isConflict = false;
 
-            foreach (MemberDeclarationSyntax member in members)
+            foreach (ParameterSyntax parameter in parameters)
             {
-                if (!(member is ConstructorDeclarationSyntax constructorDeclaration))
-                    continue;
-
-                if (constructorDeclaration.Modifiers.Contains(SyntaxKind.StaticKeyword))
-                    continue;
-
-                ParameterListSyntax parameterList = constructorDeclaration.ParameterList;
-
-                if (parameterList == null)
-                    continue;
-
-                foreach (ParameterSyntax parameter in parameterList.Parameters)
-                    (reservedNames ?? (reservedNames = new HashSet<string>())).Add(parameter.Identifier.ValueText);
+                if (string.Equals(name, parameter.Identifier.ValueText, StringComparison.Ordinal))
+                {
+                    isConflict = true;
+                    break;
+                }
             }
 
-            if (reservedNames != null)
-                name = NameGenerator.Default.EnsureUniqueName(name, reservedNames);
+            if (!isConflict)
+                return name;
 
-            return name;
+            if (reservedNames == null)
+                reservedNames = new HashSet<string>();
+
+            foreach (ParameterSyntax parameter in parameters)
+                reservedNames.Add(parameter.Identifier.ValueText);
+
+            return NameGenerator.Default.EnsureUniqueName(name, reservedNames);
         }
     }
 }
