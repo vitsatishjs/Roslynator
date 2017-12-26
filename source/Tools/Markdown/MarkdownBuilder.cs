@@ -63,6 +63,10 @@ namespace Roslynator.Markdown
 
         private bool AllowLinkWithoutUrl => Settings.AllowLinkWithoutUrl;
 
+        private bool UnderlineHeading1 => Settings.UnderlineHeading1;
+
+        private bool UnderlineHeading2 => Settings.UnderlineHeading2;
+
         private bool CloseHeading => Settings.CloseHeading;
 
         public char this[int index]
@@ -168,8 +172,7 @@ namespace Roslynator.Markdown
             return AppendRaw(StrikethroughDelimiter);
         }
 
-        //TODO: code contains `
-        //TODO: first char is `
+        //TODO: code contains `, first char is `
         public MarkdownBuilder AppendCode(string value)
         {
             return AppendDelimiter(CodeDelimiter, value);
@@ -282,35 +285,57 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendHeading(int level, string value = null)
         {
-            return AppendLineMarkdown(
-                prefix: HeadingStart(level),
-                suffix: (CloseHeading) ? HeadingEnd(level) : null,
-                indent: false,
-                emptyLineBefore: AddEmptyLineBeforeHeading,
-                emptyLineAfter: AddEmptyLineAfterHeading,
-                value: value);
+            return AppendHeading(level, value, Array.Empty<object>());
         }
 
         public MarkdownBuilder AppendHeading(int level, object value = null)
         {
-            return AppendLineMarkdown(
-                prefix: HeadingStart(level),
-                suffix: (CloseHeading) ? HeadingEnd(level) : null,
-                indent: false,
-                emptyLineBefore: AddEmptyLineBeforeHeading,
-                emptyLineAfter: AddEmptyLineAfterHeading,
-                value: value);
+            return AppendHeading(level, value, Array.Empty<object>());
         }
 
         public MarkdownBuilder AppendHeading(int level, params object[] values)
         {
-            return AppendLineMarkdown(
-                prefix: HeadingStart(level),
-                suffix: (CloseHeading) ? HeadingEnd(level) : null,
-                indent: false,
-                emptyLineBefore: AddEmptyLineBeforeHeading,
-                emptyLineAfter: AddEmptyLineAfterHeading,
-                values: values);
+            return AppendHeading(level, null, values);
+        }
+
+        private MarkdownBuilder AppendHeading(int level, object value, object[] additionalValues)
+        {
+            bool underline = (level == 1 && UnderlineHeading1)
+                || (level == 2 && UnderlineHeading2);
+
+            AppendEmptyLineIf(AddEmptyLineBeforeHeading);
+            AppendQuoteIndentation();
+
+            if (!underline)
+                AppendRaw(HeadingStart(level));
+
+            int length = Length;
+
+            Append(value);
+            AppendRange(additionalValues);
+
+            length = Length - length;
+
+            if (length == 0)
+                return this;
+
+            if (underline
+                && CloseHeading)
+            {
+                AppendRaw(HeadingEnd(level));
+            }
+
+            AppendLineIfNecessary();
+
+            if (underline)
+            {
+                AppendQuoteIndentation();
+                AppendRaw((level == 1) ? '=' : '-', length);
+                AppendLine();
+            }
+
+            AppendEmptyLineIf(AddEmptyLineAfterHeading);
+            return this;
         }
 
         public MarkdownBuilder AppendHeadingStart(int level)
@@ -320,17 +345,17 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendListItem(string value)
         {
-            return AppendItem(ListItemStart, value);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value);
         }
 
         public MarkdownBuilder AppendListItem(object value)
         {
-            return AppendItem(ListItemStart, value);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value);
         }
 
         public MarkdownBuilder AppendListItem(params object[] values)
         {
-            return AppendItem(ListItemStart, values);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, values: values);
         }
 
         public MarkdownBuilder AppendListItemStart()
@@ -340,17 +365,17 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
         {
-            return AppendItem(OrderedListItemStart(number), value);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, object value)
         {
-            return AppendItem(OrderedListItemStart(number), value);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
         {
-            return AppendItem(OrderedListItemStart(number), values);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", values: values);
         }
 
         public MarkdownBuilder AppendOrderedListItemStart(int number)
@@ -361,32 +386,32 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendTaskListItem(string value)
         {
-            return AppendItem(TaskListItemStart(), value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value);
         }
 
         public MarkdownBuilder AppendTaskListItem(object value)
         {
-            return AppendItem(TaskListItemStart(), value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value);
         }
 
         public MarkdownBuilder AppendTaskListItem(params object[] values)
         {
-            return AppendItem(TaskListItemStart(), values);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), values: values);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(string value)
         {
-            return AppendItem(TaskListItemStart(isCompleted: true), value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(object value)
         {
-            return AppendItem(TaskListItemStart(isCompleted: true), value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(params object[] values)
         {
-            return AppendItem(TaskListItemStart(isCompleted: true), values);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), values: values);
         }
 
         public MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
@@ -394,19 +419,40 @@ namespace Roslynator.Markdown
             return AppendRaw(TaskListItemStart(isCompleted));
         }
 
-        private MarkdownBuilder AppendItem(string prefix, string value)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, string value)
         {
-            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
+            return AppendLineMarkdown(
+                prefix1: prefix1,
+                prefix2: prefix2,
+                suffix: null,
+                indent: true,
+                emptyLineBefore: false,
+                emptyLineAfter: false,
+                value: value);
         }
 
-        private MarkdownBuilder AppendItem(string prefix, object value)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, object value)
         {
-            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, value: value);
+            return AppendLineMarkdown(
+                prefix1: prefix1,
+                prefix2: prefix2,
+                suffix: null,
+                indent: true,
+                emptyLineBefore: false,
+                emptyLineAfter: false,
+                value: value);
         }
 
-        private MarkdownBuilder AppendItem(string prefix, params object[] values)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, params object[] values)
         {
-            return AppendLineMarkdown(prefix, suffix: null, indent: true, emptyLineBefore: false, emptyLineAfter: false, values: values);
+            return AppendLineMarkdown(
+                prefix1: prefix1,
+                prefix2: prefix2,
+                suffix: null,
+                indent: true,
+                emptyLineBefore: false,
+                emptyLineAfter: false,
+                values: values);
         }
 
         public MarkdownBuilder AppendImage(string text, string url, string title = null)
@@ -505,7 +551,7 @@ namespace Roslynator.Markdown
             if (!indent)
                 return AppendCodeBlock(code, language: null);
 
-            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix: "    ");
+            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix2: "    ");
             AppendBlock(code, prefix: "    ", escape: false);
             AppendEmptyLineIf(AddEmptyLineAfterCodeBlock);
             return this;
@@ -513,10 +559,10 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendCodeBlock(string code, string language = null)
         {
-            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix: CodeBlockChars);
+            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix2: CodeBlockChars);
             AppendLineRaw(language);
             AppendBlock(code, escape: false);
-            AppendLineStart(addEmptyLine: false, indent: true, prefix: CodeBlockChars);
+            AppendLineStart(addEmptyLine: false, indent: true, prefix2: CodeBlockChars);
             AppendLineEnd(suffix: null, addEmptyLine: AddEmptyLineAfterCodeBlock);
             return this;
         }
@@ -524,7 +570,7 @@ namespace Roslynator.Markdown
         //TODO: overload
         public MarkdownBuilder AppendQuoteBlock(string value = null)
         {
-            AppendBlock(value, prefix: "> ");
+            AppendBlock(value, prefix: QuoteBlockStart);
             return this;
         }
 
@@ -552,7 +598,7 @@ namespace Roslynator.Markdown
                         AppendRaw(ch);
 
                         if (i + 1 < length)
-                            AppendLineStart(addEmptyLine: false, indent: true, prefix: prefix);
+                            AppendLineStart(addEmptyLine: false, indent: true, prefix2: prefix);
                     }
                     else if (ch == 13)
                     {
@@ -570,7 +616,7 @@ namespace Roslynator.Markdown
                         }
 
                         if (i + 1 < length)
-                            AppendLineStart(addEmptyLine: false, indent: true, prefix: prefix);
+                            AppendLineStart(addEmptyLine: false, indent: true, prefix2: prefix);
                     }
                 }
             }
@@ -912,7 +958,6 @@ namespace Roslynator.Markdown
             }
         }
 
-        //TODO: contains -->
         public MarkdownBuilder AppendComment(string value)
         {
             AppendRaw("<!-- ");
@@ -969,9 +1014,9 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(string prefix, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, string value)
+        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, string value)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix);
+            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
 
             if (AppendInternal(value) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
@@ -979,9 +1024,9 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(string prefix, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, object value)
+        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, object value)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix);
+            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
 
             if (AppendInternal(value) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
@@ -989,9 +1034,9 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(string prefix, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, params object[] values)
+        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, params object[] values)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix);
+            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
 
             if (AppendInternal(values) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
@@ -1100,20 +1145,26 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        private void AppendLineStart(bool addEmptyLine = false, bool indent = false, string prefix = null)
+        private void AppendLineStart(bool addEmptyLine = false, bool indent = false, object prefix1 = null, string prefix2 = null)
         {
             AppendEmptyLineIf(addEmptyLine);
 
             if (indent)
                 AppendIndentation();
 
-            for (int i = 1; i <= QuoteLevel; i++)
-                AppendRaw("> ");
+            AppendQuoteIndentation();
 
-            AppendRaw(prefix);
+            Append(prefix1, escape: false);
+            AppendRaw(prefix2);
         }
 
-        private void AppendLineEnd(string suffix, bool addEmptyLine)
+        private void AppendQuoteIndentation()
+        {
+            for (int i = 1; i <= QuoteLevel; i++)
+                AppendRaw(QuoteBlockStart);
+        }
+
+        private void AppendLineEnd(string suffix = null, bool addEmptyLine = false)
         {
             AppendRaw(suffix);
             AppendLine(addEmptyLine);
@@ -1131,6 +1182,14 @@ namespace Roslynator.Markdown
 
         private void AppendLine(bool addEmptyLine)
         {
+            AppendLineIfNecessary();
+
+            if (addEmptyLine)
+                AppendEmptyLine();
+        }
+
+        private void AppendLineIfNecessary()
+        {
             int length = Length;
 
             if (length == 0)
@@ -1138,9 +1197,6 @@ namespace Roslynator.Markdown
 
             if (this[length - 1] != '\n')
                 AppendLine();
-
-            if (addEmptyLine)
-                AppendEmptyLine();
         }
 
         private void AppendEmptyLineIf(bool condition)
@@ -1187,6 +1243,12 @@ namespace Roslynator.Markdown
         public MarkdownBuilder AppendRaw(char value)
         {
             StringBuilder.Append(value);
+            return this;
+        }
+
+        public MarkdownBuilder AppendRaw(char value, int repeatCount)
+        {
+            StringBuilder.Append(value, repeatCount);
             return this;
         }
 

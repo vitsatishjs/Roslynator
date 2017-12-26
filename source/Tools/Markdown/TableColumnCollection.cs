@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 
 namespace Roslynator.Markdown
 {
-    //TODO: TableHeader
     public class TableColumnCollection : Collection<TableColumn>
     {
         internal TableColumnCollection()

@@ -2,7 +2,6 @@
 
 namespace Roslynator.Markdown
 {
-    //TODO: TableColumnDefinition
     public struct TableColumn
     {
         internal TableColumn(string name, Alignment alignment = Alignment.Left)

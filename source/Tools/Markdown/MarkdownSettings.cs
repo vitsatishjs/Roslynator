@@ -4,7 +4,6 @@ using System;
 
 namespace Roslynator.Markdown
 {
-    //TODO: EmptyLineBetweenListItems
     public class MarkdownSettings
     {
         public MarkdownSettings(
@@ -64,6 +63,12 @@ namespace Roslynator.Markdown
         internal bool TableOuterPipe => (TableOptions & TableOptions.OuterPipe) != 0;
 
         public bool AllowLinkWithoutUrl { get; }
+
+        internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
+
+        internal bool UnderlineHeading1 => (HeadingOptions & HeadingOptions.UnderlineH1) != 0;
+
+        internal bool UnderlineHeading2 => (HeadingOptions & HeadingOptions.UnderlineH2) != 0;
 
         internal bool CloseHeading => (HeadingOptions & HeadingOptions.Close) != 0;
 
