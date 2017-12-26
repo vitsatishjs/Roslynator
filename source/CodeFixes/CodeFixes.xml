@@ -513,4 +513,9 @@
       <Id>CS0030</Id>
     </FixableDiagnosticIds>
   </CodeFix>
+  <CodeFix Id="RCF0093" Identifier="RemoveDefaultValueFromParameter" Title="Remove default value from parameter">
+    <FixableDiagnosticIds>
+      <Id>CS1751</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
 </CodeFixes>

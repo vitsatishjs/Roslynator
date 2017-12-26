@@ -20,7 +20,7 @@ namespace Roslynator.VisualStudio
             get;
         }
 
-        = CodeFixIdentifiers.ChangeTypeToVar;
+        = CodeFixIdentifiers.RemoveDefaultValueFromParameter;
         protected override void Fill(ICollection<BaseModel> codeFixes)
         {
             codeFixes.Clear();
@@ -114,6 +114,7 @@ namespace Roslynator.VisualStudio
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeTypeAccordingToInitializer, "Change type according to initializer (fixes CS0029)", IsEnabled(CodeFixIdentifiers.ChangeTypeAccordingToInitializer)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeForEachType, "Change foreach type (fixes CS0030)", IsEnabled(CodeFixIdentifiers.ChangeForEachType)));
             codeFixes.Add(new BaseModel(CodeFixIdentifiers.ChangeTypeToVar, "Change type to var (fixes CS0029, CS0030)", IsEnabled(CodeFixIdentifiers.ChangeTypeToVar)));
+            codeFixes.Add(new BaseModel(CodeFixIdentifiers.RemoveDefaultValueFromParameter, "Remove default value from parameter (fixes CS1751)", IsEnabled(CodeFixIdentifiers.RemoveDefaultValueFromParameter)));
         }
     }
 }
