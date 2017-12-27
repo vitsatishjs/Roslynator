@@ -11,6 +11,8 @@ namespace Roslynator.Markdown
 
         public static string CodeDelimiter => "`";
 
+        internal static char CodeDelimiterChar => '`';
+
         public static string TableDelimiter => "|";
 
         public static string CodeBlockChars => "```";

@@ -12,7 +12,7 @@ namespace Roslynator.Markdown
             return Escape(value, shouldBeEscaped, null);
         }
 
-        internal static string Escape(string value, Func<char, bool> shouldBeEscaped, StringBuilder sb)
+        internal static string Escape(string value, Func<char, bool> shouldBeEscaped, StringBuilder sb, char escapingChar = '\\')
         {
             bool fAppend = sb != null;
 
@@ -24,7 +24,7 @@ namespace Roslynator.Markdown
                         sb = new StringBuilder();
 
                     sb.Append(value, 0, i);
-                    sb.Append('\\');
+                    sb.Append(escapingChar);
                     sb.Append(value[i]);
 
                     i++;
@@ -35,7 +35,7 @@ namespace Roslynator.Markdown
                         if (shouldBeEscaped(value[i]))
                         {
                             sb.Append(value, lastIndex, i - lastIndex);
-                            sb.Append('\\');
+                            sb.Append(escapingChar);
                             sb.Append(value[i]);
 
                             i++;

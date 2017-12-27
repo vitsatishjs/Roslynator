@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="Alignment.cs" />
     <Compile Include="CodeBlock.cs" />
+    <Compile Include="CodeMarkdownBuilder.cs" />
+    <Compile Include="CodeMarkdownBuilderCache.cs" />
     <Compile Include="Emojis.cs" />
     <Compile Include="EmphasisOptions.cs" />
     <Compile Include="EmphasisStyle.cs" />

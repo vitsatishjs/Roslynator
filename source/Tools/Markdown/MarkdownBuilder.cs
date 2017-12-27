@@ -10,6 +10,8 @@ namespace Roslynator.Markdown
 {
     public class MarkdownBuilder
     {
+        private MarkdownSettings _settings;
+
         public MarkdownBuilder(MarkdownSettings settings = null)
             : this(new StringBuilder(), settings)
         {
@@ -21,7 +23,11 @@ namespace Roslynator.Markdown
             StringBuilder = sb;
         }
 
-        public MarkdownSettings Settings { get; }
+        public MarkdownSettings Settings
+        {
+            get { return _settings; }
+            set { _settings = value ?? throw new ArgumentNullException(nameof(value)); }
+        }
 
         public int IndentLevel { get; private set; }
 
@@ -172,20 +178,60 @@ namespace Roslynator.Markdown
             return AppendRaw(StrikethroughDelimiter);
         }
 
-        //TODO: code contains `, first char is `
         public MarkdownBuilder AppendCode(string value)
         {
-            return AppendDelimiter(CodeDelimiter, value);
+            AppendRaw(CodeDelimiter);
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (value[0] == CodeDelimiterChar)
+                    AppendRaw(" ");
+
+                Append(value, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
+
+                if (value[value.Length - 1] == CodeDelimiterChar)
+                    AppendRaw(" ");
+            }
+
+            AppendRaw(CodeDelimiter);
+
+            return this;
         }
 
         public MarkdownBuilder AppendCode(object value)
         {
-            return AppendDelimiter(CodeDelimiter, value);
+            return AppendCode(value, Array.Empty<object>());
         }
 
         public MarkdownBuilder AppendCode(params object[] values)
         {
-            return AppendDelimiter(CodeDelimiter, values);
+            return AppendCode(null, values);
+        }
+
+        private MarkdownBuilder AppendCode(object value, object[] additionalValues)
+        {
+            CodeMarkdownBuilder mb = CodeMarkdownBuilderCache.GetInstance();
+
+            mb.Append(value);
+            mb.AppendRange(additionalValues);
+
+            string s = CodeMarkdownBuilderCache.GetResultAndFree(mb);
+
+            AppendRaw(CodeDelimiter);
+
+            if (s.Length > 0)
+            {
+                if (s[0] == CodeDelimiterChar)
+                    AppendRaw(" ");
+
+                AppendRaw(s);
+
+                if (s[s.Length - 1] == CodeDelimiterChar)
+                    AppendRaw(" ");
+            }
+
+            AppendRaw(CodeDelimiter);
+            return this;
         }
 
         public MarkdownBuilder AppendCodeDelimiter()
@@ -380,7 +426,7 @@ namespace Roslynator.Markdown
 
         public MarkdownBuilder AppendOrderedListItemStart(int number)
         {
-            StringBuilder.Append(number);
+            AppendRaw(number);
             return AppendRaw(". ");
         }
 
@@ -487,7 +533,7 @@ namespace Roslynator.Markdown
         {
             AppendSquareBrackets(text);
             AppendRaw("(");
-            Append(url, shouldBeEscaped: f => f == '(' || f == ')');
+            Append(url, shouldBeEscaped: ch => ch == '(' || ch == ')');
             AppendLinkTitle(title);
             AppendRaw(")");
             return this;
@@ -528,21 +574,21 @@ namespace Roslynator.Markdown
         private void AppendDoubleQuotes(string value)
         {
             AppendRaw("\"");
-            Append(value, shouldBeEscaped: f => f == '"');
+            Append(value, shouldBeEscaped: ch => ch == '"');
             AppendRaw("\"");
         }
 
         private void AppendSquareBrackets(string value)
         {
             AppendRaw("[");
-            Append(value, shouldBeEscaped: f => f == '[' || f == ']');
+            Append(value, shouldBeEscaped: ch => ch == '[' || ch == ']');
             AppendRaw("]");
         }
 
         private void AppendAngleBrackets(string value)
         {
             AppendRaw("<");
-            Append(value, shouldBeEscaped: f => f == '<' || f == '>');
+            Append(value, shouldBeEscaped: ch => ch == '<' || ch == '>');
             AppendRaw(">");
         }
 
@@ -1111,9 +1157,9 @@ namespace Roslynator.Markdown
             return this;
         }
 
-        internal MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped)
+        internal virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
         {
-            MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder);
+            MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder, escapingChar);
             return this;
         }
 
@@ -1258,10 +1304,21 @@ namespace Roslynator.Markdown
             return this;
         }
 
+        public MarkdownBuilder AppendRaw(int value)
+        {
+            StringBuilder.Append(value);
+            return this;
+        }
+
         public MarkdownBuilder AppendLine()
         {
             StringBuilder.AppendLine();
             return this;
+        }
+
+        public void Clear()
+        {
+            StringBuilder.Clear();
         }
 
         public override string ToString()
