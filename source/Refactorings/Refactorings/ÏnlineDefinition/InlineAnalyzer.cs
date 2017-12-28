@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Roslynator.CSharp.Refactorings.InlineMember
+namespace Roslynator.CSharp.Refactorings.InlineDefinition
 {
     internal abstract class InlineAnalyzer<TNode, TDeclaration, TSymbol>
         where TNode : SyntaxNode
@@ -61,13 +61,9 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
 
                 if (expression != null)
                 {
-                    context.RegisterRefactoring(
-                        $"Inline {title}",
-                        cancellationToken => refactoring.InlineAsync(node, expression, cancellationToken));
+                    context.RegisterRefactoring($"Inline {title}", cancellationToken => refactoring.InlineAsync(node, expression, cancellationToken));
 
-                    context.RegisterRefactoring(
-                        $"Inline and remove {title}",
-                        cancellationToken => refactoring.InlineAndRemoveAsync(node, expression, cancellationToken));
+                    context.RegisterRefactoring($"Inline and remove {title}", cancellationToken => refactoring.InlineAndRemoveAsync(node, expression, cancellationToken));
                 }
                 else
                 {

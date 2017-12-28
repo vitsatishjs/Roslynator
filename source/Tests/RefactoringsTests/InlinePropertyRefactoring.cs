@@ -8,7 +8,7 @@ namespace Roslynator.CSharp.Refactorings.Tests
     {
         private class Foo
         {
-            void Bar(string s)
+            public void Bar(string s)
             {
                 s = Property;
                 s = this.Property;
@@ -16,7 +16,10 @@ namespace Roslynator.CSharp.Refactorings.Tests
                 s = Property2;
                 s = this.Property2;
 
+                s = StaticProperty;
                 s = Foo.StaticProperty;
+
+                s = StaticProperty2;
                 s = Foo.StaticProperty2;
             }
 

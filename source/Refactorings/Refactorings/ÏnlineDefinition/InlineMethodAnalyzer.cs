@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslynator.CSharp.Helpers;
 
-namespace Roslynator.CSharp.Refactorings.InlineMember
+namespace Roslynator.CSharp.Refactorings.InlineDefinition
 {
     internal class InlineMethodAnalyzer : InlineAnalyzer<InvocationExpressionSyntax, MethodDeclarationSyntax, IMethodSymbol>
     {

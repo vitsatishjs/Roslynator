@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Rename;
-using Roslynator.CSharp.Refactorings.InlineMember;
+using Roslynator.CSharp.Refactorings.InlineDefinition;
 using Roslynator.Utilities;
 
 namespace Roslynator.CSharp.Refactorings

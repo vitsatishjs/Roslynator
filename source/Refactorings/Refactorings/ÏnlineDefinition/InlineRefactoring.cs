@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.Editing;
 using Roslynator.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace Roslynator.CSharp.Refactorings.InlineMember
+namespace Roslynator.CSharp.Refactorings.InlineDefinition
 {
     internal abstract class InlineRefactoring<TNode, TDeclaration, TSymbol>
         where TNode : SyntaxNode
@@ -63,8 +63,8 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
 
         public CancellationToken CancellationToken { get; }
 
-        public Task<Document> InlineAsync(
-            TNode node,
+        public virtual Task<Document> InlineAsync(
+            SyntaxNode node,
             ExpressionSyntax expression,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -73,8 +73,8 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
             return Document.ReplaceNodeAsync(node, newExpression, cancellationToken);
         }
 
-        public async Task<Solution> InlineAndRemoveAsync(
-            TNode node,
+        public virtual async Task<Solution> InlineAndRemoveAsync(
+            SyntaxNode node,
             ExpressionSyntax expression,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -102,7 +102,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
             }
         }
 
-        private ParenthesizedExpressionSyntax RewriteExpression(TNode node, ExpressionSyntax expression)
+        private ParenthesizedExpressionSyntax RewriteExpression(SyntaxNode node, ExpressionSyntax expression)
         {
             return RewriteNode(expression)
                 .WithTriviaFrom(node)
@@ -110,7 +110,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
                 .WithFormatterAnnotation();
         }
 
-        public Task<Document> InlineAsync(
+        public virtual Task<Document> InlineAsync(
             ExpressionStatementSyntax expressionStatement,
             SyntaxList<StatementSyntax> statements,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -136,7 +136,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
             }
         }
 
-        public async Task<Solution> InlineAndRemoveAsync(
+        public virtual async Task<Solution> InlineAndRemoveAsync(
             ExpressionStatementSyntax expressionStatement,
             SyntaxList<StatementSyntax> statements,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -191,7 +191,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
             return newStatements;
         }
 
-        public T RewriteNode<T>(T node) where T : SyntaxNode
+        private T RewriteNode<T>(T node) where T : SyntaxNode
         {
             Dictionary<ISymbol, string> symbolMap = GetSymbolsToRename();
 
@@ -292,12 +292,14 @@ namespace Roslynator.CSharp.Refactorings.InlineMember
             if (!declarationSymbols.Any())
                 return null;
 
+            int position = Node.SpanStart;
+
             ImmutableArray<ISymbol> invocationSymbols = InvocationSemanticModel.GetSymbolsDeclaredInEnclosingSymbol(
-                Node.SpanStart,
+                position,
                 excludeAnonymousTypeProperty: true,
                 cancellationToken: CancellationToken);
 
-            invocationSymbols = invocationSymbols.AddRange(InvocationSemanticModel.LookupSymbols(Node.SpanStart));
+            invocationSymbols = invocationSymbols.AddRange(InvocationSemanticModel.LookupSymbols(position));
 
             var reservedNames = new HashSet<string>(invocationSymbols.Select(f => f.Name));
 

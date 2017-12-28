@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Roslynator.CSharp.Refactorings.InlineMember
+namespace Roslynator.CSharp.Refactorings.InlineDefinition
 {
     internal class InlineMethodRefactoring : InlineRefactoring<InvocationExpressionSyntax, MethodDeclarationSyntax, IMethodSymbol>
     {
