@@ -226,13 +226,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMethod
             foreach (IParameterSymbol parameterSymbol in parameters)
             {
                 if (parameterInfos == null
-                    || parameterInfos.FindIndex(f =>
-                    {
-                        Debug.WriteLine(f.ParameterSymbol == parameterSymbol);
-                        Debug.WriteLine(f.ParameterSymbol.Equals(parameterSymbol));
-                        Debug.WriteLine(f.ParameterSymbol.Name == parameterSymbol.Name);
-                        return f.ParameterSymbol.Equals(parameterSymbol);
-                    }) == -1)
+                    || parameterInfos.FindIndex(f => f.ParameterSymbol.Equals(parameterSymbol)) == -1)
                 {
                     if (parameterSymbol.HasExplicitDefaultValue)
                     {
