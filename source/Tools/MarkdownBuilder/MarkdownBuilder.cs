@@ -543,6 +543,12 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
+        public MarkdownBuilder AppendAutoLink(string url)
+        {
+            AppendAngleBrackets(url);
+            return this;
+        }
+
         public MarkdownBuilder AppendImageReference(string text, string label)
         {
             AppendRaw("!");
