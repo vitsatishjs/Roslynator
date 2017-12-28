@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.3;netcoreapp1.0;net45</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\global.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>MarkdownBuilder</PackageId>
+    <PackageVersion>0.1.0-beta</PackageVersion>
+    <Authors>Josef Pihrt</Authors>
+    <Company></Company>
+    <Description>MarkdownBuilder provides convenient way to generate markdown from any data.
+
+Commonly Used Types:
+Pihrtsoft.Markdown.MarkdownBuilder
+Pihrtsoft.Markdown.MarkdownSettings</Description>
+    <Copyright>Copyright (c) 2017-2018 Josef Pihrt</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>http://github.com/JosefPihrt/MarkdownBuilder/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>http://github.com/JosefPihrt/MarkdownBuilder</PackageProjectUrl>
+    <PackageIconUrl>http://pihrt.net/images/MarkdownBuilder.ico</PackageIconUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>markdown;md;codegeneration</PackageTags>
+    <RepositoryUrl>http://github.com/JosefPihrt/MarkdownBuilder.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>Pihrtsoft.Markdown</AssemblyName>
+    <RootNamespace>Pihrtsoft.Markdown</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MarkdownBuilder.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+</Project>

@@ -168,9 +168,9 @@
       <Project>{3AD7B124-7B99-440D-84A1-858BE5AE268B}</Project>
       <Name>Refactorings</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Markdown\Markdown.csproj">
-      <Project>{cabd560d-70aa-4569-9ed4-014b5fae1ed3}</Project>
-      <Name>Markdown</Name>
+    <ProjectReference Include="..\MarkdownBuilder\MarkdownBuilder.csproj">
+      <Project>{8b57aded-9334-4563-ab5a-13e88c810507}</Project>
+      <Name>MarkdownBuilder</Name>
     </ProjectReference>
     <ProjectReference Include="..\Metadata\Metadata.csproj">
       <Project>{7f6f6533-e406-4225-a435-dee22c717f48}</Project>

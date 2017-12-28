@@ -6,9 +6,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Roslynator.Markdown;
+using Pihrtsoft.Markdown;
 using Roslynator.Metadata;
-using static Roslynator.Markdown.MarkdownFactory;
+using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
 {

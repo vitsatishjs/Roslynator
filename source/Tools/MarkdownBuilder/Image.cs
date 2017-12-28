@@ -1,0 +1,25 @@
+﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+namespace Pihrtsoft.Markdown
+{
+    public struct Image : IMarkdown
+    {
+        internal Image(string text, string url, string title = null)
+        {
+            Text = text;
+            Url = url;
+            Title = title;
+        }
+
+        public string Text { get; }
+
+        public string Url { get; }
+
+        public string Title { get; }
+
+        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        {
+            return mb.AppendImage(Text, Url, Title);
+        }
+    }
+}
