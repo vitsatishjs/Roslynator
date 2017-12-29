@@ -4,20 +4,20 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: DefaultTableColumnAlignment
     public class MarkdownSettings
     {
         public MarkdownSettings(
             EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
-            string horizontalRule = "___",
+            HorizontalRule horizontalRule = default(HorizontalRule),
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             bool allowLinkWithoutUrl = true,
             string indentChars = "  ",
-            Func<char, bool> shouldBeEscaped = null)
+            Func<char, bool> shouldBeEscaped = null,
+            bool addSignature = false)
         {
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
@@ -29,6 +29,7 @@ namespace Pihrtsoft.Markdown
             AllowLinkWithoutUrl = allowLinkWithoutUrl;
             IndentChars = indentChars;
             ShouldBeEscaped = shouldBeEscaped ?? MarkdownEscaper.ShouldBeEscaped;
+            AddSignature = addSignature;
         }
 
         public static MarkdownSettings Default { get; } = new MarkdownSettings();
@@ -43,7 +44,7 @@ namespace Pihrtsoft.Markdown
 
         public ListItemStyle ListItemStyle { get; }
 
-        public string HorizontalRule { get; }
+        public HorizontalRule HorizontalRule { get; }
 
         public HeadingOptions HeadingOptions { get; }
 
@@ -76,6 +77,8 @@ namespace Pihrtsoft.Markdown
         public string IndentChars { get; }
 
         public Func<char, bool> ShouldBeEscaped { get; }
+
+        public bool AddSignature { get; }
 
         private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
         {

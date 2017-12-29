@@ -224,9 +224,24 @@ namespace Pihrtsoft.Markdown
             return new QuoteBlock(value);
         }
 
-        public static MarkdownText HorizontalRule()
+        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style, int count = 3, bool addSpaces = true)
         {
-            return RawText(MarkdownSettings.Default.HorizontalRule);
+            return new HorizontalRule(style, count, addSpaces);
+        }
+
+        public static char HorizontalRuleChar(HorizontalRuleStyle style)
+        {
+            switch (style)
+            {
+                case HorizontalRuleStyle.Hyphen:
+                    return '-';
+                case HorizontalRuleStyle.Asterisk:
+                    return '*';
+                case HorizontalRuleStyle.Underscore:
+                    return '_';
+                default:
+                    throw new ArgumentException("", nameof(style));
+            }
         }
 
         public static Table Table()

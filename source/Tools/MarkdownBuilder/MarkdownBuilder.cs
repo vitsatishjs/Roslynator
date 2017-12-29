@@ -8,8 +8,6 @@ using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MarkdownBuilder.Analyzers
-
     public class MarkdownBuilder
     {
         private MarkdownSettings _settings;
@@ -691,14 +689,31 @@ namespace Pihrtsoft.Markdown
             return AppendRaw(CodeBlockChars);
         }
 
-        public MarkdownBuilder AppendHorizonalRule()
+        public MarkdownBuilder AppendHorizonalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
         {
             AppendLineStart();
-            AppendLineRaw(Settings.HorizontalRule);
+
+            char ch = HorizontalRuleChar(style);
+
+            bool isFirst = true;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else if (addSpaces)
+                {
+                    AppendSpace();
+                }
+
+                AppendRaw(ch);
+            }
+
             return this;
         }
 
-        //TODO: TableSortOption (None, FirstColumn, AllColumns)
         public MarkdownBuilder AppendTable(IEnumerable<TableColumn> columns, IEnumerable<IList<object>> rows)
         {
             return AppendTable(new TableColumnCollection(columns), rows.ToList());
@@ -1352,6 +1367,13 @@ namespace Pihrtsoft.Markdown
 
         public override string ToString()
         {
+            if (Length > 0
+                && Settings.AddSignature)
+            {
+                AppendLine(addEmptyLine: true);
+                AppendComment("Generated with MarkdownBuilder (http://www.github.com/josefpihrt/markdownbuilder)");
+            }
+
             return StringBuilder.ToString();
         }
     }

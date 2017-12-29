@@ -7,9 +7,9 @@ namespace Pihrtsoft.Markdown
 {
     public static class MarkdownEscaper
     {
-        public static string Escape(string value, Func<char, bool> shouldBeEscaped)
+        public static string Escape(string value, Func<char, bool> shouldBeEscaped = null)
         {
-            return Escape(value, shouldBeEscaped, null);
+            return Escape(value, shouldBeEscaped ?? ShouldBeEscaped, null);
         }
 
         internal static string Escape(string value, Func<char, bool> shouldBeEscaped, StringBuilder sb, char escapingChar = '\\')
