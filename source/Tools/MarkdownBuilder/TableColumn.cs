@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Name,nq} Alignment = {Alignment}")]
-    public struct TableColumn
+    public struct TableColumn : IEquatable<TableColumn>
     {
         internal TableColumn(string name, Alignment alignment = Alignment.Left)
         {
@@ -17,6 +17,33 @@ namespace Pihrtsoft.Markdown
         public string Name { get; }
 
         public Alignment Alignment { get; }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is TableColumn other)
+                && Equals(other);
+        }
+
+        public bool Equals(TableColumn other)
+        {
+            return Alignment == other.Alignment
+                   && string.Equals(Name, other.Name, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            return Hash.Combine(Name, Hash.Combine((int)Alignment, Hash.OffsetBasis));
+        }
+
+        public static bool operator ==(TableColumn column1, TableColumn column2)
+        {
+            return column1.Equals(column2);
+        }
+
+        public static bool operator !=(TableColumn column1, TableColumn column2)
+        {
+            return !(column1 == column2);
+        }
 
         public static implicit operator TableColumn(string value)
         {

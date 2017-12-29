@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Language = {LanguageDebuggerDisplay}")]
-    public struct CodeBlock : IMarkdown
+    public struct CodeBlock : IMarkdown, IEquatable<CodeBlock>
     {
         internal CodeBlock(string text, string language = null)
         {
@@ -22,6 +23,33 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendCodeBlock(Text, Language);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is CodeBlock other)
+                && Equals(other);
+        }
+
+        public bool Equals(CodeBlock other)
+        {
+            return string.Equals(Text, other.Text, StringComparison.Ordinal)
+                && string.Equals(Language, other.Language, StringComparison.Ordinal);
+        }
+
+        public override int GetHashCode()
+        {
+            return Hash.Combine(Text, Hash.Combine(Language, Hash.OffsetBasis));
+        }
+
+        public static bool operator ==(CodeBlock left, CodeBlock right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(CodeBlock left, CodeBlock right)
+        {
+            return !(left == right);
         }
     }
 }

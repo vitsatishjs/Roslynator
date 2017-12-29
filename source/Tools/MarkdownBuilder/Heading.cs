@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Level = {Level}")]
-    public struct Heading : IMarkdown
+    public struct Heading : IMarkdown, IEquatable<Heading>
     {
         internal Heading(string text, int level = 1)
         {
@@ -20,6 +21,33 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendHeading(Level, Text);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Heading other)
+                && Equals(other);
+        }
+
+        public bool Equals(Heading other)
+        {
+            return string.Equals(Text, other.Text, StringComparison.Ordinal)
+                && Level == other.Level;
+        }
+
+        public override int GetHashCode()
+        {
+            return Hash.Combine(Level, Hash.Combine(Text, Hash.OffsetBasis));
+        }
+
+        public static bool operator ==(Heading left, Heading right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Heading left, Heading right)
+        {
+            return !(left == right);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    public class MarkdownSettings
+    public class MarkdownSettings : IEquatable<MarkdownSettings>
     {
         public MarkdownSettings(
             EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
@@ -16,7 +17,6 @@ namespace Pihrtsoft.Markdown
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             bool allowLinkWithoutUrl = true,
             string indentChars = "  ",
-            Func<char, bool> shouldBeEscaped = null,
             bool addSignature = false)
         {
             BoldStyle = boldStyle;
@@ -28,7 +28,6 @@ namespace Pihrtsoft.Markdown
             TableOptions = tableOptions;
             AllowLinkWithoutUrl = allowLinkWithoutUrl;
             IndentChars = indentChars;
-            ShouldBeEscaped = shouldBeEscaped ?? MarkdownEscaper.ShouldBeEscaped;
             AddSignature = addSignature;
         }
 
@@ -76,8 +75,6 @@ namespace Pihrtsoft.Markdown
 
         public string IndentChars { get; }
 
-        public Func<char, bool> ShouldBeEscaped { get; }
-
         public bool AddSignature { get; }
 
         private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
@@ -89,6 +86,52 @@ namespace Pihrtsoft.Markdown
                 return EmphasisStyle.Asterisk;
 
             throw new ArgumentException("", nameof(style));
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as MarkdownSettings);
+        }
+
+        public bool Equals(MarkdownSettings other)
+        {
+            return other != null
+                && BoldStyle == other.BoldStyle
+                && ItalicStyle == other.ItalicStyle
+                && ListItemStyle == other.ListItemStyle
+                && HorizontalRule == other.HorizontalRule
+                && HeadingOptions == other.HeadingOptions
+                && CodeBlockOptions == other.CodeBlockOptions
+                && TableOptions == other.TableOptions
+                && AllowLinkWithoutUrl == other.AllowLinkWithoutUrl
+                && IndentChars == other.IndentChars
+                && AddSignature == other.AddSignature;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = Hash.OffsetBasis;
+            hashCode = Hash.Combine((int)BoldStyle, hashCode);
+            hashCode = Hash.Combine((int)ItalicStyle, hashCode);
+            hashCode = Hash.Combine((int)ListItemStyle, hashCode);
+            hashCode = Hash.Combine(HorizontalRule.GetHashCode(), hashCode);
+            hashCode = Hash.Combine((int)HeadingOptions, hashCode);
+            hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
+            hashCode = Hash.Combine((int)TableOptions, hashCode);
+            hashCode = Hash.Combine(AllowLinkWithoutUrl, hashCode);
+            hashCode = Hash.Combine(IndentChars, hashCode);
+            hashCode = Hash.Combine(AddSignature, hashCode);
+            return hashCode;
+        }
+
+        public static bool operator ==(MarkdownSettings settings1, MarkdownSettings settings2)
+        {
+            return EqualityComparer<MarkdownSettings>.Default.Equals(settings1, settings2);
+        }
+
+        public static bool operator !=(MarkdownSettings settings1, MarkdownSettings settings2)
+        {
+            return !(settings1 == settings2);
         }
     }
 }

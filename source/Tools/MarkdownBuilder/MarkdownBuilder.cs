@@ -1163,7 +1163,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder Append(char value, bool escape)
         {
             if (escape
-                && Settings.ShouldBeEscaped(value))
+                && MarkdownEscaper.ShouldBeEscaped(value))
             {
                 return AppendRaw('\\');
             }
@@ -1180,7 +1180,7 @@ namespace Pihrtsoft.Markdown
         {
             if (escape)
             {
-                return Append(value, Settings.ShouldBeEscaped);
+                return Append(value, MarkdownEscaper.ShouldBeEscaped);
             }
             else
             {
