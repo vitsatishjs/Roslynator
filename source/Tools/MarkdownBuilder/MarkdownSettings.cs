@@ -4,6 +4,7 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: DefaultTableColumnAlignment
     public class MarkdownSettings
     {
         public MarkdownSettings(

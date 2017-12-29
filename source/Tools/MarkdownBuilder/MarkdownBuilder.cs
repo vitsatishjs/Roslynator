@@ -8,6 +8,8 @@ using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: MarkdownBuilder.Analyzers
+
     public class MarkdownBuilder
     {
         private MarkdownSettings _settings;
@@ -185,12 +187,12 @@ namespace Pihrtsoft.Markdown
             if (!string.IsNullOrEmpty(value))
             {
                 if (value[0] == CodeDelimiterChar)
-                    AppendRaw(" ");
+                    AppendSpace();
 
                 Append(value, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
 
                 if (value[value.Length - 1] == CodeDelimiterChar)
-                    AppendRaw(" ");
+                    AppendSpace();
             }
 
             AppendRaw(CodeDelimiter);
@@ -224,12 +226,12 @@ namespace Pihrtsoft.Markdown
             if (s.Length > 0)
             {
                 if (s[0] == CodeDelimiterChar)
-                    AppendRaw(" ");
+                    AppendSpace();
 
                 AppendRaw(s);
 
                 if (s[s.Length - 1] == CodeDelimiterChar)
-                    AppendRaw(" ");
+                    AppendSpace();
             }
 
             AppendRaw(CodeDelimiter);
@@ -537,7 +539,7 @@ namespace Pihrtsoft.Markdown
         {
             AppendSquareBrackets(text);
             AppendRaw("(");
-            Append(url, shouldBeEscaped: ch => ch == '(' || ch == ')');
+            Append(url, shouldBeEscaped: ch => ch == '(' || ch == ')' || ch == '<' || ch == '>');
             AppendLinkTitle(title);
             AppendRaw(")");
             return this;
@@ -576,22 +578,17 @@ namespace Pihrtsoft.Markdown
         {
             if (!string.IsNullOrEmpty(title))
             {
-                AppendRaw(" ");
-                AppendDoubleQuotes(title);
+                AppendSpace();
+                AppendRaw("\"");
+                Append(title, shouldBeEscaped: ch => ch == '"');
+                AppendRaw("\"");
             }
-        }
-
-        private void AppendDoubleQuotes(string value)
-        {
-            AppendRaw("\"");
-            Append(value, shouldBeEscaped: ch => ch == '"');
-            AppendRaw("\"");
         }
 
         private void AppendSquareBrackets(string value)
         {
             AppendRaw("[");
-            Append(value, shouldBeEscaped: ch => ch == '[' || ch == ']');
+            Append(value, shouldBeEscaped: ch => ch == '[' || ch == ']' || ch == '<' || ch == '>');
             AppendRaw("]");
         }
 
@@ -701,6 +698,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
+        //TODO: TableSortOption (None, FirstColumn, AllColumns)
         public MarkdownBuilder AppendTable(IEnumerable<TableColumn> columns, IEnumerable<IList<object>> rows)
         {
             return AppendTable(new TableColumnCollection(columns), rows.ToList());
@@ -713,70 +711,10 @@ namespace Pihrtsoft.Markdown
             if (columnCount == 0)
                 return this;
 
-            if (FormatTableContent)
-            {
-                List<int> widths = CalculateWidths(columns, rows, columnCount);
+            List<int> widths = (FormatTableContent) ? CalculateWidths(columns, rows, columnCount) : null;
 
-                AppendTableHeader(columns, columnCount, widths);
-                AppendTableRows(rows, columnCount, widths);
-            }
-            else
-            {
-                AppendTableHeader(columns, columnCount);
-                AppendTableRows(rows, columnCount);
-            }
-
-            return this;
-        }
-
-        private List<int> CalculateWidths<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> valueProviders)
-        {
-            List<int> widths = GetColumnsWidths(columns);
-
-            int index = 0;
-
-            var mb = new MarkdownBuilder(Settings);
-
-            for (int i = 0; i < items.Count; i++)
-            {
-                for (int j = 0; j < items.Count; j++)
-                {
-                    mb.Append(valueProviders[j](items[j]));
-                    widths[i] = Math.Max(widths[i], mb.Length - index);
-                    index = mb.Length;
-                }
-            }
-
-            return widths;
-        }
-
-        public MarkdownBuilder AppendTable<T>(
-            IEnumerable<TableColumn> columns,
-            IEnumerable<T> rows,
-            IEnumerable<Func<T, object>> valueProviders)
-        {
-            return AppendTable(new TableColumnCollection(columns), rows.ToList(), valueProviders.ToList());
-        }
-
-        public MarkdownBuilder AppendTable<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> valueProviders)
-        {
-            int columnCount = columns.Count;
-
-            if (columnCount == 0)
-                return this;
-
-            if (FormatTableContent)
-            {
-                List<int> widths = CalculateWidths(columns, items, valueProviders);
-
-                AppendTableHeader(columns, columnCount, widths);
-                AppendTableRows(items, valueProviders, columnCount, widths);
-            }
-            else
-            {
-                AppendTableHeader(columns, columnCount);
-                AppendTableRows(items, valueProviders, columnCount);
-            }
+            AppendTableHeader(columns, columnCount, widths);
+            AppendTableRows(rows, columnCount, widths);
 
             return this;
         }
@@ -814,12 +752,64 @@ namespace Pihrtsoft.Markdown
             return maxWidths;
         }
 
-        private static List<int> GetColumnsWidths(IList<TableColumn> columns)
+        public MarkdownBuilder AppendTable<T>(
+            IEnumerable<TableColumn> columns,
+            IEnumerable<T> rows,
+            IEnumerable<Func<T, object>> selectors)
+        {
+            return AppendTable(new TableColumnCollection(columns), rows.ToList(), selectors.ToList());
+        }
+
+        public MarkdownBuilder AppendTable<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> selectors)
+        {
+            int columnCount = columns.Count;
+
+            if (columnCount == 0)
+                return this;
+
+            List<int> widths = (FormatTableContent) ? CalculateWidths(columns, items, selectors) : null;
+
+            AppendTableHeader(columns, columnCount, widths);
+            AppendTableRows(items, selectors, columnCount, widths);
+
+            return this;
+        }
+
+        private List<int> CalculateWidths<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> selectors)
+        {
+            List<int> widths = GetColumnsWidths(columns);
+
+            int index = 0;
+
+            var mb = new MarkdownBuilder(Settings);
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                for (int j = 0; j < items.Count; j++)
+                {
+                    mb.Append(selectors[i](items[j]));
+                    widths[i] = Math.Max(widths[i], mb.Length - index);
+                    index = mb.Length;
+                }
+            }
+
+            return widths;
+        }
+
+        private List<int> GetColumnsWidths(IList<TableColumn> columns)
         {
             var widths = new List<int>(columns.Count);
 
-            foreach (TableColumn column in columns)
-                widths.Add(column.Name.Length);
+            if (FormatTableHeader)
+            {
+                foreach (TableColumn column in columns)
+                    widths.Add(column.Name.Length);
+            }
+            else
+            {
+                for (int i = 0; i < columns.Count; i++)
+                    widths.Add(0);
+            }
 
             return widths;
         }
@@ -856,26 +846,40 @@ namespace Pihrtsoft.Markdown
         {
             for (int i = 0; i < columnCount; i++)
             {
+                TableColumn column = columns[i];
+
                 AppendTableRowStart(i);
 
-                AppendTablePadding();
+                if (TablePadding)
+                {
+                    AppendSpace();
+                }
+                else if (FormatTableHeader
+                    && column.Alignment == Alignment.Center)
+                {
+                    AppendSpace();
+                }
 
-                string name = columns[i].Name;
+                string name = column.Name;
 
                 Append(name);
 
                 if (FormatTableHeader)
                 {
                     int width = name.Length;
-                    int minimalWidth = width;
 
-                    if (FormatTableHeader)
-                        minimalWidth = Math.Max(minimalWidth, 3);
+                    int minimalWidth = Math.Max(width, 3);
 
                     AppendPadRight(width, widths?[i], minimalWidth);
+
+                    if (!TablePadding
+                        && column.Alignment != Alignment.Left)
+                    {
+                        AppendSpace();
+                    }
                 }
 
-                AppendTableCellEnd(i, columnCount);
+                AppendTableCellEnd(i, columnCount, string.IsNullOrWhiteSpace(name));
             }
 
             AppendLine();
@@ -910,7 +914,13 @@ namespace Pihrtsoft.Markdown
                 }
 
                 if (i == columnCount - 1)
-                    AppendTableOuterPipe();
+                {
+                    if (TableOuterPipe
+                        || string.IsNullOrWhiteSpace(column.Name))
+                    {
+                        AppendTableDelimiter();
+                    }
+                }
             }
 
             AppendLine();
@@ -937,7 +947,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        internal void AppendTableRows<T>(IList<T> items, IList<Func<T, object>> valueProviders, int columnCount, List<int> widths = null)
+        internal void AppendTableRows<T>(IList<T> items, IList<Func<T, object>> selectors, int columnCount, List<int> widths = null)
         {
             foreach (T item in items)
             {
@@ -946,7 +956,7 @@ namespace Pihrtsoft.Markdown
                     AppendTableRowStart(i);
                     AppendTablePadding();
 
-                    int length = AppendInternal(valueProviders[i](item));
+                    int length = AppendInternal(selectors[i](item));
 
                     if (FormatTableContent)
                         AppendPadRight(length, widths?[i]);
@@ -971,13 +981,17 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void AppendTableCellEnd(int index, int length)
+        private void AppendTableCellEnd(int columnIndex, int columnCount, bool isBlankCell = false)
         {
-            if (index == length - 1)
+            if (columnIndex == columnCount - 1)
             {
                 if (TableOuterPipe)
                 {
                     AppendTablePadding();
+                    AppendTableDelimiter();
+                }
+                else if (isBlankCell)
+                {
                     AppendTableDelimiter();
                 }
             }
@@ -996,7 +1010,7 @@ namespace Pihrtsoft.Markdown
         private void AppendTablePadding()
         {
             if (TablePadding)
-                AppendRaw(" ");
+                AppendSpace();
         }
 
         public void AppendTableDelimiter()
@@ -1167,7 +1181,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        internal virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
+        protected virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
         {
             MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder, escapingChar);
             return this;
@@ -1318,6 +1332,11 @@ namespace Pihrtsoft.Markdown
         {
             StringBuilder.Append(value);
             return this;
+        }
+
+        internal MarkdownBuilder AppendSpace()
+        {
+            return AppendRaw(" ");
         }
 
         public MarkdownBuilder AppendLine()

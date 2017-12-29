@@ -304,7 +304,7 @@ namespace Pihrtsoft.Markdown
             return new TableColumnCollection() { column1, column2, column3, column4, column5 };
         }
 
-        public static TableColumn TableHeader(string name, Alignment alignment = Alignment.Left)
+        public static TableColumn TableColumn(string name, Alignment alignment = Alignment.Left)
         {
             return new TableColumn(name, alignment);
         }

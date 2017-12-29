@@ -10,6 +10,7 @@ namespace Pihrtsoft.Markdown
         None = 0,
         FormatHeader = 1,
         FormatContent = 2,
+        FormatHeaderAndContent = FormatHeader | FormatContent,
         Padding = 4,
         OuterPipe = 8
     }

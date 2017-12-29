@@ -2,10 +2,12 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Pihrtsoft.Markdown
 {
+    [DebuggerDisplay("Columns = {Columns.Count} Rows = {Rows.Count}")]
     public class Table : IMarkdown
     {
         internal Table()
