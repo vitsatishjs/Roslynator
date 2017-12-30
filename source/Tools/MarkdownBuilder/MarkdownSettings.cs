@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: MiscellaneousOptions
+    //TODO: MarkdownSettings >>> MarkdownFormat
     public class MarkdownSettings : IEquatable<MarkdownSettings>
     {
         public MarkdownSettings(
@@ -132,6 +134,156 @@ namespace Pihrtsoft.Markdown
         public static bool operator !=(MarkdownSettings settings1, MarkdownSettings settings2)
         {
             return !(settings1 == settings2);
+        }
+
+        public MarkdownSettings WithBoldStyle(EmphasisStyle boldStyle)
+        {
+            return new MarkdownSettings(
+                boldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithItalicStyle(EmphasisStyle italicStyle)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                italicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithListItemStyle(ListItemStyle listItemStyle)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                listItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithHorizontalRule(HorizontalRule horizontalRule)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                horizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithHeadingOptions(HeadingOptions headingOptions)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                headingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithTableOptions(TableOptions tableOptions)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                tableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                codeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithAllowLinkWithoutUrl(bool allowLinkWithoutUrl)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                allowLinkWithoutUrl,
+                IndentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithIndentChars(string indentChars)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                indentChars,
+                AddSignature);
+        }
+
+        public MarkdownSettings WithAddSignatur(bool addSignature)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                AllowLinkWithoutUrl,
+                IndentChars,
+                addSignature);
         }
     }
 }

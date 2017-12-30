@@ -270,7 +270,7 @@ namespace Roslynator.CodeGeneration.Markdown
             Table table = Table("Category", "Title", "Id", TableColumn("Enabled by Default", Alignment.Center));
 
             foreach (IGrouping<string, AnalyzerDescriptor> grouping in analyzers
-                .GroupBy(f => MarkdownEscaper.Escape(f.Category, mb.Settings.ShouldBeEscaped))
+                .GroupBy(f => MarkdownEscaper.Escape(f.Category))
                 .OrderBy(f => f.Key, comparer))
             {
                 foreach (AnalyzerDescriptor analyzer in grouping.OrderBy(f => f.Title, comparer))

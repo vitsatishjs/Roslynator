@@ -8,6 +8,7 @@ using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: WithOptions
     public class MarkdownBuilder
     {
         private MarkdownSettings _settings;
