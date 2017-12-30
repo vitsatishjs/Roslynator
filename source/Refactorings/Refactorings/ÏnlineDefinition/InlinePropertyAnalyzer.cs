@@ -74,7 +74,12 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
 
         protected override async Task<PropertyDeclarationSyntax> GetMemberDeclarationAsync(IPropertySymbol symbol, CancellationToken cancellationToken)
         {
-            return (PropertyDeclarationSyntax)await symbol.DeclaringSyntaxReferences.FirstOrDefault().GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+            SyntaxReference syntaxReference = symbol.DeclaringSyntaxReferences.FirstOrDefault();
+
+            if (syntaxReference == null)
+                return null;
+
+            return (PropertyDeclarationSyntax)await syntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
         }
 
         protected override ImmutableArray<ParameterInfo> GetParameterInfos(IdentifierNameSyntax node, IPropertySymbol symbol)
