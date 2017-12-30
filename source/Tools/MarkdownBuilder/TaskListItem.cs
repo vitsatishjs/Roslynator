@@ -18,6 +18,16 @@ namespace Pihrtsoft.Markdown
 
         public bool IsCompleted { get; }
 
+        public TaskListItem WithText(string text)
+        {
+            return new TaskListItem(text, IsCompleted);
+        }
+
+        public TaskListItem WithIsCompleted(bool isCompleted)
+        {
+            return new TaskListItem(Text, isCompleted);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendTaskListItem(Text, IsCompleted);
@@ -37,7 +47,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Text, Hash.Combine(IsCompleted, Hash.OffsetBasis));
+            return Hash.Combine(Text, Hash.Create(IsCompleted));
         }
 
         public static bool operator ==(TaskListItem item1, TaskListItem item2)

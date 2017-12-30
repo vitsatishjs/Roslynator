@@ -16,6 +16,11 @@ namespace Pihrtsoft.Markdown
 
         public string Text { get; }
 
+        public QuoteBlock WithText(string text)
+        {
+            return new QuoteBlock(text);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendQuoteBlock(Text);

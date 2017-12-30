@@ -18,6 +18,16 @@ namespace Pihrtsoft.Markdown
 
         public Alignment Alignment { get; }
 
+        public TableColumn WithName(string name)
+        {
+            return new TableColumn(name, Alignment);
+        }
+
+        public TableColumn WithAlignment(Alignment alignment)
+        {
+            return new TableColumn(Name, alignment);
+        }
+
         public override bool Equals(object obj)
         {
             return (obj is TableColumn other)
@@ -32,7 +42,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Name, Hash.Combine((int)Alignment, Hash.OffsetBasis));
+            return Hash.Combine(Name, Hash.Create((int)Alignment));
         }
 
         public static bool operator ==(TableColumn column1, TableColumn column2)

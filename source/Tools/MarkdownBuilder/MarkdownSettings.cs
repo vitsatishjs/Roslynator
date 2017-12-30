@@ -271,7 +271,7 @@ namespace Pihrtsoft.Markdown
                 AddSignature);
         }
 
-        public MarkdownSettings WithAddSignatur(bool addSignature)
+        public MarkdownSettings WithAddSignature(bool addSignature)
         {
             return new MarkdownSettings(
                 BoldStyle,

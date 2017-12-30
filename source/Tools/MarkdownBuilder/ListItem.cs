@@ -21,6 +21,11 @@ namespace Pihrtsoft.Markdown
             return mb.AppendListItem(Text);
         }
 
+        public ListItem WithText(string text)
+        {
+            return new ListItem(text);
+        }
+
         public override bool Equals(object obj)
         {
             return (obj is ListItem other)

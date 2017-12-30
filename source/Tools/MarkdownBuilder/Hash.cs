@@ -10,6 +10,21 @@ namespace Pihrtsoft.Markdown
 
         public const int Prime = 16777619;
 
+        public static int Create(int value)
+        {
+            return Combine(value, OffsetBasis);
+        }
+
+        public static int Create(bool value)
+        {
+            return (value) ? 1 : 0;
+        }
+
+        public static int Create<T>(T value) where T : class
+        {
+            return Combine(value, OffsetBasis);
+        }
+
         public static int Combine(int value, int hash)
         {
             return unchecked((hash * Prime) + value);

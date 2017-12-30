@@ -21,6 +21,21 @@ namespace Pihrtsoft.Markdown
 
         public string Title { get; }
 
+        public Image WithText(string text)
+        {
+            return new Image(text, Url, Title);
+        }
+
+        public Image WithUrl(string url)
+        {
+            return new Image(Text, url, Title);
+        }
+
+        public Image WithTitle(string title)
+        {
+            return new Image(Text, Url, title);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendImage(Text, Url, Title);
@@ -41,7 +56,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Text, Hash.Combine(Url, Hash.Combine(Title, Hash.OffsetBasis)));
+            return Hash.Combine(Text, Hash.Combine(Url, Hash.Create(Title)));
         }
 
         public static bool operator ==(Image left, Image right)

@@ -8,7 +8,6 @@ using static Pihrtsoft.Markdown.MarkdownFactory;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: WithOptions
     public class MarkdownBuilder
     {
         private MarkdownSettings _settings;
@@ -79,6 +78,12 @@ namespace Pihrtsoft.Markdown
         public char this[int index]
         {
             get { return StringBuilder[index]; }
+        }
+
+        internal MarkdownBuilder WithSettings(MarkdownSettings settings)
+        {
+            Settings = settings;
+            return this;
         }
 
         public MarkdownBuilder IncreaseIndentLevel()
@@ -1197,7 +1202,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        protected virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
+        internal virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
         {
             MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder, escapingChar);
             return this;

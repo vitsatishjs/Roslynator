@@ -20,6 +20,16 @@ namespace Pihrtsoft.Markdown
 
         private string LanguageDebuggerDisplay => Language ?? "None";
 
+        public CodeBlock WithText(string text)
+        {
+            return new CodeBlock(text, Language);
+        }
+
+        public CodeBlock WithLanguage(string language)
+        {
+            return new CodeBlock(Text, language);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendCodeBlock(Text, Language);
@@ -39,7 +49,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Text, Hash.Combine(Language, Hash.OffsetBasis));
+            return Hash.Combine(Text, Hash.Create(Language));
         }
 
         public static bool operator ==(CodeBlock left, CodeBlock right)

@@ -6,7 +6,7 @@ using static Pihrtsoft.Markdown.Tests.TestHelper;
 namespace Pihrtsoft.Markdown.Tests
 {
     [TestClass]
-    public class CodeTest
+    public class CodeTests
     {
         [TestMethod]
         public void CodeTest1()

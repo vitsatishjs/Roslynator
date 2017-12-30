@@ -24,6 +24,21 @@ namespace Pihrtsoft.Markdown
 
         public bool AddSpaces { get; }
 
+        public HorizontalRule WithStyle(HorizontalRuleStyle style)
+        {
+            return new HorizontalRule(style, Count, AddSpaces);
+        }
+
+        public HorizontalRule WithCount(int count)
+        {
+            return new HorizontalRule(Style, count, AddSpaces);
+        }
+
+        public HorizontalRule WithAddSpaces(bool addSpaces)
+        {
+            return new HorizontalRule(Style, Count, addSpaces);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendHorizonalRule(Style, Count, AddSpaces);
@@ -44,7 +59,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Combine(AddSpaces, Hash.OffsetBasis)));
+            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Create(AddSpaces)));
         }
 
         public static bool operator ==(HorizontalRule left, HorizontalRule right)

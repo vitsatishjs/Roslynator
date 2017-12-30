@@ -10,6 +10,12 @@ namespace Pihrtsoft.Markdown
     {
         internal Heading(string text, int level = 1)
         {
+            if (level < 1
+                || level > 6)
+            {
+                throw new ArgumentOutOfRangeException(nameof(level), level, "Heading level must be between 1-6.");
+            }
+
             Text = text;
             Level = level;
         }
@@ -17,6 +23,16 @@ namespace Pihrtsoft.Markdown
         public string Text { get; }
 
         public int Level { get; }
+
+        public Heading WithText(string text)
+        {
+            return new Heading(text, Level);
+        }
+
+        public Heading WithLevel(int level)
+        {
+            return new Heading(Text, level);
+        }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
@@ -37,7 +53,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Level, Hash.Combine(Text, Hash.OffsetBasis));
+            return Hash.Combine(Level, Hash.Create(Text));
         }
 
         public static bool operator ==(Heading left, Heading right)

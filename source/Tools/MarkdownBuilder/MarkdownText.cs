@@ -21,6 +21,21 @@ namespace Pihrtsoft.Markdown
 
         public bool Escape { get; }
 
+        public MarkdownText WithText(string text)
+        {
+            return new MarkdownText(text, Options, Escape);
+        }
+
+        public MarkdownText WithOptions(EmphasisOptions options)
+        {
+            return new MarkdownText(Text, options, Escape);
+        }
+
+        public MarkdownText WithEscape(bool escape)
+        {
+            return new MarkdownText(Text, Options, escape);
+        }
+
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.Append(Text, Options, Escape);
@@ -41,7 +56,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Text, Hash.Combine((int)Options, Hash.Combine(Escape, Hash.OffsetBasis)));
+            return Hash.Combine(Text, Hash.Combine((int)Options, Hash.Create(Escape)));
         }
 
         public static bool operator ==(MarkdownText text1, MarkdownText text2)

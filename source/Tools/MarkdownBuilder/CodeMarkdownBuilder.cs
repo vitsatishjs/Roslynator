@@ -7,7 +7,17 @@ namespace Pihrtsoft.Markdown
 {
     internal class CodeMarkdownBuilder : MarkdownBuilder
     {
-        protected override MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar)
+        public CodeMarkdownBuilder(MarkdownSettings settings = null)
+            : base(settings)
+        {
+        }
+
+        public CodeMarkdownBuilder(System.Text.StringBuilder sb, MarkdownSettings settings = null)
+            : base(sb, settings)
+        {
+        }
+
+        internal override MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar)
         {
             return base.Append(value, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
         }
