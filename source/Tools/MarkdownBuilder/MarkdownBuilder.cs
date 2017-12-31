@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using static Pihrtsoft.Markdown.MarkdownFactory;
@@ -41,8 +42,6 @@ namespace Pihrtsoft.Markdown
 
         private string ItalicDelimiter => ItalicDelimiter(Settings.ItalicStyle);
 
-        private string AlternativeItalicDelimiter => ItalicDelimiter(Settings.AlternativeItalicStyle);
-
         private ListItemStyle ListItemStyle => Settings.ListItemStyle;
 
         private string ListItemStart => ListItemStart(ListItemStyle);
@@ -80,6 +79,47 @@ namespace Pihrtsoft.Markdown
             get { return StringBuilder[index]; }
         }
 
+        private State State { get; set; }
+
+        private MarkdownBuilder AddState(State state)
+        {
+            State |= state;
+            return this;
+        }
+
+        private MarkdownBuilder AddStateIf(bool condition, State state)
+        {
+            if (condition)
+                State |= state;
+
+            return this;
+        }
+
+        private MarkdownBuilder AddOrRemoveState(State state, bool add)
+        {
+            if (add)
+            {
+                AddState(state);
+            }
+            else
+            {
+                RemoveState(state);
+            }
+
+            return this;
+        }
+
+        private MarkdownBuilder RemoveState(State state)
+        {
+            State &= ~state;
+            return this;
+        }
+
+        private bool HasState(State state)
+        {
+            return (State & state) != 0;
+        }
+
         internal MarkdownBuilder WithSettings(MarkdownSettings settings)
         {
             Settings = settings;
@@ -104,6 +144,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder IncreaseQuoteLevel()
         {
             QuoteLevel++;
+            AddState(State.QuoteBlock);
             return this;
         }
 
@@ -113,80 +154,72 @@ namespace Pihrtsoft.Markdown
                 throw new InvalidOperationException($"{nameof(QuoteLevel)} cannot be less than 0.");
 
             QuoteLevel--;
-            return this;
-        }
 
-        public MarkdownBuilder AppendIndentation()
-        {
-            for (int i = 0; i < IndentLevel; i++)
-                AppendRaw(IndentChars);
+            if (QuoteLevel == 0)
+                RemoveState(State.QuoteBlock);
 
             return this;
         }
 
         public MarkdownBuilder AppendBold(string value)
         {
-            return AppendDelimiter(BoldDelimiter, value);
+            return AppendDelimiter(BoldDelimiter, value, State.Bold);
         }
 
         public MarkdownBuilder AppendBold(object value)
         {
-            return AppendDelimiter(BoldDelimiter, value);
+            return AppendDelimiter(BoldDelimiter, value, State.Bold);
         }
 
         public MarkdownBuilder AppendBold(params object[] values)
         {
-            return AppendDelimiter(BoldDelimiter, values);
-        }
-
-        public MarkdownBuilder AppendBoldDelimiter()
-        {
-            return AppendRaw(BoldDelimiter);
+            return AppendDelimiter(BoldDelimiter, State.Bold, values);
         }
 
         public MarkdownBuilder AppendItalic(string value)
         {
-            return AppendDelimiter(ItalicDelimiter, value);
+            return AppendDelimiter(ItalicDelimiter, value, State.Italic);
         }
 
         public MarkdownBuilder AppendItalic(object value)
         {
-            return AppendDelimiter(ItalicDelimiter, value);
+            return AppendDelimiter(ItalicDelimiter, value, State.Italic);
         }
 
         public MarkdownBuilder AppendItalic(params object[] values)
         {
-            return AppendDelimiter(ItalicDelimiter, values);
+            return AppendDelimiter(ItalicDelimiter, State.Italic, values);
         }
 
-        public MarkdownBuilder AppendItalicDelimiter()
+        internal MarkdownBuilder AppendItalicDelimiter()
         {
-            return AppendRaw(ItalicDelimiter);
+            return AppendSyntax(ItalicDelimiter);
         }
 
         public MarkdownBuilder AppendStrikethrough(string value)
         {
-            return AppendDelimiter(StrikethroughDelimiter, value);
+            return AppendDelimiter(StrikethroughDelimiter, value, State.Strikethrough);
         }
 
         public MarkdownBuilder AppendStrikethrough(object value)
         {
-            return AppendDelimiter(StrikethroughDelimiter, value);
+            return AppendDelimiter(StrikethroughDelimiter, value, State.Strikethrough);
         }
 
         public MarkdownBuilder AppendStrikethrough(params object[] values)
         {
-            return AppendDelimiter(StrikethroughDelimiter, values);
+            return AppendDelimiter(StrikethroughDelimiter, State.Strikethrough, values);
         }
 
-        public MarkdownBuilder AppendStrikethroughDelimiter()
+        internal MarkdownBuilder AppendStrikethroughDelimiter()
         {
-            return AppendRaw(StrikethroughDelimiter);
+            return AppendSyntax(StrikethroughDelimiter);
         }
 
         public MarkdownBuilder AppendCode(string value)
         {
-            AppendRaw(CodeDelimiter);
+            AddState(State.Code);
+            AppendSyntax(CodeDelimiter);
 
             if (!string.IsNullOrEmpty(value))
             {
@@ -199,8 +232,8 @@ namespace Pihrtsoft.Markdown
                     AppendSpace();
             }
 
-            AppendRaw(CodeDelimiter);
-
+            AppendSyntax(CodeDelimiter);
+            RemoveState(State.Code);
             return this;
         }
 
@@ -225,7 +258,8 @@ namespace Pihrtsoft.Markdown
 
             string s = CodeMarkdownBuilderCache.GetResultAndFree(mb);
 
-            AppendRaw(CodeDelimiter);
+            AddState(State.Code);
+            AppendSyntax(CodeDelimiter);
 
             if (s.Length > 0)
             {
@@ -238,13 +272,14 @@ namespace Pihrtsoft.Markdown
                     AppendSpace();
             }
 
-            AppendRaw(CodeDelimiter);
+            AppendSyntax(CodeDelimiter);
+            RemoveState(State.Code);
             return this;
         }
 
-        public MarkdownBuilder AppendCodeDelimiter()
+        internal MarkdownBuilder AppendCodeDelimiter()
         {
-            return AppendRaw(CodeDelimiter);
+            return AppendSyntax(CodeDelimiter);
         }
 
         public MarkdownBuilder AppendHeading1(string value)
@@ -358,10 +393,11 @@ namespace Pihrtsoft.Markdown
                 || (level == 2 && UnderlineHeading2);
 
             AppendEmptyLineIf(AddEmptyLineBeforeHeading);
-            AppendQuoteIndentation();
+
+            AddState(State.Heading);
 
             if (!underline)
-                AppendRaw(HeadingStart(level));
+                AppendSyntax(HeadingStart(level));
 
             int length = Length;
 
@@ -378,143 +414,146 @@ namespace Pihrtsoft.Markdown
             if (underline
                 && CloseHeading)
             {
-                AppendRaw(HeadingEnd(level));
+                AppendSyntax(HeadingEnd(level));
             }
 
             AppendLineIfNecessary();
 
             if (underline)
             {
-                AppendQuoteIndentation();
                 AppendRaw((level == 1) ? '=' : '-', length);
                 AppendLine();
             }
 
-            AppendEmptyLineIf(AddEmptyLineAfterHeading);
+            RemoveState(State.Heading);
+
+            AddStateIf(AddEmptyLineAfterHeading, State.PendingEmptyLine);
             return this;
         }
 
-        public MarkdownBuilder AppendHeadingStart(int level)
+        internal MarkdownBuilder AppendHeadingStart(int level)
         {
-            return AppendRaw(HeadingStart(level));
+            return AppendSyntax(HeadingStart(level));
         }
 
         public MarkdownBuilder AppendListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value, state: State.ListItem);
         }
 
         public MarkdownBuilder AppendListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value, state: State.ListItem);
         }
 
         public MarkdownBuilder AppendListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, values: values);
+            return AppendItem(prefix1: null, prefix2: ListItemStart, state: State.ListItem, values: values);
         }
 
-        public MarkdownBuilder AppendListItemStart()
+        internal MarkdownBuilder AppendListItemStart()
         {
-            return AppendRaw(ListItemStart);
+            return AppendSyntax(ListItemStart);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value, state: State.OrderedListItem);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, object value)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value, state: State.OrderedListItem);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", values: values);
+            return AppendItem(prefix1: number.ToString(), prefix2: ". ", state: State.OrderedListItem, values: values);
         }
 
-        public MarkdownBuilder AppendOrderedListItemStart(int number)
+        internal MarkdownBuilder AppendOrderedListItemStart(int number)
         {
             AppendRaw(number);
-            return AppendRaw(". ");
+            return AppendSyntax(". ");
         }
 
         public MarkdownBuilder AppendTaskListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value, state: State.TaskListItem);
         }
 
         public MarkdownBuilder AppendTaskListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value, state: State.TaskListItem);
         }
 
         public MarkdownBuilder AppendTaskListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), values: values);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), state: State.TaskListItem, values: values);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value, state: State.TaskListItem);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value, state: State.TaskListItem);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), values: values);
+            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), state: State.TaskListItem, values: values);
         }
 
-        public MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
+        internal MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
         {
-            return AppendRaw(TaskListItemStart(isCompleted));
+            return AppendSyntax(TaskListItemStart(isCompleted));
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, string value)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, string value, State state)
         {
             return AppendLineMarkdown(
                 prefix1: prefix1,
                 prefix2: prefix2,
                 suffix: null,
-                indent: true,
                 emptyLineBefore: false,
                 emptyLineAfter: false,
+                state: state,
                 value: value);
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, object value)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, object value, State state)
         {
             return AppendLineMarkdown(
                 prefix1: prefix1,
                 prefix2: prefix2,
                 suffix: null,
-                indent: true,
                 emptyLineBefore: false,
                 emptyLineAfter: false,
+                state: state,
                 value: value);
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, params object[] values)
+        private MarkdownBuilder AppendItem(object prefix1, string prefix2, State state, params object[] values)
         {
             return AppendLineMarkdown(
                 prefix1: prefix1,
                 prefix2: prefix2,
                 suffix: null,
-                indent: true,
                 emptyLineBefore: false,
                 emptyLineAfter: false,
+                state: state,
                 values: values);
         }
 
         public MarkdownBuilder AppendImage(string text, string url, string title = null)
         {
-            AppendRaw("!");
+            AddState(State.Image);
+            AppendSyntax("!");
             AppendLinkCore(text, url, title);
+            RemoveState(State.Image);
             return this;
         }
 
@@ -536,33 +575,50 @@ namespace Pihrtsoft.Markdown
                 return Append(text);
             }
 
-            return AppendLinkCore(text, url, title);
+            AddState(State.Link);
+            AppendLinkCore(text, url, title);
+            RemoveState(State.Link);
+            return this;
         }
 
         private MarkdownBuilder AppendLinkCore(string text, string url, string title)
         {
             AppendSquareBrackets(text);
-            AppendRaw("(");
+            AppendSyntax("(");
+            AddState(State.Parentheses);
             Append(url, shouldBeEscaped: ch => ch == '(' || ch == ')' || ch == '<' || ch == '>');
             AppendLinkTitle(title);
-            AppendRaw(")");
+            RemoveState(State.Parentheses);
+            AppendSyntax(")");
             return this;
         }
 
         public MarkdownBuilder AppendAutoLink(string url)
         {
+            AddState(State.AutoLink);
             AppendAngleBrackets(url);
+            RemoveState(State.AutoLink);
             return this;
         }
 
         public MarkdownBuilder AppendImageReference(string text, string label)
         {
-            AppendRaw("!");
-            AppendLinkReference(text, label);
+            AppendSyntax("!");
+            AddState(State.ImageReference);
+            AppendLinkReferenceCore(text, label);
+            RemoveState(State.ImageReference);
             return this;
         }
 
         public MarkdownBuilder AppendLinkReference(string text, string label = null)
+        {
+            AddState(State.LinkReference);
+            AppendLinkReferenceCore(text, label);
+            RemoveState(State.LinkReference);
+            return this;
+        }
+
+        public MarkdownBuilder AppendLinkReferenceCore(string text, string label = null)
         {
             AppendSquareBrackets(text);
             AppendSquareBrackets(label);
@@ -571,10 +627,12 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendLabel(string label, string url, string title = null)
         {
+            AddState(State.Label);
             AppendSquareBrackets(label);
-            AppendRaw(": ");
+            AppendSyntax(": ");
             AppendAngleBrackets(url);
             AppendLinkTitle(title);
+            RemoveState(State.Label);
             return this;
         }
 
@@ -583,24 +641,30 @@ namespace Pihrtsoft.Markdown
             if (!string.IsNullOrEmpty(title))
             {
                 AppendSpace();
-                AppendRaw("\"");
+                AppendSyntax("\"");
+                AddState(State.DoubleQuotes);
                 Append(title, shouldBeEscaped: ch => ch == '"');
-                AppendRaw("\"");
+                RemoveState(State.DoubleQuotes);
+                AppendSyntax("\"");
             }
         }
 
         private void AppendSquareBrackets(string value)
         {
-            AppendRaw("[");
+            AppendSyntax("[");
+            AddState(State.SquareBrackets);
             Append(value, shouldBeEscaped: ch => ch == '[' || ch == ']' || ch == '<' || ch == '>');
-            AppendRaw("]");
+            RemoveState(State.SquareBrackets);
+            AppendSyntax("]");
         }
 
         private void AppendAngleBrackets(string value)
         {
-            AppendRaw("<");
+            AppendSyntax("<");
+            AddState(State.AngleBrackets);
             Append(value, shouldBeEscaped: ch => ch == '<' || ch == '>');
-            AppendRaw(">");
+            RemoveState(State.AngleBrackets);
+            AppendSyntax(">");
         }
 
         public MarkdownBuilder AppendCodeBlock(string code, bool indent)
@@ -608,96 +672,46 @@ namespace Pihrtsoft.Markdown
             if (!indent)
                 return AppendCodeBlock(code, language: null);
 
-            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix2: "    ");
-            AppendBlock(code, prefix: "    ", escape: false);
-            AppendEmptyLineIf(AddEmptyLineAfterCodeBlock);
+            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock, prefix2: "    ");
+            AddState(State.IndentedCodeBlock);
+            AppendRaw(code);
+            AppendLineIfNecessary();
+            RemoveState(State.IndentedCodeBlock);
+            AddStateIf(AddEmptyLineAfterCodeBlock, State.PendingEmptyLine);
             return this;
         }
 
         public MarkdownBuilder AppendCodeBlock(string code, string language = null)
         {
-            AppendLineStart(addEmptyLine: AddEmptyLineBeforeCodeBlock, indent: true, prefix2: CodeBlockChars);
+            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock, prefix2: CodeBlockChars);
             AppendLineRaw(language);
-            AppendBlock(code, escape: false);
-            AppendLineStart(addEmptyLine: false, indent: true, prefix2: CodeBlockChars);
-            AppendLineEnd(suffix: null, addEmptyLine: AddEmptyLineAfterCodeBlock);
+
+            AppendRaw(code);
+            AppendLineIfNecessary();
+
+            AppendLineRaw(CodeBlockChars);
+
+            RemoveState(State.CodeBlock);
+            AddStateIf(AddEmptyLineAfterCodeBlock, State.PendingEmptyLine);
             return this;
         }
 
-        //TODO: overload
-        public MarkdownBuilder AppendQuoteBlock(string value = null)
+        public MarkdownBuilder AppendQuoteBlock(string value)
         {
-            AppendBlock(value, prefix: QuoteBlockStart);
+            IncreaseQuoteLevel();
+            Append(value);
+            DecreaseQuoteLevel();
             return this;
         }
 
-        private void AppendBlock(string value, string prefix = null, bool shouldEndWithNewLine = true, bool escape = true)
+        internal MarkdownBuilder AppendCodeBlockChars()
         {
-            if (string.IsNullOrEmpty(value))
-                return;
-
-            if (IndentLevel == 0
-                && QuoteLevel == 0
-                && prefix == null)
-            {
-                Append(value, escape);
-            }
-            else
-            {
-                int length = value.Length;
-
-                for (int i = 0; i < length; i++)
-                {
-                    char ch = value[i];
-
-                    if (ch == 10)
-                    {
-                        AppendRaw(ch);
-
-                        if (i + 1 < length)
-                            AppendLineStart(addEmptyLine: false, indent: true, prefix2: prefix);
-                    }
-                    else if (ch == 13)
-                    {
-                        AppendRaw(ch);
-
-                        if (i + 1 < length)
-                        {
-                            ch = value[i + 1];
-
-                            if (ch == 10)
-                            {
-                                AppendRaw(ch);
-                                i++;
-                            }
-                        }
-
-                        if (i + 1 < length)
-                            AppendLineStart(addEmptyLine: false, indent: true, prefix2: prefix);
-                    }
-                }
-            }
-
-            if (shouldEndWithNewLine)
-            {
-                char last = value[value.Length - 1];
-
-                if (last != 10
-                    && last != 13)
-                {
-                    AppendLine();
-                }
-            }
-        }
-
-        public MarkdownBuilder AppendCodeBlockChars()
-        {
-            return AppendRaw(CodeBlockChars);
+            return AppendSyntax(CodeBlockChars);
         }
 
         public MarkdownBuilder AppendHorizonalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
         {
-            AppendLineStart();
+            AppendLineStart(state: State.HorizontalRule);
 
             char ch = HorizontalRuleChar(style);
 
@@ -717,6 +731,9 @@ namespace Pihrtsoft.Markdown
                 AppendRaw(ch);
             }
 
+            //TODO: 
+            //AppendLine();
+            RemoveState(State.HorizontalRule);
             return this;
         }
 
@@ -727,6 +744,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendTable(IList<TableColumn> columns, IList<IList<object>> rows)
         {
+            AddState(State.Table);
             int columnCount = columns.Count;
 
             if (columnCount == 0)
@@ -736,7 +754,7 @@ namespace Pihrtsoft.Markdown
 
             AppendTableHeader(columns, columnCount, widths);
             AppendTableRows(rows, columnCount, widths);
-
+            RemoveState(State.Table);
             return this;
         }
 
@@ -783,6 +801,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendTable<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> selectors)
         {
+            AddState(State.Table);
             int columnCount = columns.Count;
 
             if (columnCount == 0)
@@ -792,7 +811,7 @@ namespace Pihrtsoft.Markdown
 
             AppendTableHeader(columns, columnCount, widths);
             AppendTableRows(items, selectors, columnCount, widths);
-
+            RemoveState(State.Table);
             return this;
         }
 
@@ -835,7 +854,7 @@ namespace Pihrtsoft.Markdown
             return widths;
         }
 
-        public MarkdownBuilder AppendTableHeader(params TableColumn[] columns)
+        internal MarkdownBuilder AppendTableHeader(params TableColumn[] columns)
         {
             if (columns == null)
                 throw new ArgumentNullException(nameof(columns));
@@ -849,7 +868,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendTableHeader(IList<TableColumn> columns)
+        internal MarkdownBuilder AppendTableHeader(IList<TableColumn> columns)
         {
             if (columns == null)
                 throw new ArgumentNullException(nameof(columns));
@@ -913,21 +932,21 @@ namespace Pihrtsoft.Markdown
 
                 if (column.Alignment == Alignment.Center)
                 {
-                    AppendRaw(":");
+                    AppendSyntax(":");
                 }
                 else
                 {
                     AppendTablePadding();
                 }
 
-                AppendRaw("---");
+                AppendSyntax("---");
 
                 if (FormatTableHeader)
                     AppendPadRight(3, widths?[i] ?? columns[i].Name.Length, 3, '-');
 
                 if (column.Alignment != Alignment.Left)
                 {
-                    AppendRaw(":");
+                    AppendSyntax(":");
                 }
                 else
                 {
@@ -956,7 +975,7 @@ namespace Pihrtsoft.Markdown
                     AppendTableRowStart(i);
                     AppendTablePadding();
 
-                    int length = AppendInternal(row[i]);
+                    int length = AppendPrivate(row[i]);
 
                     if (FormatTableContent)
                         AppendPadRight(length, widths?[i]);
@@ -977,7 +996,7 @@ namespace Pihrtsoft.Markdown
                     AppendTableRowStart(i);
                     AppendTablePadding();
 
-                    int length = AppendInternal(selectors[i](item));
+                    int length = AppendPrivate(selectors[i](item));
 
                     if (FormatTableContent)
                         AppendPadRight(length, widths?[i]);
@@ -1034,9 +1053,9 @@ namespace Pihrtsoft.Markdown
                 AppendSpace();
         }
 
-        public void AppendTableDelimiter()
+        internal void AppendTableDelimiter()
         {
-            AppendRaw(TableDelimiter);
+            AppendSyntax(TableDelimiter);
         }
 
         private void AppendPadRight(int width, int? proposedWidth, int minimalWidth = 0, char paddingChar = ' ')
@@ -1051,105 +1070,141 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendComment(string value)
         {
-            AppendRaw("<!-- ");
+            AddState(State.Comment);
+            AppendSyntax("<!-- ");
             AppendRaw(value);
-            AppendRaw(" -->");
+            AppendSyntax(" -->");
+            RemoveState(State.Comment);
             return this;
         }
 
-        public void AppendDelimiter(EmphasisOptions options)
+        internal void AppendDelimiter(EmphasisOptions options, bool isOpen)
         {
             if (options == EmphasisOptions.None)
                 return;
 
             if ((options & EmphasisOptions.Bold) != 0)
             {
-                Append(BoldDelimiter);
-
-                if ((options & EmphasisOptions.Italic) != 0)
-                    Append(AlternativeItalicDelimiter);
+                AddOrRemoveState(State.Bold, isOpen);
+                AppendSyntax(BoldDelimiter);
             }
-            else if ((options & EmphasisOptions.Italic) != 0)
+
+            if ((options & EmphasisOptions.Italic) != 0)
             {
-                Append(ItalicDelimiter);
+                AddOrRemoveState(State.Italic, isOpen);
+                AppendSyntax(ItalicDelimiter);
             }
 
             if ((options & EmphasisOptions.Strikethrough) != 0)
-                Append(StrikethroughDelimiter);
+            {
+                AddOrRemoveState(State.Strikethrough, isOpen);
+                AppendSyntax(StrikethroughDelimiter);
+            }
 
             if ((options & EmphasisOptions.Code) != 0)
-                Append(CodeDelimiter);
+            {
+                AddOrRemoveState(State.Code, isOpen);
+                AppendSyntax(CodeDelimiter);
+            }
         }
 
-        private MarkdownBuilder AppendDelimiter(string delimiter, string value)
+        private MarkdownBuilder AppendDelimiter(string delimiter, string value, State state)
         {
-            AppendRaw(delimiter);
+            AddState(state);
+            AppendSyntax(delimiter);
             Append(value);
-            AppendRaw(delimiter);
+            AppendSyntax(delimiter);
+            RemoveState(state);
             return this;
         }
 
-        private MarkdownBuilder AppendDelimiter(string delimiter, object value)
+        private MarkdownBuilder AppendDelimiter(string delimiter, object value, State state)
         {
-            AppendRaw(delimiter);
+            AddState(state);
+            AppendSyntax(delimiter);
             Append(value);
-            AppendRaw(delimiter);
+            AppendSyntax(delimiter);
+            RemoveState(state);
             return this;
         }
 
-        private MarkdownBuilder AppendDelimiter(string delimiter, params object[] values)
+        private MarkdownBuilder AppendDelimiter(string delimiter, State state, params object[] values)
         {
-            AppendRaw(delimiter);
+            AddState(state);
+            AppendSyntax(delimiter);
             AppendRange(values);
-            AppendRaw(delimiter);
+            AppendSyntax(delimiter);
+            RemoveState(state);
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, string value)
+        //TODO: rename
+        private MarkdownBuilder AppendLineMarkdown(
+            object prefix1,
+            string prefix2,
+            string suffix,
+            bool emptyLineBefore,
+            bool emptyLineAfter,
+            State state,
+            string value)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
+            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
 
-            if (AppendInternal(value) > 0)
+            if (AppendPrivate(value) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
 
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, object value)
+        private MarkdownBuilder AppendLineMarkdown(
+            object prefix1,
+            string prefix2,
+            string suffix,
+            bool emptyLineBefore,
+            bool emptyLineAfter,
+            State state,
+            object value)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
+            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
 
-            if (AppendInternal(value) > 0)
+            if (AppendPrivate(value) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
 
             return this;
         }
 
-        private MarkdownBuilder AppendLineMarkdown(object prefix1, string prefix2, string suffix, bool indent, bool emptyLineBefore, bool emptyLineAfter, params object[] values)
+        private MarkdownBuilder AppendLineMarkdown(
+            object prefix1,
+            string prefix2,
+            string suffix,
+            bool emptyLineBefore,
+            bool emptyLineAfter,
+            State state,
+            params object[] values)
         {
-            AppendLineStart(emptyLineBefore, indent, prefix1, prefix2);
+            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
 
-            if (AppendInternal(values) > 0)
+            if (AppendPrivate(values) > 0)
                 AppendLineEnd(suffix, emptyLineAfter);
 
             return this;
         }
 
-        internal int AppendInternal(string value)
+        private int AppendPrivate(string value)
         {
             int length = Length;
             Append(value);
             return Length - length;
         }
 
-        internal int AppendInternal(object value)
+        private int AppendPrivate(object value)
         {
             int length = Length;
             Append(value);
             return Length - length;
         }
 
-        internal int AppendInternal(params object[] values)
+        private int AppendPrivate(params object[] values)
         {
             int length = Length;
             AppendRange(values);
@@ -1196,16 +1251,99 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder Append(string value, EmphasisOptions options, bool escape = true)
         {
-            AppendDelimiter(options);
+            State state = options.ToState();
+
+            AddState(state);
+            AppendDelimiter(options, isOpen: true);
             Append(value, escape);
-            AppendDelimiter(options);
+            AppendDelimiter(options, isOpen: false);
+            RemoveState(state);
             return this;
         }
 
         internal virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
         {
-            MarkdownEscaper.Escape(value, shouldBeEscaped, StringBuilder, escapingChar);
+            int length = value.Length;
+
+            bool f = false;
+
+            for (int i = 0; i < length; i++)
+            {
+                char ch = value[i];
+
+                if (ch == 10)
+                {
+                    AppendLinefeed(0, i);
+                    f = true;
+                }
+                else if (shouldBeEscaped(ch))
+                {
+                    AppendEscapedChar(0, i, ch);
+                    f = true;
+                }
+
+                if (f)
+                {
+                    f = false;
+
+                    i++;
+                    int lastIndex = i;
+
+                    while (i < value.Length)
+                    {
+                        ch = value[i];
+
+                        if (ch == 10)
+                        {
+                            AppendLinefeed(lastIndex, i - lastIndex);
+                            f = true;
+                        }
+
+                        if (shouldBeEscaped(ch))
+                        {
+                            AppendEscapedChar(lastIndex, i - lastIndex, ch);
+                            f = true;
+                        }
+
+                        if (f)
+                        {
+                            f = false;
+                            i++;
+                            lastIndex = i;
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+
+                    StringBuilder.Append(value, lastIndex, value.Length - lastIndex);
+                    return this;
+                }
+            }
+
+            StringBuilder.Append(value);
             return this;
+
+            void AppendLinefeed(int startIndex, int index)
+            {
+                index--;
+                if (index > 0
+                    && value[index - 1] == '\r')
+                {
+                    index--;
+                }
+
+                StringBuilder.Append(value, startIndex, index - startIndex);
+                AppendLine();
+            }
+
+            void AppendEscapedChar(int startIndex, int index, char ch)
+            {
+                StringBuilder.Append(value, startIndex, index - startIndex);
+                StringBuilder.Append(escapingChar);
+                StringBuilder.Append(ch);
+            }
         }
 
         public MarkdownBuilder Append(object value)
@@ -1236,28 +1374,19 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        private void AppendLineStart(bool addEmptyLine = false, bool indent = false, object prefix1 = null, string prefix2 = null)
+        private void AppendLineStart(State state = State.None, bool addEmptyLine = false, object prefix1 = null, string prefix2 = null)
         {
             AppendEmptyLineIf(addEmptyLine);
 
-            if (indent)
-                AppendIndentation();
-
-            AppendQuoteIndentation();
+            AddState(state);
 
             Append(prefix1, escape: false);
-            AppendRaw(prefix2);
-        }
-
-        private void AppendQuoteIndentation()
-        {
-            for (int i = 1; i <= QuoteLevel; i++)
-                AppendRaw(QuoteBlockStart);
+            AppendSyntax(prefix2);
         }
 
         private void AppendLineEnd(string suffix = null, bool addEmptyLine = false)
         {
-            AppendRaw(suffix);
+            AppendSyntax(suffix);
             AppendLine(addEmptyLine);
         }
 
@@ -1331,44 +1460,96 @@ namespace Pihrtsoft.Markdown
             AppendLine();
         }
 
-        public MarkdownBuilder AppendRaw(char value)
+        private MarkdownBuilder AppendRaw(char value)
         {
+            Debug.Assert(value != '\r' && value != '\n', value.ToString());
+
+            BeforeAppendRaw();
             StringBuilder.Append(value);
             return this;
         }
 
-        public MarkdownBuilder AppendRaw(char value, int repeatCount)
+        private MarkdownBuilder AppendRaw(char value, int repeatCount)
         {
+            Debug.Assert(value != '\r' && value != '\n' , value.ToString());
+
+            BeforeAppendRaw();
             StringBuilder.Append(value, repeatCount);
+            return this;
+        }
+
+        private MarkdownBuilder AppendSyntax(string value)
+        {
+            BeforeAppendRaw();
+            StringBuilder.Append(value);
             return this;
         }
 
         public MarkdownBuilder AppendRaw(string value)
         {
-            StringBuilder.Append(value);
+            BeforeAppendRaw();
+            Append(value, f => false);
             return this;
         }
 
         public MarkdownBuilder AppendRaw(int value)
         {
+            BeforeAppendRaw();
             StringBuilder.Append(value);
             return this;
         }
 
-        internal MarkdownBuilder AppendSpace()
-        {
-            return AppendRaw(" ");
-        }
-
         public MarkdownBuilder AppendLine()
         {
+            RemoveState(State.PendingEmptyLine);
             StringBuilder.AppendLine();
+            AddState(State.StartOfLine);
             return this;
+        }
+
+        private void BeforeAppendRaw()
+        {
+            if (HasState(State.PendingEmptyLine))
+            {
+                AppendAllIndentation();
+                AppendLine();
+            }
+            else
+            {
+                AppendStartOfLine();
+            }
+        }
+
+        private void AppendStartOfLine()
+        {
+            if (HasState(State.StartOfLine))
+            {
+                AppendAllIndentation();
+                RemoveState(State.StartOfLine);
+            }
+        }
+
+        private void AppendAllIndentation()
+        {
+            for (int i = 0; i < IndentLevel; i++)
+                StringBuilder.Append(IndentChars);
+
+            for (int i = 1; i <= QuoteLevel; i++)
+                StringBuilder.Append(QuoteBlockStart);
+
+            if (HasState(State.IndentedCodeBlock))
+                StringBuilder.Append("    ");
+        }
+
+        internal MarkdownBuilder AppendSpace()
+        {
+            return AppendSyntax(" ");
         }
 
         public void Clear()
         {
             StringBuilder.Clear();
+            State = State.None;
         }
 
         public override string ToString()

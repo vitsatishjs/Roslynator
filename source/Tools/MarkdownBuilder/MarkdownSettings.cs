@@ -5,8 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MiscellaneousOptions
-    //TODO: MarkdownSettings >>> MarkdownFormat
+    //TODO: MiscellaneousOptions, MarkdownSettings >>> MarkdownFormat
     public class MarkdownSettings : IEquatable<MarkdownSettings>
     {
         public MarkdownSettings(
