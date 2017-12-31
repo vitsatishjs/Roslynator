@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Pihrtsoft.Markdown.Tests
 {
-
     [TestClass]
     public class TableColumnTests
     {

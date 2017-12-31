@@ -93,7 +93,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 if (!isFirst)
                 {
-                    mb.AppendHorizonalRule();
+                    mb.AppendHorizontalRule();
                 }
                 else
                 {

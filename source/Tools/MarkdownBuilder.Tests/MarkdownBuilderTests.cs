@@ -16,7 +16,7 @@ namespace Pihrtsoft.Markdown.Tests
         private const string ValueEscaped = SpecialCharsEscaped;
 
         [TestMethod]
-        public void BoldTest1()
+        public void AppendBoldTest1()
         {
             const string x = SpecialChars;
             const string y = SpecialCharsEscaped;
@@ -57,7 +57,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void ItalicTest1()
+        public void AppendItalicTest1()
         {
             const string x = SpecialChars;
             const string y = SpecialCharsEscaped;
@@ -98,7 +98,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void StrikethroughTest1()
+        public void AppendStrikethroughTest1()
         {
             const string x = SpecialChars;
             const string y = SpecialCharsEscaped;
@@ -117,7 +117,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void CodeTest1()
+        public void AppendCodeTest1()
         {
             const string x = SpecialCharsEnclosedWithBacktick;
             const string y = SpecialCharsEnclosedWithBacktickDoubled;
@@ -136,7 +136,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingTest2()
+        public void AppendHeadingTest2()
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.None));
 
@@ -155,7 +155,7 @@ namespace Pihrtsoft.Markdown.Tests
         [DataRow(4)]
         [DataRow(5)]
         [DataRow(6)]
-        public void HeadingTest2(int value)
+        public void AppendHeadingTest2(int value)
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.None));
 
@@ -173,7 +173,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingWithoutTextTest1()
+        public void AppendHeadingWithoutTextTest1()
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.None));
 
@@ -186,7 +186,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingUnderlineH1Test1()
+        public void AppendHeadingUnderlineH1Test1()
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.UnderlineH1));
 
@@ -199,7 +199,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingUnderlineH2Test1()
+        public void AppendHeadingUnderlineH2Test1()
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.UnderlineH2));
 
@@ -212,7 +212,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingUnderlineTest1()
+        public void AppendHeadingUnderlineTest1()
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.Underline));
 
@@ -225,7 +225,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [TestMethod]
-        public void HeadingEmptyLineBeforeAfterTest1()
+        public void AppendHeadingEmptyLineBeforeAfterTest1()
         {
             MarkdownBuilder mb = CreateBuilder();
 
@@ -245,6 +245,63 @@ namespace Pihrtsoft.Markdown.Tests
 
             mb.WithSettings(mb.Settings.WithHeadingOptions(HeadingOptions.EmptyLineBeforeAndAfter));
             Assert.AreEqual(x + NewLine2 + s + NewLine + s + NewLine + x, mb.Append(x).Append(h).Append(h).Append(x).ToStringAndClear());
+        }
+
+        [TestMethod]
+        public void AppendHorizontalRuleTest1()
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            HorizontalRule hr = HorizontalRule.Default;
+            Assert.AreEqual("- - -" + NewLine, mb.Append(hr).ToStringAndClear());
+
+            Assert.AreEqual("***" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 3, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("* * *" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 3, addSpaces: true)).ToStringAndClear());
+            Assert.AreEqual("*****" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 5, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("* * * * *" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 5, addSpaces: true)).ToStringAndClear());
+
+            Assert.AreEqual("***" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 3, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("* * *" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 3, addSpaces: true).ToStringAndClear());
+            Assert.AreEqual("*****" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 5, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("* * * * *" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: 5, addSpaces: true).ToStringAndClear());
+
+            Assert.AreEqual("---" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 3, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("- - -" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 3, addSpaces: true)).ToStringAndClear());
+            Assert.AreEqual("-----" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 5, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("- - - - -" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 5, addSpaces: true)).ToStringAndClear());
+
+            Assert.AreEqual("---" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 3, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("- - -" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 3, addSpaces: true).ToStringAndClear());
+            Assert.AreEqual("-----" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 5, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("- - - - -" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: 5, addSpaces: true).ToStringAndClear());
+
+            Assert.AreEqual("___" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Underscore, count: 3, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("_ _ _" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Underscore, count: 3, addSpaces: true)).ToStringAndClear());
+            Assert.AreEqual("_____" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Underscore, count: 5, addSpaces: false)).ToStringAndClear());
+            Assert.AreEqual("_ _ _ _ _" + NewLine, mb.Append(HorizontalRule(style: HorizontalRuleStyle.Underscore, count: 5, addSpaces: true)).ToStringAndClear());
+
+            Assert.AreEqual("___" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: 3, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("_ _ _" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: 3, addSpaces: true).ToStringAndClear());
+            Assert.AreEqual("_____" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: 5, addSpaces: false).ToStringAndClear());
+            Assert.AreEqual("_ _ _ _ _" + NewLine, mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: 5, addSpaces: true).ToStringAndClear());
+        }
+
+        [DataTestMethod]
+        [DataRow(-1)]
+        [DataRow(0)]
+        [DataRow(1)]
+        [DataRow(2)]
+        public void AppendHorizontalRuleTest2(int count)
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.Append(HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false)));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.Append(HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false)));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.Append(HorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false)));
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false));
         }
     }
 }

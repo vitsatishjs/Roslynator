@@ -41,7 +41,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendHorizonalRule(Style, Count, AddSpaces);
+            return mb.AppendHorizontalRule(Style, Count, AddSpaces);
         }
 
         public override bool Equals(object obj)

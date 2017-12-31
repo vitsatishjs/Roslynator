@@ -692,8 +692,11 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(CodeBlockChars);
         }
 
-        public MarkdownBuilder AppendHorizonalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
+        public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
         {
+            if (count < 3)
+                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule cannot be less than 3.");
+
             AppendLineStart(state: State.HorizontalRule);
 
             char ch = HorizontalRuleChar(style);
