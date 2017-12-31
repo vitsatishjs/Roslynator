@@ -7,36 +7,36 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Pihrtsoft.Markdown.Tests
 {
     [TestClass]
-    public class CodeBlockTests
+    public class OrderedListItemTests
     {
         [TestMethod]
-        public void CodeBlockTest1()
+        public void OrderedListItemTest1()
         {
-            CodeBlock x = MarkdownFactory.CodeBlock("CodeBlockText", LanguageIdentifiers.CSharp);
+            OrderedListItem x = MarkdownFactory.OrderedListItem(1, "OrderedListItemText");
 
+            int number = x.Number;
             string text = x.Text;
-            string language = x.Language;
 
-            string text2 = text.Modify();
-            string language2 = language.Modify();
+            int number2 = number.Modify();
+            string text2 =  text.Modify();
 
+            Assert.AreNotEqual(number, number2);
             Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(language, language2);
 
+            TestEquality(x, x.WithNumber(number2));
             TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithLanguage(language2));
 
+            Assert.AreEqual(number2, x.WithNumber(number2).Number);
             Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(language2, x.WithLanguage(language2).Language);
 
+            Assert.AreEqual(x, x.WithNumber(number));
             Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithLanguage(language));
 
+            Assert.AreNotEqual(x, x.WithNumber(number2));
             Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithLanguage(language2));
         }
 
-        private static void TestEquality(CodeBlock x, CodeBlock y)
+        private static void TestEquality(OrderedListItem x, OrderedListItem y)
         {
             Assert.AreEqual(x, x);
             Assert.IsTrue(x == x);

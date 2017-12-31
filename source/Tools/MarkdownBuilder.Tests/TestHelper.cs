@@ -19,11 +19,11 @@ namespace Pihrtsoft.Markdown.Tests
         public const HorizontalRuleStyle HorizontalRuleStyleValue = HorizontalRuleStyle.Hyphen;
         public const HorizontalRuleStyle HorizontalRuleStyleValue2 = HorizontalRuleStyle.Asterisk;
 
-        public const string SpecialChars = @"\ ` * _ { } [ ] ( ) # + - . ! < >";
+        public const string SpecialChars = @"\ ` * _ { } [ ] ( ) # + - . ! <";
 
-        public const string SpecialCharsEscaped = @"\\ \` \* \_ \{ \} \[ \] \( \) \# \+ \- \. \! \< \>";
+        public const string SpecialCharsEscaped = @"\\ \` \* \_ \{ \} \[ \] \( \) \# \+ \- \. \! \<";
 
-        public const string SpecialCharsBacktickDoubled = @"\ `` * _ { } [ ] ( ) # + - . ! < >";
+        public const string SpecialCharsBacktickDoubled = @"\ `` * _ { } [ ] ( ) # + - . ! <";
 
         public static string NewLine { get; } = Environment.NewLine;
 

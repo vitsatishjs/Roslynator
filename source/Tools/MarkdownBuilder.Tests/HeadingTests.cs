@@ -17,13 +17,13 @@ namespace Pihrtsoft.Markdown.Tests
         [TestMethod]
         public void HeadingTest1()
         {
-            var x = new Heading(StringValue, IntValue);
+            Heading x = MarkdownFactory.Heading("HeadingText", 1);
 
             string text = x.Text;
             int level = x.Level;
 
-            string text2 = x.Text.Modify();
-            int level2 = x.Level.Modify();
+            string text2 = text.Modify();
+            int level2 = level.Modify();
 
             Assert.AreNotEqual(text, text2);
             Assert.AreNotEqual(level, level2);

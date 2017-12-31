@@ -7,36 +7,43 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Pihrtsoft.Markdown.Tests
 {
     [TestClass]
-    public class CodeBlockTests
+    public class LinkTests
     {
         [TestMethod]
-        public void CodeBlockTest1()
+        public void LinkTest1()
         {
-            CodeBlock x = MarkdownFactory.CodeBlock("CodeBlockText", LanguageIdentifiers.CSharp);
+            Link x = MarkdownFactory.Link("LinkText", "LinkUrl", "LinkTitle");
 
             string text = x.Text;
-            string language = x.Language;
+            string url = x.Url;
+            string title = x.Title;
 
             string text2 = text.Modify();
-            string language2 = language.Modify();
+            string url2 = url.Modify();
+            string title2 = title.Modify();
 
             Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(language, language2);
+            Assert.AreNotEqual(url, url2);
+            Assert.AreNotEqual(title, title2);
 
             TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithLanguage(language2));
+            TestEquality(x, x.WithUrl(url2));
+            TestEquality(x, x.WithTitle(title2));
 
             Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(language2, x.WithLanguage(language2).Language);
+            Assert.AreEqual(url2, x.WithUrl(url2).Url);
+            Assert.AreEqual(title2, x.WithTitle(title2).Title);
 
             Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithLanguage(language));
+            Assert.AreEqual(x, x.WithUrl(url));
+            Assert.AreEqual(x, x.WithTitle(title));
 
             Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithLanguage(language2));
+            Assert.AreNotEqual(x, x.WithUrl(url2));
+            Assert.AreNotEqual(x, x.WithTitle(title2));
         }
 
-        private static void TestEquality(CodeBlock x, CodeBlock y)
+        private static void TestEquality(Link x, Link y)
         {
             Assert.AreEqual(x, x);
             Assert.IsTrue(x == x);

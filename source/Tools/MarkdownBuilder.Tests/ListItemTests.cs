@@ -7,36 +7,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Pihrtsoft.Markdown.Tests
 {
     [TestClass]
-    public class CodeBlockTests
+    public class ListItemTests
     {
         [TestMethod]
-        public void CodeBlockTest1()
+        public void ListItemTest1()
         {
-            CodeBlock x = MarkdownFactory.CodeBlock("CodeBlockText", LanguageIdentifiers.CSharp);
+            ListItem x = MarkdownFactory.ListItem("ListItemText");
 
             string text = x.Text;
-            string language = x.Language;
 
-            string text2 = text.Modify();
-            string language2 = language.Modify();
+            string text2 =  text.Modify();
 
             Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(language, language2);
 
             TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithLanguage(language2));
 
             Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(language2, x.WithLanguage(language2).Language);
 
             Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithLanguage(language));
 
             Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithLanguage(language2));
         }
 
-        private static void TestEquality(CodeBlock x, CodeBlock y)
+        private static void TestEquality(ListItem x, ListItem y)
         {
             Assert.AreEqual(x, x);
             Assert.IsTrue(x == x);

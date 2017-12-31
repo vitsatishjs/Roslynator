@@ -21,19 +21,19 @@ namespace Pihrtsoft.Markdown
 
         public string Title { get; }
 
-        public Image WithText(string text)
+        public Link WithText(string text)
         {
-            return new Image(text, Url, Title);
+            return new Link(text, Url, Title);
         }
 
-        public Image WithUrl(string url)
+        public Link WithUrl(string url)
         {
-            return new Image(Text, url, Title);
+            return new Link(Text, url, Title);
         }
 
-        public Image WithTitle(string title)
+        public Link WithTitle(string title)
         {
-            return new Image(Text, Url, title);
+            return new Link(Text, Url, title);
         }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)

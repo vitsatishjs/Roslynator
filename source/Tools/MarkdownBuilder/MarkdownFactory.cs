@@ -182,14 +182,14 @@ namespace Pihrtsoft.Markdown
             return number.ToString() + ". ";
         }
 
-        public static TaskListItem TaskListItem(string value = null)
+        public static TaskListItem TaskListItem(string value = null, bool isCompleted = false)
         {
-            return new TaskListItem(value);
+            return new TaskListItem(value, isCompleted);
         }
 
         public static TaskListItem CompletedTaskListItem(string value = null)
         {
-            return new TaskListItem(value, isCompleted: true);
+            return TaskListItem(value, isCompleted: true);
         }
 
         public static string TaskListItemStart(bool isCompleted = false)
@@ -204,14 +204,14 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public static Link Link(string text, string url)
+        public static Link Link(string text, string url, string title = null)
         {
-            return new Link(text, url);
+            return new Link(text, url, title);
         }
 
-        public static Image Image(string text, string url)
+        public static Image Image(string text, string url, string title = null)
         {
-            return new Image(text, url);
+            return new Image(text, url, title);
         }
 
         public static CodeBlock CodeBlock(string value, string language = null)

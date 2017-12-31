@@ -7,36 +7,36 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Pihrtsoft.Markdown.Tests
 {
     [TestClass]
-    public class CodeBlockTests
+    public class TaskListItemTests
     {
         [TestMethod]
-        public void CodeBlockTest1()
+        public void TaskListItemTest1()
         {
-            CodeBlock x = MarkdownFactory.CodeBlock("CodeBlockText", LanguageIdentifiers.CSharp);
+            TaskListItem x = MarkdownFactory.TaskListItem("TaskListItemText", isCompleted: true);
 
             string text = x.Text;
-            string language = x.Language;
+            bool isCompleted = x.IsCompleted;
 
-            string text2 = text.Modify();
-            string language2 = language.Modify();
+            string text2 =  text.Modify();
+            bool isCompleted2 = isCompleted.Modify();
 
             Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(language, language2);
+            Assert.AreNotEqual(isCompleted, isCompleted2);
 
             TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithLanguage(language2));
+            TestEquality(x, x.WithIsCompleted(isCompleted2));
 
             Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(language2, x.WithLanguage(language2).Language);
+            Assert.AreEqual(isCompleted2, x.WithIsCompleted(isCompleted2).IsCompleted);
 
             Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithLanguage(language));
+            Assert.AreEqual(x, x.WithIsCompleted(isCompleted));
 
             Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithLanguage(language2));
+            Assert.AreNotEqual(x, x.WithIsCompleted(isCompleted2));
         }
 
-        private static void TestEquality(CodeBlock x, CodeBlock y)
+        private static void TestEquality(TaskListItem x, TaskListItem y)
         {
             Assert.AreEqual(x, x);
             Assert.IsTrue(x == x);

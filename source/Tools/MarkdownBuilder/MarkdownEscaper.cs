@@ -5,25 +5,23 @@ using System.Text;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: escape '&', escape '<' as '&lt;', escape '>'?
+    //TODO: escape '<' as '&lt;'?
     public static class MarkdownEscaper
     {
         public static string Escape(string value, Func<char, bool> shouldBeEscaped = null)
         {
-            return Escape(value, shouldBeEscaped ?? ShouldBeEscaped, null);
+            return Escape(value, shouldBeEscaped ?? ShouldBeEscaped, escapingChar: '\\');
         }
 
-        internal static string Escape(string value, Func<char, bool> shouldBeEscaped, StringBuilder sb, char escapingChar = '\\')
+        internal static string Escape(string value, Func<char, bool> shouldBeEscaped, char escapingChar)
         {
-            bool fAppend = sb != null;
+            StringBuilder sb = null;
 
             for (int i = 0; i < value.Length; i++)
             {
                 if (shouldBeEscaped(value[i]))
                 {
-                    if (!fAppend)
-                        sb = new StringBuilder();
-
+                    sb = new StringBuilder();
                     sb.Append(value, 0, i);
                     sb.Append(escapingChar);
                     sb.Append(value[i]);
@@ -50,19 +48,11 @@ namespace Pihrtsoft.Markdown
 
                     sb.Append(value, lastIndex, value.Length - lastIndex);
 
-                    return (fAppend) ? null : sb.ToString();
+                    return sb.ToString();
                 }
             }
 
-            if (fAppend)
-            {
-                sb.Append(value);
-                return null;
-            }
-            else
-            {
-                return value;
-            }
+            return value;
         }
 
         public static bool ShouldBeEscaped(char value)
@@ -85,7 +75,6 @@ namespace Pihrtsoft.Markdown
                 case '.':
                 case '!':
                 case '<':
-                case '>':
                     return true;
                 default:
                     return false;

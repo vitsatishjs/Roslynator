@@ -438,17 +438,17 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value, state: State.ListItem);
+            return AppendItem(state: State.ListItem, prefix1: null, prefix2: ListItemStart, value: value);
         }
 
         public MarkdownBuilder AppendListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, value: value, state: State.ListItem);
+            return AppendItem(state: State.ListItem, prefix1: null, prefix2: ListItemStart, value: value);
         }
 
         public MarkdownBuilder AppendListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: ListItemStart, state: State.ListItem, values: values);
+            return AppendItem(state: State.ListItem, prefix1: null, prefix2: ListItemStart, values: values);
         }
 
         internal MarkdownBuilder AppendListItemStart()
@@ -458,17 +458,17 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value, state: State.OrderedListItem);
+            return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, object value)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", value: value, state: State.OrderedListItem);
+            return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
         {
-            return AppendItem(prefix1: number.ToString(), prefix2: ". ", state: State.OrderedListItem, values: values);
+            return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", values: values);
         }
 
         internal MarkdownBuilder AppendOrderedListItemStart(int number)
@@ -479,32 +479,32 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendTaskListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value, state: State.TaskListItem);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), value: value);
         }
 
         public MarkdownBuilder AppendTaskListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), value: value, state: State.TaskListItem);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), value: value);
         }
 
         public MarkdownBuilder AppendTaskListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(), state: State.TaskListItem, values: values);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), values: values);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(string value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value, state: State.TaskListItem);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(object value)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value, state: State.TaskListItem);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(params object[] values)
         {
-            return AppendItem(prefix1: null, prefix2: TaskListItemStart(isCompleted: true), state: State.TaskListItem, values: values);
+            return AppendItem(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), values: values);
         }
 
         internal MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
@@ -512,40 +512,34 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(TaskListItemStart(isCompleted));
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, string value, State state)
+        private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, string value)
         {
-            return AppendLineMarkdown(
-                prefix1: prefix1,
-                prefix2: prefix2,
-                suffix: null,
-                emptyLineBefore: false,
-                emptyLineAfter: false,
-                state: state,
-                value: value);
+            AppendLineStart(state, false, prefix1, prefix2);
+
+            if (AppendPrivate(value) > 0)
+                AppendLineIfNecessary();
+
+            return this;
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, object value, State state)
+        private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, object value)
         {
-            return AppendLineMarkdown(
-                prefix1: prefix1,
-                prefix2: prefix2,
-                suffix: null,
-                emptyLineBefore: false,
-                emptyLineAfter: false,
-                state: state,
-                value: value);
+            AppendLineStart(state, false, prefix1, prefix2);
+
+            if (AppendPrivate(value) > 0)
+                AppendLineIfNecessary();
+
+            return this;
         }
 
-        private MarkdownBuilder AppendItem(object prefix1, string prefix2, State state, params object[] values)
+        private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, params object[] values)
         {
-            return AppendLineMarkdown(
-                prefix1: prefix1,
-                prefix2: prefix2,
-                suffix: null,
-                emptyLineBefore: false,
-                emptyLineAfter: false,
-                state: state,
-                values: values);
+            AppendLineStart(state, false, prefix1, prefix2);
+
+            if (AppendPrivate(values) > 0)
+                AppendLineIfNecessary();
+
+            return this;
         }
 
         public MarkdownBuilder AppendImage(string text, string url, string title = null)
@@ -672,7 +666,7 @@ namespace Pihrtsoft.Markdown
             if (!indent)
                 return AppendCodeBlock(code, language: null);
 
-            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock, prefix2: "    ");
+            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock);
             AddState(State.IndentedCodeBlock);
             AppendRaw(code);
             AppendLineIfNecessary();
@@ -731,8 +725,7 @@ namespace Pihrtsoft.Markdown
                 AppendRaw(ch);
             }
 
-            //TODO: 
-            //AppendLine();
+            AppendLine();
             RemoveState(State.HorizontalRule);
             return this;
         }
@@ -1138,58 +1131,6 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        //TODO: rename
-        private MarkdownBuilder AppendLineMarkdown(
-            object prefix1,
-            string prefix2,
-            string suffix,
-            bool emptyLineBefore,
-            bool emptyLineAfter,
-            State state,
-            string value)
-        {
-            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
-
-            if (AppendPrivate(value) > 0)
-                AppendLineEnd(suffix, emptyLineAfter);
-
-            return this;
-        }
-
-        private MarkdownBuilder AppendLineMarkdown(
-            object prefix1,
-            string prefix2,
-            string suffix,
-            bool emptyLineBefore,
-            bool emptyLineAfter,
-            State state,
-            object value)
-        {
-            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
-
-            if (AppendPrivate(value) > 0)
-                AppendLineEnd(suffix, emptyLineAfter);
-
-            return this;
-        }
-
-        private MarkdownBuilder AppendLineMarkdown(
-            object prefix1,
-            string prefix2,
-            string suffix,
-            bool emptyLineBefore,
-            bool emptyLineAfter,
-            State state,
-            params object[] values)
-        {
-            AppendLineStart(state, emptyLineBefore, prefix1, prefix2);
-
-            if (AppendPrivate(values) > 0)
-                AppendLineEnd(suffix, emptyLineAfter);
-
-            return this;
-        }
-
         private int AppendPrivate(string value)
         {
             int length = Length;
@@ -1295,13 +1236,13 @@ namespace Pihrtsoft.Markdown
 
                         if (ch == 10)
                         {
-                            AppendLinefeed(lastIndex, i - lastIndex);
+                            AppendLinefeed(lastIndex, i);
                             f = true;
                         }
 
                         if (shouldBeEscaped(ch))
                         {
-                            AppendEscapedChar(lastIndex, i - lastIndex, ch);
+                            AppendEscapedChar(lastIndex, i, ch);
                             f = true;
                         }
 
@@ -1382,12 +1323,6 @@ namespace Pihrtsoft.Markdown
 
             Append(prefix1, escape: false);
             AppendSyntax(prefix2);
-        }
-
-        private void AppendLineEnd(string suffix = null, bool addEmptyLine = false)
-        {
-            AppendSyntax(suffix);
-            AppendLine(addEmptyLine);
         }
 
         public MarkdownBuilder AppendLine(string value, bool escape = true)
@@ -1554,8 +1489,13 @@ namespace Pihrtsoft.Markdown
 
         public override string ToString()
         {
+            return ToString(addSignature: false);
+        }
+
+        internal string ToString(bool addSignature)
+        {
             if (Length > 0
-                && Settings.AddSignature)
+                && addSignature)
             {
                 AppendLine(addEmptyLine: true);
                 AppendComment("Generated with MarkdownBuilder (http://www.github.com/josefpihrt/markdownbuilder)");

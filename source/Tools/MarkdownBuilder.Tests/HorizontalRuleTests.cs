@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Pihrtsoft.Markdown.Tests.TestHelper;
 
 #pragma warning disable CS1718
 
@@ -19,9 +18,9 @@ namespace Pihrtsoft.Markdown.Tests
             int count = x.Count;
             bool addSpaces = x.AddSpaces;
 
-            const HorizontalRuleStyle style2 =  HorizontalRuleStyle.Asterisk;
-            int count2 = x.Count.Modify();
-            bool addSpaces2 = x.AddSpaces.Modify();
+            HorizontalRuleStyle style2 = style.Modify();
+            int count2 = count.Modify();
+            bool addSpaces2 = addSpaces.Modify();
 
             Assert.AreNotEqual(style, style2);
             Assert.AreNotEqual(count, count2);

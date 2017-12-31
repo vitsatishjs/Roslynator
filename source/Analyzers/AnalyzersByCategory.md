@@ -126,6 +126,7 @@
 | Redundancy | [Unused parameter](../../docs/analyzers/RCS1163.md) | RCS1163 | &#x2713; |
 | Redundancy | [Unused this parameter](../../docs/analyzers/RCS1175.md) | RCS1175 | &#x2713; |
 | Redundancy | [Unused type parameter](../../docs/analyzers/RCS1164.md) | RCS1164 | &#x2713; |
+| Simplification | [Avoid interpolated string with no interpolated text](../../docs/analyzers/RCS1214.md) | RCS1214 | &#x2713; |
 | Simplification | [Call 'Enumerable.Cast' instead of 'Enumerable.Select'](../../docs/analyzers/RCS1109.md) | RCS1109 | &#x2713; |
 | Simplification | [Call string.Concat instead of string.Join](../../docs/analyzers/RCS1150.md) | RCS1150 | &#x2713; |
 | Simplification | [Combine 'Enumerable.Where' method chain](../../docs/analyzers/RCS1112.md) | RCS1112 | &#x2713; |

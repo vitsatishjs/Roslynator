@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MiscellaneousOptions, MarkdownSettings >>> MarkdownFormat
+    //TODO: MarkdownFormat
     public class MarkdownSettings : IEquatable<MarkdownSettings>
     {
         public MarkdownSettings(
@@ -17,8 +17,7 @@ namespace Pihrtsoft.Markdown
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             bool allowLinkWithoutUrl = true,
-            string indentChars = "  ",
-            bool addSignature = false)
+            string indentChars = "  ")
         {
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
@@ -29,7 +28,6 @@ namespace Pihrtsoft.Markdown
             TableOptions = tableOptions;
             AllowLinkWithoutUrl = allowLinkWithoutUrl;
             IndentChars = indentChars;
-            AddSignature = addSignature;
         }
 
         public static MarkdownSettings Default { get; } = new MarkdownSettings();
@@ -64,6 +62,7 @@ namespace Pihrtsoft.Markdown
 
         internal bool TableOuterPipe => (TableOptions & TableOptions.OuterPipe) != 0;
 
+        //TODO: move to MarkdownBuilder
         public bool AllowLinkWithoutUrl { get; }
 
         internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
@@ -75,8 +74,6 @@ namespace Pihrtsoft.Markdown
         internal bool CloseHeading => (HeadingOptions & HeadingOptions.Close) != 0;
 
         public string IndentChars { get; }
-
-        public bool AddSignature { get; }
 
         private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
         {
@@ -105,8 +102,7 @@ namespace Pihrtsoft.Markdown
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
                 && AllowLinkWithoutUrl == other.AllowLinkWithoutUrl
-                && IndentChars == other.IndentChars
-                && AddSignature == other.AddSignature;
+                && IndentChars == other.IndentChars;
         }
 
         public override int GetHashCode()
@@ -121,7 +117,6 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)TableOptions, hashCode);
             hashCode = Hash.Combine(AllowLinkWithoutUrl, hashCode);
             hashCode = Hash.Combine(IndentChars, hashCode);
-            hashCode = Hash.Combine(AddSignature, hashCode);
             return hashCode;
         }
 
@@ -146,8 +141,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithItalicStyle(EmphasisStyle italicStyle)
@@ -161,8 +155,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithListItemStyle(ListItemStyle listItemStyle)
@@ -176,8 +169,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithHorizontalRule(HorizontalRule horizontalRule)
@@ -191,8 +183,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithHeadingOptions(HeadingOptions headingOptions)
@@ -206,8 +197,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithTableOptions(TableOptions tableOptions)
@@ -221,8 +211,7 @@ namespace Pihrtsoft.Markdown
                 tableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
@@ -236,8 +225,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 codeBlockOptions,
                 AllowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithAllowLinkWithoutUrl(bool allowLinkWithoutUrl)
@@ -251,8 +239,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 allowLinkWithoutUrl,
-                IndentChars,
-                AddSignature);
+                IndentChars);
         }
 
         public MarkdownSettings WithIndentChars(string indentChars)
@@ -266,23 +253,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeBlockOptions,
                 AllowLinkWithoutUrl,
-                indentChars,
-                AddSignature);
-        }
-
-        public MarkdownSettings WithAddSignature(bool addSignature)
-        {
-            return new MarkdownSettings(
-                BoldStyle,
-                ItalicStyle,
-                ListItemStyle,
-                HorizontalRule,
-                HeadingOptions,
-                TableOptions,
-                CodeBlockOptions,
-                AllowLinkWithoutUrl,
-                IndentChars,
-                addSignature);
+                indentChars);
         }
     }
 }
