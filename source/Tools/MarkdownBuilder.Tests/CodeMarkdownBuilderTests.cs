@@ -13,8 +13,11 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateCodeBuilder();
 
-            Assert.AreEqual(SpecialCharsBacktickDoubled, mb.Append(SpecialChars).ToStringAndClear());
-            Assert.AreEqual(SpecialCharsBacktickDoubled, mb.Append(SpecialChars, MarkdownEscaper.ShouldBeEscaped, '\\').ToStringAndClear());
+            const string x = SpecialCharsEnclosedWithBacktick;
+            const string y = SpecialCharsEnclosedWithBacktickDoubled;
+
+            Assert.AreEqual(y, mb.Append(x).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(x, MarkdownEscaper.ShouldBeEscaped, '\\').ToStringAndClear());
         }
     }
 }

@@ -23,11 +23,17 @@ namespace Pihrtsoft.Markdown.Tests
 
         public const string SpecialCharsEscaped = @"\\ \` \* \_ \{ \} \[ \] \( \) \# \+ \- \. \! \<";
 
-        public const string SpecialCharsBacktickDoubled = @"\ `` * _ { } [ ] ( ) # + - . ! <";
+        public const string SpecialCharsEnclosedWithBacktick = @"` \ * _ { } [ ] ( ) # + - . ! < `";
+
+        public const string SpecialCharsEnclosedWithBacktickDoubled = @"`` \ * _ { } [ ] ( ) # + - . ! < ``";
 
         public static string NewLine { get; } = Environment.NewLine;
 
+        public static string NewLine2 { get; } = NewLine + NewLine;
+
         public static string Backtick { get; } = "`";
+
+        public static string CSharpLanguage { get; } = LanguageIdentifiers.CSharp;
 
         public static MarkdownBuilder CreateBuilder(MarkdownSettings settings = null)
         {
