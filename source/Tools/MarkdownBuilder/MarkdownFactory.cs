@@ -204,6 +204,11 @@ namespace Pihrtsoft.Markdown
             }
         }
 
+        public static Image Image(string text, string url, string title = null)
+        {
+            return new Image(text, url, title);
+        }
+
         public static Link Link(string text, string url, string title = null)
         {
             return new Link(text, url, title);
@@ -216,11 +221,6 @@ namespace Pihrtsoft.Markdown
                 return Text(text);
 
             return new Link(text, url, title);
-        }
-
-        public static Image Image(string text, string url, string title = null)
-        {
-            return new Image(text, url, title);
         }
 
         public static CodeBlock CodeBlock(string value, string language = null)
@@ -267,6 +267,15 @@ namespace Pihrtsoft.Markdown
             return table;
         }
 
+        public static Table Table(TableColumn column)
+        {
+            Table table = Table();
+
+            table.Columns.Add(column);
+
+            return table;
+        }
+
         public static Table Table(TableColumn column1, TableColumn column2)
         {
             Table table = Table();
@@ -303,6 +312,11 @@ namespace Pihrtsoft.Markdown
             return table;
         }
 
+        public static TableColumnCollection TableHeader()
+        {
+            return new TableColumnCollection();
+        }
+
         public static TableColumnCollection TableHeader(TableColumn column)
         {
             return new TableColumnCollection() { column };
@@ -326,6 +340,19 @@ namespace Pihrtsoft.Markdown
         public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
         {
             return new TableColumnCollection() { column1, column2, column3, column4, column5 };
+        }
+
+        public static TableColumnCollection TableHeader(params TableColumn[] columns)
+        {
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
+
+            TableColumnCollection tableHeader = TableHeader();
+
+            for (int i = 0; i < columns.Length; i++)
+                tableHeader.Add(columns[i]);
+
+            return tableHeader;
         }
 
         public static TableColumn TableColumn(string name, Alignment alignment = Alignment.Left)

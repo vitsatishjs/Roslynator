@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: IsImage
     [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
     public struct Link : IMarkdown, IEquatable<Link>
     {

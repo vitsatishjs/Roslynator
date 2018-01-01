@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -25,6 +26,9 @@ namespace Pihrtsoft.Markdown
 
         public Table AddColumns(params TableColumn[] columns)
         {
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
+
             foreach (TableColumn column in columns)
                 Columns.Add(column);
 
