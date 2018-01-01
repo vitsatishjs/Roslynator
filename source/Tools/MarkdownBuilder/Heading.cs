@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown
             if (level < 1
                 || level > 6)
             {
-                throw new ArgumentOutOfRangeException(nameof(level), level, "Heading level must be between 1-6.");
+                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
             }
 
             Text = text;

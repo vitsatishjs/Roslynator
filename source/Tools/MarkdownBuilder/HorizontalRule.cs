@@ -9,7 +9,7 @@ namespace Pihrtsoft.Markdown
         internal HorizontalRule(HorizontalRuleStyle style, int count = 3, bool addSpaces = true)
         {
             if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule cannot be less than 3.");
+                throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
 
             Style = style;
             Count = count;

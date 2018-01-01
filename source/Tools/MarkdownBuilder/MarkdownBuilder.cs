@@ -11,6 +11,8 @@ namespace Pihrtsoft.Markdown
 {
     public class MarkdownBuilder
     {
+        private const State InitialState = State.StartOfLine;
+
         private MarkdownSettings _settings;
 
         public MarkdownBuilder(MarkdownSettings settings = null)
@@ -77,7 +79,7 @@ namespace Pihrtsoft.Markdown
             get { return StringBuilder[index]; }
         }
 
-        private State State { get; set; }
+        private State State { get; set; } = InitialState;
 
         private MarkdownBuilder AddState(State state)
         {
@@ -119,7 +121,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder DecreaseIndentLevel()
         {
             if (IndentLevel == 0)
-                throw new InvalidOperationException($"{nameof(IndentLevel)} cannot be less than 0.");
+                throw new InvalidOperationException("Indent level cannot be less than 0.");
 
             IndentLevel--;
             return this;
@@ -135,7 +137,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder DecreaseQuoteLevel()
         {
             if (QuoteLevel == 0)
-                throw new InvalidOperationException($"{nameof(QuoteLevel)} cannot be less than 0.");
+                throw new InvalidOperationException("Quote level cannot be less than 0.");
 
             QuoteLevel--;
 
@@ -443,21 +445,33 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, string value)
         {
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+
             return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, object value)
         {
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+
             return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: value);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
         {
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+
             return AppendItem(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", values: values);
         }
 
         internal MarkdownBuilder AppendOrderedListItemStart(int number)
         {
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+
             AppendRaw(number);
             return AppendSyntax(". ");
         }
@@ -499,31 +513,28 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, string value)
         {
-            AppendLineStart(state, false, prefix1, prefix2);
-
-            if (AppendPrivate(value) > 0)
-                AppendLineIfNecessary();
-
+            AppendLineStart(state: state, addEmptyLine: false, prefix1: prefix1, prefix2: prefix2);
+            Append(value);
+            AppendLineIfNecessary();
+            RemoveState(state);
             return this;
         }
 
         private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, object value)
         {
-            AppendLineStart(state, false, prefix1, prefix2);
-
-            if (AppendPrivate(value) > 0)
-                AppendLineIfNecessary();
-
+            AppendLineStart(state: state, addEmptyLine: false, prefix1: prefix1, prefix2: prefix2);
+            Append(value);
+            AppendLineIfNecessary();
+            RemoveState(state);
             return this;
         }
 
         private MarkdownBuilder AppendItem(State state, object prefix1, string prefix2, params object[] values)
         {
-            AppendLineStart(state, false, prefix1, prefix2);
-
-            if (AppendPrivate(values) > 0)
-                AppendLineIfNecessary();
-
+            AppendLineStart(state: state, addEmptyLine: false, prefix1: prefix1, prefix2: prefix2);
+            AppendRange(values);
+            AppendLineIfNecessary();
+            RemoveState(state);
             return this;
         }
 
@@ -680,8 +691,12 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendQuoteBlock(string value)
         {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             IncreaseQuoteLevel();
             Append(value);
+            AppendLineIfNecessary();
             DecreaseQuoteLevel();
             return this;
         }
@@ -694,7 +709,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
         {
             if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule cannot be less than 3.");
+                throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
 
             AppendLineStart(state: State.HorizontalRule);
 
@@ -959,7 +974,7 @@ namespace Pihrtsoft.Markdown
                     AppendTableRowStart(i);
                     AppendTablePadding();
 
-                    int length = AppendPrivate(row[i]);
+                    int length = AppendGetLength(row[i]);
 
                     if (FormatTableContent)
                         AppendPadRight(length, widths?[i]);
@@ -980,7 +995,7 @@ namespace Pihrtsoft.Markdown
                     AppendTableRowStart(i);
                     AppendTablePadding();
 
-                    int length = AppendPrivate(selectors[i](item));
+                    int length = AppendGetLength(selectors[i](item));
 
                     if (FormatTableContent)
                         AppendPadRight(length, widths?[i]);
@@ -1092,24 +1107,10 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        private int AppendPrivate(string value)
+        private int AppendGetLength(object value)
         {
             int length = Length;
             Append(value);
-            return Length - length;
-        }
-
-        private int AppendPrivate(object value)
-        {
-            int length = Length;
-            Append(value);
-            return Length - length;
-        }
-
-        private int AppendPrivate(params object[] values)
-        {
-            int length = Length;
-            AppendRange(values);
             return Length - length;
         }
 
@@ -1216,6 +1217,9 @@ namespace Pihrtsoft.Markdown
 
         internal virtual MarkdownBuilder Append(string value, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
         {
+            if (value == null)
+                return this;
+
             BeforeAppend();
 
             int length = value.Length;
@@ -1253,8 +1257,7 @@ namespace Pihrtsoft.Markdown
                             AppendLinefeed(lastIndex, i);
                             f = true;
                         }
-
-                        if (shouldBeEscaped(ch))
+                        else if (shouldBeEscaped(ch))
                         {
                             AppendEscapedChar(lastIndex, i, ch);
                             f = true;
@@ -1289,12 +1292,14 @@ namespace Pihrtsoft.Markdown
                     index--;
                 }
 
+                BeforeAppend();
                 StringBuilder.Append(value, startIndex, index - startIndex);
                 AppendLine();
             }
 
             void AppendEscapedChar(int startIndex, int index, char ch)
             {
+                BeforeAppend();
                 StringBuilder.Append(value, startIndex, index - startIndex);
                 StringBuilder.Append(escapingChar);
                 StringBuilder.Append(ch);
@@ -1323,8 +1328,11 @@ namespace Pihrtsoft.Markdown
 
         internal MarkdownBuilder AppendRange(params object[] values)
         {
-            foreach (object value in values)
-                Append(value);
+            if (values != null)
+            {
+                foreach (object value in values)
+                    Append(value);
+            }
 
             return this;
         }
@@ -1439,7 +1447,6 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendRaw(string value)
         {
-            BeforeAppend();
             Append(value, f => false);
             return this;
         }
@@ -1501,7 +1508,7 @@ namespace Pihrtsoft.Markdown
         public void Clear()
         {
             StringBuilder.Clear();
-            State = State.None;
+            State = InitialState;
         }
 
         public override string ToString()

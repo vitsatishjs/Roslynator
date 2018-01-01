@@ -11,8 +11,8 @@ namespace Pihrtsoft.Markdown
     {
         internal MarkdownJoin(string separator, IEnumerable<object> values, bool escape)
         {
-            Separator = separator;
             Values = values ?? throw new ArgumentNullException(nameof(values));
+            Separator = separator;
             Escape = escape;
         }
 

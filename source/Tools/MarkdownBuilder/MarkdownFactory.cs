@@ -42,7 +42,7 @@ namespace Pihrtsoft.Markdown
             if (style == EmphasisStyle.Underscore)
                 return "__";
 
-            throw new ArgumentException("", nameof(style));
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
         public static MarkdownText Italic(string value)
@@ -58,7 +58,7 @@ namespace Pihrtsoft.Markdown
             if (style == EmphasisStyle.Underscore)
                 return "_";
 
-            throw new ArgumentException("", nameof(style));
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
         public static MarkdownText Strikethrough(string value)
@@ -128,7 +128,7 @@ namespace Pihrtsoft.Markdown
                 case 6:
                     return "###### ";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(level), level, "Header level cannot be less than 1 or greater than 6");
+                    throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Pihrtsoft.Markdown
                 case 6:
                     return " ######";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(level), level, "Header level cannot be less than 1 or greater than 6");
+                    throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
             }
         }
 
@@ -169,7 +169,7 @@ namespace Pihrtsoft.Markdown
             if (style == ListItemStyle.Minus)
                 return "- ";
 
-            throw new ArgumentException("", nameof(style));
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
         public static OrderedListItem OrderedListItem(int number, string value = null)
@@ -249,7 +249,7 @@ namespace Pihrtsoft.Markdown
                 case HorizontalRuleStyle.Underscore:
                     return '_';
                 default:
-                    throw new ArgumentException("", nameof(style));
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
             }
         }
 

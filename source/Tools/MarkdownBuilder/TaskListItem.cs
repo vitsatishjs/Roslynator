@@ -30,7 +30,14 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendTaskListItem(Text, IsCompleted);
+            if (IsCompleted)
+            {
+                return mb.AppendCompletedTaskListItem(Text);
+            }
+            else
+            {
+                return mb.AppendTaskListItem(Text);
+            }
         }
 
         public override bool Equals(object obj)

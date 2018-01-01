@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #pragma warning disable CS1718
@@ -34,6 +35,9 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.AreNotEqual(x, x.WithNumber(number2));
             Assert.AreNotEqual(x, x.WithText(text2));
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => MarkdownFactory.OrderedListItem(-2));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => MarkdownFactory.OrderedListItem(-1));
         }
 
         private static void TestEquality(OrderedListItem x, OrderedListItem y)

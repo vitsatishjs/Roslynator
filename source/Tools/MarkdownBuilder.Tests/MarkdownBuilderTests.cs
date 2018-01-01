@@ -370,5 +370,138 @@ namespace Pihrtsoft.Markdown.Tests
             Assert.ThrowsException<ArgumentNullException>(() => mb.AppendLink(null, "Url"));
             Assert.ThrowsException<ArgumentNullException>(() => mb.AppendLink("Text", null));
         }
+
+        [DataTestMethod]
+        [DataRow("*", ListItemStyle.Asterisk)]
+        [DataRow("-", ListItemStyle.Minus)]
+        [DataRow("+", ListItemStyle.Plus)]
+        public void AppendListItemTest1(string syntax, ListItemStyle style)
+        {
+            MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(listItemStyle: style));
+
+            const string text = "ListItemText";
+
+            Test1(syntax + $" {text + CharsEscaped}" + NewLine, ListItem(text + Chars));
+
+            Test1(syntax + " " + NewLine, ListItem());
+
+            void Test1(string e, ListItem li)
+            {
+                Assert.AreEqual(e, mb.AppendListItem(li.Text).ToStringAndClear());
+                Assert.AreEqual(e, mb.AppendListItem((object)li.Text).ToStringAndClear());
+                Assert.AreEqual(e, mb.AppendListItem(li.Text, null).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(li).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append((object)li).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(li, escape: true).ToStringAndClear());
+                Assert.AreEqual(e + e, mb.AppendRange(li, li).ToStringAndClear());
+            }
+        }
+
+        [DataTestMethod]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        public void AppendOrderedListItemTest1(int number)
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            const string text = "OrderedListItemText";
+
+            Test1(number + $". {text + CharsEscaped}" + NewLine, OrderedListItem(number, text + Chars));
+
+            Test1(number + ". " + NewLine, OrderedListItem(number));
+
+            void Test1(string e, OrderedListItem oli)
+            {
+                Assert.AreEqual(e, mb.AppendOrderedListItem(number, oli.Text).ToStringAndClear());
+                Assert.AreEqual(e, mb.AppendOrderedListItem(number, (object)oli.Text).ToStringAndClear());
+                Assert.AreEqual(e, mb.AppendOrderedListItem(number, oli.Text, null).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(oli).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append((object)oli).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(oli, escape: true).ToStringAndClear());
+                Assert.AreEqual(e + e, mb.AppendRange(oli, oli).ToStringAndClear());
+            }
+        }
+
+        [DataTestMethod]
+        [DataRow(-2)]
+        [DataRow(-1)]
+        public void AppendOrderedListItemTest2(int number)
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendOrderedListItem(number));
+        }
+
+        [DataTestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public void AppendTaskListItemTest1(bool isCompleted)
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            const string text = "TaskListItemText";
+
+            string start = $"- [{((isCompleted) ? "x" : " ")}] ";
+
+            Test1(start + text + CharsEscaped + NewLine, TaskListItem(text + Chars, isCompleted));
+
+            Test1(start + NewLine, TaskListItem(null, isCompleted));
+
+            if (isCompleted)
+            {
+                Test1(start + text + CharsEscaped + NewLine, CompletedTaskListItem(text + Chars));
+
+                Test1(start + NewLine, CompletedTaskListItem(null));
+            }
+
+            void Test1(string e, TaskListItem tli)
+            {
+                if (isCompleted)
+                {
+                    Assert.AreEqual(e, mb.AppendCompletedTaskListItem(tli.Text).ToStringAndClear());
+                    Assert.AreEqual(e, mb.AppendCompletedTaskListItem((object)tli.Text).ToStringAndClear());
+                    Assert.AreEqual(e, mb.AppendCompletedTaskListItem(tli.Text, null).ToStringAndClear());
+                }
+                else
+                {
+                    Assert.AreEqual(e, mb.AppendTaskListItem(tli.Text).ToStringAndClear());
+                    Assert.AreEqual(e, mb.AppendTaskListItem((object)tli.Text).ToStringAndClear());
+                    Assert.AreEqual(e, mb.AppendTaskListItem(tli.Text, null).ToStringAndClear());
+                }
+
+                Assert.AreEqual(e, mb.Append(tli).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append((object)tli).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(tli, escape: true).ToStringAndClear());
+                Assert.AreEqual(e + e, mb.AppendRange(tli, tli).ToStringAndClear());
+            }
+        }
+
+        [TestMethod]
+        public void AppendQuoteBlockTest1()
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            const string text = "QuoteBlockText";
+
+            const string start = "> ";
+
+            string md = start + text + CharsEscaped + NewLine;
+
+            Test1(md, QuoteBlock(text + Chars));
+
+            Test1(md + md, QuoteBlock(text + Chars + NewLine + text + Chars));
+
+            void Test1(string e, QuoteBlock x)
+            {
+                Assert.AreEqual(e, mb.AppendQuoteBlock(x.Text).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(x).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append((object)x).ToStringAndClear());
+                Assert.AreEqual(e, mb.Append(x, escape: true).ToStringAndClear());
+                Assert.AreEqual(e + e, mb.AppendRange(x, x).ToStringAndClear());
+            }
+
+            Assert.ThrowsException<ArgumentNullException>(() => mb.AppendQuoteBlock(null));
+        }
     }
 }

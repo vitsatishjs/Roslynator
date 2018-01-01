@@ -11,7 +11,7 @@ namespace Pihrtsoft.Markdown
         internal OrderedListItem(int number, string text)
         {
             if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, "Number must be positive.");
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
 
             Number = number;
             Text = text;

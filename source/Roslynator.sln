@@ -58,7 +58,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneration", "Tools\Cod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownBuilder", "Tools\MarkdownBuilder\MarkdownBuilder.csproj", "{8B57ADED-9334-4563-AB5A-13E88C810507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownBuilder.Tests", "Tools\MarkdownBuilder.Tests\MarkdownBuilder.Tests.csproj", "{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownBuilder.Tests", "Tools\MarkdownBuilder.Tests\MarkdownBuilder.Tests.csproj", "{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

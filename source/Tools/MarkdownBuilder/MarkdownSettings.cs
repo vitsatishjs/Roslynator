@@ -78,7 +78,7 @@ namespace Pihrtsoft.Markdown
             if (style == EmphasisStyle.Underscore)
                 return EmphasisStyle.Asterisk;
 
-            throw new ArgumentException("", nameof(style));
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
         public override bool Equals(object obj)
