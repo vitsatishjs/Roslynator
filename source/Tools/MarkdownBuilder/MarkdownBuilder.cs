@@ -66,8 +66,6 @@ namespace Pihrtsoft.Markdown
 
         private bool TablePadding => Settings.TablePadding;
 
-        private bool AllowLinkWithoutUrl => Settings.AllowLinkWithoutUrl;
-
         private bool UnderlineHeading1 => Settings.UnderlineHeading1;
 
         private bool UnderlineHeading2 => Settings.UnderlineHeading2;
@@ -531,6 +529,12 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendImage(string text, string url, string title = null)
         {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            if (url == null)
+                throw new ArgumentNullException(nameof(url));
+
             AddState(State.Image);
             AppendSyntax("!");
             AppendLinkCore(text, url, title);
@@ -540,21 +544,11 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendLink(string text, string url, string title = null)
         {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (url == null)
-            {
-                if (!AllowLinkWithoutUrl)
-                    throw new ArgumentNullException(nameof(url));
-
-                return Append(text);
-            }
-
-            if (url.Length == 0)
-            {
-                if (!AllowLinkWithoutUrl)
-                    throw new ArgumentException("Url cannot be empty.", nameof(url));
-
-                return Append(text);
-            }
+                throw new ArgumentNullException(nameof(url));
 
             AddState(State.Link);
             AppendLinkCore(text, url, title);
@@ -562,12 +556,17 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
+        public MarkdownBuilder AppendLinkOrText(string text, string url = null, string title = null)
+        {
+            return Append(LinkOrText(text, url, title));
+        }
+
         private MarkdownBuilder AppendLinkCore(string text, string url, string title)
         {
             AppendSquareBrackets(text);
             AppendSyntax("(");
             AddState(State.Parentheses);
-            Append(url, shouldBeEscaped: ch => ch == '(' || ch == ')' || ch == '<' || ch == '>');
+            Append(url, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkUrl);
             AppendLinkTitle(title);
             RemoveState(State.Parentheses);
             AppendSyntax(")");
@@ -599,7 +598,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendLinkReferenceCore(string text, string label = null)
+        private MarkdownBuilder AppendLinkReferenceCore(string text, string label = null)
         {
             AppendSquareBrackets(text);
             AppendSquareBrackets(label);
@@ -624,7 +623,7 @@ namespace Pihrtsoft.Markdown
                 AppendSpace();
                 AppendSyntax("\"");
                 AddState(State.DoubleQuotes);
-                Append(title, shouldBeEscaped: ch => ch == '"');
+                Append(title, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkTitle);
                 RemoveState(State.DoubleQuotes);
                 AppendSyntax("\"");
             }
@@ -634,7 +633,7 @@ namespace Pihrtsoft.Markdown
         {
             AppendSyntax("[");
             AddState(State.SquareBrackets);
-            Append(value, shouldBeEscaped: ch => ch == '[' || ch == ']' || ch == '<' || ch == '>');
+            Append(value, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkText);
             RemoveState(State.SquareBrackets);
             AppendSyntax("]");
         }
@@ -1424,7 +1423,7 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendRaw(char value, int repeatCount)
         {
-            Debug.Assert(value != '\r' && value != '\n' , value.ToString());
+            Debug.Assert(value != '\r' && value != '\n', value.ToString());
 
             BeforeAppend();
             StringBuilder.Append(value, repeatCount);

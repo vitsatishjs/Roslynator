@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: escape '<' as '&lt;'?
+    //TODO: LessThanEscapeOption, escape '<' as '&lt;'?
     public static class MarkdownEscaper
     {
         public static string Escape(string value, Func<char, bool> shouldBeEscaped = null)
@@ -75,6 +75,43 @@ namespace Pihrtsoft.Markdown
                 case '.':
                 case '!':
                 case '<':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal static bool ShouldBeEscapedInLinkText(char ch)
+        {
+            switch (ch)
+            {
+                case '[':
+                case ']':
+                case '`':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        //TODO: replace space with %20
+        internal static bool ShouldBeEscapedInLinkUrl(char ch)
+        {
+            switch (ch)
+            {
+                case '(':
+                case ')':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal static bool ShouldBeEscapedInLinkTitle(char ch)
+        {
+            switch (ch)
+            {
+                case '"':
                     return true;
                 default:
                     return false;

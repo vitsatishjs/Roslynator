@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    internal static class TestHelper
+    internal static class TestHelpers
     {
         public const string StringValue = "x";
         public const string StringValue2 = "x2";
@@ -16,16 +16,21 @@ namespace Pihrtsoft.Markdown.Tests
         public const bool BoolValue = true;
         public const bool BoolValue2 = false;
 
-        public const HorizontalRuleStyle HorizontalRuleStyleValue = HorizontalRuleStyle.Hyphen;
-        public const HorizontalRuleStyle HorizontalRuleStyleValue2 = HorizontalRuleStyle.Asterisk;
+        public const string Chars = @"\ ` * _ } { ] [ ) ( # + - . ! < "" '";
 
-        public const string SpecialChars = @"\ ` * _ { } [ ] ( ) # + - . ! <";
+        public const string CharsWithoutSpaces = @"\`*_}{][)(#+-.!<""'";
 
-        public const string SpecialCharsEscaped = @"\\ \` \* \_ \{ \} \[ \] \( \) \# \+ \- \. \! \<";
+        public const string CharsEscaped = @"\\ \` \* \_ \} \{ \] \[ \) \( \# \+ \- \. \! \< "" '";
 
-        public const string SpecialCharsEnclosedWithBacktick = @"` \ * _ { } [ ] ( ) # + - . ! < `";
+        public const string CharsSquareBracketsBacktickEscaped = @"\ \` * _ } { \] \[ ) ( # + - . ! < "" '";
 
-        public const string SpecialCharsEnclosedWithBacktickDoubled = @"`` \ * _ { } [ ] ( ) # + - . ! < ``";
+        public const string CharsWithoutSpacesParenthesesEscaped = @"\`*_}{][\)\(#+-.!<""'";
+
+        public const string CharsDoubleQuoteEscaped = @"\ ` * _ } { ] [ ) ( # + - . ! < \"" '";
+
+        public const string CharsEnclosedWithBacktick = @"` \ * _ } { ] [ ) ( # + - . ! <  "" ' `";
+
+        public const string CharsEnclosedWithBacktickDoubled = @"`` \ * _ } { ] [ ) ( # + - . ! <  "" ' ``";
 
         public static string NewLine { get; } = Environment.NewLine;
 

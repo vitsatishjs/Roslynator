@@ -16,7 +16,6 @@ namespace Pihrtsoft.Markdown
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
-            bool allowLinkWithoutUrl = true,
             string indentChars = "  ")
         {
             BoldStyle = boldStyle;
@@ -26,7 +25,6 @@ namespace Pihrtsoft.Markdown
             HeadingOptions = headingOptions;
             CodeBlockOptions = codeBlockOptions;
             TableOptions = tableOptions;
-            AllowLinkWithoutUrl = allowLinkWithoutUrl;
             IndentChars = indentChars;
         }
 
@@ -61,9 +59,6 @@ namespace Pihrtsoft.Markdown
         internal bool TablePadding => (TableOptions & TableOptions.Padding) != 0;
 
         internal bool TableOuterPipe => (TableOptions & TableOptions.OuterPipe) != 0;
-
-        //TODO: move to MarkdownBuilder
-        public bool AllowLinkWithoutUrl { get; }
 
         internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
 
@@ -101,7 +96,6 @@ namespace Pihrtsoft.Markdown
                 && HeadingOptions == other.HeadingOptions
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
-                && AllowLinkWithoutUrl == other.AllowLinkWithoutUrl
                 && IndentChars == other.IndentChars;
         }
 
@@ -115,7 +109,6 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
-            hashCode = Hash.Combine(AllowLinkWithoutUrl, hashCode);
             hashCode = Hash.Combine(IndentChars, hashCode);
             return hashCode;
         }
@@ -140,7 +133,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -154,7 +146,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -168,7 +159,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -182,7 +172,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -196,7 +185,6 @@ namespace Pihrtsoft.Markdown
                 headingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -210,7 +198,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 tableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -224,21 +211,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 codeBlockOptions,
-                AllowLinkWithoutUrl,
-                IndentChars);
-        }
-
-        public MarkdownSettings WithAllowLinkWithoutUrl(bool allowLinkWithoutUrl)
-        {
-            return new MarkdownSettings(
-                BoldStyle,
-                ItalicStyle,
-                ListItemStyle,
-                HorizontalRule,
-                HeadingOptions,
-                TableOptions,
-                CodeBlockOptions,
-                allowLinkWithoutUrl,
                 IndentChars);
         }
 
@@ -252,7 +224,6 @@ namespace Pihrtsoft.Markdown
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
-                AllowLinkWithoutUrl,
                 indentChars);
         }
     }

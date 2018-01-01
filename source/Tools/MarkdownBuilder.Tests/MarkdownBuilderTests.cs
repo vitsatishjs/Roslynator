@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Pihrtsoft.Markdown.MarkdownFactory;
-using static Pihrtsoft.Markdown.Tests.TestHelper;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
@@ -12,14 +13,14 @@ namespace Pihrtsoft.Markdown.Tests
     [TestClass]
     public class MarkdownBuilderTests
     {
-        private const string Value = SpecialChars;
-        private const string ValueEscaped = SpecialCharsEscaped;
+        private const string Value = Chars;
+        private const string ValueEscaped = CharsEscaped;
 
         [TestMethod]
         public void AppendBoldTest1()
         {
-            const string x = SpecialChars;
-            const string y = SpecialCharsEscaped;
+            const string x = Chars;
+            const string y = CharsEscaped;
 
             MarkdownBuilder mb = CreateBuilder();
 
@@ -59,8 +60,8 @@ namespace Pihrtsoft.Markdown.Tests
         [TestMethod]
         public void AppendItalicTest1()
         {
-            const string x = SpecialChars;
-            const string y = SpecialCharsEscaped;
+            const string x = Chars;
+            const string y = CharsEscaped;
 
             MarkdownBuilder mb = CreateBuilder();
 
@@ -100,8 +101,8 @@ namespace Pihrtsoft.Markdown.Tests
         [TestMethod]
         public void AppendStrikethroughTest1()
         {
-            const string x = SpecialChars;
-            const string y = SpecialCharsEscaped;
+            const string x = Chars;
+            const string y = CharsEscaped;
 
             MarkdownBuilder mb = CreateBuilder();
 
@@ -119,8 +120,8 @@ namespace Pihrtsoft.Markdown.Tests
         [TestMethod]
         public void AppendCodeTest1()
         {
-            const string x = SpecialCharsEnclosedWithBacktick;
-            const string y = SpecialCharsEnclosedWithBacktickDoubled;
+            const string x = CharsEnclosedWithBacktick;
+            const string y = CharsEnclosedWithBacktickDoubled;
 
             MarkdownBuilder mb = CreateBuilder();
 
@@ -230,8 +231,8 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilder();
 
             const string x = "x";
-            string s = "# " + SpecialCharsEscaped + NewLine;
-            Heading h = Heading(SpecialChars, 1);
+            string s = "# " + CharsEscaped + NewLine;
+            Heading h = Heading(Chars, 1);
 
             mb.WithSettings(mb.Settings.WithHeadingOptions(headingOptions: HeadingOptions.None));
 
@@ -302,6 +303,72 @@ namespace Pihrtsoft.Markdown.Tests
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false));
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false));
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false));
+        }
+
+        [TestMethod]
+        public void AppendImageTest1()
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            const string text = "ImageText";
+            const string url = "ImageUrl";
+            const string title = "ImageTitle";
+
+            Image i = Image(text + Chars, url + CharsWithoutSpaces);
+
+            string y = $"![{text + CharsSquareBracketsBacktickEscaped}]({url + CharsWithoutSpacesParenthesesEscaped})";
+
+            Assert.AreEqual(y, mb.AppendImage(i.Text, i.Url).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append((object)i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i, escape: true).ToStringAndClear());
+            Assert.AreEqual(y + y, mb.AppendRange(i, i).ToStringAndClear());
+
+            i = i.WithTitle(title + Chars);
+
+            y = $"![{text + CharsSquareBracketsBacktickEscaped}]({url + CharsWithoutSpacesParenthesesEscaped} \"{title + CharsDoubleQuoteEscaped}\")";
+
+            Assert.AreEqual(y, mb.AppendImage(i.Text, i.Url, i.Title).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append((object)i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i, escape: true).ToStringAndClear());
+            Assert.AreEqual(y + y, mb.AppendRange(i, i).ToStringAndClear());
+
+            Assert.ThrowsException<ArgumentNullException>(() => mb.AppendImage(null, "Url"));
+            Assert.ThrowsException<ArgumentNullException>(() => mb.AppendImage("Text", null));
+        }
+
+        [TestMethod]
+        public void AppendLinkTest1()
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            const string text = "LinkText";
+            const string url = "LinkUrl";
+            const string title = "LinkTitle";
+
+            Link i = Link(text + Chars, url + CharsWithoutSpaces);
+
+            string y = $"[{text + CharsSquareBracketsBacktickEscaped}]({url + CharsWithoutSpacesParenthesesEscaped})";
+
+            Assert.AreEqual(y, mb.AppendLink(i.Text, i.Url).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append((object)i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i, escape: true).ToStringAndClear());
+            Assert.AreEqual(y + y, mb.AppendRange(i, i).ToStringAndClear());
+
+            i = i.WithTitle(title + Chars);
+
+            y = $"[{text + CharsSquareBracketsBacktickEscaped}]({url + CharsWithoutSpacesParenthesesEscaped} \"{title + CharsDoubleQuoteEscaped}\")";
+
+            Assert.AreEqual(y, mb.AppendLink(i.Text, i.Url, i.Title).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append((object)i).ToStringAndClear());
+            Assert.AreEqual(y, mb.Append(i, escape: true).ToStringAndClear());
+            Assert.AreEqual(y + y, mb.AppendRange(i, i).ToStringAndClear());
+
+            Assert.ThrowsException<ArgumentNullException>(() => mb.AppendLink(null, "Url"));
+            Assert.ThrowsException<ArgumentNullException>(() => mb.AppendLink("Text", null));
         }
     }
 }

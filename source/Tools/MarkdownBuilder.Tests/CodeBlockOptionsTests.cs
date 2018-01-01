@@ -2,7 +2,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Pihrtsoft.Markdown.MarkdownFactory;
-using static Pihrtsoft.Markdown.Tests.TestHelper;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
@@ -17,8 +17,8 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilder();
 
             const string x = "x";
-            string y = "```csharp" + NewLine + SpecialChars + NewLine + "```" + NewLine;
-            CodeBlock cb = CodeBlock(SpecialChars, CSharpLanguage);
+            string y = "```csharp" + NewLine + Chars + NewLine + "```" + NewLine;
+            CodeBlock cb = CodeBlock(Chars, CSharpLanguage);
 
             mb.WithSettings(mb.Settings.WithCodeBlockOptions(CodeBlockOptions.None));
 

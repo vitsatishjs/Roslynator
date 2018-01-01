@@ -209,6 +209,15 @@ namespace Pihrtsoft.Markdown
             return new Link(text, url, title);
         }
 
+        //TODO: TextOrLink
+        public static IMarkdown LinkOrText(string text, string url = null, string title = null)
+        {
+            if (url == null)
+                return Text(text);
+
+            return new Link(text, url, title);
+        }
+
         public static Image Image(string text, string url, string title = null)
         {
             return new Image(text, url, title);

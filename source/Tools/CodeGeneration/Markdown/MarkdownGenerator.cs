@@ -228,7 +228,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 {
                     f => f.Id,
                     f => f.Title.TrimEnd('.'),
-                    f => Join(", ", f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => (object)Link(x, y.HelpUrl))),
+                    f => Join(", ", f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => (object)LinkOrText(x, y.HelpUrl))),
                     f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
                 });
 
@@ -252,7 +252,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 CompilerDiagnosticDescriptor diagnostic = diagnostics.FirstOrDefault(f => f.Id == grouping.Key);
 
                 table.AddRow(
-                    Link(diagnostic?.Id ?? grouping.Key, diagnostic?.HelpUrl),
+                    LinkOrText(diagnostic?.Id ?? grouping.Key, diagnostic?.HelpUrl),
                     Join(", ", grouping.Select(f => f.CodeFixDescriptor.Id)));
             }
 
