@@ -74,6 +74,8 @@ namespace Pihrtsoft.Markdown
 
         private bool CloseHeading => Settings.CloseHeading;
 
+        private HeadingStyle HeadingStyle => Settings.HeadingStyle;
+
         public char this[int index]
         {
             get { return StringBuilder[index]; }
@@ -237,6 +239,7 @@ namespace Pihrtsoft.Markdown
         {
             CodeMarkdownBuilder mb = CodeMarkdownBuilderCache.GetInstance();
 
+            mb.Settings = Settings;
             mb.Append(value);
 
             if (additionalValues != null)
@@ -375,6 +378,12 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendHeading(int level, object value, object[] additionalValues)
         {
+            if (level < 1
+                || level > 6)
+            {
+                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
+            }
+
             bool underline = (level == 1 && UnderlineHeading1)
                 || (level == 2 && UnderlineHeading2);
 
@@ -384,7 +393,7 @@ namespace Pihrtsoft.Markdown
             AddState(State.Heading);
 
             if (!underline)
-                AppendSyntax(HeadingStart(level));
+                AppendHeadingStart(level);
 
             int length = Length;
 
@@ -401,7 +410,7 @@ namespace Pihrtsoft.Markdown
             if (underline
                 && CloseHeading)
             {
-                AppendSyntax(HeadingEnd(level));
+                AppendHeadingEnd(level);
             }
 
             AppendLineIfNecessary();
@@ -420,7 +429,16 @@ namespace Pihrtsoft.Markdown
 
         internal MarkdownBuilder AppendHeadingStart(int level)
         {
-            return AppendSyntax(HeadingStart(level));
+            AppendRaw(HeadingStartChar(HeadingStyle), level);
+            AppendSpace();
+            return this;
+        }
+
+        internal MarkdownBuilder AppendHeadingEnd(int level)
+        {
+            AppendSpace();
+            AppendRaw(HeadingStartChar(HeadingStyle), level);
+            return this;
         }
 
         public MarkdownBuilder AppendListItem(string value)

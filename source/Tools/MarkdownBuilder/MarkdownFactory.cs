@@ -111,45 +111,14 @@ namespace Pihrtsoft.Markdown
             return new Heading(value, 6);
         }
 
-        public static string HeadingStart(int level)
+        internal static char HeadingStartChar(HeadingStyle style)
         {
-            switch (level)
+            switch (style)
             {
-                case 1:
-                    return "# ";
-                case 2:
-                    return "## ";
-                case 3:
-                    return "### ";
-                case 4:
-                    return "#### ";
-                case 5:
-                    return "##### ";
-                case 6:
-                    return "###### ";
+                case HeadingStyle.NumberSign:
+                    return '#';
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
-            }
-        }
-
-        public static string HeadingEnd(int level)
-        {
-            switch (level)
-            {
-                case 1:
-                    return " #";
-                case 2:
-                    return " ##";
-                case 3:
-                    return " ###";
-                case 4:
-                    return " ####";
-                case 5:
-                    return " #####";
-                case 6:
-                    return " ######";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
             }
         }
 
@@ -217,7 +186,7 @@ namespace Pihrtsoft.Markdown
         //TODO: TextOrLink
         public static IMarkdown LinkOrText(string text, string url = null, string title = null)
         {
-            if (url == null)
+            if (string.IsNullOrEmpty(url))
                 return Text(text);
 
             return new Link(text, url, title);

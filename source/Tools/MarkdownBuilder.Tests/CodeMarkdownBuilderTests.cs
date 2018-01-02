@@ -1,23 +1,30 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class CodeMarkdownBuilderTests
     {
-        [TestMethod]
-        public void CodeMarkdownBuilderTest1()
+        private const string x = CharsEnclosedWithBacktick;
+
+        private const string e = CharsEnclosedWithBacktickDoubled;
+
+        [Fact]
+        public void CodeMarkdownBuilder_Append_WithDefaultParameters()
         {
             MarkdownBuilder mb = CreateCodeBuilder();
 
-            const string x = CharsEnclosedWithBacktick;
-            const string y = CharsEnclosedWithBacktickDoubled;
+            Assert.Equal(e, mb.Append(x).ToStringAndClear());
+        }
 
-            Assert.AreEqual(y, mb.Append(x).ToStringAndClear());
-            Assert.AreEqual(y, mb.Append(x, MarkdownEscaper.ShouldBeEscaped, '\\').ToStringAndClear());
+        [Fact]
+        public void CodeMarkdownBuilder_Append_WithParameters()
+        {
+            MarkdownBuilder mb = CreateCodeBuilder();
+
+            Assert.Equal(e, mb.Append(x, MarkdownEscaper.ShouldBeEscaped, '\\').ToStringAndClear());
         }
     }
 }

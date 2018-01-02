@@ -1,58 +1,138 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Xunit;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class ImageTests
     {
-        [TestMethod]
-        public void ImageTest1()
+        [Fact]
+        public void Image_Equals()
         {
-            Image x = MarkdownFactory.Image("ImageText", "ImageUrl", "ImageTitle");
+            Image image = CreateImage();
 
-            string text = x.Text;
-            string url = x.Url;
-            string title = x.Title;
-
-            string text2 = text.Modify();
-            string url2 = url.Modify();
-            string title2 = title.Modify();
-
-            Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(url, url2);
-            Assert.AreNotEqual(title, title2);
-
-            TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithUrl(url2));
-            TestEquality(x, x.WithTitle(title2));
-
-            Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(url2, x.WithUrl(url2).Url);
-            Assert.AreEqual(title2, x.WithTitle(title2).Title);
-
-            Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithUrl(url));
-            Assert.AreEqual(x, x.WithTitle(title));
-
-            Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithUrl(url2));
-            Assert.AreNotEqual(x, x.WithTitle(title2));
+            Assert.True(image.Equals((object)image));
         }
 
-        private static void TestEquality(Image x, Image y)
+        [Fact]
+        public void Image_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            Image image = CreateImage();
+            Image image2 = image.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(image.Equals((object)image2));
+        }
+
+        [Fact]
+        public void Image_IEquatableEquals()
+        {
+            Image image = CreateImage();
+            Image image2 = image;
+            IEquatable<Image> equatable = image;
+
+            Assert.True(equatable.Equals(image2));
+        }
+
+        [Fact]
+        public void Image_IEquatableNotEquals()
+        {
+            Image image = CreateImage();
+            Image image2 = CreateImage().Modify();
+            IEquatable<Image> equatable = image;
+
+            Assert.False(image.Equals(image2));
+        }
+
+        [Fact]
+        public void Image_GetHashCode_Equal()
+        {
+            Image image = CreateImage();
+
+            Assert.Equal(image.GetHashCode(), image.GetHashCode());
+        }
+
+        [Fact]
+        public void Image_GetHashCode_NotEqual()
+        {
+            Image image = CreateImage();
+            Image image2 = image.Modify();
+
+            Assert.NotEqual(image.GetHashCode(), image2.GetHashCode());
+        }
+
+        [Fact]
+        public void Image_OperatorEquals()
+        {
+            Image image = CreateImage();
+            Image image2 = image;
+
+            Assert.True(image == image2);
+        }
+
+        [Fact]
+        public void Image_OperatorNotEquals()
+        {
+            Image image = CreateImage();
+            Image image2 = image.Modify();
+
+            Assert.True(image != image2);
+        }
+
+        [Fact]
+        public void Image_Constructor_AssignText()
+        {
+            string text = LinkText();
+            var image = new Image(text: text, url: LinkUrl(), title: LinkTitle());
+
+            Assert.Equal(text, image.Text);
+        }
+
+        [Fact]
+        public void Image_WithText()
+        {
+            string text = LinkText();
+
+            Assert.Equal(text, CreateImage().WithText(text).Text);
+        }
+
+        [Fact]
+        public void Image_Constructor_AssignUrl()
+        {
+            string url = LinkUrl();
+            var image = new Image(text: LinkText(), url: url, title: LinkTitle());
+
+            Assert.Equal(url, image.Url);
+        }
+
+        [Fact]
+        public void Image_WithUrl()
+        {
+            Image image = CreateImage();
+            string url = image.Url.Modify();
+
+            Assert.Equal(url, image.WithUrl(url).Url);
+        }
+
+        [Fact]
+        public void Image_Constructor_AssignTitle()
+        {
+            string title = LinkTitle();
+            var image = new Image(text: LinkText(), url: LinkUrl(), title: title);
+
+            Assert.Equal(title, image.Title);
+        }
+
+        [Fact]
+        public void Image_WithTitle()
+        {
+            Image image = CreateImage();
+            string title = image.Title.Modify();
+
+            Assert.Equal(title, image.WithTitle(title).Title);
         }
     }
 }

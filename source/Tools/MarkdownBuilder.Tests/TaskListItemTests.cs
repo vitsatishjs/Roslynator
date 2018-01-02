@@ -1,51 +1,119 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Xunit;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class TaskListItemTests
     {
-        [TestMethod]
-        public void TaskListItemTest1()
+        [Fact]
+        public void TaskListItem_Equals()
         {
-            TaskListItem x = MarkdownFactory.TaskListItem("TaskListItemText", isCompleted: true);
+            TaskListItem item = CreateTaskListItem();
 
-            string text = x.Text;
-            bool isCompleted = x.IsCompleted;
-
-            string text2 =  text.Modify();
-            bool isCompleted2 = isCompleted.Modify();
-
-            Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(isCompleted, isCompleted2);
-
-            TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithIsCompleted(isCompleted2));
-
-            Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(isCompleted2, x.WithIsCompleted(isCompleted2).IsCompleted);
-
-            Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithIsCompleted(isCompleted));
-
-            Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithIsCompleted(isCompleted2));
+            Assert.True(item.Equals((object)item));
         }
 
-        private static void TestEquality(TaskListItem x, TaskListItem y)
+        [Fact]
+        public void TaskListItem_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = item.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(item.Equals((object)item2));
+        }
+
+        [Fact]
+        public void TaskListItem_IEquatableEquals()
+        {
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = item;
+            IEquatable<TaskListItem> equatable = item;
+
+            Assert.True(equatable.Equals(item2));
+        }
+
+        [Fact]
+        public void TaskListItem_IEquatableNotEquals()
+        {
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = CreateTaskListItem().Modify();
+            IEquatable<TaskListItem> equatable = item;
+
+            Assert.False(item.Equals(item2));
+        }
+
+        [Fact]
+        public void TaskListItem_GetHashCode_Equal()
+        {
+            TaskListItem item = CreateTaskListItem();
+
+            Assert.Equal(item.GetHashCode(), item.GetHashCode());
+        }
+
+        [Fact]
+        public void TaskListItem_GetHashCode_NotEqual()
+        {
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = item.Modify();
+
+            Assert.NotEqual(item.GetHashCode(), item2.GetHashCode());
+        }
+
+        [Fact]
+        public void TaskListItem_OperatorEquals()
+        {
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = item;
+
+            Assert.True(item == item2);
+        }
+
+        [Fact]
+        public void TaskListItem_OperatorNotEquals()
+        {
+            TaskListItem item = CreateTaskListItem();
+            TaskListItem item2 = item.Modify();
+
+            Assert.True(item != item2);
+        }
+
+        [Fact]
+        public void TaskListItem_Constructor_AssignText()
+        {
+            string text = ListItemText();
+            var item = new TaskListItem(text: text, isCompleted: TaskListItemIsCompleted());
+
+            Assert.Equal(text, item.Text);
+        }
+
+        [Fact]
+        public void TaskListItem_WithText()
+        {
+            string text = ListItemText();
+
+            Assert.Equal(text, CreateTaskListItem().WithText(text).Text);
+        }
+
+        [Fact]
+        public void TaskListItem_Constructor_AssignIsCompleted()
+        {
+            bool isCompleted = TaskListItemIsCompleted();
+            var item = new TaskListItem(text: ListItemText(), isCompleted: isCompleted);
+
+            Assert.Equal(isCompleted, item.IsCompleted);
+        }
+
+        [Fact]
+        public void TaskListItem_WithNumber()
+        {
+            bool isCompleted = TaskListItemIsCompleted();
+
+            Assert.Equal(isCompleted, CreateTaskListItem().WithIsCompleted(isCompleted).IsCompleted);
         }
     }
 }

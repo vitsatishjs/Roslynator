@@ -13,6 +13,7 @@ namespace Pihrtsoft.Markdown
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
             HorizontalRule horizontalRule = default(HorizontalRule),
+            HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
@@ -22,6 +23,7 @@ namespace Pihrtsoft.Markdown
             ItalicStyle = italicStyle;
             ListItemStyle = listItemStyle;
             HorizontalRule = horizontalRule;
+            HeadingStyle = headingStyle;
             HeadingOptions = headingOptions;
             CodeBlockOptions = codeBlockOptions;
             TableOptions = tableOptions;
@@ -41,6 +43,8 @@ namespace Pihrtsoft.Markdown
         public ListItemStyle ListItemStyle { get; }
 
         public HorizontalRule HorizontalRule { get; }
+
+        public HeadingStyle HeadingStyle { get; }
 
         public HeadingOptions HeadingOptions { get; }
 
@@ -93,6 +97,7 @@ namespace Pihrtsoft.Markdown
                 && ItalicStyle == other.ItalicStyle
                 && ListItemStyle == other.ListItemStyle
                 && HorizontalRule == other.HorizontalRule
+                && HeadingStyle == other.HeadingStyle
                 && HeadingOptions == other.HeadingOptions
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
@@ -106,6 +111,7 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)ItalicStyle, hashCode);
             hashCode = Hash.Combine((int)ListItemStyle, hashCode);
             hashCode = Hash.Combine(HorizontalRule.GetHashCode(), hashCode);
+            hashCode = Hash.Combine((int)HeadingStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
@@ -130,6 +136,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
@@ -143,6 +150,7 @@ namespace Pihrtsoft.Markdown
                 italicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
@@ -156,6 +164,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 listItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
@@ -169,6 +178,21 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 horizontalRule,
+                HeadingStyle,
+                HeadingOptions,
+                TableOptions,
+                CodeBlockOptions,
+                IndentChars);
+        }
+
+        public MarkdownSettings WithHeadingOptions(HeadingStyle headingStyle)
+        {
+            return new MarkdownSettings(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                headingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,
@@ -182,6 +206,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 headingOptions,
                 TableOptions,
                 CodeBlockOptions,
@@ -195,6 +220,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 tableOptions,
                 CodeBlockOptions,
@@ -208,6 +234,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 codeBlockOptions,
@@ -221,6 +248,7 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 HorizontalRule,
+                HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeBlockOptions,

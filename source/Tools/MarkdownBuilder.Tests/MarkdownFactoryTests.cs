@@ -2,458 +2,754 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Pihrtsoft.Markdown.MarkdownFactory;
+using Xunit;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class MarkdownFactoryTests
     {
-        [TestMethod]
-        public void TextTest1()
+        [Fact]
+        public void MarkdownFactory_Text_DefaultValues()
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, Text(x).Text);
-            Assert.AreEqual(EmphasisOptions.None, Text(x).Options);
-            Assert.AreEqual(true, Text(x).Escape);
-
-            Assert.AreEqual(x, Text(x, EmphasisOptions.Bold).Text);
-            Assert.AreEqual(EmphasisOptions.Bold, Text(x, EmphasisOptions.Bold).Options);
-            Assert.AreEqual(true, Text(x, EmphasisOptions.Bold).Escape);
-
-            Assert.AreEqual(x, Text(x, EmphasisOptions.BoldItalic).Text);
-            Assert.AreEqual(EmphasisOptions.BoldItalic, Text(x, EmphasisOptions.BoldItalic).Options);
-            Assert.AreEqual(true, Text(x, EmphasisOptions.BoldItalic).Escape);
+            Assert.Equal(text, MarkdownFactory.Text(text).Text);
+            Assert.Equal(EmphasisOptions.None, MarkdownFactory.Text(text).Options);
+            Assert.True(MarkdownFactory.Text(text).Escape);
         }
 
-        [TestMethod]
-        public void RawTextTest1()
+        [Theory]
+        [InlineData(EmphasisOptions.None)]
+        [InlineData(EmphasisOptions.Bold)]
+        [InlineData(EmphasisOptions.BoldItalic)]
+        public void MarkdownFactory_Text(EmphasisOptions options)
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, RawText(x).Text);
-            Assert.AreEqual(EmphasisOptions.None, RawText(x).Options);
-            Assert.AreEqual(false, RawText(x).Escape);
-
-            Assert.AreEqual(x, RawText(x, EmphasisOptions.Bold).Text);
-            Assert.AreEqual(EmphasisOptions.Bold, RawText(x, EmphasisOptions.Bold).Options);
-            Assert.AreEqual(false, RawText(x, EmphasisOptions.Bold).Escape);
-
-            Assert.AreEqual(x, RawText(x, EmphasisOptions.BoldItalic).Text);
-            Assert.AreEqual(EmphasisOptions.BoldItalic, RawText(x, EmphasisOptions.BoldItalic).Options);
-            Assert.AreEqual(false, RawText(x, EmphasisOptions.BoldItalic).Escape);
+            Assert.Equal(text, MarkdownFactory.Text(text, options).Text);
+            Assert.Equal(options, MarkdownFactory.Text(text, options).Options);
+            Assert.True(MarkdownFactory.Text(text, options).Escape);
         }
 
-        [TestMethod]
-        public void BoldTest1()
+        [Fact]
+        public void MarkdownFactory_RawText_DefaultValues()
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, Bold(x).Text);
-            Assert.AreEqual(EmphasisOptions.Bold, Bold(x).Options);
-            Assert.AreEqual(true, Bold(x).Escape);
+            Assert.Equal(text, MarkdownFactory.RawText(text).Text);
+            Assert.Equal(EmphasisOptions.None, MarkdownFactory.RawText(text).Options);
+            Assert.False(MarkdownFactory.RawText(text).Escape);
         }
 
-        [DataTestMethod]
-        [DataRow("**", EmphasisStyle.Asterisk)]
-        [DataRow("__", EmphasisStyle.Underscore)]
-        public void BoldDelimiterTest1(string syntax, EmphasisStyle style)
+        [Theory]
+        [InlineData(EmphasisOptions.None)]
+        [InlineData(EmphasisOptions.Bold)]
+        [InlineData(EmphasisOptions.BoldItalic)]
+        public void MarkdownFactory_RawText(EmphasisOptions options)
         {
-            Assert.AreEqual(syntax, BoldDelimiter(style));
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.RawText(text, options).Text);
+            Assert.Equal(options, MarkdownFactory.RawText(text, options).Options);
+            Assert.False(MarkdownFactory.RawText(text, options).Escape);
         }
 
-        [TestMethod]
-        public void ItalicTest1()
+        [Fact]
+        public void MarkdownFactory_Bold()
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, Italic(x).Text);
-            Assert.AreEqual(EmphasisOptions.Italic, Italic(x).Options);
-            Assert.AreEqual(true, Italic(x).Escape);
+            Assert.Equal(text, MarkdownFactory.Bold(text).Text);
+            Assert.Equal(EmphasisOptions.Bold, MarkdownFactory.Bold(text).Options);
+            Assert.True(MarkdownFactory.Bold(text).Escape);
         }
 
-        [DataTestMethod]
-        [DataRow("*", EmphasisStyle.Asterisk)]
-        [DataRow("_", EmphasisStyle.Underscore)]
-        public void ItalicDelimiterTest1(string syntax, EmphasisStyle style)
+        [Theory]
+        [InlineData("**", EmphasisStyle.Asterisk)]
+        [InlineData("__", EmphasisStyle.Underscore)]
+        public void MarkdownFactory_BoldDelimiter(string syntax, EmphasisStyle style)
         {
-            Assert.AreEqual(syntax, ItalicDelimiter(style));
+            Assert.Equal(syntax, MarkdownFactory.BoldDelimiter(style));
         }
 
-        [TestMethod]
-        public void StrikethroughTest1()
+        [Fact]
+        public void MarkdownFactory_Italic()
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, Strikethrough(x).Text);
-            Assert.AreEqual(EmphasisOptions.Strikethrough, Strikethrough(x).Options);
-            Assert.AreEqual(true, Strikethrough(x).Escape);
+            Assert.Equal(text, MarkdownFactory.Italic(text).Text);
+            Assert.Equal(EmphasisOptions.Italic, MarkdownFactory.Italic(text).Options);
+            Assert.True(MarkdownFactory.Italic(text).Escape);
         }
 
-        [TestMethod]
-        public void CodeTest1()
+        [Theory]
+        [InlineData("*", EmphasisStyle.Asterisk)]
+        [InlineData("_", EmphasisStyle.Underscore)]
+        public void MarkdownFactory_ItalicDelimiter(string syntax, EmphasisStyle style)
         {
-            const string x = "x";
-
-            Assert.AreEqual(x, Code(x).Text);
-            Assert.AreEqual(EmphasisOptions.Code, Code(x).Options);
-            Assert.AreEqual(true, Code(x).Escape);
+            Assert.Equal(syntax, MarkdownFactory.ItalicDelimiter(style));
         }
 
-        [TestMethod]
-        public void JoinTest1()
+        [Fact]
+        public void MarkdownFactory_Strikethrough()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Strikethrough(text).Text);
+            Assert.Equal(EmphasisOptions.Strikethrough, MarkdownFactory.Strikethrough(text).Options);
+            Assert.True(MarkdownFactory.Strikethrough(text).Escape);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Code()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Code(text).Text);
+            Assert.Equal(EmphasisOptions.Code, MarkdownFactory.Code(text).Options);
+            Assert.True(MarkdownFactory.Code(text).Escape);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Join_DefaultValues()
         {
             const string separator = "separator";
             IEnumerable<string> values = Array.Empty<string>();
 
-            Assert.AreEqual(separator, Join(separator, values).Separator);
-            Assert.AreSame(values, Join(separator, values).Values);
-            Assert.AreEqual(true, Join(separator, values).Escape);
-            Assert.AreEqual(true, Join(separator, values, true).Escape);
-            Assert.AreEqual(false, Join(separator, values, false).Escape);
+            Assert.Equal(separator, MarkdownFactory.Join(separator, values).Separator);
+            Assert.Same(values, MarkdownFactory.Join(separator, values).Values);
+            Assert.True(MarkdownFactory.Join(separator, values).Escape);
         }
 
-        [DataTestMethod]
-        [DataRow(1)]
-        [DataRow(2)]
-        [DataRow(3)]
-        [DataRow(4)]
-        [DataRow(5)]
-        [DataRow(6)]
-        public void HeadingTest1(int level)
+        [Fact]
+        public void MarkdownFactory_Join()
         {
-            const string x = "x";
+            const string separator = "separator";
+            IEnumerable<string> values = Array.Empty<string>();
 
-            Assert.AreEqual(x, Heading(x, level).Text);
-            Assert.AreEqual(level, Heading(x, level).Level);
-
-            Assert.AreEqual(new string('#', level) + " ", HeadingStart(level));
-            Assert.AreEqual(" " + new string('#', level), HeadingEnd(level));
+            Assert.Equal(separator, MarkdownFactory.Join(separator, values, false).Separator);
+            Assert.Same(values, MarkdownFactory.Join(separator, values, false).Values);
+            Assert.True(MarkdownFactory.Join(separator, values, true).Escape);
+            Assert.False(MarkdownFactory.Join(separator, values, false).Escape);
         }
 
-        [TestMethod]
-        public void HeadingTest2()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void MarkdownFactory_Heading(int level)
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, Heading1(x).Text);
-            Assert.AreEqual(1, Heading1(x).Level);
-            Assert.AreEqual(x, Heading2(x).Text);
-            Assert.AreEqual(2, Heading2(x).Level);
-            Assert.AreEqual(x, Heading3(x).Text);
-            Assert.AreEqual(3, Heading3(x).Level);
-            Assert.AreEqual(x, Heading4(x).Text);
-            Assert.AreEqual(4, Heading4(x).Level);
-            Assert.AreEqual(x, Heading5(x).Text);
-            Assert.AreEqual(5, Heading5(x).Level);
-            Assert.AreEqual(x, Heading6(x).Text);
-            Assert.AreEqual(6, Heading6(x).Level);
+            Assert.Equal(text, MarkdownFactory.Heading(text, level).Text);
+            Assert.Equal(level, MarkdownFactory.Heading(text, level).Level);
         }
 
-        [DataTestMethod]
-        [DataRow(0)]
-        [DataRow(7)]
-        public void HeadingTest4(int level)
+        [Fact]
+        public void MarkdownFactory_Heading1()
         {
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => Heading("x", level));
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => HeadingStart(level));
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => HeadingEnd(level));
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Heading1(text).Text);
+            Assert.Equal(1, MarkdownFactory.Heading1(text).Level);
         }
 
-        [TestMethod]
-        public void ListItemTest1()
+        [Fact]
+        public void MarkdownFactory_Heading2()
         {
-            const string x = "x";
-            Assert.AreEqual(x, MarkdownFactory.ListItem(x).Text);
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Heading2(text).Text);
+            Assert.Equal(2, MarkdownFactory.Heading2(text).Level);
         }
 
-        [DataTestMethod]
-        [DataRow("* ", ListItemStyle.Asterisk)]
-        [DataRow("- ", ListItemStyle.Minus)]
-        [DataRow("+ ", ListItemStyle.Plus)]
-        public void ListItemStartTest1(string syntax, ListItemStyle style)
+        [Fact]
+        public void MarkdownFactory_Heading3()
         {
-            Assert.AreEqual(syntax, ListItemStart(style));
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Heading3(text).Text);
+            Assert.Equal(3, MarkdownFactory.Heading3(text).Level);
         }
 
-        [DataTestMethod]
-        [DataRow(1)]
-        [DataRow(2)]
-        [DataRow(3)]
-        [DataRow(4)]
-        [DataRow(5)]
-        [DataRow(6)]
-        public void OrderedListItemTest1(int number)
+        [Fact]
+        public void MarkdownFactory_Heading4()
         {
-            const string x = "x";
-            Assert.AreEqual(x, OrderedListItem(number, x).Text);
-            Assert.AreEqual(number, OrderedListItem(number).Number);
-            Assert.AreEqual(number + ". ", OrderedListItemStart(number));
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.Heading4(text).Text);
+            Assert.Equal(4, MarkdownFactory.Heading4(text).Level);
         }
 
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public void TaskListItemTest1(bool isCompleted)
+        [Fact]
+        public void MarkdownFactory_Heading5()
         {
-            const string x = "x";
-            Assert.AreEqual(x, MarkdownFactory.TaskListItem(x, isCompleted).Text);
-            Assert.AreEqual(isCompleted, MarkdownFactory.TaskListItem(x, isCompleted).IsCompleted);
+            string text = MarkdownTextText();
 
-            Assert.AreEqual($"- [{((isCompleted) ? "x" : " ")}] ", TaskListItemStart(isCompleted));
+            Assert.Equal(text, MarkdownFactory.Heading5(text).Text);
+            Assert.Equal(5, MarkdownFactory.Heading5(text).Level);
         }
 
-        [TestMethod]
-        public void TaskListItemTest2()
+        [Fact]
+        public void MarkdownFactory_Heading6()
         {
-            const string x = "x";
+            string text = MarkdownTextText();
 
-            Assert.AreEqual(x, MarkdownFactory.TaskListItem(x).Text);
-            Assert.AreEqual(false, MarkdownFactory.TaskListItem(x).IsCompleted);
-
-            Assert.AreEqual(x, CompletedTaskListItem(x).Text);
-            Assert.AreEqual(true, CompletedTaskListItem(x).IsCompleted);
-
-            Assert.AreEqual("- [ ] ", TaskListItemStart());
+            Assert.Equal(text, MarkdownFactory.Heading6(text).Text);
+            Assert.Equal(6, MarkdownFactory.Heading6(text).Level);
         }
 
-        [TestMethod]
-        public void ImageTest1()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(7)]
+        public void MarkdownFactory_Heading_Throws(int level)
         {
-            const string text = "Text";
-            const string url = "Url";
-            const string title = "Title";
+            Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownFactory.Heading("x", level));
+        }
+
+        [Fact]
+        public void MarkdownFactory_ListItem()
+        {
+            string text = MarkdownTextText();
+            Assert.Equal(text, MarkdownFactory.ListItem(text).Text);
+        }
+
+        [Theory]
+        [InlineData("* ", ListItemStyle.Asterisk)]
+        [InlineData("- ", ListItemStyle.Minus)]
+        [InlineData("+ ", ListItemStyle.Plus)]
+        public void MarkdownFactory_ListItemStart(string syntax, ListItemStyle style)
+        {
+            Assert.Equal(syntax, MarkdownFactory.ListItemStart(style));
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void MarkdownFactory_OrderedListItem(int number)
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.OrderedListItem(number, text).Text);
+            Assert.Equal(number, MarkdownFactory.OrderedListItem(number).Number);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void MarkdownFactory_OrderedListItemStart(int number)
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(number + ". ", MarkdownFactory.OrderedListItemStart(number));
+        }
+
+        [Fact]
+        public void MarkdownFactory_TaskListItem_DefaultValues()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.TaskListItem(text).Text);
+            Assert.False(MarkdownFactory.TaskListItem(text).IsCompleted);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void MarkdownFactory_TaskListItem(bool isCompleted)
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.TaskListItem(text, isCompleted).Text);
+            Assert.Equal(isCompleted, MarkdownFactory.TaskListItem(text, isCompleted).IsCompleted);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TaskListItemStart_DefaultValues()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal("- [ ] ", MarkdownFactory.TaskListItemStart());
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void MarkdownFactory_TaskListItemStart(bool isCompleted)
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal($"- [{((isCompleted) ? "x" : " ")}] ", MarkdownFactory.TaskListItemStart(isCompleted));
+        }
+
+        [Fact]
+        public void MarkdownFactory_CompletedTaskListItem()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, MarkdownFactory.CompletedTaskListItem(text).Text);
+            Assert.True(MarkdownFactory.CompletedTaskListItem(text).IsCompleted);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Image_DefaultValues()
+        {
+            string text = LinkText();
+            string url = LinkUrl();
+            string title = LinkTitle();
 
             Image image = MarkdownFactory.Image(text, url);
 
-            Assert.AreEqual(text, image.Text);
-            Assert.AreEqual(url, image.Url);
-            Assert.AreEqual(null, image.Title);
+            Assert.Equal(text, image.Text);
+            Assert.Equal(url, image.Url);
+            Assert.Null(image.Title);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Image()
+        {
+            string text = LinkText();
+            string url = LinkUrl();
+            string title = LinkTitle();
+
+            Image image = MarkdownFactory.Image(text, url);
 
             image = MarkdownFactory.Image(text, url, title);
 
-            Assert.AreEqual(text, image.Text);
-            Assert.AreEqual(url, image.Url);
-            Assert.AreEqual(title, image.Title);
+            Assert.Equal(text, image.Text);
+            Assert.Equal(url, image.Url);
+            Assert.Equal(title, image.Title);
         }
 
-        [TestMethod]
-        public void LinkTest1()
+        [Fact]
+        public void MarkdownFactory_Link_DefaultValues()
         {
-            const string text = "Text";
-            const string url = "Url";
-            const string title = "Title";
+            string text = LinkText();
+            string url = LinkUrl();
+            string title = LinkTitle();
 
             Link link = MarkdownFactory.Link(text, url);
 
-            Assert.AreEqual(text, link.Text);
-            Assert.AreEqual(url, link.Url);
-            Assert.AreEqual(null, link.Title);
-
-            link = MarkdownFactory.Link(text, url, title);
-
-            Assert.AreEqual(text, link.Text);
-            Assert.AreEqual(url, link.Url);
-            Assert.AreEqual(title, link.Title);
+            Assert.Equal(text, link.Text);
+            Assert.Equal(url, link.Url);
+            Assert.Null(link.Title);
         }
 
-        [TestMethod]
-        public void LinkOrImageTest()
+        [Fact]
+        public void MarkdownFactory_Link()
         {
-            const string text = "Text";
-            const string url = "Url";
+            string text = LinkText();
+            string url = LinkUrl();
+            string title = LinkTitle();
 
-            Assert.IsInstanceOfType(LinkOrText(text, url), typeof(Link));
+            Link link = MarkdownFactory.Link(text, url, title);
 
-            Assert.IsInstanceOfType(LinkOrText(text), typeof(MarkdownText));
-            Assert.IsInstanceOfType(LinkOrText(text, url: null), typeof(MarkdownText));
+            Assert.Equal(text, link.Text);
+            Assert.Equal(url, link.Url);
+            Assert.Equal(title, link.Title);
         }
 
-        [TestMethod]
-        public void CodeBlockTest1()
+        [Fact]
+        public void MarkdownFactory_LinkOrText_Link()
         {
-            const string text = "x";
-            const string language = LanguageIdentifiers.CSharp;
+            string text = LinkText();
+            string url = LinkUrl();
 
-            CodeBlock cb = CodeBlock(text);
-
-            Assert.AreEqual(text, cb.Text);
-            Assert.AreEqual(null, cb.Language);
-
-            cb = CodeBlock(text, language);
-
-            Assert.AreEqual(text, cb.Text);
-            Assert.AreEqual(language, cb.Language);
+            Assert.IsType<Link>(MarkdownFactory.LinkOrText(text, url));
         }
 
-        [TestMethod]
-        public void QuoteBlockTest1()
+        [Fact]
+        public void MarkdownFactory_LinkOrText_Text()
         {
-            const string text = "x";
+            string text = LinkText();
+            string url = LinkUrl();
 
-            QuoteBlock cb = QuoteBlock(text);
-
-            Assert.AreEqual(text, cb.Text);
+            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text));
+            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text, url: ""));
+            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text, url: null));
         }
 
-        [DataTestMethod]
-        [DataRow('*', HorizontalRuleStyle.Asterisk)]
-        [DataRow('-', HorizontalRuleStyle.Hyphen)]
-        [DataRow('_', HorizontalRuleStyle.Underscore)]
-        public void HorizontalRuleTest1(char syntax, HorizontalRuleStyle style)
+        [Fact]
+        public void MarkdownFactory_CodeBlock_DefaultValues()
+        {
+            string text = CodeBlockText();
+            string language = CodeBlockLanguage();
+
+            CodeBlock cb = MarkdownFactory.CodeBlock(text);
+
+            Assert.Equal(text, cb.Text);
+            Assert.Null(cb.Language);
+        }
+
+        [Fact]
+        public void MarkdownFactory_CodeBlock()
+        {
+            string text = CodeBlockText();
+            string language = CodeBlockLanguage();
+
+            CodeBlock cb = MarkdownFactory.CodeBlock(text, language);
+
+            Assert.Equal(text, cb.Text);
+            Assert.Equal(language, cb.Language);
+        }
+
+        [Fact]
+        public void MarkdownFactory_QuoteBlock()
+        {
+            string text = QuoteBlockText();
+
+            QuoteBlock cb = MarkdownFactory.QuoteBlock(text);
+
+            Assert.Equal(text, cb.Text);
+        }
+
+        [Theory]
+        [InlineData(HorizontalRuleStyle.Asterisk)]
+        [InlineData(HorizontalRuleStyle.Hyphen)]
+        [InlineData(HorizontalRuleStyle.Underscore)]
+        public void MarkdownFactory_HorizontalRule_DefaultValues(HorizontalRuleStyle style)
         {
             for (int i = 3; i <= 5; i++)
             {
-                Assert.AreEqual(style, HorizontalRule(style, count: i).Style);
-                Assert.AreEqual(i, HorizontalRule(style, count: i).Count);
-                Assert.AreEqual(true, HorizontalRule(style, count: i).AddSpaces);
-                Assert.AreEqual(true, HorizontalRule(style, count: i, addSpaces: true).AddSpaces);
-                Assert.AreEqual(false, HorizontalRule(style, count: i, addSpaces: false).AddSpaces);
+                Assert.Equal(style, MarkdownFactory.HorizontalRule(style, count: i).Style);
+                Assert.Equal(i, MarkdownFactory.HorizontalRule(style, count: i).Count);
+                Assert.True(MarkdownFactory.HorizontalRule(style, count: i).AddSpaces);
             }
-
-            Assert.AreEqual(syntax, HorizontalRuleChar(style));
         }
 
-        [TestMethod]
-        public void TableTest1()
+        [Theory]
+        [InlineData(HorizontalRuleStyle.Asterisk)]
+        [InlineData(HorizontalRuleStyle.Hyphen)]
+        [InlineData(HorizontalRuleStyle.Underscore)]
+        public void MarkdownFactory_HorizontalRule(HorizontalRuleStyle style)
         {
-            TableColumn column1 = TableColumn("1");
-            TableColumn column2 = TableColumn("2");
-            TableColumn column3 = TableColumn("3");
-            TableColumn column4 = TableColumn("4");
-            TableColumn column5 = TableColumn("5");
-            TableColumn column6 = TableColumn("6");
-
-            Table t = Table();
-            Assert.AreEqual(0, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-
-            t = Table(Array.Empty<TableColumn>());
-            Assert.AreEqual(0, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-
-            t = MarkdownFactory.Table(column1);
-            Assert.AreEqual(1, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-
-            t = MarkdownFactory.Table(column1, column2);
-            Assert.AreEqual(2, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-            Assert.AreEqual(column2.Name, t.Columns[1].Name);
-
-            t = MarkdownFactory.Table(column1, column2, column3);
-            Assert.AreEqual(3, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-            Assert.AreEqual(column2.Name, t.Columns[1].Name);
-            Assert.AreEqual(column3.Name, t.Columns[2].Name);
-
-            t = MarkdownFactory.Table(column1, column2, column3, column4);
-            Assert.AreEqual(4, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-            Assert.AreEqual(column2.Name, t.Columns[1].Name);
-            Assert.AreEqual(column3.Name, t.Columns[2].Name);
-            Assert.AreEqual(column4.Name, t.Columns[3].Name);
-
-            t = MarkdownFactory.Table(column1, column2, column3, column4, column5);
-            Assert.AreEqual(5, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-            Assert.AreEqual(column2.Name, t.Columns[1].Name);
-            Assert.AreEqual(column3.Name, t.Columns[2].Name);
-            Assert.AreEqual(column4.Name, t.Columns[3].Name);
-            Assert.AreEqual(column5.Name, t.Columns[4].Name);
-
-            t = MarkdownFactory.Table(column1, column2, column3, column4, column5, column6);
-            Assert.AreEqual(6, t.Columns.Count);
-            Assert.AreEqual(0, t.Rows.Count);
-            Assert.AreEqual(column1.Name, t.Columns[0].Name);
-            Assert.AreEqual(column2.Name, t.Columns[1].Name);
-            Assert.AreEqual(column3.Name, t.Columns[2].Name);
-            Assert.AreEqual(column4.Name, t.Columns[3].Name);
-            Assert.AreEqual(column5.Name, t.Columns[4].Name);
-            Assert.AreEqual(column6.Name, t.Columns[5].Name);
+            for (int i = 3; i <= 5; i++)
+            {
+                Assert.Equal(style, MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).Style);
+                Assert.Equal(i, MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).Count);
+                Assert.False(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).AddSpaces);
+                Assert.True(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: true).AddSpaces);
+                Assert.False(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).AddSpaces);
+            }
         }
 
-        [TestMethod]
-        public void TableHeaderTest1()
+        [Theory]
+        [InlineData('*', HorizontalRuleStyle.Asterisk)]
+        [InlineData('-', HorizontalRuleStyle.Hyphen)]
+        [InlineData('_', HorizontalRuleStyle.Underscore)]
+        public void MarkdownFactory_HorizontalRuleChar(char syntax, HorizontalRuleStyle style)
         {
-            TableColumn column1 = TableColumn("1");
-            TableColumn column2 = TableColumn("2");
-            TableColumn column3 = TableColumn("3");
-            TableColumn column4 = TableColumn("4");
-            TableColumn column5 = TableColumn("5");
-            TableColumn column6 = TableColumn("6");
-
-            TableColumnCollection th = TableHeader();
-            Assert.AreEqual(0, th.Count);
-
-            th = TableHeader(Array.Empty<TableColumn>());
-            Assert.AreEqual(0, th.Count);
-
-            th = TableHeader(column1);
-            Assert.AreEqual(1, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-
-            th = TableHeader(column1, column2);
-            Assert.AreEqual(2, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-            Assert.AreEqual(column2.Name, th[1].Name);
-
-            th = TableHeader(column1, column2, column3);
-            Assert.AreEqual(3, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-            Assert.AreEqual(column2.Name, th[1].Name);
-            Assert.AreEqual(column3.Name, th[2].Name);
-
-            th = TableHeader(column1, column2, column3, column4);
-            Assert.AreEqual(4, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-            Assert.AreEqual(column2.Name, th[1].Name);
-            Assert.AreEqual(column3.Name, th[2].Name);
-            Assert.AreEqual(column4.Name, th[3].Name);
-
-            th = TableHeader(column1, column2, column3, column4, column5);
-            Assert.AreEqual(5, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-            Assert.AreEqual(column2.Name, th[1].Name);
-            Assert.AreEqual(column3.Name, th[2].Name);
-            Assert.AreEqual(column4.Name, th[3].Name);
-            Assert.AreEqual(column5.Name, th[4].Name);
-
-            th = TableHeader(column1, column2, column3, column4, column5, column6);
-            Assert.AreEqual(6, th.Count);
-            Assert.AreEqual(column1.Name, th[0].Name);
-            Assert.AreEqual(column2.Name, th[1].Name);
-            Assert.AreEqual(column3.Name, th[2].Name);
-            Assert.AreEqual(column4.Name, th[3].Name);
-            Assert.AreEqual(column5.Name, th[4].Name);
-            Assert.AreEqual(column6.Name, th[5].Name);
+            Assert.Equal(syntax, MarkdownFactory.HorizontalRuleChar(style));
         }
 
-        [DataTestMethod]
-        [DataRow(Alignment.Left)]
-        [DataRow(Alignment.Center)]
-        [DataRow(Alignment.Right)]
-        public void TableColumnTest1(Alignment alignment)
+        [Fact]
+        public void MarkdownFactory_Table_Params()
         {
-            string name = alignment.ToString();
-            Assert.AreEqual(name, MarkdownFactory.TableColumn(name, alignment).Name);
-            Assert.AreEqual(alignment, MarkdownFactory.TableColumn(name, alignment).Alignment);
+            Table table = MarkdownFactory.Table(Array.Empty<TableColumn>());
+            Assert.Empty(table.Columns);
+            Assert.Empty(table.Rows);
         }
 
-        [TestMethod]
-        public void TableRowTest1()
+        [Fact]
+        public void MarkdownFactory_Table_0()
+        {
+            Table table = MarkdownFactory.Table();
+            Assert.Empty(table.Columns);
+            Assert.Empty(table.Rows);
+
+            table = MarkdownFactory.Table(Array.Empty<TableColumn>());
+            Assert.Empty(table.Columns);
+            Assert.Empty(table.Rows);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_1()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            Table table = MarkdownFactory.Table(column1);
+
+            Assert.Single(table.Columns);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_2()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            Table table = MarkdownFactory.Table(column1, column2);
+
+            Assert.Equal(2, table.Columns.Count);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+            Assert.Equal(column2.Name, table.Columns[1].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_3()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            Table table = MarkdownFactory.Table(column1, column2, column3);
+
+            Assert.Equal(3, table.Columns.Count);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+            Assert.Equal(column2.Name, table.Columns[1].Name);
+            Assert.Equal(column3.Name, table.Columns[2].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_4()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            Table table = MarkdownFactory.Table(column1, column2, column3, column4);
+
+            Assert.Equal(4, table.Columns.Count);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+            Assert.Equal(column2.Name, table.Columns[1].Name);
+            Assert.Equal(column3.Name, table.Columns[2].Name);
+            Assert.Equal(column4.Name, table.Columns[3].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_5()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            TableColumn column5 = MarkdownFactory.TableColumn("5");
+            Table table = MarkdownFactory.Table(column1, column2, column3, column4, column5);
+
+            Assert.Equal(5, table.Columns.Count);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+            Assert.Equal(column2.Name, table.Columns[1].Name);
+            Assert.Equal(column3.Name, table.Columns[2].Name);
+            Assert.Equal(column4.Name, table.Columns[3].Name);
+            Assert.Equal(column5.Name, table.Columns[4].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_Table_6()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            TableColumn column5 = MarkdownFactory.TableColumn("5");
+            TableColumn column6 = MarkdownFactory.TableColumn("6");
+            Table table = MarkdownFactory.Table(column1, column2, column3, column4, column5, column6);
+
+            Assert.Equal(6, table.Columns.Count);
+            Assert.Empty(table.Rows);
+            Assert.Equal(column1.Name, table.Columns[0].Name);
+            Assert.Equal(column2.Name, table.Columns[1].Name);
+            Assert.Equal(column3.Name, table.Columns[2].Name);
+            Assert.Equal(column4.Name, table.Columns[3].Name);
+            Assert.Equal(column5.Name, table.Columns[4].Name);
+            Assert.Equal(column6.Name, table.Columns[5].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_Params()
+        {
+            TableColumnCollection th = MarkdownFactory.TableHeader(Array.Empty<TableColumn>());
+            Assert.Empty(th);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_0()
+        {
+            TableColumnCollection th = MarkdownFactory.TableHeader();
+            Assert.Empty(th);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_1()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1);
+
+            Assert.Single(th);
+            Assert.Equal(column1.Name, th[0].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_2()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1, column2);
+
+            Assert.Equal(2, th.Count);
+            Assert.Equal(column1.Name, th[0].Name);
+            Assert.Equal(column2.Name, th[1].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_3()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1, column2, column3);
+
+            Assert.Equal(3, th.Count);
+            Assert.Equal(column1.Name, th[0].Name);
+            Assert.Equal(column2.Name, th[1].Name);
+            Assert.Equal(column3.Name, th[2].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_4()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1, column2, column3, column4);
+
+            Assert.Equal(4, th.Count);
+            Assert.Equal(column1.Name, th[0].Name);
+            Assert.Equal(column2.Name, th[1].Name);
+            Assert.Equal(column3.Name, th[2].Name);
+            Assert.Equal(column4.Name, th[3].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_5()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            TableColumn column5 = MarkdownFactory.TableColumn("5");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1, column2, column3, column4, column5);
+
+            Assert.Equal(5, th.Count);
+            Assert.Equal(column1.Name, th[0].Name);
+            Assert.Equal(column2.Name, th[1].Name);
+            Assert.Equal(column3.Name, th[2].Name);
+            Assert.Equal(column4.Name, th[3].Name);
+            Assert.Equal(column5.Name, th[4].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableHeader_6()
+        {
+            TableColumn column1 = MarkdownFactory.TableColumn("1");
+            TableColumn column2 = MarkdownFactory.TableColumn("2");
+            TableColumn column3 = MarkdownFactory.TableColumn("3");
+            TableColumn column4 = MarkdownFactory.TableColumn("4");
+            TableColumn column5 = MarkdownFactory.TableColumn("5");
+            TableColumn column6 = MarkdownFactory.TableColumn("6");
+            TableColumnCollection th = MarkdownFactory.TableHeader(column1, column2, column3, column4, column5, column6);
+
+            Assert.Equal(6, th.Count);
+            Assert.Equal(column1.Name, th[0].Name);
+            Assert.Equal(column2.Name, th[1].Name);
+            Assert.Equal(column3.Name, th[2].Name);
+            Assert.Equal(column4.Name, th[3].Name);
+            Assert.Equal(column5.Name, th[4].Name);
+            Assert.Equal(column6.Name, th[5].Name);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableColumn_DefaultValues()
+        {
+            string name = TableColumnName();
+            Assert.Equal(name, MarkdownFactory.TableColumn(name).Name);
+            Assert.Equal(Alignment.Left, MarkdownFactory.TableColumn(name).Alignment);
+        }
+
+        [Theory]
+        [InlineData(Alignment.Left)]
+        [InlineData(Alignment.Center)]
+        [InlineData(Alignment.Right)]
+        public void MarkdownFactory_TableColumnTest1(Alignment alignment)
+        {
+            string name = TableColumnName();
+
+            Assert.Equal(name, MarkdownFactory.TableColumn(name, alignment).Name);
+            Assert.Equal(alignment, MarkdownFactory.TableColumn(name, alignment).Alignment);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableRow_1()
+        {
+            const string row1 = "1";
+
+            List<object> row = MarkdownFactory.TableRow(row1);
+            Assert.Single(row);
+            Assert.Equal(row1, row[0]);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableRow_2()
+        {
+            const string row1 = "1";
+            const string row2 = "2";
+
+            List<object> row = MarkdownFactory.TableRow(row1, row2);
+            Assert.Equal(2, row.Count);
+            Assert.Equal(row1, row[0]);
+            Assert.Equal(row2, row[1]);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableRow_3()
+        {
+            const string row1 = "1";
+            const string row2 = "2";
+            const string row3 = "3";
+
+            List<object> row = MarkdownFactory.TableRow(row1, row2, row3);
+            Assert.Equal(3, row.Count);
+            Assert.Equal(row1, row[0]);
+            Assert.Equal(row2, row[1]);
+            Assert.Equal(row3, row[2]);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableRow_4()
+        {
+            const string row1 = "1";
+            const string row2 = "2";
+            const string row3 = "3";
+            const string row4 = "4";
+
+            List<object> row = MarkdownFactory.TableRow(row1, row2, row3, row4);
+            Assert.Equal(4, row.Count);
+            Assert.Equal(row1, row[0]);
+            Assert.Equal(row2, row[1]);
+            Assert.Equal(row3, row[2]);
+            Assert.Equal(row4, row[3]);
+        }
+
+        [Fact]
+        public void MarkdownFactory_TableRow_5()
         {
             const string row1 = "1";
             const string row2 = "2";
@@ -461,35 +757,13 @@ namespace Pihrtsoft.Markdown.Tests
             const string row4 = "4";
             const string row5 = "5";
 
-            List<object> row = TableRow(row1);
-            Assert.AreEqual(1, row.Count);
-            Assert.AreEqual(row1, row[0]);
-
-            row = TableRow(row1, row2);
-            Assert.AreEqual(2, row.Count);
-            Assert.AreEqual(row1, row[0]);
-            Assert.AreEqual(row2, row[1]);
-
-            row = TableRow(row1, row2, row3);
-            Assert.AreEqual(3, row.Count);
-            Assert.AreEqual(row1, row[0]);
-            Assert.AreEqual(row2, row[1]);
-            Assert.AreEqual(row3, row[2]);
-
-            row = TableRow(row1, row2, row3, row4);
-            Assert.AreEqual(4, row.Count);
-            Assert.AreEqual(row1, row[0]);
-            Assert.AreEqual(row2, row[1]);
-            Assert.AreEqual(row3, row[2]);
-            Assert.AreEqual(row4, row[3]);
-
-            row = TableRow(row1, row2, row3, row4, row5);
-            Assert.AreEqual(5, row.Count);
-            Assert.AreEqual(row1, row[0]);
-            Assert.AreEqual(row2, row[1]);
-            Assert.AreEqual(row3, row[2]);
-            Assert.AreEqual(row4, row[3]);
-            Assert.AreEqual(row5, row[4]);
+            List<object> row = MarkdownFactory.TableRow(row1, row2, row3, row4, row5);
+            Assert.Equal(5, row.Count);
+            Assert.Equal(row1, row[0]);
+            Assert.Equal(row2, row[1]);
+            Assert.Equal(row3, row[2]);
+            Assert.Equal(row4, row[3]);
+            Assert.Equal(row5, row[4]);
         }
     }
 }

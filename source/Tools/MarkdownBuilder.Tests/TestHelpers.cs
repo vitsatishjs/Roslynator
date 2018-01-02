@@ -7,14 +7,7 @@ namespace Pihrtsoft.Markdown.Tests
 {
     internal static class TestHelpers
     {
-        public const string StringValue = "x";
-        public const string StringValue2 = "x2";
-
-        public const int IntValue = 1;
-        public const int IntValue2 = 2;
-
-        public const bool BoolValue = true;
-        public const bool BoolValue2 = false;
+        private static readonly Random _random = new Random();
 
         public const string Chars = @"\ ` * _ } { ] [ ) ( # + - . ! > < "" '";
 
@@ -32,17 +25,172 @@ namespace Pihrtsoft.Markdown.Tests
 
         public const string CharsEnclosedWithBacktickDoubled = @"`` \ * _ } { ] [ ) ( # + - . ! > <  "" ' ``";
 
-        public static string NewLine { get; } = Environment.NewLine;
+        public const string NewLine = "\r\n";
+
+        public const string DefaultText = "Text";
 
         public static string NewLine2 { get; } = NewLine + NewLine;
 
         public static string Backtick { get; } = "`";
 
-        public static string CSharpLanguage { get; } = LanguageIdentifiers.CSharp;
+        public static CodeBlock CreateCodeBlock()
+        {
+            return new CodeBlock(CodeBlockText(), CodeBlockLanguage());
+        }
+
+        public static string CodeBlockText()
+        {
+            return StringValue();
+        }
+
+        public static string CodeBlockLanguage()
+        {
+            return StringValue();
+        }
+
+        public static Heading CreateHeading()
+        {
+            return new Heading(HeadingText(), HeadingLevel());
+        }
+
+        public static string HeadingText()
+        {
+            return StringValue();
+        }
+
+        public static int HeadingLevel()
+        {
+            return IntValue(1, 6);
+        }
+
+        public static HorizontalRule CreateHorizontalRule()
+        {
+            return new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), HorizontalRuleAddSpaces());
+        }
+
+        public static HorizontalRuleStyle HorizontalRuleStyle()
+        {
+            return (HorizontalRuleStyle)IntValue(0, 2);
+        }
+
+        public static int HorizontalRuleCount()
+        {
+            return IntValue(3, 10);
+        }
+
+        public static bool HorizontalRuleAddSpaces()
+        {
+            return BoolValue();
+        }
+
+        public static Image CreateImage()
+        {
+            return new Image(LinkText(), LinkUrl(), LinkTitle());
+        }
+
+        public static Link CreateLink()
+        {
+            return new Link(LinkText(), LinkUrl(), LinkTitle());
+        }
+
+        public static string LinkText()
+        {
+            return StringValue();
+        }
+
+        public static string LinkUrl()
+        {
+            return StringValue();
+        }
+
+        public static string LinkTitle()
+        {
+            return StringValue();
+        }
+
+        public static ListItem CreateListItem()
+        {
+            return new ListItem(ListItemText());
+        }
+
+        public static string ListItemText()
+        {
+            return StringValue();
+        }
+
+        public static MarkdownText CreateMarkdownText()
+        {
+            return new MarkdownText(MarkdownTextText(), MarkdownTextOptions(), MarkdownTextEscape());
+        }
+
+        public static string MarkdownTextText()
+        {
+            return StringValue();
+        }
+
+        public static EmphasisOptions MarkdownTextOptions()
+        {
+            return (EmphasisOptions)IntValue(0, 8);
+        }
+
+        public static bool MarkdownTextEscape()
+        {
+            return BoolValue();
+        }
+
+        public static OrderedListItem CreateOrderedListItem()
+        {
+            return new OrderedListItem(OrderedListItemNumber(), ListItemText());
+        }
+
+        public static int OrderedListItemNumber()
+        {
+            return IntValue(0, 9);
+        }
+
+        public static QuoteBlock CreateQuoteBlock()
+        {
+            return new QuoteBlock(QuoteBlockText());
+        }
+
+        public static string QuoteBlockText()
+        {
+            return StringValue();
+        }
+
+        public static TableColumn CreateTableColumn()
+        {
+            return new TableColumn(TableColumnName(), TableColumnAlignment());
+        }
+
+        public static string TableColumnName()
+        {
+            return StringValue();
+        }
+
+        public static Alignment TableColumnAlignment()
+        {
+            return (Alignment)IntValue(0, 2);
+        }
+
+        public static TaskListItem CreateTaskListItem()
+        {
+            return new TaskListItem(ListItemText(), TaskListItemIsCompleted());
+        }
+
+        public static bool TaskListItemIsCompleted()
+        {
+            return BoolValue();
+        }
 
         public static MarkdownBuilder CreateBuilder(MarkdownSettings settings = null)
         {
             return CreateBuilder(new StringBuilder(), settings);
+        }
+
+        public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
+        {
+            return CreateBuilder(new MarkdownSettings(codeBlockOptions: options));
         }
 
         public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownSettings settings = null)
@@ -58,6 +206,38 @@ namespace Pihrtsoft.Markdown.Tests
         public static CodeMarkdownBuilder CreateCodeBuilder(StringBuilder sb, MarkdownSettings settings = null)
         {
             return new CodeMarkdownBuilder(sb, settings);
+        }
+
+        public static int IntValue()
+        {
+            return _random.Next();
+        }
+
+        public static int IntValue(int maxValue)
+        {
+            return _random.Next(maxValue + 1);
+        }
+
+        public static int IntValue(int minValue, int maxValue)
+        {
+            return _random.Next(minValue, maxValue + 1);
+        }
+
+        public static string StringValue(int length = 3)
+        {
+            var chars = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                chars[i] = (char)IntValue(97, 122);
+            }
+
+            return new string(chars);
+        }
+
+        public static bool BoolValue()
+        {
+            return IntValue(0, 1) == 1;
         }
     }
 }

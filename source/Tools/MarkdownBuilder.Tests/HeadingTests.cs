@@ -1,52 +1,120 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Xunit;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class HeadingTests
     {
-        [TestMethod]
-        public void HeadingTest1()
+        [Fact]
+        public void Heading_Equals()
         {
-            Heading x = MarkdownFactory.Heading("HeadingText", 1);
+            Heading heading = CreateHeading();
 
-            string text = x.Text;
-            int level = x.Level;
-
-            string text2 = text.Modify();
-            int level2 = level.Modify();
-
-            Assert.AreNotEqual(text, text2);
-            Assert.AreNotEqual(level, level2);
-
-            TestEquality(x, x.WithText(text2));
-            TestEquality(x, x.WithLevel(level2));
-
-            Assert.AreEqual(text2, x.WithText(text2).Text);
-            Assert.AreEqual(level2, x.WithLevel(level2).Level);
-
-            Assert.AreEqual(x, x.WithText(text));
-            Assert.AreEqual(x, x.WithLevel(level));
-
-            Assert.AreNotEqual(x, x.WithText(text2));
-            Assert.AreNotEqual(x, x.WithLevel(level2));
+            Assert.True(heading.Equals((object)heading));
         }
 
-        private static void TestEquality(Heading x, Heading y)
+        [Fact]
+        public void Heading_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            Heading heading = CreateHeading();
+            Heading heading2 = heading.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(heading.Equals((object)heading2));
+        }
+
+        [Fact]
+        public void Heading_IEquatableEquals()
+        {
+            Heading heading = CreateHeading();
+            Heading heading2 = heading;
+            IEquatable<Heading> equatable = heading;
+
+            Assert.True(heading.Equals(heading2));
+        }
+
+        [Fact]
+        public void Heading_IEquatableNotEquals()
+        {
+            Heading heading = CreateHeading();
+            Heading heading2 = CreateHeading().Modify();
+            IEquatable<Heading> equatable = heading;
+
+            Assert.False(equatable.Equals(heading2));
+        }
+
+        [Fact]
+        public void Heading_GetHashCode_Equal()
+        {
+            Heading heading = CreateHeading();
+
+            Assert.Equal(heading.GetHashCode(), heading.GetHashCode());
+        }
+
+        [Fact]
+        public void Heading_GetHashCode_NotEqual()
+        {
+            Heading heading = CreateHeading();
+            Heading heading2 = heading.Modify();
+
+            Assert.NotEqual(heading.GetHashCode(), heading2.GetHashCode());
+        }
+
+        [Fact]
+        public void Heading_OperatorEquals()
+        {
+            Heading heading = CreateHeading();
+            Heading heading2 = heading;
+
+            Assert.True(heading == heading2);
+        }
+
+        [Fact]
+        public void Heading_OperatorNotEquals()
+        {
+            Heading heading = CreateHeading();
+            Heading heading2 = heading.Modify();
+
+            Assert.True(heading != heading2);
+        }
+
+        [Fact]
+        public void Heading_Constructor_AssignText()
+        {
+            string text = HeadingText();
+            var heading = new Heading(text: text, level: HeadingLevel());
+
+            Assert.Equal(text, heading.Text);
+        }
+
+        [Fact]
+        public void Heading_WithText()
+        {
+            string text = HeadingText();
+
+            Assert.Equal(text, CreateHeading().WithText(text).Text);
+        }
+
+        [Fact]
+        public void Heading_Constructor_AssignLevel()
+        {
+            int level = HeadingLevel();
+
+            var heading = new Heading(text: HeadingText(), level: level);
+
+            Assert.Equal(level, heading.Level);
+        }
+
+        [Fact]
+        public void Heading_WithLevel()
+        {
+            int level = HeadingLevel();
+
+            Assert.Equal(level, CreateHeading().WithLevel(level).Level);
         }
     }
 }

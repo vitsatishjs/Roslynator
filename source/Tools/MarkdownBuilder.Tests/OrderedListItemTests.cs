@@ -1,55 +1,119 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
+using Xunit;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
-    public class OrderedListItemTests
+    public class OrderedOrderedListItemTests
     {
-        [TestMethod]
-        public void OrderedListItemTest1()
+        [Fact]
+        public void OrderedListItem_Equals()
         {
-            OrderedListItem x = MarkdownFactory.OrderedListItem(1, "OrderedListItemText");
+            OrderedListItem item = CreateOrderedListItem();
 
-            int number = x.Number;
-            string text = x.Text;
-
-            int number2 = number.Modify();
-            string text2 =  text.Modify();
-
-            Assert.AreNotEqual(number, number2);
-            Assert.AreNotEqual(text, text2);
-
-            TestEquality(x, x.WithNumber(number2));
-            TestEquality(x, x.WithText(text2));
-
-            Assert.AreEqual(number2, x.WithNumber(number2).Number);
-            Assert.AreEqual(text2, x.WithText(text2).Text);
-
-            Assert.AreEqual(x, x.WithNumber(number));
-            Assert.AreEqual(x, x.WithText(text));
-
-            Assert.AreNotEqual(x, x.WithNumber(number2));
-            Assert.AreNotEqual(x, x.WithText(text2));
-
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => MarkdownFactory.OrderedListItem(-2));
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => MarkdownFactory.OrderedListItem(-1));
+            Assert.True(item.Equals((object)item));
         }
 
-        private static void TestEquality(OrderedListItem x, OrderedListItem y)
+        [Fact]
+        public void OrderedListItem_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = item.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(item.Equals((object)item2));
+        }
+
+        [Fact]
+        public void OrderedListItem_IEquatableEquals()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = item;
+            IEquatable<OrderedListItem> equatable = item;
+
+            Assert.True(equatable.Equals(item2));
+        }
+
+        [Fact]
+        public void OrderedListItem_IEquatableNotEquals()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = CreateOrderedListItem().Modify();
+            IEquatable<OrderedListItem> equatable = item;
+
+            Assert.False(item.Equals(item2));
+        }
+
+        [Fact]
+        public void OrderedListItem_GetHashCode_Equal()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+
+            Assert.Equal(item.GetHashCode(), item.GetHashCode());
+        }
+
+        [Fact]
+        public void OrderedListItem_GetHashCode_NotEqual()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = item.Modify();
+
+            Assert.NotEqual(item.GetHashCode(), item2.GetHashCode());
+        }
+
+        [Fact]
+        public void OrderedListItem_OperatorEquals()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = item;
+
+            Assert.True(item == item2);
+        }
+
+        [Fact]
+        public void OrderedListItem_OperatorNotEquals()
+        {
+            OrderedListItem item = CreateOrderedListItem();
+            OrderedListItem item2 = item.Modify();
+
+            Assert.True(item != item2);
+        }
+
+        [Fact]
+        public void OrderedListItem_Constructor_AssignNumber()
+        {
+            int number = OrderedListItemNumber();
+            var item = new OrderedListItem(number: number, text: ListItemText());
+
+            Assert.Equal(number, item.Number);
+        }
+
+        [Fact]
+        public void OrderedListItem_WithNumber()
+        {
+            int number = OrderedListItemNumber();
+
+            Assert.Equal(number, CreateOrderedListItem().WithNumber(number).Number);
+        }
+
+        [Fact]
+        public void OrderedListItem_Constructor_AssignText()
+        {
+            string text = ListItemText();
+            var item = new OrderedListItem(number: OrderedListItemNumber(), text: text);
+
+            Assert.Equal(text, item.Text);
+        }
+
+        [Fact]
+        public void OrderedListItem_WithText()
+        {
+            string text = ListItemText();
+
+            Assert.Equal(text, CreateOrderedListItem().WithText(text).Text);
         }
     }
 }

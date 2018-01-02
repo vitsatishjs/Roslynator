@@ -22,6 +22,7 @@ namespace Pihrtsoft.Markdown
 
         public int Count { get; }
 
+        //TODO: Spaces
         public bool AddSpaces { get; }
 
         public HorizontalRule WithStyle(HorizontalRuleStyle style)

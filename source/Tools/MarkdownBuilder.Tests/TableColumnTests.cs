@@ -1,51 +1,120 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Xunit;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class TableColumnTests
     {
-        [TestMethod]
-        public void TableColumnTest1()
+        [Fact]
+        public void TableColumn_Equals()
         {
-            TableColumn x = MarkdownFactory.TableColumn("TableColumnName", Alignment.Center);
+            TableColumn column = CreateTableColumn();
 
-            string name = x.Name;
-            Alignment alignment = x.Alignment;
-
-            string name2 =  name.Modify();
-            Alignment alignment2 = alignment.Modify();
-
-            Assert.AreNotEqual(name, name2);
-            Assert.AreNotEqual(alignment, alignment2);
-
-            TestEquality(x, x.WithName(name2));
-            TestEquality(x, x.WithAlignment(alignment2));
-
-            Assert.AreEqual(name2, x.WithName(name2).Name);
-            Assert.AreEqual(alignment2, x.WithAlignment(alignment2).Alignment);
-
-            Assert.AreEqual(x, x.WithName(name));
-            Assert.AreEqual(x, x.WithAlignment(alignment));
-
-            Assert.AreNotEqual(x, x.WithName(name2));
-            Assert.AreNotEqual(x, x.WithAlignment(alignment2));
+            Assert.True(column.Equals((object)column));
         }
 
-        private static void TestEquality(TableColumn x, TableColumn y)
+        [Fact]
+        public void TableColumn_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = column.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(column.Equals((object)column2));
+        }
+
+        [Fact]
+        public void TableColumn_IEquatableEquals()
+        {
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = column;
+            IEquatable<TableColumn> equatable = column;
+
+            Assert.True(equatable.Equals(column2));
+        }
+
+        [Fact]
+        public void TableColumn_IEquatableNotEquals()
+        {
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = CreateTableColumn().Modify();
+            IEquatable<TableColumn> equatable = column;
+
+            Assert.False(column.Equals(column2));
+        }
+
+        [Fact]
+        public void TableColumn_GetHashCode_Equal()
+        {
+            TableColumn column = CreateTableColumn();
+
+            Assert.Equal(column.GetHashCode(), column.GetHashCode());
+        }
+
+        [Fact]
+        public void TableColumn_GetHashCode_NotEqual()
+        {
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = column.Modify();
+
+            Assert.NotEqual(column.GetHashCode(), column2.GetHashCode());
+        }
+
+        [Fact]
+        public void TableColumn_OperatorEquals()
+        {
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = column;
+
+            Assert.True(column == column2);
+        }
+
+        [Fact]
+        public void TableColumn_OperatorNotEquals()
+        {
+            TableColumn column = CreateTableColumn();
+            TableColumn column2 = column.Modify();
+
+            Assert.True(column != column2);
+        }
+
+        [Fact]
+        public void TableColumn_Constructor_AssignName()
+        {
+            string name = TableColumnName();
+            var column = new TableColumn(name: name, alignment: TableColumnAlignment());
+
+            Assert.Equal(name, column.Name);
+        }
+
+        [Fact]
+        public void TableColumn_WithName()
+        {
+            string name = TableColumnName();
+
+            Assert.Equal(name, CreateTableColumn().WithName(name).Name);
+        }
+
+        [Fact]
+        public void TableColumn_Constructor_AssignAlignment()
+        {
+            Alignment alignment = TableColumnAlignment();
+            var column = new TableColumn(name: TableColumnName(), alignment: alignment);
+
+            Assert.Equal(alignment, column.Alignment);
+        }
+
+        [Fact]
+        public void TableColumn_WithAlignment()
+        {
+            TableColumn column = CreateTableColumn();
+            Alignment alignment = column.Alignment.Modify();
+
+            Assert.Equal(alignment, column.WithAlignment(alignment).Alignment);
         }
     }
 }

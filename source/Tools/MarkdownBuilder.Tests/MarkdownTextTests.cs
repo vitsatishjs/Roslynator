@@ -1,44 +1,138 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using Xunit;
+using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 #pragma warning disable CS1718
 
 namespace Pihrtsoft.Markdown.Tests
 {
-    [TestClass]
     public class MarkdownTextTests
     {
-        [TestMethod]
-        public void MarkdownTextTest1()
+        [Fact]
+        public void MarkdownText_Equals()
         {
-            MarkdownText x = MarkdownFactory.Text("MarkdownText");
+            MarkdownText markdownText = CreateMarkdownText();
 
-            string text = x.Text;
-
-            string text2 =  text.Modify();
-
-            Assert.AreNotEqual(text, text2);
-
-            TestEquality(x, x.WithText(text2));
-
-            Assert.AreEqual(text2, x.WithText(text2).Text);
-
-            Assert.AreEqual(x, x.WithText(text));
-
-            Assert.AreNotEqual(x, x.WithText(text2));
+            Assert.True(markdownText.Equals((object)markdownText));
         }
 
-        private static void TestEquality(MarkdownText x, MarkdownText y)
+        [Fact]
+        public void MarkdownText_NotEquals()
         {
-            Assert.AreEqual(x, x);
-            Assert.IsTrue(x == x);
-            Assert.IsFalse(x != x);
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = markdownText.Modify();
 
-            Assert.AreNotEqual(x, y);
-            Assert.IsFalse(x == y);
-            Assert.IsTrue(x != y);
-            Assert.IsFalse(x.GetHashCode() == y.GetHashCode());
+            Assert.False(markdownText.Equals((object)markdownText2));
+        }
+
+        [Fact]
+        public void MarkdownText_IEquatableEquals()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = markdownText;
+            IEquatable<MarkdownText> equatable = markdownText;
+
+            Assert.True(equatable.Equals(markdownText2));
+        }
+
+        [Fact]
+        public void MarkdownText_IEquatableNotEquals()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = CreateMarkdownText().Modify();
+            IEquatable<MarkdownText> equatable = markdownText;
+
+            Assert.False(markdownText.Equals(markdownText2));
+        }
+
+        [Fact]
+        public void MarkdownText_GetHashCode_Equal()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+
+            Assert.Equal(markdownText.GetHashCode(), markdownText.GetHashCode());
+        }
+
+        [Fact]
+        public void MarkdownText_GetHashCode_NotEqual()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = markdownText.Modify();
+
+            Assert.NotEqual(markdownText.GetHashCode(), markdownText2.GetHashCode());
+        }
+
+        [Fact]
+        public void MarkdownText_OperatorEquals()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = markdownText;
+
+            Assert.True(markdownText == markdownText2);
+        }
+
+        [Fact]
+        public void MarkdownText_OperatorNotEquals()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            MarkdownText markdownText2 = markdownText.Modify();
+
+            Assert.True(markdownText != markdownText2);
+        }
+
+        [Fact]
+        public void MarkdownText_Constructor_AssignText()
+        {
+            string text = MarkdownTextText();
+            var markdownText = new MarkdownText(text: text, options: MarkdownTextOptions(), escape: MarkdownTextEscape());
+
+            Assert.Equal(text, markdownText.Text);
+        }
+
+        [Fact]
+        public void MarkdownText_WithText()
+        {
+            string text = MarkdownTextText();
+
+            Assert.Equal(text, CreateMarkdownText().WithText(text).Text);
+        }
+
+        [Fact]
+        public void MarkdownOptions_Constructor_AssignOptions()
+        {
+            EmphasisOptions options = MarkdownTextOptions();
+            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: options, escape: MarkdownTextEscape());
+
+            Assert.Equal(options, markdownOptions.Options);
+        }
+
+        [Fact]
+        public void MarkdownText_WithOptions()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            EmphasisOptions options = markdownText.Options.Modify();
+
+            Assert.Equal(options, markdownText.WithOptions(options).Options);
+        }
+
+        [Fact]
+        public void MarkdownOptions_Constructor_AssignEscape()
+        {
+            bool escape = MarkdownTextEscape();
+            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: MarkdownTextOptions(), escape: escape);
+
+            Assert.Equal(escape, markdownOptions.Escape);
+        }
+
+        [Fact]
+        public void MarkdownText_WithEscape()
+        {
+            MarkdownText markdownText = CreateMarkdownText();
+            bool escape = markdownText.Escape.Modify();
+
+            Assert.Equal(escape, markdownText.WithEscape(escape).Escape);
         }
     }
 }

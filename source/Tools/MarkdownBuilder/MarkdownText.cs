@@ -8,6 +8,7 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("{Text,nq} Options = {Options} Escape = {Escape}")]
     public struct MarkdownText : IMarkdown, IEquatable<MarkdownText>
     {
+        //TODO: optional parameters
         internal MarkdownText(string text, EmphasisOptions options, bool escape)
         {
             Text = text;
