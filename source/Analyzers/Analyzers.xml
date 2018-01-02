@@ -4490,15 +4490,13 @@ string y = $"{x}";]]>
     <SupportsFadeOutAnalyzer>false</SupportsFadeOutAnalyzer>
     <Samples>
       <Sample>
-        <Before>
-          <![CDATA[int i = 0;
+        <Before><![CDATA[uint i = 0;
 
 // ...
 
 if (i >= 0) // RCS1213
 {
-}]]>
-        </Before>
+}]]></Before>
       </Sample>
       <Sample>
         <Before>
@@ -4508,8 +4506,7 @@ if (i >= 0) // RCS1213
 
 if (items.Count < 0) // RCS1213
 {
-}]]>
-        </Before>
+}]]></Before>
       </Sample>
     </Samples>
   </Analyzer>

@@ -18,49 +18,67 @@ namespace Roslynator.CSharp.Analyzers.Tests
             var arr = new string[0];
             string s = null;
 
+            // true
+
             if (b >= 0) { }
 
             if (0 <= b) { }
-
-            if (b < 0) { }
-
-            if (0 > b) { }
 
             if (us >= 0) { }
 
             if (0 <= us) { }
 
-            if (us < 0) { }
-
-            if (0 > us) { }
-
             if (ui >= 0) { }
 
             if (0 <= ui) { }
-
-            if (ui < 0) { }
-
-            if (0 > ui) { }
 
             if (ul >= 0) { }
 
             if (0 <= ul) { }
 
+            if (items.Count >= 0) { }
+
+            if (0 <= items.Count) { }
+
+            if (arr.Length >= 0) { }
+
+            if (0 <= arr.Length) { }
+
+            if (s.Length >= 0) { }
+
+            if (0 <= s.Length) { }
+
+            // false
+
+            if (b < 0) { }
+
+            if (0 > b) { }
+
+            if (us < 0) { }
+
+            if (0 > us) { }
+
+            if (ui < 0) { }
+
+            if (0 > ui) { }
+
             if (ul < 0) { }
 
             if (0 > ul) { }
 
-            if (items.Count >= 0) { }
-
-            if (arr.Length >= 0) { }
-
-            if (s.Length >= 0) { }
-
             if (items.Count < 0) { }
+
+            if (0 > items.Count) { }
 
             if (arr.Length < 0) { }
 
+            if (0 > arr.Length) { }
+
             if (s.Length < 0) { }
+
+            if (0 > s.Length) { }
+
+            // n
 
             for (int i = items.Count - 1; i >= 0; i--)
             {
