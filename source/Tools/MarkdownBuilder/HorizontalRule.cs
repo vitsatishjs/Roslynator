@@ -6,43 +6,42 @@ namespace Pihrtsoft.Markdown
 {
     public struct HorizontalRule : IMarkdown, IEquatable<HorizontalRule>
     {
-        internal HorizontalRule(HorizontalRuleStyle style, int count = 3, bool addSpaces = true)
+        internal HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
             if (count < 3)
                 throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
 
             Style = style;
             Count = count;
-            AddSpaces = addSpaces;
+            Space = space ?? "";
         }
 
-        public static HorizontalRule Default { get; } = new HorizontalRule(HorizontalRuleStyle.Hyphen, count: 3, addSpaces: true);
+        public static HorizontalRule Default { get; } = new HorizontalRule(HorizontalRuleStyle.Hyphen, count: 3, space: " ");
 
         public HorizontalRuleStyle Style { get; }
 
         public int Count { get; }
 
-        //TODO: Spaces
-        public bool AddSpaces { get; }
+        public string Space { get; }
 
         public HorizontalRule WithStyle(HorizontalRuleStyle style)
         {
-            return new HorizontalRule(style, Count, AddSpaces);
+            return new HorizontalRule(style, Count, Space);
         }
 
         public HorizontalRule WithCount(int count)
         {
-            return new HorizontalRule(Style, count, AddSpaces);
+            return new HorizontalRule(Style, count, Space);
         }
 
-        public HorizontalRule WithAddSpaces(bool addSpaces)
+        public HorizontalRule WithSpace(string space)
         {
-            return new HorizontalRule(Style, Count, addSpaces);
+            return new HorizontalRule(Style, Count, space);
         }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.AppendHorizontalRule(Style, Count, AddSpaces);
+            return mb.AppendHorizontalRule(Style, Count, Space);
         }
 
         public override bool Equals(object obj)
@@ -55,12 +54,12 @@ namespace Pihrtsoft.Markdown
         {
             return Style == other.Style
                 && Count == other.Count
-                && AddSpaces == other.AddSpaces;
+                && Space == other.Space;
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Create(AddSpaces)));
+            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Create(Space)));
         }
 
         public static bool operator ==(HorizontalRule left, HorizontalRule right)

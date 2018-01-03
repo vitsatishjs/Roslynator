@@ -87,7 +87,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             HorizontalRuleStyle style = HorizontalRuleStyle();
 
-            var horizontalRule = new HorizontalRule(style, HorizontalRuleCount(), HorizontalRuleAddSpaces());
+            var horizontalRule = new HorizontalRule(style, HorizontalRuleCount(), HorizontalRuleSpace());
 
             Assert.Equal(style, horizontalRule.Style);
         }
@@ -107,7 +107,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             int count = HorizontalRuleCount();
 
-            var horizontalRule = new HorizontalRule(HorizontalRuleStyle(), count, HorizontalRuleAddSpaces());
+            var horizontalRule = new HorizontalRule(HorizontalRuleStyle(), count, HorizontalRuleSpace());
 
             Assert.Equal(count, horizontalRule.Count);
         }
@@ -123,23 +123,23 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Fact]
-        public void HorizontalRule_Constructor_AssignAddSpaces()
+        public void HorizontalRule_Constructor_AssignSpace()
         {
-            bool addSpaces = HorizontalRuleAddSpaces();
+            string space = HorizontalRuleSpace();
 
-            var horizontalRule = new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), addSpaces);
+            var horizontalRule = new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), space);
 
-            Assert.Equal(addSpaces, horizontalRule.AddSpaces);
+            Assert.Equal(space, horizontalRule.Space);
         }
 
         [Fact]
-        public void HorizontalRule_WithAddSpaces()
+        public void HorizontalRule_WithSpace()
         {
             HorizontalRule horizontalRule = CreateHorizontalRule();
 
-            bool addSpaces = horizontalRule.AddSpaces.Modify();
+            string space = horizontalRule.Space.Modify();
 
-            Assert.Equal(addSpaces, horizontalRule.WithAddSpaces(addSpaces).AddSpaces);
+            Assert.Equal(space, horizontalRule.WithSpace(space).Space);
         }
     }
 }

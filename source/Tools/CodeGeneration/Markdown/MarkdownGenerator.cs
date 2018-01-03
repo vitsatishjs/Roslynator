@@ -113,7 +113,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateRefactoringMarkdown(RefactoringDescriptor refactoring)
         {
-            var mb = new MarkdownBuilder(new MarkdownSettings(tableOptions: MarkdownSettings.Default.TableOptions | TableOptions.FormatContent));
+            var mb = new MarkdownBuilder(new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent));
 
             mb.AppendHeading2(refactoring.Title);
 
@@ -136,7 +136,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateAnalyzerMarkdown(AnalyzerDescriptor analyzer)
         {
-            var mb = new MarkdownBuilder(new MarkdownSettings(tableOptions: MarkdownSettings.Default.TableOptions | TableOptions.FormatContent));
+            var mb = new MarkdownBuilder(new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent));
 
             mb.AppendHeading1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}");
 

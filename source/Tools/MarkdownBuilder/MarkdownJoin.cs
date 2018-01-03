@@ -9,18 +9,18 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("Separator = {Separator,nq} Escape = {Escape}")]
     public class MarkdownJoin : IMarkdown
     {
-        internal MarkdownJoin(string separator, IEnumerable<object> values, bool escape)
+        internal MarkdownJoin(string separator, IEnumerable<object> values, bool escapeSeparator = true)
         {
             Values = values ?? throw new ArgumentNullException(nameof(values));
             Separator = separator;
-            Escape = escape;
+            EscapeSeparator = escapeSeparator;
         }
 
         public string Separator { get; }
 
         public IEnumerable<object> Values { get; }
 
-        public bool Escape { get; }
+        public bool EscapeSeparator { get; }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
@@ -34,7 +34,7 @@ namespace Pihrtsoft.Markdown
                 }
                 else
                 {
-                    mb.Append(Separator, escape: Escape);
+                    mb.Append(Separator, escape: EscapeSeparator);
                 }
 
                 mb.Append(value);

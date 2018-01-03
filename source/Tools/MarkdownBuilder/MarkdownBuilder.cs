@@ -14,23 +14,23 @@ namespace Pihrtsoft.Markdown
     {
         private const State InitialState = State.StartOfLine;
 
-        private MarkdownSettings _settings;
+        private MarkdownFormat _format;
 
-        public MarkdownBuilder(MarkdownSettings settings = null)
-            : this(new StringBuilder(), settings)
+        public MarkdownBuilder(MarkdownFormat format = null)
+            : this(new StringBuilder(), format)
         {
         }
 
-        public MarkdownBuilder(StringBuilder sb, MarkdownSettings settings = null)
+        public MarkdownBuilder(StringBuilder sb, MarkdownFormat format = null)
         {
-            Settings = settings ?? MarkdownSettings.Default;
+            Format = format ?? MarkdownFormat.Default;
             StringBuilder = sb;
         }
 
-        public MarkdownSettings Settings
+        public MarkdownFormat Format
         {
-            get { return _settings; }
-            set { _settings = value ?? throw new ArgumentNullException(nameof(value)); }
+            get { return _format; }
+            set { _format = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
         public int IndentLevel { get; private set; }
@@ -41,41 +41,43 @@ namespace Pihrtsoft.Markdown
 
         public int Length => StringBuilder.Length;
 
-        private string BoldDelimiter => BoldDelimiter(Settings.BoldStyle);
+        private string BoldDelimiter => BoldDelimiter(Format.BoldStyle);
 
-        private string ItalicDelimiter => ItalicDelimiter(Settings.ItalicStyle);
+        private string ItalicDelimiter => ItalicDelimiter(Format.ItalicStyle);
 
-        private ListItemStyle ListItemStyle => Settings.ListItemStyle;
+        private ListItemStyle ListItemStyle => Format.ListItemStyle;
 
         private string ListItemStart => ListItemStart(ListItemStyle);
 
-        private string IndentChars => Settings.IndentChars;
+        private string IndentChars => Format.IndentChars;
 
-        private bool AddEmptyLineBeforeHeading => Settings.EmptyLineBeforeHeading;
+        private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
-        private bool AddEmptyLineAfterHeading => Settings.EmptyLineAfterHeading;
+        private bool AddEmptyLineAfterHeading => Format.EmptyLineAfterHeading;
 
-        private bool AddEmptyLineBeforeCodeBlock => Settings.EmptyLineBeforeCodeBlock;
+        private bool AddEmptyLineBeforeCodeBlock => Format.EmptyLineBeforeCodeBlock;
 
-        private bool AddEmptyLineAfterCodeBlock => Settings.EmptyLineAfterCodeBlock;
+        private bool AddEmptyLineAfterCodeBlock => Format.EmptyLineAfterCodeBlock;
 
-        private TableOptions TableOptions => Settings.TableOptions;
+        private TableOptions TableOptions => Format.TableOptions;
 
         private bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
 
         private bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
 
-        private bool TableOuterPipe => Settings.TableOuterPipe;
+        private bool TableOuterPipe => Format.TableOuterPipe;
 
-        private bool TablePadding => Settings.TablePadding;
+        private bool TablePadding => Format.TablePadding;
 
-        private bool UnderlineHeading1 => Settings.UnderlineHeading1;
+        private bool UnderlineHeading1 => Format.UnderlineHeading1;
 
-        private bool UnderlineHeading2 => Settings.UnderlineHeading2;
+        private bool UnderlineHeading2 => Format.UnderlineHeading2;
 
-        private bool CloseHeading => Settings.CloseHeading;
+        private bool CloseHeading => Format.CloseHeading;
 
-        private HeadingStyle HeadingStyle => Settings.HeadingStyle;
+        private HeadingStyle HeadingStyle => Format.HeadingStyle;
+
+        private CodeFenceStyle CodeFenceStyle => Format.CodeFenceStyle;
 
         public char this[int index]
         {
@@ -109,9 +111,9 @@ namespace Pihrtsoft.Markdown
             return (State & state) != 0;
         }
 
-        internal MarkdownBuilder WithSettings(MarkdownSettings settings)
+        internal MarkdownBuilder WithFormat(MarkdownFormat format)
         {
-            Settings = settings;
+            Format = format;
             return this;
         }
 
@@ -240,7 +242,7 @@ namespace Pihrtsoft.Markdown
         {
             CodeMarkdownBuilder mb = CodeMarkdownBuilderCache.GetInstance();
 
-            mb.Settings = Settings;
+            mb.Format = Format;
             mb.AppendRange(value, additionalValues);
 
             string s = CodeMarkdownBuilderCache.GetResultAndFree(mb);
@@ -624,11 +626,8 @@ namespace Pihrtsoft.Markdown
             AppendSyntax(">");
         }
 
-        public MarkdownBuilder AppendCodeBlock(string code, bool indent)
+        public MarkdownBuilder AppendIndentedCodeBlock(string code)
         {
-            if (!indent)
-                return AppendCodeBlock(code, language: null);
-
             AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock);
             AddState(State.IndentedCodeBlock);
             AppendRaw(code);
@@ -638,21 +637,39 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendCodeBlock(string code, string language = null)
+        public MarkdownBuilder AppendFencedCodeBlock(string code, string info = null)
         {
-            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock, prefix2: CodeBlockChars);
-            AppendSyntax(language);
+            AppendLineIfNecessary();
+            AppendEmptyLineIf(AddEmptyLineBeforeCodeBlock);
+
+            AddState(State.CodeBlock);
+
+            AppendCodeFence();
+            AppendSyntax(info);
             AppendLine();
 
             AppendRaw(code);
             AppendLineIfNecessary();
 
-            AppendSyntax(CodeBlockChars);
+            AppendCodeFence();
             AppendLine();
 
             RemoveState(State.CodeBlock);
             AddStateIf(AddEmptyLineAfterCodeBlock, State.PendingEmptyLine);
             return this;
+        }
+
+        private MarkdownBuilder AppendCodeFence()
+        {
+            switch (CodeFenceStyle)
+            {
+                case CodeFenceStyle.Backtick:
+                    return AppendSyntax("```");
+                case CodeFenceStyle.Tilde:
+                    return AppendSyntax("~~~");
+                default:
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(CodeFenceStyle), nameof(CodeFenceStyle));
+            }
         }
 
         public MarkdownBuilder AppendQuoteBlock(string value)
@@ -667,12 +684,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        internal MarkdownBuilder AppendCodeBlockChars()
-        {
-            return AppendSyntax(CodeBlockChars);
-        }
-
-        public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, bool addSpaces = true)
+        public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
         {
             if (count < 3)
                 throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
@@ -689,9 +701,9 @@ namespace Pihrtsoft.Markdown
                 {
                     isFirst = false;
                 }
-                else if (addSpaces)
+                else
                 {
-                    AppendSpace();
+                    AppendRaw(space);
                 }
 
                 AppendRaw(ch);
@@ -729,7 +741,7 @@ namespace Pihrtsoft.Markdown
 
             int index = 0;
 
-            var mb = new MarkdownBuilder(Settings);
+            var mb = new MarkdownBuilder(Format);
 
             foreach (IList<object> row in rows)
             {
@@ -786,7 +798,7 @@ namespace Pihrtsoft.Markdown
 
             int index = 0;
 
-            var mb = new MarkdownBuilder(Settings);
+            var mb = new MarkdownBuilder(Format);
 
             for (int i = 0; i < columns.Count; i++)
             {
@@ -853,7 +865,7 @@ namespace Pihrtsoft.Markdown
             {
                 TableColumn column = columns[i];
 
-                AppendTableRowStart(i);
+                AppendTableRowStart(i, columnCount);
 
                 if (TablePadding)
                 {
@@ -893,7 +905,7 @@ namespace Pihrtsoft.Markdown
             {
                 TableColumn column = columns[i];
 
-                AppendTableRowStart(i);
+                AppendTableRowStart(i, columnCount);
 
                 if (column.Alignment == Alignment.Center)
                 {
@@ -937,7 +949,7 @@ namespace Pihrtsoft.Markdown
             {
                 for (int i = 0; i < columnCount; i++)
                 {
-                    AppendTableRowStart(i);
+                    AppendTableRowStart(i, columnCount);
                     AppendTablePadding();
 
                     int length = AppendGetLength(row[i]);
@@ -958,7 +970,7 @@ namespace Pihrtsoft.Markdown
             {
                 for (int i = 0; i < columnCount; i++)
                 {
-                    AppendTableRowStart(i);
+                    AppendTableRowStart(i, columnCount);
                     AppendTablePadding();
 
                     int length = AppendGetLength(selectors[i](item));
@@ -973,12 +985,17 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void AppendTableRowStart(int index)
+        private void AppendTableRowStart(int index, int length)
         {
             if (index == 0)
             {
                 AppendLineStart();
-                AppendTableOuterPipe();
+
+                if (TableOuterPipe
+                    || length == 1)
+                {
+                    AppendTableDelimiter();
+                }
             }
             else
             {
@@ -1004,12 +1021,6 @@ namespace Pihrtsoft.Markdown
             {
                 AppendTablePadding();
             }
-        }
-
-        private void AppendTableOuterPipe()
-        {
-            if (TableOuterPipe)
-                AppendTableDelimiter();
         }
 
         private void AppendTablePadding()

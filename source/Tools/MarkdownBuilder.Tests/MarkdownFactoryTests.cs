@@ -100,7 +100,7 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(separator, MarkdownFactory.Join(separator, values).Separator);
             Assert.Same(values, MarkdownFactory.Join(separator, values).Values);
-            Assert.True(MarkdownFactory.Join(separator, values).Escape);
+            Assert.True(MarkdownFactory.Join(separator, values).EscapeSeparator);
         }
 
         [Fact]
@@ -111,8 +111,8 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(separator, MarkdownFactory.Join(separator, values, false).Separator);
             Assert.Same(values, MarkdownFactory.Join(separator, values, false).Values);
-            Assert.True(MarkdownFactory.Join(separator, values, true).Escape);
-            Assert.False(MarkdownFactory.Join(separator, values, false).Escape);
+            Assert.True(MarkdownFactory.Join(separator, values, true).EscapeSeparator);
+            Assert.False(MarkdownFactory.Join(separator, values, false).EscapeSeparator);
         }
 
         [Theory]
@@ -366,24 +366,34 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownFactory_CodeBlock_DefaultValues()
         {
             string text = CodeBlockText();
-            string language = CodeBlockLanguage();
+            string info = CodeBlockInfo();
 
-            CodeBlock cb = MarkdownFactory.CodeBlock(text);
+            FencedCodeBlock block = MarkdownFactory.FencedCodeBlock(text);
 
-            Assert.Equal(text, cb.Text);
-            Assert.Null(cb.Language);
+            Assert.Equal(text, block.Text);
+            Assert.Null(block.Info);
         }
 
         [Fact]
         public void MarkdownFactory_CodeBlock()
         {
             string text = CodeBlockText();
-            string language = CodeBlockLanguage();
+            string info = CodeBlockInfo();
 
-            CodeBlock cb = MarkdownFactory.CodeBlock(text, language);
+            FencedCodeBlock block = MarkdownFactory.FencedCodeBlock(text, info);
 
-            Assert.Equal(text, cb.Text);
-            Assert.Equal(language, cb.Language);
+            Assert.Equal(text, block.Text);
+            Assert.Equal(info, block.Info);
+        }
+
+        [Fact]
+        public void MarkdownFactory_IndentedCodeBlock()
+        {
+            string text = IndentedCodeBlockText();
+
+            IndentedCodeBlock block = MarkdownFactory.IndentedCodeBlock(text);
+
+            Assert.Equal(text, block.Text);
         }
 
         [Fact]
@@ -391,9 +401,9 @@ namespace Pihrtsoft.Markdown.Tests
         {
             string text = QuoteBlockText();
 
-            QuoteBlock cb = MarkdownFactory.QuoteBlock(text);
+            QuoteBlock block = MarkdownFactory.QuoteBlock(text);
 
-            Assert.Equal(text, cb.Text);
+            Assert.Equal(text, block.Text);
         }
 
         [Theory]
@@ -406,7 +416,7 @@ namespace Pihrtsoft.Markdown.Tests
             {
                 Assert.Equal(style, MarkdownFactory.HorizontalRule(style, count: i).Style);
                 Assert.Equal(i, MarkdownFactory.HorizontalRule(style, count: i).Count);
-                Assert.True(MarkdownFactory.HorizontalRule(style, count: i).AddSpaces);
+                Assert.Equal(" ", MarkdownFactory.HorizontalRule(style, count: i).Space);
             }
         }
 
@@ -418,11 +428,11 @@ namespace Pihrtsoft.Markdown.Tests
         {
             for (int i = 3; i <= 5; i++)
             {
-                Assert.Equal(style, MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).Style);
-                Assert.Equal(i, MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).Count);
-                Assert.False(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).AddSpaces);
-                Assert.True(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: true).AddSpaces);
-                Assert.False(MarkdownFactory.HorizontalRule(style, count: i, addSpaces: false).AddSpaces);
+                Assert.Equal(style, MarkdownFactory.HorizontalRule(style, count: i, space: " ").Style);
+                Assert.Equal(i, MarkdownFactory.HorizontalRule(style, count: i, space: " ").Count);
+                Assert.Equal("", MarkdownFactory.HorizontalRule(style, count: i, space: null).Space);
+                Assert.Equal("", MarkdownFactory.HorizontalRule(style, count: i, space: "").Space);
+                Assert.Equal("  ", MarkdownFactory.HorizontalRule(style, count: i, space: "  ").Space);
             }
         }
 
@@ -443,9 +453,9 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false)));
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false)));
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, space: " ")));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, space: " ")));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, space: " ")));
         }
 
         [Fact]

@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit;
 using static Pihrtsoft.Markdown.MarkdownFactory;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
+using static Pihrtsoft.Markdown.Tests.MarkdownSamples;
 
 #pragma warning disable CS1718
 
@@ -260,7 +261,7 @@ namespace Pihrtsoft.Markdown.Tests
         [InlineData(6)]
         public void MarkdownBuilder_AppendHeading(int level)
         {
-            MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.None));
+            MarkdownBuilder mb = CreateBuilder(new MarkdownFormat(headingOptions: HeadingOptions.None));
 
             Assert.Equal($"{new string('#', level)} {ValueEscaped}{NewLine}", mb.AppendHeading(level, Value).ToStringAndClear());
         }
@@ -278,7 +279,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownBuilder_AppendHeading_Params()
         {
-            MarkdownBuilder mb = CreateBuilder(new MarkdownSettings(headingOptions: HeadingOptions.None));
+            MarkdownBuilder mb = CreateBuilder(new MarkdownFormat(headingOptions: HeadingOptions.None));
         }
 
         [Theory]
@@ -350,14 +351,14 @@ namespace Pihrtsoft.Markdown.Tests
             {
                 MarkdownBuilder mb = CreateBuilder();
 
-                Assert.Equal(new string(syntax, i) + NewLine, mb.Append(HorizontalRule(style: style, count: i, addSpaces: false)).ToStringAndClear());
+                Assert.Equal(new string(syntax, i) + NewLine, mb.Append(HorizontalRule(style: style, count: i, space: "")).ToStringAndClear());
             }
 
             for (int i = 3; i <= 5; i++)
             {
                 MarkdownBuilder mb = CreateBuilder();
 
-                Assert.Equal(string.Join(" ", Enumerable.Repeat<char>(syntax, i)) + NewLine, mb.Append(HorizontalRule(style: style, count: i, addSpaces: true)).ToStringAndClear());
+                Assert.Equal(string.Join("  ", Enumerable.Repeat(syntax, i)) + NewLine, mb.Append(HorizontalRule(style: style, count: i, space: "  ")).ToStringAndClear());
             }
         }
 
@@ -369,9 +370,9 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false));
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false));
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, space: ""));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, space: ""));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendHorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, space: ""));
         }
 
         [Fact]
@@ -686,6 +687,69 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
             Assert.Equal(expected, mb.Append((object)item).ToStringAndClear());
+        }
+
+        [Theory]
+        [InlineData("```", null)]
+        [InlineData("```", CodeFenceStyle.Backtick)]
+        [InlineData("~~~", CodeFenceStyle.Tilde)]
+        public void MarkdownBuilder_Append_CodeBlock_CodeFenceStyle(string syntax, CodeFenceStyle? style)
+        {
+            MarkdownBuilder mb = CreateBuilderWithCodeFenceOptions(style);
+
+            FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
+
+            Assert.Equal(
+                syntax + DefaultText + NewLine + Chars + NewLine + syntax + NewLine,
+                mb.Append(block).ToStringAndClear());
+        }
+
+        [Fact]
+        public void MarkdownBuilder_Append_CodeBlock_CodeBlockOptionsNone()
+        {
+            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.None);
+
+            FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
+
+            Assert.Equal(
+                DefaultText + NewLine + CodeBlockMarkdown + CodeBlockMarkdown + DefaultText,
+                mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
+        }
+
+        [Fact]
+        public void MarkdownBuilder_Append_CodeBlock_CodeBlockOptionsEmptyLineBefore()
+        {
+            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineBefore);
+
+            FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
+
+            Assert.Equal(
+                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + DefaultText,
+                mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
+        }
+
+        [Fact]
+        public void MarkdownBuilder_Append_CodeBlock_CodeBlockOptionsEmptyLineAfter()
+        {
+            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineAfter);
+
+            FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
+
+            Assert.Equal(
+                DefaultText + NewLine + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
+                mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
+        }
+
+        [Fact]
+        public void MarkdownBuilder_Append_CodeBlock_CodeBlockOptionsEmptyLineBeforeAndAfter()
+        {
+            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineBeforeAndAfter);
+
+            FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
+
+            Assert.Equal(
+                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
+                mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
         }
 
         [Theory]

@@ -2,8 +2,9 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum HeadingStyle
+    public enum CodeFenceStyle
     {
-        NumberSign = 0
+        Backtick = 0,
+        Tilde = 1
     }
 }

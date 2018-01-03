@@ -5,10 +5,9 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MarkdownFormat
-    public class MarkdownSettings : IEquatable<MarkdownSettings>
+    public class MarkdownFormat : IEquatable<MarkdownFormat>
     {
-        public MarkdownSettings(
+        public MarkdownFormat(
             EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
@@ -16,6 +15,7 @@ namespace Pihrtsoft.Markdown
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
+            CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             string indentChars = "  ")
         {
@@ -25,12 +25,13 @@ namespace Pihrtsoft.Markdown
             HorizontalRule = horizontalRule;
             HeadingStyle = headingStyle;
             HeadingOptions = headingOptions;
+            CodeFenceStyle = codeFenceStyle;
             CodeBlockOptions = codeBlockOptions;
             TableOptions = tableOptions;
             IndentChars = indentChars;
         }
 
-        public static MarkdownSettings Default { get; } = new MarkdownSettings();
+        public static MarkdownFormat Default { get; } = new MarkdownFormat();
 
         public EmphasisStyle BoldStyle { get; }
 
@@ -51,6 +52,8 @@ namespace Pihrtsoft.Markdown
         internal bool EmptyLineBeforeHeading => (HeadingOptions & HeadingOptions.EmptyLineBefore) != 0;
 
         internal bool EmptyLineAfterHeading => (HeadingOptions & HeadingOptions.EmptyLineAfter) != 0;
+
+        public CodeFenceStyle CodeFenceStyle { get; }
 
         public CodeBlockOptions CodeBlockOptions { get; }
 
@@ -87,10 +90,10 @@ namespace Pihrtsoft.Markdown
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as MarkdownSettings);
+            return Equals(obj as MarkdownFormat);
         }
 
-        public bool Equals(MarkdownSettings other)
+        public bool Equals(MarkdownFormat other)
         {
             return other != null
                 && BoldStyle == other.BoldStyle
@@ -99,6 +102,7 @@ namespace Pihrtsoft.Markdown
                 && HorizontalRule == other.HorizontalRule
                 && HeadingStyle == other.HeadingStyle
                 && HeadingOptions == other.HeadingOptions
+                && CodeFenceStyle == other.CodeFenceStyle
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
                 && IndentChars == other.IndentChars;
@@ -113,25 +117,26 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine(HorizontalRule.GetHashCode(), hashCode);
             hashCode = Hash.Combine((int)HeadingStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
+            hashCode = Hash.Combine((int)CodeFenceStyle, hashCode);
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
             hashCode = Hash.Combine(IndentChars, hashCode);
             return hashCode;
         }
 
-        public static bool operator ==(MarkdownSettings settings1, MarkdownSettings settings2)
+        public static bool operator ==(MarkdownFormat format1, MarkdownFormat format2)
         {
-            return EqualityComparer<MarkdownSettings>.Default.Equals(settings1, settings2);
+            return EqualityComparer<MarkdownFormat>.Default.Equals(format1, format2);
         }
 
-        public static bool operator !=(MarkdownSettings settings1, MarkdownSettings settings2)
+        public static bool operator !=(MarkdownFormat format1, MarkdownFormat format2)
         {
-            return !(settings1 == settings2);
+            return !(format1 == format2);
         }
 
-        public MarkdownSettings WithBoldStyle(EmphasisStyle boldStyle)
+        public MarkdownFormat WithBoldStyle(EmphasisStyle boldStyle)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 boldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -139,13 +144,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithItalicStyle(EmphasisStyle italicStyle)
+        public MarkdownFormat WithItalicStyle(EmphasisStyle italicStyle)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 italicStyle,
                 ListItemStyle,
@@ -153,13 +159,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithListItemStyle(ListItemStyle listItemStyle)
+        public MarkdownFormat WithListItemStyle(ListItemStyle listItemStyle)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 listItemStyle,
@@ -167,13 +174,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithHorizontalRule(HorizontalRule horizontalRule)
+        public MarkdownFormat WithHorizontalRule(HorizontalRule horizontalRule)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -181,13 +189,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithHeadingOptions(HeadingStyle headingStyle)
+        public MarkdownFormat WithHeadingOptions(HeadingStyle headingStyle)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -195,13 +204,14 @@ namespace Pihrtsoft.Markdown
                 headingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithHeadingOptions(HeadingOptions headingOptions)
+        public MarkdownFormat WithHeadingOptions(HeadingOptions headingOptions)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -209,13 +219,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 headingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithTableOptions(TableOptions tableOptions)
+        public MarkdownFormat WithTableOptions(TableOptions tableOptions)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -223,13 +234,14 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 tableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
+        public MarkdownFormat WithCodeFenceStyle(CodeFenceStyle codeFenceStyle)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -237,13 +249,29 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                codeFenceStyle,
+                CodeBlockOptions,
+                IndentChars);
+        }
+
+        public MarkdownFormat WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
+        {
+            return new MarkdownFormat(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                HorizontalRule,
+                HeadingStyle,
+                HeadingOptions,
+                TableOptions,
+                CodeFenceStyle,
                 codeBlockOptions,
                 IndentChars);
         }
 
-        public MarkdownSettings WithIndentChars(string indentChars)
+        public MarkdownFormat WithIndentChars(string indentChars)
         {
-            return new MarkdownSettings(
+            return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
@@ -251,6 +279,7 @@ namespace Pihrtsoft.Markdown
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
+                CodeFenceStyle,
                 CodeBlockOptions,
                 indentChars);
         }

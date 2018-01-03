@@ -15,8 +15,6 @@ namespace Pihrtsoft.Markdown
 
         public static string TableDelimiter => "|";
 
-        public static string CodeBlockChars => "```";
-
         public static string QuoteBlockStart => "> ";
 
         public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
@@ -183,7 +181,6 @@ namespace Pihrtsoft.Markdown
             return new Link(text, url, title);
         }
 
-        //TODO: TextOrLink
         public static IMarkdown LinkOrText(string text, string url = null, string title = null)
         {
             if (string.IsNullOrEmpty(url))
@@ -192,9 +189,14 @@ namespace Pihrtsoft.Markdown
             return new Link(text, url, title);
         }
 
-        public static CodeBlock CodeBlock(string value, string language = null)
+        public static FencedCodeBlock FencedCodeBlock(string value, string info = null)
         {
-            return new CodeBlock(value, language);
+            return new FencedCodeBlock(value, info);
+        }
+
+        public static IndentedCodeBlock IndentedCodeBlock(string value)
+        {
+            return new IndentedCodeBlock(value);
         }
 
         public static QuoteBlock QuoteBlock(string value)
@@ -202,9 +204,9 @@ namespace Pihrtsoft.Markdown
             return new QuoteBlock(value);
         }
 
-        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style, int count = 3, bool addSpaces = true)
+        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
-            return new HorizontalRule(style, count, addSpaces);
+            return new HorizontalRule(style, count, space);
         }
 
         public static char HorizontalRuleChar(HorizontalRuleStyle style)

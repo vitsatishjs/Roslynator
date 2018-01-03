@@ -8,7 +8,7 @@ namespace Roslynator.CodeGeneration.Markdown
     {
         public static void AppendCSharpCodeBlock(this MarkdownBuilder mb, string code)
         {
-            mb.AppendCodeBlock(code, LanguageIdentifiers.CSharp);
+            mb.AppendFencedCodeBlock(code, LanguageIdentifiers.CSharp);
         }
     }
 }

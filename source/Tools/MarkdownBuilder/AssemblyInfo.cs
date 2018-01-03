@@ -2,8 +2,6 @@
 
 using System.Runtime.CompilerServices;
 
-//TODO: AssemblyInfo
-
 [assembly: InternalsVisibleTo("Pihrtsoft.Markdown.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079a15779a1ff18"
     + "3c87a6793d91ffa82905cc3ed86a48401c75d0fe8f9e07851be8eb9a4d30305135190b3d441ef6"
     + "cf4138debd19f640885142ded739e09275a5bc82ad666c75865acf53d371c71cad5891f9237357"

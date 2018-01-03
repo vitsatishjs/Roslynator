@@ -12,6 +12,19 @@ namespace Pihrtsoft.Markdown.Tests
             return value + "x";
         }
 
+        public static string ModifySpaces(this string value, int minValue, int maxValue)
+        {
+            string newValue = null;
+
+            do
+            {
+                newValue = Spaces(minValue, maxValue);
+
+            } while (newValue == value);
+
+            return newValue;
+        }
+
         public static int Modify(this int value)
         {
             int newValue = 0;
@@ -56,9 +69,14 @@ namespace Pihrtsoft.Markdown.Tests
             return !value;
         }
 
-        public static CodeBlock Modify(this CodeBlock codeBlock)
+        public static FencedCodeBlock Modify(this FencedCodeBlock block)
         {
-            return new CodeBlock(codeBlock.Text.Modify(), codeBlock.Language.Modify());
+            return new FencedCodeBlock(block.Text.Modify(), block.Info.Modify());
+        }
+
+        public static IndentedCodeBlock Modify(this IndentedCodeBlock block)
+        {
+            return new IndentedCodeBlock(block.Text.Modify());
         }
 
         public static Heading Modify(this Heading heading)
@@ -68,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static HorizontalRule Modify(this HorizontalRule horizontalRule)
         {
-            return new HorizontalRule(horizontalRule.Style.Modify(), horizontalRule.Count.Modify(3, 10), horizontalRule.AddSpaces.Modify());
+            return new HorizontalRule(horizontalRule.Style.Modify(), horizontalRule.Count.Modify(3, 10), horizontalRule.Space.Modify());
         }
 
         public static Image Modify(this Image image)
@@ -116,6 +134,106 @@ namespace Pihrtsoft.Markdown.Tests
             return new TaskListItem(item.Text.Modify(), item.IsCompleted.Modify());
         }
 
+        public static MarkdownFormat Modify(this MarkdownFormat x)
+        {
+            return new MarkdownFormat(
+                boldStyle: x.BoldStyle.Modify(),
+                italicStyle: x.ItalicStyle.Modify(),
+                listItemStyle: x.ListItemStyle.Modify(),
+                horizontalRule: x.HorizontalRule.Modify(),
+                headingStyle: x.HeadingStyle.Modify(),
+                headingOptions: x.HeadingOptions.Modify(),
+                tableOptions: x.TableOptions.Modify(),
+                codeFenceStyle: x.CodeFenceStyle.Modify(),
+                codeBlockOptions: x.CodeBlockOptions.Modify(),
+                indentChars: x.IndentChars.ModifySpaces(1, 3));
+        }
+
+        public static ListItemStyle Modify(this ListItemStyle style)
+        {
+            switch (style)
+            {
+                case ListItemStyle.Asterisk:
+                    return ListItemStyle.Plus;
+                case ListItemStyle.Plus:
+                    return ListItemStyle.Minus;
+                case ListItemStyle.Minus:
+                    return ListItemStyle.Asterisk;
+                default:
+                    throw new ArgumentException(style.ToString(), nameof(style));
+            }
+        }
+
+        public static HeadingStyle Modify(this HeadingStyle style)
+        {
+            switch (style)
+            {
+                case HeadingStyle.NumberSign:
+                    return HeadingStyle.NumberSign;
+                default:
+                    throw new ArgumentException(style.ToString(), nameof(style));
+            }
+        }
+
+        public static HeadingOptions Modify(this HeadingOptions options)
+        {
+            switch (options)
+            {
+                case HeadingOptions.None:
+                    return HeadingOptions.EmptyLineBefore;
+                default:
+                    return HeadingOptions.None;
+            }
+        }
+
+        public static TableOptions Modify(this TableOptions options)
+        {
+            switch (options)
+            {
+                case TableOptions.None:
+                    return TableOptions.FormatHeader;
+                default:
+                    return TableOptions.None;
+            }
+        }
+
+        public static CodeFenceStyle Modify(this CodeFenceStyle style)
+        {
+            switch (style)
+            {
+                case CodeFenceStyle.Backtick:
+                    return CodeFenceStyle.Tilde;
+                case CodeFenceStyle.Tilde:
+                    return CodeFenceStyle.Backtick;
+                default:
+                    throw new ArgumentException(style.ToString(), nameof(style));
+            }
+        }
+
+        public static CodeBlockOptions Modify(this CodeBlockOptions options)
+        {
+            switch (options)
+            {
+                case CodeBlockOptions.None:
+                    return CodeBlockOptions.EmptyLineBefore;
+                default:
+                    return CodeBlockOptions.None;
+            }
+        }
+
+        public static EmphasisStyle Modify(this EmphasisStyle style)
+        {
+            switch (style)
+            {
+                case EmphasisStyle.Asterisk:
+                    return EmphasisStyle.Underscore;
+                case EmphasisStyle.Underscore:
+                    return EmphasisStyle.Asterisk;
+                default:
+                    throw new ArgumentException(style.ToString(), nameof(style));
+            }
+        }
+
         public static Alignment Modify(this Alignment alignment)
         {
             switch (alignment)
@@ -127,7 +245,7 @@ namespace Pihrtsoft.Markdown.Tests
                 case Alignment.Right:
                     return Alignment.Left;
                 default:
-                    throw new ArgumentException("", nameof(alignment));
+                    throw new ArgumentException(alignment.ToString(), nameof(alignment));
             }
         }
 
@@ -142,7 +260,7 @@ namespace Pihrtsoft.Markdown.Tests
                 case HorizontalRuleStyle.Underscore:
                     return HorizontalRuleStyle.Hyphen;
                 default:
-                    throw new ArgumentException("", nameof(style));
+                    throw new ArgumentException(style.ToString(), nameof(style));
             }
         }
 

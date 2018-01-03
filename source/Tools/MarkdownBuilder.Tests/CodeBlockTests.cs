@@ -2,8 +2,6 @@
 
 using System;
 using Xunit;
-using static Pihrtsoft.Markdown.MarkdownFactory;
-using static Pihrtsoft.Markdown.Tests.MarkdownSamples;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 namespace Pihrtsoft.Markdown.Tests
@@ -13,82 +11,82 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void CodeBlock_Equals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
+            FencedCodeBlock block = CreateCodeBlock();
 
-            Assert.True(codeBlock.Equals((object)codeBlock));
+            Assert.True(block.Equals((object)block));
         }
 
         [Fact]
         public void CodeBlock_NotEquals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = codeBlock.Modify();
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = block.Modify();
 
-            Assert.False(codeBlock.Equals((object)codeBlock2));
+            Assert.False(block.Equals((object)block2));
         }
 
         [Fact]
         public void CodeBlock_IEquatableEquals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = codeBlock;
-            IEquatable<CodeBlock> equatable = codeBlock;
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = block;
+            IEquatable<FencedCodeBlock> equatable = block;
 
-            Assert.True(equatable.Equals(codeBlock2));
+            Assert.True(equatable.Equals(block2));
         }
 
         [Fact]
         public void CodeBlock_IEquatableNotEquals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = CreateCodeBlock().Modify();
-            IEquatable<CodeBlock> equatable = codeBlock;
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = CreateCodeBlock().Modify();
+            IEquatable<FencedCodeBlock> equatable = block;
 
-            Assert.False(codeBlock.Equals(codeBlock2));
+            Assert.False(block.Equals(block2));
         }
 
         [Fact]
         public void CodeBlock_GetHashCode_Equal()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
+            FencedCodeBlock block = CreateCodeBlock();
 
-            Assert.Equal(codeBlock.GetHashCode(), codeBlock.GetHashCode());
+            Assert.Equal(block.GetHashCode(), block.GetHashCode());
         }
 
         [Fact]
         public void CodeBlock_GetHashCode_NotEqual()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = codeBlock.Modify();
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = block.Modify();
 
-            Assert.NotEqual(codeBlock.GetHashCode(), codeBlock2.GetHashCode());
+            Assert.NotEqual(block.GetHashCode(), block2.GetHashCode());
         }
 
         [Fact]
         public void CodeBlock_OperatorEquals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = codeBlock;
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = block;
 
-            Assert.True(codeBlock == codeBlock2);
+            Assert.True(block == block2);
         }
 
         [Fact]
         public void CodeBlock_OperatorNotEquals()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            CodeBlock codeBlock2 = codeBlock.Modify();
+            FencedCodeBlock block = CreateCodeBlock();
+            FencedCodeBlock block2 = block.Modify();
 
-            Assert.True(codeBlock != codeBlock2);
+            Assert.True(block != block2);
         }
 
         [Fact]
         public void CodeBlock_Constructor_AssignText()
         {
             string text = CodeBlockText();
-            var codeBlock = new CodeBlock(text: text, language: CodeBlockLanguage());
+            var block = new FencedCodeBlock(text: text, info: CodeBlockInfo());
 
-            Assert.Equal(text, codeBlock.Text);
+            Assert.Equal(text, block.Text);
         }
 
         [Fact]
@@ -100,69 +98,21 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Fact]
-        public void CodeBlock_Constructor_AssignLanguage()
+        public void CodeBlock_Constructor_AssignInfo()
         {
-            string language = CodeBlockLanguage();
-            var codeBlock = new CodeBlock(text: CodeBlockText(), language: language);
+            string info = CodeBlockInfo();
+            var block = new FencedCodeBlock(text: CodeBlockText(), info: info);
 
-            Assert.Equal(language, codeBlock.Language);
+            Assert.Equal(info, block.Info);
         }
 
         [Fact]
-        public void CodeBlock_WithLanguage()
+        public void CodeBlock_WithInfo()
         {
-            CodeBlock codeBlock = CreateCodeBlock();
-            string language = codeBlock.Language.Modify();
+            FencedCodeBlock block = CreateCodeBlock();
+            string info = block.Info.Modify();
 
-            Assert.Equal(language, codeBlock.WithLanguage(language).Language);
-        }
-
-        [Fact]
-        public void CodeBlock_Append_CodeBlockOptionsNone()
-        {
-            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.None);
-
-            CodeBlock cb = CodeBlock(Chars, DefaultText);
-
-            Assert.Equal(
-                DefaultText + NewLine + CodeBlockMarkdown + CodeBlockMarkdown + DefaultText,
-                mb.Append(DefaultText).Append(cb).Append(cb).Append(DefaultText).ToStringAndClear());
-        }
-
-        [Fact]
-        public void CodeBlock_Append_CodeBlockOptionsEmptyLineBefore()
-        {
-            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineBefore);
-
-            CodeBlock cb = CodeBlock(Chars, DefaultText);
-
-            Assert.Equal(
-                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + DefaultText,
-                mb.Append(DefaultText).Append(cb).Append(cb).Append(DefaultText).ToStringAndClear());
-        }
-
-        [Fact]
-        public void CodeBlock_Append_CodeBlockOptionsEmptyLineAfter()
-        {
-            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineAfter);
-
-            CodeBlock cb = CodeBlock(Chars, DefaultText);
-
-            Assert.Equal(
-                DefaultText + NewLine + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
-                mb.Append(DefaultText).Append(cb).Append(cb).Append(DefaultText).ToStringAndClear());
-        }
-
-        [Fact]
-        public void CodeBlock_Append_CodeBlockOptionsEmptyLineBeforeAndAfter()
-        {
-            MarkdownBuilder mb = CreateBuilderWithCodeBlockOptions(CodeBlockOptions.EmptyLineBeforeAndAfter);
-
-            CodeBlock cb = CodeBlock(Chars, DefaultText);
-
-            Assert.Equal(
-                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
-                mb.Append(DefaultText).Append(cb).Append(cb).Append(DefaultText).ToStringAndClear());
+            Assert.Equal(info, block.WithInfo(info).Info);
         }
     }
 }

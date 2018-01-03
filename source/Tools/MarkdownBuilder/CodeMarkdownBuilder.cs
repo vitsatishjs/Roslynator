@@ -7,13 +7,13 @@ namespace Pihrtsoft.Markdown
 {
     internal class CodeMarkdownBuilder : MarkdownBuilder
     {
-        public CodeMarkdownBuilder(MarkdownSettings settings = null)
-            : base(settings)
+        public CodeMarkdownBuilder(MarkdownFormat format = null)
+            : base(format)
         {
         }
 
-        public CodeMarkdownBuilder(System.Text.StringBuilder sb, MarkdownSettings settings = null)
-            : base(sb, settings)
+        public CodeMarkdownBuilder(System.Text.StringBuilder sb, MarkdownFormat format = null)
+            : base(sb, format)
         {
         }
 

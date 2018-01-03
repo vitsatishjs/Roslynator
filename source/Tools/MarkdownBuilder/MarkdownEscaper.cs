@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: LessThanEscapeOption, escape '<' as '&lt;'?
     public static class MarkdownEscaper
     {
         public static string Escape(string value, Func<char, bool> shouldBeEscaped = null)

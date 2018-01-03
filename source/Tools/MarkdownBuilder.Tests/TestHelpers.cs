@@ -33,9 +33,9 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static string Backtick { get; } = "`";
 
-        public static CodeBlock CreateCodeBlock()
+        public static FencedCodeBlock CreateCodeBlock()
         {
-            return new CodeBlock(CodeBlockText(), CodeBlockLanguage());
+            return new FencedCodeBlock(CodeBlockText(), CodeBlockInfo());
         }
 
         public static string CodeBlockText()
@@ -43,7 +43,17 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static string CodeBlockLanguage()
+        public static IndentedCodeBlock CreateIndentedCodeBlock()
+        {
+            return new IndentedCodeBlock(IndentedCodeBlockText());
+        }
+
+        public static string IndentedCodeBlockText()
+        {
+            return StringValue();
+        }
+
+        public static string CodeBlockInfo()
         {
             return StringValue();
         }
@@ -65,7 +75,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static HorizontalRule CreateHorizontalRule()
         {
-            return new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), HorizontalRuleAddSpaces());
+            return new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), HorizontalRuleSpace());
         }
 
         public static HorizontalRuleStyle HorizontalRuleStyle()
@@ -78,9 +88,9 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(3, 10);
         }
 
-        public static bool HorizontalRuleAddSpaces()
+        public static string HorizontalRuleSpace()
         {
-            return BoolValue();
+            return Spaces(0, 2);
         }
 
         public static Image CreateImage()
@@ -188,49 +198,109 @@ namespace Pihrtsoft.Markdown.Tests
             return BoolValue();
         }
 
-        public static MarkdownBuilder CreateBuilder(MarkdownSettings settings = null)
+        public static MarkdownFormat CreateMarkdownFormat()
         {
-            return CreateBuilder(new StringBuilder(), settings);
+            return new MarkdownFormat(
+                BoldStyle(),
+                ItalicStyle(),
+                ListItemStyle(),
+                CreateHorizontalRule(),
+                HeadingStyle(),
+                HeadingOptions(),
+                TableOptions(),
+                CodeFenceStyle(),
+                CodeBlockOptions(),
+                StringValue());
+        }
+
+        public static EmphasisStyle BoldStyle()
+        {
+            return (EmphasisStyle)IntValue(0, 1);
+        }
+
+        public static EmphasisStyle ItalicStyle()
+        {
+            return (EmphasisStyle)IntValue(0, 1);
+        }
+
+        public static ListItemStyle ListItemStyle()
+        {
+            return (ListItemStyle)IntValue(0, 2);
+        }
+
+        public static HeadingStyle HeadingStyle()
+        {
+            return (HeadingStyle)IntValue(0, 0);
+        }
+
+        public static HeadingOptions HeadingOptions()
+        {
+            return (HeadingOptions)IntValue(0, 16);
+        }
+
+        public static TableOptions TableOptions()
+        {
+            return (TableOptions)IntValue(0, 8);
+        }
+
+        public static CodeFenceStyle CodeFenceStyle()
+        {
+            return (CodeFenceStyle)IntValue(0, 1);
+        }
+
+        public static CodeBlockOptions CodeBlockOptions()
+        {
+            return (CodeBlockOptions)IntValue(0, 3);
+        }
+
+        public static MarkdownBuilder CreateBuilder(MarkdownFormat format = null)
+        {
+            return CreateBuilder(new StringBuilder(), format);
         }
 
         public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
         {
-            return CreateBuilder(new MarkdownSettings(codeBlockOptions: options));
+            return CreateBuilder(new MarkdownFormat(codeBlockOptions: options));
+        }
+
+        public static MarkdownBuilder CreateBuilderWithCodeFenceOptions(CodeFenceStyle? style)
+        {
+            return CreateBuilder((style != null) ? new MarkdownFormat(codeFenceStyle: style.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithBoldStyle(EmphasisStyle? boldStyle)
         {
-            return CreateBuilder((boldStyle != null) ? new MarkdownSettings(boldStyle: boldStyle.Value) : null);
+            return CreateBuilder((boldStyle != null) ? new MarkdownFormat(boldStyle: boldStyle.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithItalicStyle(EmphasisStyle? italicStyle)
         {
-            return CreateBuilder((italicStyle != null) ? new MarkdownSettings(italicStyle: italicStyle.Value) : null);
+            return CreateBuilder((italicStyle != null) ? new MarkdownFormat(italicStyle: italicStyle.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithHeadingOptions(HeadingOptions? headingOptions)
         {
-            return CreateBuilder((headingOptions != null) ? new MarkdownSettings(headingOptions: headingOptions.Value) : null);
+            return CreateBuilder((headingOptions != null) ? new MarkdownFormat(headingOptions: headingOptions.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithListItemStyle(ListItemStyle? style)
         {
-            return CreateBuilder((style != null) ? new MarkdownSettings(listItemStyle: style.Value) : null);
+            return CreateBuilder((style != null) ? new MarkdownFormat(listItemStyle: style.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownSettings settings = null)
+        public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownFormat format = null)
         {
-            return new MarkdownBuilder(sb, settings);
+            return new MarkdownBuilder(sb, format);
         }
 
-        public static CodeMarkdownBuilder CreateCodeBuilder(MarkdownSettings settings = null)
+        public static CodeMarkdownBuilder CreateCodeBuilder(MarkdownFormat format = null)
         {
-            return CreateCodeBuilder(new StringBuilder(), settings);
+            return CreateCodeBuilder(new StringBuilder(), format);
         }
 
-        public static CodeMarkdownBuilder CreateCodeBuilder(StringBuilder sb, MarkdownSettings settings = null)
+        public static CodeMarkdownBuilder CreateCodeBuilder(StringBuilder sb, MarkdownFormat format = null)
         {
-            return new CodeMarkdownBuilder(sb, settings);
+            return new CodeMarkdownBuilder(sb, format);
         }
 
         public static int IntValue()
@@ -258,6 +328,11 @@ namespace Pihrtsoft.Markdown.Tests
             }
 
             return new string(chars);
+        }
+
+        public static string Spaces(int minValue, int maxValue)
+        {
+            return new string(' ', IntValue(minValue, maxValue));
         }
 
         public static bool BoolValue()
