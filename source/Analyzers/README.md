@@ -197,3 +197,4 @@
 | RCS1212 | [Remove redundant assignment](../../docs/analyzers/RCS1212.md) | Redundancy | &#x2713; |
 | RCS1213 | [Remove unused member declaration](../../docs/analyzers/RCS1213.md) | Redundancy | &#x2713; |
 | RCS1214 | [Avoid interpolated string with no interpolated text](../../docs/analyzers/RCS1214.md) | Simplification | &#x2713; |
+| RCS1215 | [Expression is always equal to true/false](../../docs/analyzers/RCS1215.md) | Redundancy | &#x2713; |

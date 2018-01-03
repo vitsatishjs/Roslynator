@@ -87,6 +87,7 @@
 | Readability | [Use regular string literal instead of verbatim string literal](../../docs/analyzers/RCS1192.md) | RCS1192 | &#x2713; |
 | Redundancy | [Avoid interpolated string with no interpolation](../../docs/analyzers/RCS1062.md) | RCS1062 | &#x2713; |
 | Redundancy | [Avoid semicolon at the end of declaration](../../docs/analyzers/RCS1055.md) | RCS1055 | &#x2713; |
+| Redundancy | [Expression is always equal to true/false](../../docs/analyzers/RCS1215.md) | RCS1215 | &#x2713; |
 | Redundancy | [Remove argument list from attribute](../../docs/analyzers/RCS1039.md) | RCS1039 | &#x2713; |
 | Redundancy | [Remove empty destructor](../../docs/analyzers/RCS1106.md) | RCS1106 | &#x2713; |
 | Redundancy | [Remove empty else clause](../../docs/analyzers/RCS1040.md) | RCS1040 |  |
