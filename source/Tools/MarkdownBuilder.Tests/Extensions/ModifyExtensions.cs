@@ -88,7 +88,12 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static MarkdownText Modify(this MarkdownText text)
         {
-            return new MarkdownText(text.Text.Modify(), text.Options.Modify(), text.Escape.Modify());
+            return new MarkdownText(text.Text.Modify(), text.Options.Modify());
+        }
+
+        public static RawText Modify(this RawText text)
+        {
+            return new RawText(text.Text.Modify());
         }
 
         public static OrderedListItem Modify(this OrderedListItem item)

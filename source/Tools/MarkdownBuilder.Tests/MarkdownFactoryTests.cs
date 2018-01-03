@@ -18,7 +18,6 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Text(text).Text);
             Assert.Equal(EmphasisOptions.None, MarkdownFactory.Text(text).Options);
-            Assert.True(MarkdownFactory.Text(text).Escape);
         }
 
         [Theory]
@@ -31,30 +30,14 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Text(text, options).Text);
             Assert.Equal(options, MarkdownFactory.Text(text, options).Options);
-            Assert.True(MarkdownFactory.Text(text, options).Escape);
         }
 
         [Fact]
-        public void MarkdownFactory_RawText_DefaultValues()
+        public void MarkdownFactory_RawText()
         {
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.RawText(text).Text);
-            Assert.Equal(EmphasisOptions.None, MarkdownFactory.RawText(text).Options);
-            Assert.False(MarkdownFactory.RawText(text).Escape);
-        }
-
-        [Theory]
-        [InlineData(EmphasisOptions.None)]
-        [InlineData(EmphasisOptions.Bold)]
-        [InlineData(EmphasisOptions.BoldItalic)]
-        public void MarkdownFactory_RawText(EmphasisOptions options)
-        {
-            string text = MarkdownTextText();
-
-            Assert.Equal(text, MarkdownFactory.RawText(text, options).Text);
-            Assert.Equal(options, MarkdownFactory.RawText(text, options).Options);
-            Assert.False(MarkdownFactory.RawText(text, options).Escape);
         }
 
         [Fact]
@@ -64,7 +47,6 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Bold(text).Text);
             Assert.Equal(EmphasisOptions.Bold, MarkdownFactory.Bold(text).Options);
-            Assert.True(MarkdownFactory.Bold(text).Escape);
         }
 
         [Theory]
@@ -82,7 +64,6 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Italic(text).Text);
             Assert.Equal(EmphasisOptions.Italic, MarkdownFactory.Italic(text).Options);
-            Assert.True(MarkdownFactory.Italic(text).Escape);
         }
 
         [Theory]
@@ -100,7 +81,6 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Strikethrough(text).Text);
             Assert.Equal(EmphasisOptions.Strikethrough, MarkdownFactory.Strikethrough(text).Options);
-            Assert.True(MarkdownFactory.Strikethrough(text).Escape);
         }
 
         [Fact]
@@ -110,7 +90,6 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, MarkdownFactory.Code(text).Text);
             Assert.Equal(EmphasisOptions.Code, MarkdownFactory.Code(text).Options);
-            Assert.True(MarkdownFactory.Code(text).Escape);
         }
 
         [Fact]
@@ -241,7 +220,7 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.OrderedListItem(number, text).Text);
-            Assert.Equal(number, MarkdownFactory.OrderedListItem(number).Number);
+            Assert.Equal(number, MarkdownFactory.OrderedListItem(number, null).Number);
         }
 
         [Theory]
@@ -454,6 +433,19 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownFactory_HorizontalRuleChar(char syntax, HorizontalRuleStyle style)
         {
             Assert.Equal(syntax, MarkdownFactory.HorizontalRuleChar(style));
+        }
+
+        [Theory]
+        [InlineData(-2)]
+        [InlineData(0)]
+        [InlineData(2)]
+        public void MarkdownFactory_HorizontalRule_Throws(int count)
+        {
+            MarkdownBuilder mb = CreateBuilder();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Asterisk, count: count, addSpaces: false)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Hyphen, count: count, addSpaces: false)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.Append(MarkdownFactory.HorizontalRule(style: HorizontalRuleStyle.Underscore, count: count, addSpaces: false)));
         }
 
         [Fact]

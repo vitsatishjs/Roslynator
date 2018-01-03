@@ -21,12 +21,12 @@ namespace Pihrtsoft.Markdown
 
         public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
         {
-            return new MarkdownText(value, options, escape: true);
+            return new MarkdownText(value, options);
         }
 
-        public static MarkdownText RawText(string value, EmphasisOptions options = EmphasisOptions.None)
+        public static RawText RawText(string value)
         {
-            return new MarkdownText(value, options, escape: false);
+            return new RawText(value);
         }
 
         public static MarkdownText Bold(string value)
@@ -81,32 +81,32 @@ namespace Pihrtsoft.Markdown
             return new Heading(value, level);
         }
 
-        public static Heading Heading1(string value = null)
+        public static Heading Heading1(string value)
         {
             return new Heading(value, 1);
         }
 
-        public static Heading Heading2(string value = null)
+        public static Heading Heading2(string value)
         {
             return new Heading(value, 2);
         }
 
-        public static Heading Heading3(string value = null)
+        public static Heading Heading3(string value)
         {
             return new Heading(value, 3);
         }
 
-        public static Heading Heading4(string value = null)
+        public static Heading Heading4(string value)
         {
             return new Heading(value, 4);
         }
 
-        public static Heading Heading5(string value = null)
+        public static Heading Heading5(string value)
         {
             return new Heading(value, 5);
         }
 
-        public static Heading Heading6(string value = null)
+        public static Heading Heading6(string value)
         {
             return new Heading(value, 6);
         }
@@ -122,7 +122,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public static ListItem ListItem(string value = null)
+        public static ListItem ListItem(string value)
         {
             return new ListItem(value);
         }
@@ -141,7 +141,7 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static OrderedListItem OrderedListItem(int number, string value = null)
+        public static OrderedListItem OrderedListItem(int number, string value)
         {
             return new OrderedListItem(number, value);
         }
@@ -151,12 +151,12 @@ namespace Pihrtsoft.Markdown
             return number.ToString() + ". ";
         }
 
-        public static TaskListItem TaskListItem(string value = null, bool isCompleted = false)
+        public static TaskListItem TaskListItem(string value, bool isCompleted = false)
         {
             return new TaskListItem(value, isCompleted);
         }
 
-        public static TaskListItem CompletedTaskListItem(string value = null)
+        public static TaskListItem CompletedTaskListItem(string value)
         {
             return TaskListItem(value, isCompleted: true);
         }

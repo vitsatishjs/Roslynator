@@ -8,38 +8,29 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("{Text,nq} Options = {Options} Escape = {Escape}")]
     public struct MarkdownText : IMarkdown, IEquatable<MarkdownText>
     {
-        //TODO: optional parameters
-        internal MarkdownText(string text, EmphasisOptions options, bool escape)
+        internal MarkdownText(string text, EmphasisOptions options = EmphasisOptions.None)
         {
             Text = text;
             Options = options;
-            Escape = escape;
         }
 
         public string Text { get; }
 
         public EmphasisOptions Options { get; }
 
-        public bool Escape { get; }
-
         public MarkdownText WithText(string text)
         {
-            return new MarkdownText(text, Options, Escape);
+            return new MarkdownText(text, Options);
         }
 
         public MarkdownText WithOptions(EmphasisOptions options)
         {
-            return new MarkdownText(Text, options, Escape);
-        }
-
-        public MarkdownText WithEscape(bool escape)
-        {
-            return new MarkdownText(Text, Options, escape);
+            return new MarkdownText(Text, options);
         }
 
         public MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
-            return mb.Append(Text, Options, Escape);
+            return mb.Append(Text, Options);
         }
 
         public override bool Equals(object obj)
@@ -50,14 +41,13 @@ namespace Pihrtsoft.Markdown
 
         public bool Equals(MarkdownText other)
         {
-            return Escape == other.Escape
-                && Options == other.Options
+            return Options == other.Options
                 && string.Equals(Text, other.Text, StringComparison.Ordinal);
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Text, Hash.Combine((int)Options, Hash.Create(Escape)));
+            return Hash.Combine(Text, Hash.Create((int)Options));
         }
 
         public static bool operator ==(MarkdownText text1, MarkdownText text2)

@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownText_Constructor_AssignText()
         {
             string text = MarkdownTextText();
-            var markdownText = new MarkdownText(text: text, options: MarkdownTextOptions(), escape: MarkdownTextEscape());
+            var markdownText = new MarkdownText(text: text, options: MarkdownTextOptions());
 
             Assert.Equal(text, markdownText.Text);
         }
@@ -103,7 +103,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownOptions_Constructor_AssignOptions()
         {
             EmphasisOptions options = MarkdownTextOptions();
-            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: options, escape: MarkdownTextEscape());
+            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: options);
 
             Assert.Equal(options, markdownOptions.Options);
         }
@@ -115,24 +115,6 @@ namespace Pihrtsoft.Markdown.Tests
             EmphasisOptions options = markdownText.Options.Modify();
 
             Assert.Equal(options, markdownText.WithOptions(options).Options);
-        }
-
-        [Fact]
-        public void MarkdownOptions_Constructor_AssignEscape()
-        {
-            bool escape = MarkdownTextEscape();
-            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: MarkdownTextOptions(), escape: escape);
-
-            Assert.Equal(escape, markdownOptions.Escape);
-        }
-
-        [Fact]
-        public void MarkdownText_WithEscape()
-        {
-            MarkdownText markdownText = CreateMarkdownText();
-            bool escape = markdownText.Escape.Modify();
-
-            Assert.Equal(escape, markdownText.WithEscape(escape).Escape);
         }
     }
 }

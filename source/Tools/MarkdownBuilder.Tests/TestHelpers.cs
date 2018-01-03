@@ -120,7 +120,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static MarkdownText CreateMarkdownText()
         {
-            return new MarkdownText(MarkdownTextText(), MarkdownTextOptions(), MarkdownTextEscape());
+            return new MarkdownText(MarkdownTextText(), MarkdownTextOptions());
         }
 
         public static string MarkdownTextText()
@@ -128,14 +128,19 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
+        public static RawText CreateRawText()
+        {
+            return new RawText(RawTextText());
+        }
+
+        public static string RawTextText()
+        {
+            return StringValue();
+        }
+
         public static EmphasisOptions MarkdownTextOptions()
         {
             return (EmphasisOptions)IntValue(0, 8);
-        }
-
-        public static bool MarkdownTextEscape()
-        {
-            return BoolValue();
         }
 
         public static OrderedListItem CreateOrderedListItem()
@@ -191,6 +196,26 @@ namespace Pihrtsoft.Markdown.Tests
         public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
         {
             return CreateBuilder(new MarkdownSettings(codeBlockOptions: options));
+        }
+
+        public static MarkdownBuilder CreateBuilderWithBoldStyle(EmphasisStyle? boldStyle)
+        {
+            return CreateBuilder((boldStyle != null) ? new MarkdownSettings(boldStyle: boldStyle.Value) : null);
+        }
+
+        public static MarkdownBuilder CreateBuilderWithItalicStyle(EmphasisStyle? italicStyle)
+        {
+            return CreateBuilder((italicStyle != null) ? new MarkdownSettings(italicStyle: italicStyle.Value) : null);
+        }
+
+        public static MarkdownBuilder CreateBuilderWithHeadingOptions(HeadingOptions? headingOptions)
+        {
+            return CreateBuilder((headingOptions != null) ? new MarkdownSettings(headingOptions: headingOptions.Value) : null);
+        }
+
+        public static MarkdownBuilder CreateBuilderWithListItemStyle(ListItemStyle? style)
+        {
+            return CreateBuilder((style != null) ? new MarkdownSettings(listItemStyle: style.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownSettings settings = null)

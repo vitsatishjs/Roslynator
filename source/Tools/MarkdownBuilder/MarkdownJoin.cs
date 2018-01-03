@@ -37,7 +37,7 @@ namespace Pihrtsoft.Markdown
                     mb.Append(Separator, escape: Escape);
                 }
 
-                mb.Append(value, escape: Escape);
+                mb.Append(value);
             }
 
             return mb;
