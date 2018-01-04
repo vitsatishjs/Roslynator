@@ -17,8 +17,7 @@ namespace Pihrtsoft.Markdown
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
-            HtmlEntityFormat htmlEntityFormat = HtmlEntityFormat.Hexadecimal,
-            string indentChars = "  ")
+            HtmlEntityFormat htmlEntityFormat = HtmlEntityFormat.Hexadecimal)
         {
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
@@ -30,7 +29,6 @@ namespace Pihrtsoft.Markdown
             CodeBlockOptions = codeBlockOptions;
             TableOptions = tableOptions;
             HtmlEntityFormat = htmlEntityFormat;
-            IndentChars = indentChars;
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
@@ -79,8 +77,6 @@ namespace Pihrtsoft.Markdown
 
         public HtmlEntityFormat HtmlEntityFormat { get; }
 
-        public string IndentChars { get; }
-
         private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
         {
             if (style == EmphasisStyle.Asterisk)
@@ -109,8 +105,7 @@ namespace Pihrtsoft.Markdown
                 && CodeFenceStyle == other.CodeFenceStyle
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
-                && HtmlEntityFormat == other.HtmlEntityFormat
-                && IndentChars == other.IndentChars;
+                && HtmlEntityFormat == other.HtmlEntityFormat;
         }
 
         public override int GetHashCode()
@@ -126,7 +121,6 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
             hashCode = Hash.Combine((int)HtmlEntityFormat, hashCode);
-            hashCode = Hash.Combine(IndentChars, hashCode);
             return hashCode;
         }
 
@@ -152,8 +146,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithItalicStyle(EmphasisStyle italicStyle)
@@ -168,8 +161,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithListItemStyle(ListItemStyle listItemStyle)
@@ -184,8 +176,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithHorizontalRule(HorizontalRule horizontalRule)
@@ -200,8 +191,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithHeadingOptions(HeadingStyle headingStyle)
@@ -216,8 +206,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithHeadingOptions(HeadingOptions headingOptions)
@@ -232,8 +221,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithTableOptions(TableOptions tableOptions)
@@ -248,8 +236,7 @@ namespace Pihrtsoft.Markdown
                 tableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithCodeFenceStyle(CodeFenceStyle codeFenceStyle)
@@ -264,8 +251,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 codeFenceStyle,
                 CodeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
@@ -280,8 +266,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 codeBlockOptions,
-                HtmlEntityFormat,
-                IndentChars);
+                HtmlEntityFormat);
         }
 
         public MarkdownFormat WithHtmlEntityFormat(HtmlEntityFormat htmlEntityFormat)
@@ -296,24 +281,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                htmlEntityFormat,
-                IndentChars);
-        }
-
-        public MarkdownFormat WithIndentChars(string indentChars)
-        {
-            return new MarkdownFormat(
-                BoldStyle,
-                ItalicStyle,
-                ListItemStyle,
-                HorizontalRule,
-                HeadingStyle,
-                HeadingOptions,
-                TableOptions,
-                CodeFenceStyle,
-                CodeBlockOptions,
-                HtmlEntityFormat,
-                indentChars);
+                htmlEntityFormat);
         }
     }
 }

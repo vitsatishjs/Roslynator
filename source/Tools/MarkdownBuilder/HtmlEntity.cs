@@ -6,6 +6,7 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: HtmlEntity
     [DebuggerDisplay("{Number}")]
     public struct HtmlEntity : IMarkdown, IEquatable<HtmlEntity>
     {

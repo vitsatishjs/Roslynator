@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
-    public struct Link : IMarkdown, IEquatable<Link>
+    public class Link : MElement, IEquatable<Link>, IMarkdown
     {
         internal Link(string text, string url, string title = null)
         {
@@ -20,6 +20,8 @@ namespace Pihrtsoft.Markdown
         public string Url { get; }
 
         public string Title { get; }
+
+        public override MarkdownKind Kind => MarkdownKind.Link;
 
         public Link WithText(string text)
         {
@@ -36,9 +38,9 @@ namespace Pihrtsoft.Markdown
             return new Link(Text, Url, title);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return mb.AppendLink(Text, Url, Title);
+            return builder.AppendLink(Text, Url, Title);
         }
 
         public override bool Equals(object obj)

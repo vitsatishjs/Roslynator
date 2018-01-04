@@ -74,6 +74,7 @@ namespace Pihrtsoft.Markdown
                 case '.':
                 case '!':
                 case '<':
+                case '|':
                     return true;
                 default:
                     return false;

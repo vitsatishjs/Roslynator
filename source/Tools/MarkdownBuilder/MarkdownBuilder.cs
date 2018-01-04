@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -33,8 +34,6 @@ namespace Pihrtsoft.Markdown
             set { _format = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
-        public int IndentLevel { get; private set; }
-
         public int QuoteLevel { get; private set; }
 
         public StringBuilder StringBuilder { get; }
@@ -48,8 +47,6 @@ namespace Pihrtsoft.Markdown
         private ListItemStyle ListItemStyle => Format.ListItemStyle;
 
         private string ListItemStart => ListItemStart(ListItemStyle);
-
-        private string IndentChars => Format.IndentChars;
 
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
@@ -116,41 +113,6 @@ namespace Pihrtsoft.Markdown
         internal MarkdownBuilder WithFormat(MarkdownFormat format)
         {
             Format = format;
-            return this;
-        }
-
-        public MarkdownBuilder IncreaseIndentLevel()
-        {
-            IndentLevel++;
-            return this;
-        }
-
-        public MarkdownBuilder DecreaseIndentLevel()
-        {
-            if (IndentLevel == 0)
-                throw new InvalidOperationException("Indent level cannot be less than 0.");
-
-            IndentLevel--;
-            return this;
-        }
-
-        public MarkdownBuilder IncreaseQuoteLevel()
-        {
-            QuoteLevel++;
-            AddState(State.QuoteBlock);
-            return this;
-        }
-
-        public MarkdownBuilder DecreaseQuoteLevel()
-        {
-            if (QuoteLevel == 0)
-                throw new InvalidOperationException("Quote level cannot be less than 0.");
-
-            QuoteLevel--;
-
-            if (QuoteLevel == 0)
-                RemoveState(State.QuoteBlock);
-
             return this;
         }
 
@@ -402,19 +364,19 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendListItem(string value)
+        public MarkdownBuilder AppendListItem(object content)
         {
-            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, value: value);
+            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
         }
 
-        public MarkdownBuilder AppendListItem(object value)
+        public MarkdownBuilder AppendListItem(params object[] content)
         {
-            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, value: value);
+            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
         }
 
-        public MarkdownBuilder AppendListItem(params object[] values)
+        public MarkdownBuilder AppendListItem(IEnumerable<MElement> content)
         {
-            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, value: null, values: values);
+            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
         }
 
         internal MarkdownBuilder AppendListItemStart()
@@ -422,28 +384,28 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(ListItemStart);
         }
 
-        public MarkdownBuilder AppendOrderedListItem(int number, string value)
+        public MarkdownBuilder AppendOrderedListItem(int number, object content)
         {
             if (number < 0)
                 throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(CultureInfo.InvariantCulture), prefix2: ". ", value: value);
+            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
         }
 
-        public MarkdownBuilder AppendOrderedListItem(int number, object value)
+        public MarkdownBuilder AppendOrderedListItem(int number, params object[] content)
         {
             if (number < 0)
                 throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: value);
+            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
         }
 
-        public MarkdownBuilder AppendOrderedListItem(int number, params object[] values)
+        public MarkdownBuilder AppendOrderedListItem(int number, IEnumerable<MElement> content)
         {
             if (number < 0)
                 throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", value: null, values: values);
+            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
         }
 
         internal MarkdownBuilder AppendOrderedListItemStart(int number)
@@ -455,34 +417,34 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(". ");
         }
 
-        public MarkdownBuilder AppendTaskListItem(string value)
+        public MarkdownBuilder AppendTaskListItem(object content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), value: value);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
         }
 
-        public MarkdownBuilder AppendTaskListItem(object value)
+        public MarkdownBuilder AppendTaskListItem(params object[] content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), value: value);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
         }
 
-        public MarkdownBuilder AppendTaskListItem(params object[] values)
+        public MarkdownBuilder AppendTaskListItem(IEnumerable<MElement> content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), value: null, values: values);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
         }
 
-        public MarkdownBuilder AppendCompletedTaskListItem(string value)
+        public MarkdownBuilder AppendCompletedTaskListItem(object content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
         }
 
-        public MarkdownBuilder AppendCompletedTaskListItem(object value)
+        public MarkdownBuilder AppendCompletedTaskListItem(params object[] content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: value);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
         }
 
-        public MarkdownBuilder AppendCompletedTaskListItem(params object[] values)
+        public MarkdownBuilder AppendCompletedTaskListItem(IEnumerable<MElement> content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), value: null, values: values);
+            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
         }
 
         internal MarkdownBuilder AppendTaskListItemStart(bool isCompleted = false)
@@ -490,19 +452,13 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(TaskListItemStart(isCompleted));
         }
 
-        private MarkdownBuilder AppendItemCore(State state, string prefix1, string prefix2, string value)
+        private MarkdownBuilder AppendItemCore(State state, string prefix1, string prefix2, object content)
         {
-            AppendLineStart(state: state, addEmptyLine: false, prefix1: prefix1, prefix2: prefix2);
-            Append(value);
             AppendLineIfNecessary();
-            RemoveState(state);
-            return this;
-        }
-
-        private MarkdownBuilder AppendItemCore(State state, string prefix1, string prefix2, object value, params object[] values)
-        {
-            AppendLineStart(state: state, addEmptyLine: false, prefix1: prefix1, prefix2: prefix2);
-            AppendRange(value, values);
+            AppendSyntax(prefix1);
+            AppendSyntax(prefix2);
+            AddState(state);
+            AppendRange(content);
             AppendLineIfNecessary();
             RemoveState(state);
             return this;
@@ -674,15 +630,27 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public MarkdownBuilder AppendQuoteBlock(string value)
+        public MarkdownBuilder AppendQuoteBlock(object value)
+        {
+            return AppendQuoteBlockCore(value);
+        }
+
+        public MarkdownBuilder AppendQuoteBlock(params object[] values)
+        {
+            return AppendQuoteBlockCore(null, values);
+        }
+
+        private MarkdownBuilder AppendQuoteBlockCore(object value, params object[] additionalValues)
         {
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            IncreaseQuoteLevel();
-            Append(value);
+            QuoteLevel++;
+            AddState(State.QuoteBlock);
+            AppendRange(value, additionalValues);
             AppendLineIfNecessary();
-            DecreaseQuoteLevel();
+            RemoveState(State.QuoteBlock);
+            QuoteLevel--;
             return this;
         }
 
@@ -691,7 +659,9 @@ namespace Pihrtsoft.Markdown
             if (count < 3)
                 throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
 
-            AppendLineStart(state: State.HorizontalRule);
+            AppendLineIfNecessary();
+
+            AddState(State.HorizontalRule);
 
             char ch = HorizontalRuleChar(style);
 
@@ -747,6 +717,9 @@ namespace Pihrtsoft.Markdown
 
             foreach (IList<object> row in rows)
             {
+                if (row == null)
+                    continue;
+
                 for (int i = 0; i < columnCount; i++)
                 {
                     mb.Append(row[i]);
@@ -806,9 +779,15 @@ namespace Pihrtsoft.Markdown
             {
                 for (int j = 0; j < items.Count; j++)
                 {
-                    mb.Append(selectors[i](items[j]));
-                    widths[i] = Math.Max(widths[i], mb.Length - index);
-                    index = mb.Length;
+                    T item = items[j];
+
+                    //TODO: 
+                    if (!EqualityComparer<T>.Default.Equals(item, default(T)))
+                    {
+                        mb.Append(selectors[i](item));
+                        widths[i] = Math.Max(widths[i], mb.Length - index);
+                        index = mb.Length;
+                    }
                 }
             }
 
@@ -949,6 +928,9 @@ namespace Pihrtsoft.Markdown
         {
             foreach (IList<object> row in rows)
             {
+                if (row == null)
+                    continue;
+
                 for (int i = 0; i < columnCount; i++)
                 {
                     AppendTableRowStart(i, columnCount);
@@ -970,6 +952,10 @@ namespace Pihrtsoft.Markdown
         {
             foreach (T item in items)
             {
+                //TODO: 
+                if (EqualityComparer<T>.Default.Equals(item, default(T)))
+                    continue;
+
                 for (int i = 0; i < columnCount; i++)
                 {
                     AppendTableRowStart(i, columnCount);
@@ -1297,19 +1283,35 @@ namespace Pihrtsoft.Markdown
             }
         }
 
+        //TODO: test
         public MarkdownBuilder Append(object value)
         {
             if (value == null)
                 return this;
 
+            if (value is string s)
+                return Append(s, escape: true);
+
             if (value is IMarkdown markdown)
-            {
                 return markdown.AppendTo(this);
-            }
-            else
+
+            if (value is object[] arr)
             {
-                return Append(value.ToString(), escape: true);
+                foreach (object item in arr)
+                    Append(item);
+
+                return this;
             }
+
+            if (value is IEnumerable enumerable)
+            {
+                foreach (object item in enumerable)
+                    Append(item);
+
+                return this;
+            }
+
+            return Append(value.ToString(), escape: true);
         }
 
         private MarkdownBuilder AppendRange(object value, params object[] additionalValues)
@@ -1326,6 +1328,37 @@ namespace Pihrtsoft.Markdown
 
             foreach (object value in values)
                 Append(value);
+
+            return this;
+        }
+
+        //TODO: test
+        public MarkdownBuilder AppendJoin(object separator, params object[] values)
+        {
+            return AppendJoin(separator, (IEnumerable<object>)values);
+        }
+
+        //TODO: test
+        public MarkdownBuilder AppendJoin(object separator, IEnumerable<object> values)
+        {
+            if (values == null)
+                throw new ArgumentNullException(nameof(values));
+
+            bool isFirst = true;
+
+            foreach (object value in values)
+            {
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
+                else
+                {
+                    Append(separator);
+                }
+
+                Append(value);
+            }
 
             return this;
         }
@@ -1467,31 +1500,23 @@ namespace Pihrtsoft.Markdown
         {
             if (HasState(State.PendingEmptyLine))
             {
-                AppendAllIndentation();
+                AppendIndentation();
                 AppendLine();
             }
-            else
+            else if (HasState(State.StartOfLine))
             {
-                AppendStartOfLine();
-            }
-        }
-
-        private void AppendStartOfLine()
-        {
-            if (HasState(State.StartOfLine))
-            {
-                AppendAllIndentation();
+                AppendIndentation();
                 RemoveState(State.StartOfLine);
             }
         }
 
-        private void AppendAllIndentation()
+        private void AppendIndentation()
         {
-            for (int i = 0; i < IndentLevel; i++)
-                StringBuilder.Append(IndentChars);
-
             for (int i = 1; i <= QuoteLevel; i++)
                 StringBuilder.Append(QuoteBlockStart);
+
+            if (HasState(State.ListItem | State.OrderedListItem | State.TaskListItem))
+                StringBuilder.Append("  ");
 
             if (HasState(State.IndentedCodeBlock))
                 StringBuilder.Append("    ");

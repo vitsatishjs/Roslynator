@@ -9,21 +9,22 @@ namespace Pihrtsoft.Markdown.Tests
     {
         private static readonly Random _random = new Random();
 
-        public const string Chars = @"\ ` * _ } { ] [ ) ( # + - . ! > < "" '";
+        public const string Chars = @"! "" # $ % & ' ) ( * + , - . / : ; < = > ? @ ] [ \ ^ _ ` } { | ~";
 
-        public const string CharsWithoutSpaces = @"\`*_}{][)(#+-.!><""'";
+        public const string CharsWithoutSpaces = @"!""#$%&')(*+,-./:;<=>?@][\^_`}{|~";
 
-        public const string CharsEscaped = @"\\ \` \* \_ \} \{ \] \[ \) \( \# \+ \- \. \! > \< "" '";
+        //TODO: escape ~
+        public const string CharsEscaped = @"\! "" \# $ % & ' \) \( \* \+ , \- \. / : ; \< = > ? @ \] \[ \\ ^ \_ \` \} \{ \| ~";
 
-        public const string CharsSquareBracketsBacktickEscaped = @"\ \` * _ } { \] \[ ) ( # + - . ! > < "" '";
+        public const string CharsSquareBracketsBacktickEscaped = @"! "" # $ % & ' ) ( * + , - . / : ; < = > ? @ \] \[ \ ^ _ \` } { | ~";
 
-        public const string CharsWithoutSpacesParenthesesEscaped = @"\`*_}{][\)\(#+-.!><""'";
+        public const string CharsWithoutSpacesParenthesesEscaped = @"!""#$%&'\)\(*+,-./:;<=>?@][\^_`}{|~";
 
-        public const string CharsDoubleQuoteEscaped = @"\ ` * _ } { ] [ ) ( # + - . ! > < \"" '";
+        public const string CharsDoubleQuoteEscaped = @"! \"" # $ % & ' ) ( * + , - . / : ; < = > ? @ ] [ \ ^ _ ` } { | ~";
 
-        public const string CharsEnclosedWithBacktick = @"` \ * _ } { ] [ ) ( # + - . ! > <  "" ' `";
+        public const string CharsEnclosedWithBacktick = @"` ! "" # $ % & ' ) ( * + , - . / : ; < = > ? @ ] [ \ ^ _ } { | ~ `";
 
-        public const string CharsEnclosedWithBacktickDoubled = @"`` \ * _ } { ] [ ) ( # + - . ! > <  "" ' ``";
+        public const string CharsEnclosedWithBacktickDoubled = @"`` ! "" # $ % & ' ) ( * + , - . / : ; < = > ? @ ] [ \ ^ _ } { | ~ ``";
 
         public const string NewLine = "\r\n";
 
@@ -210,8 +211,7 @@ namespace Pihrtsoft.Markdown.Tests
                 TableOptions(),
                 CodeFenceStyle(),
                 CodeBlockOptions(),
-                HtmlEntityFormat(),
-                StringValue());
+                HtmlEntityFormat());
         }
 
         public static EmphasisStyle BoldStyle()

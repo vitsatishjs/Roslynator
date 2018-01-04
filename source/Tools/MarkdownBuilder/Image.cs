@@ -6,39 +6,16 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
-    public struct Image : IMarkdown, IEquatable<Image>
+    public class Image : Link, IEquatable<Image>
     {
         internal Image(string text, string url, string title = null)
+            : base(text, url, title)
         {
-            Text = text;
-            Url = url;
-            Title = title;
         }
 
-        public string Text { get; }
-
-        public string Url { get; }
-
-        public string Title { get; }
-
-        public Image WithText(string text)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return new Image(text, Url, Title);
-        }
-
-        public Image WithUrl(string url)
-        {
-            return new Image(Text, url, Title);
-        }
-
-        public Image WithTitle(string title)
-        {
-            return new Image(Text, Url, title);
-        }
-
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
-        {
-            return mb.AppendImage(Text, Url, Title);
+            return builder.AppendImage(Text, Url, Title);
         }
 
         public override bool Equals(object obj)

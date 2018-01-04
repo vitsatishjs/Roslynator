@@ -5,8 +5,8 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Text,nq} Options = {Options} Escape = {Escape}")]
-    public struct MarkdownText : IMarkdown, IEquatable<MarkdownText>
+    [DebuggerDisplay("{Text,nq} Options = {Options}")]
+    public class MarkdownText : MElement, IEquatable<MarkdownText>, IMarkdown
     {
         internal MarkdownText(string text, EmphasisOptions options = EmphasisOptions.None)
         {
@@ -18,6 +18,8 @@ namespace Pihrtsoft.Markdown
 
         public EmphasisOptions Options { get; }
 
+        public override MarkdownKind Kind => MarkdownKind.Text;
+
         public MarkdownText WithText(string text)
         {
             return new MarkdownText(text, Options);
@@ -28,9 +30,9 @@ namespace Pihrtsoft.Markdown
             return new MarkdownText(Text, options);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return mb.Append(Text, Options);
+            return builder.Append(Text, Options);
         }
 
         public override bool Equals(object obj)

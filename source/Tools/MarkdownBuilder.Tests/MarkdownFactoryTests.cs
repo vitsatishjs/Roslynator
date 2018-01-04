@@ -93,26 +93,13 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Fact]
-        public void MarkdownFactory_Join_DefaultValues()
+        public void MarkdownFactory_Join()
         {
             const string separator = "separator";
             IEnumerable<string> values = Array.Empty<string>();
 
             Assert.Equal(separator, MarkdownFactory.Join(separator, values).Separator);
             Assert.Same(values, MarkdownFactory.Join(separator, values).Values);
-            Assert.True(MarkdownFactory.Join(separator, values).EscapeSeparator);
-        }
-
-        [Fact]
-        public void MarkdownFactory_Join()
-        {
-            const string separator = "separator";
-            IEnumerable<string> values = Array.Empty<string>();
-
-            Assert.Equal(separator, MarkdownFactory.Join(separator, values, false).Separator);
-            Assert.Same(values, MarkdownFactory.Join(separator, values, false).Values);
-            Assert.True(MarkdownFactory.Join(separator, values, true).EscapeSeparator);
-            Assert.False(MarkdownFactory.Join(separator, values, false).EscapeSeparator);
         }
 
         [Theory]
@@ -461,7 +448,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownFactory_Table_Params()
         {
-            Table table = MarkdownFactory.Table(Array.Empty<TableColumn>());
+            SimpleTable table = MarkdownFactory.SimpleTable(Array.Empty<TableColumn>());
             Assert.Empty(table.Columns);
             Assert.Empty(table.Rows);
         }
@@ -469,11 +456,11 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownFactory_Table_0()
         {
-            Table table = MarkdownFactory.Table();
+            SimpleTable table = MarkdownFactory.SimpleTable();
             Assert.Empty(table.Columns);
             Assert.Empty(table.Rows);
 
-            table = MarkdownFactory.Table(Array.Empty<TableColumn>());
+            table = MarkdownFactory.SimpleTable(Array.Empty<TableColumn>());
             Assert.Empty(table.Columns);
             Assert.Empty(table.Rows);
         }
@@ -482,7 +469,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownFactory_Table_1()
         {
             TableColumn column1 = MarkdownFactory.TableColumn("1");
-            Table table = MarkdownFactory.Table(column1);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1);
 
             Assert.Single(table.Columns);
             Assert.Empty(table.Rows);
@@ -494,7 +481,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             TableColumn column1 = MarkdownFactory.TableColumn("1");
             TableColumn column2 = MarkdownFactory.TableColumn("2");
-            Table table = MarkdownFactory.Table(column1, column2);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1, column2);
 
             Assert.Equal(2, table.Columns.Count);
             Assert.Empty(table.Rows);
@@ -508,7 +495,7 @@ namespace Pihrtsoft.Markdown.Tests
             TableColumn column1 = MarkdownFactory.TableColumn("1");
             TableColumn column2 = MarkdownFactory.TableColumn("2");
             TableColumn column3 = MarkdownFactory.TableColumn("3");
-            Table table = MarkdownFactory.Table(column1, column2, column3);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1, column2, column3);
 
             Assert.Equal(3, table.Columns.Count);
             Assert.Empty(table.Rows);
@@ -524,7 +511,7 @@ namespace Pihrtsoft.Markdown.Tests
             TableColumn column2 = MarkdownFactory.TableColumn("2");
             TableColumn column3 = MarkdownFactory.TableColumn("3");
             TableColumn column4 = MarkdownFactory.TableColumn("4");
-            Table table = MarkdownFactory.Table(column1, column2, column3, column4);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1, column2, column3, column4);
 
             Assert.Equal(4, table.Columns.Count);
             Assert.Empty(table.Rows);
@@ -542,7 +529,7 @@ namespace Pihrtsoft.Markdown.Tests
             TableColumn column3 = MarkdownFactory.TableColumn("3");
             TableColumn column4 = MarkdownFactory.TableColumn("4");
             TableColumn column5 = MarkdownFactory.TableColumn("5");
-            Table table = MarkdownFactory.Table(column1, column2, column3, column4, column5);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1, column2, column3, column4, column5);
 
             Assert.Equal(5, table.Columns.Count);
             Assert.Empty(table.Rows);
@@ -562,7 +549,7 @@ namespace Pihrtsoft.Markdown.Tests
             TableColumn column4 = MarkdownFactory.TableColumn("4");
             TableColumn column5 = MarkdownFactory.TableColumn("5");
             TableColumn column6 = MarkdownFactory.TableColumn("6");
-            Table table = MarkdownFactory.Table(column1, column2, column3, column4, column5, column6);
+            SimpleTable table = MarkdownFactory.SimpleTable(column1, column2, column3, column4, column5, column6);
 
             Assert.Equal(6, table.Columns.Count);
             Assert.Empty(table.Rows);
@@ -703,7 +690,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             const string row1 = "1";
 
-            List<object> row = MarkdownFactory.TableRow(row1);
+            TableRow row = MarkdownFactory.TableRow(row1);
             Assert.Single(row);
             Assert.Equal(row1, row[0]);
         }
@@ -714,7 +701,7 @@ namespace Pihrtsoft.Markdown.Tests
             const string row1 = "1";
             const string row2 = "2";
 
-            List<object> row = MarkdownFactory.TableRow(row1, row2);
+            TableRow row = MarkdownFactory.TableRow(row1, row2);
             Assert.Equal(2, row.Count);
             Assert.Equal(row1, row[0]);
             Assert.Equal(row2, row[1]);
@@ -727,7 +714,7 @@ namespace Pihrtsoft.Markdown.Tests
             const string row2 = "2";
             const string row3 = "3";
 
-            List<object> row = MarkdownFactory.TableRow(row1, row2, row3);
+            TableRow row = MarkdownFactory.TableRow(row1, row2, row3);
             Assert.Equal(3, row.Count);
             Assert.Equal(row1, row[0]);
             Assert.Equal(row2, row[1]);
@@ -742,7 +729,7 @@ namespace Pihrtsoft.Markdown.Tests
             const string row3 = "3";
             const string row4 = "4";
 
-            List<object> row = MarkdownFactory.TableRow(row1, row2, row3, row4);
+            TableRow row = MarkdownFactory.TableRow(row1, row2, row3, row4);
             Assert.Equal(4, row.Count);
             Assert.Equal(row1, row[0]);
             Assert.Equal(row2, row[1]);
@@ -759,7 +746,7 @@ namespace Pihrtsoft.Markdown.Tests
             const string row4 = "4";
             const string row5 = "5";
 
-            List<object> row = MarkdownFactory.TableRow(row1, row2, row3, row4, row5);
+            TableRow row = MarkdownFactory.TableRow(row1, row2, row3, row4, row5);
             Assert.Equal(5, row.Count);
             Assert.Equal(row1, row[0]);
             Assert.Equal(row2, row[1]);
@@ -773,7 +760,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             int number = IntValue(1, 0xFFFF);
 
-            var entity = MarkdownFactory.HtmlEntity(number);
+            HtmlEntity entity = MarkdownFactory.HtmlEntity(number);
 
             Assert.Equal(number, entity.Number);
         }

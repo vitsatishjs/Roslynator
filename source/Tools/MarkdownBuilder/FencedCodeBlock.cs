@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Info = {InfoDebuggerDisplay}")]
-    public struct FencedCodeBlock : IMarkdown, IEquatable<FencedCodeBlock>
+    public class FencedCodeBlock : MElement, IEquatable<FencedCodeBlock>, IMarkdown
     {
         internal FencedCodeBlock(string text, string info = null)
         {
@@ -17,6 +17,8 @@ namespace Pihrtsoft.Markdown
         public string Text { get; }
 
         public string Info { get; }
+
+        public override MarkdownKind Kind => MarkdownKind.FencedCodeBlock;
 
         private string InfoDebuggerDisplay => Info ?? "None";
 
@@ -30,9 +32,9 @@ namespace Pihrtsoft.Markdown
             return new FencedCodeBlock(Text, info);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return mb.AppendFencedCodeBlock(Text, Info);
+            return builder.AppendFencedCodeBlock(Text, Info);
         }
 
         public override bool Equals(object obj)

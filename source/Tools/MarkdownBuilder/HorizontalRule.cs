@@ -4,7 +4,7 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
-    public struct HorizontalRule : IMarkdown, IEquatable<HorizontalRule>
+    public class HorizontalRule : MElement, IEquatable<HorizontalRule>, IMarkdown
     {
         internal HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
@@ -24,6 +24,8 @@ namespace Pihrtsoft.Markdown
 
         public string Space { get; }
 
+        public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
+
         public HorizontalRule WithStyle(HorizontalRuleStyle style)
         {
             return new HorizontalRule(style, Count, Space);
@@ -39,7 +41,7 @@ namespace Pihrtsoft.Markdown
             return new HorizontalRule(Style, Count, space);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder mb)
         {
             return mb.AppendHorizontalRule(Style, Count, Space);
         }

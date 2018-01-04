@@ -146,8 +146,7 @@ namespace Pihrtsoft.Markdown.Tests
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
-                x.HtmlEntityFormat.Modify(),
-                x.IndentChars.ModifySpaces(1, 3));
+                x.HtmlEntityFormat.Modify());
         }
 
         public static ListItemStyle Modify(this ListItemStyle style)

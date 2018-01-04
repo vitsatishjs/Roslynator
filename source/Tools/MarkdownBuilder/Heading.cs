@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Text,nq} Level = {Level}")]
-    public struct Heading : IMarkdown, IEquatable<Heading>
+    public class Heading : MElement, IEquatable<Heading>, IMarkdown
     {
         internal Heading(string text, int level = 1)
         {
@@ -24,6 +24,8 @@ namespace Pihrtsoft.Markdown
 
         public int Level { get; }
 
+        public override MarkdownKind Kind => MarkdownKind.Heading;
+
         public Heading WithText(string text)
         {
             return new Heading(text, Level);
@@ -34,9 +36,9 @@ namespace Pihrtsoft.Markdown
             return new Heading(Text, level);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return mb.AppendHeading(Level, Text);
+            return builder.AppendHeading(Level, Text);
         }
 
         public override bool Equals(object obj)

@@ -17,6 +17,8 @@ namespace Pihrtsoft.Markdown
 
         public static string QuoteBlockStart => "> ";
 
+        public static MarkdownText NewLine { get; } = new MarkdownText(Environment.NewLine);
+
         public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
         {
             return new MarkdownText(value, options);
@@ -69,9 +71,9 @@ namespace Pihrtsoft.Markdown
             return Text(value, EmphasisOptions.Code);
         }
 
-        public static MarkdownJoin Join(string separator, IEnumerable<object> values, bool escape = true)
+        public static MarkdownJoin Join(object separator, IEnumerable<object> values)
         {
-            return new MarkdownJoin(separator, values, escape);
+            return new MarkdownJoin(separator, values);
         }
 
         public static Heading Heading(string value, int level)
@@ -120,9 +122,14 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public static ListItem ListItem(string value)
+        public static ListItem ListItem(object content)
         {
-            return new ListItem(value);
+            return new ListItem(content);
+        }
+
+        public static ListItem ListItem(params object[] content)
+        {
+            return new ListItem(content);
         }
 
         public static string ListItemStart(ListItemStyle style)
@@ -139,9 +146,14 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static OrderedListItem OrderedListItem(int number, string value)
+        public static OrderedListItem OrderedListItem(int number, object content)
         {
-            return new OrderedListItem(number, value);
+            return new OrderedListItem(number, content);
+        }
+
+        public static OrderedListItem OrderedListItem(int number, params object[] content)
+        {
+            return new OrderedListItem(number, content);
         }
 
         public static string OrderedListItemStart(int number)
@@ -149,14 +161,24 @@ namespace Pihrtsoft.Markdown
             return number.ToString() + ". ";
         }
 
-        public static TaskListItem TaskListItem(string value, bool isCompleted = false)
+        public static TaskListItem TaskListItem(bool isCompleted, object content)
         {
-            return new TaskListItem(value, isCompleted);
+            return new TaskListItem(isCompleted, content);
         }
 
-        public static TaskListItem CompletedTaskListItem(string value)
+        public static TaskListItem TaskListItem(bool isCompleted, params object[] content)
         {
-            return TaskListItem(value, isCompleted: true);
+            return new TaskListItem(isCompleted, content);
+        }
+
+        public static TaskListItem CompletedTaskListItem(object content)
+        {
+            return TaskListItem(isCompleted: true, content: content);
+        }
+
+        public static TaskListItem CompletedTaskListItem(params object[] content)
+        {
+            return TaskListItem(isCompleted: true, content: content);
         }
 
         public static string TaskListItemStart(bool isCompleted = false)
@@ -204,7 +226,7 @@ namespace Pihrtsoft.Markdown
             return new QuoteBlock(value);
         }
 
-        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
+        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
         {
             return new HorizontalRule(style, count, space);
         }
@@ -229,59 +251,161 @@ namespace Pihrtsoft.Markdown
             return new HtmlEntity(number);
         }
 
-        public static Table Table()
+        public static Table<T> Table<T>()
         {
-            return new Table();
+            return new Table<T>();
         }
 
-        public static Table Table(params TableColumn[] columns)
+        public static Table<T> Table<T>(
+            IEnumerable<TableColumn> columns,
+            IEnumerable<Func<T, object>> selectors,
+            params T[] items)
         {
-            Table table = Table();
+            return Table(columns, selectors, (IEnumerable<T>)items);
+        }
+
+        public static Table<T> Table<T>(
+            IEnumerable<TableColumn> columns,
+            IEnumerable<Func<T, object>> selectors,
+            IEnumerable<T> items)
+        {
+            Table<T> table = Table<T>();
+
+            table.AddColumns(columns);
+
+            foreach (Func<T, object> selector in selectors)
+                table.Selectors.Add(selector);
+
+            foreach (T item in items)
+                table.Rows.Add(item);
+
+            return table;
+        }
+
+        public static Table<T> Table<T>(params TableColumn[] columns)
+        {
+            Table<T> table = Table<T>();
 
             table.AddColumns(columns);
 
             return table;
         }
 
-        public static Table Table(TableColumn column)
+        public static Table<T> Table<T>(TableColumn column)
         {
-            Table table = Table();
+            Table<T> table = Table<T>();
 
             table.Columns.Add(column);
 
             return table;
         }
 
-        public static Table Table(TableColumn column1, TableColumn column2)
+        public static Table<T> Table<T>(TableColumn column1, TableColumn column2)
         {
-            Table table = Table();
+            Table<T> table = Table<T>();
 
             table.AddColumns(column1, column2);
 
             return table;
         }
 
-        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3)
+        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3)
         {
-            Table table = Table();
+            Table<T> table = Table<T>();
 
             table.AddColumns(column1, column2, column3);
 
             return table;
         }
 
-        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
+        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
         {
-            Table table = Table();
+            Table<T> table = Table<T>();
 
             table.AddColumns(column1, column2, column3, column4);
 
             return table;
         }
 
-        public static Table Table(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
+        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
         {
-            var table = new Table();
+            var table = new Table<T>();
+
+            table.AddColumns(column1, column2, column3, column4, column5);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable()
+        {
+            return new SimpleTable();
+        }
+
+        public static SimpleTable SimpleTable(IEnumerable<TableColumn> columns, params TableRow[] rows)
+        {
+            return SimpleTable(columns, (IEnumerable<TableRow>)rows);
+        }
+
+        public static SimpleTable SimpleTable(IEnumerable<TableColumn> columns, IEnumerable<TableRow> rows)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.AddColumns(columns);
+
+            foreach (TableRow row in rows)
+                table.Rows.Add(row);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(params TableColumn[] columns)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.AddColumns(columns);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(TableColumn column)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.Columns.Add(column);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.AddColumns(column1, column2);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.AddColumns(column1, column2, column3);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
+        {
+            SimpleTable table = SimpleTable();
+
+            table.AddColumns(column1, column2, column3, column4);
+
+            return table;
+        }
+
+        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
+        {
+            var table = new SimpleTable();
 
             table.AddColumns(column1, column2, column3, column4, column5);
 
@@ -336,29 +460,40 @@ namespace Pihrtsoft.Markdown
             return new TableColumn(name, alignment);
         }
 
-        public static List<object> TableRow(object value)
+        //TODO: test
+        public static TableRow TableRow(params object[] values)
         {
-            return new List<object>() { value };
+            var row = new TableRow();
+
+            foreach (object value in values)
+                row.Add(value);
+
+            return row;
         }
 
-        public static List<object> TableRow(object value1, object value2)
+        public static TableRow TableRow(object value)
         {
-            return new List<object>() { value1, value2 };
+            return new TableRow() { value };
         }
 
-        public static List<object> TableRow(object value1, object value2, object value3)
+        public static TableRow TableRow(object value1, object value2)
         {
-            return new List<object>() { value1, value2, value3 };
+            return new TableRow() { value1, value2 };
         }
 
-        public static List<object> TableRow(object value1, object value2, object value3, object value4)
+        public static TableRow TableRow(object value1, object value2, object value3)
         {
-            return new List<object>() { value1, value2, value3, value4 };
+            return new TableRow() { value1, value2, value3 };
         }
 
-        public static List<object> TableRow(object value1, object value2, object value3, object value4, object value5)
+        public static TableRow TableRow(object value1, object value2, object value3, object value4)
         {
-            return new List<object>() { value1, value2, value3, value4, value5 };
+            return new TableRow() { value1, value2, value3, value4 };
+        }
+
+        public static TableRow TableRow(object value1, object value2, object value3, object value4, object value5)
+        {
+            return new TableRow() { value1, value2, value3, value4, value5 };
         }
     }
 }

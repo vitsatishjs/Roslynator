@@ -181,8 +181,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"# {ValueEscaped}{NewLine}", mb.AppendHeading1(Value).ToStringAndClear());
-            Assert.Equal("# " + NewLine, mb.AppendHeading1().ToStringAndClear());
+            Assert.Equal($"# {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading1(Value).ToStringAndClear());
+            Assert.Equal("# " + TestHelpers.NewLine, mb.AppendHeading1().ToStringAndClear());
         }
 
         [Theory]
@@ -193,8 +193,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"## {ValueEscaped}{NewLine}", mb.AppendHeading2(Value).ToStringAndClear());
-            Assert.Equal("## " + NewLine, mb.AppendHeading2().ToStringAndClear());
+            Assert.Equal($"## {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading2(Value).ToStringAndClear());
+            Assert.Equal("## " + TestHelpers.NewLine, mb.AppendHeading2().ToStringAndClear());
         }
 
         [Theory]
@@ -207,8 +207,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"### {ValueEscaped}{NewLine}", mb.AppendHeading3(Value).ToStringAndClear());
-            Assert.Equal("### " + NewLine, mb.AppendHeading3().ToStringAndClear());
+            Assert.Equal($"### {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading3(Value).ToStringAndClear());
+            Assert.Equal("### " + TestHelpers.NewLine, mb.AppendHeading3().ToStringAndClear());
         }
 
         [Theory]
@@ -221,8 +221,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"#### {ValueEscaped}{NewLine}", mb.AppendHeading4(Value).ToStringAndClear());
-            Assert.Equal("#### " + NewLine, mb.AppendHeading4().ToStringAndClear());
+            Assert.Equal($"#### {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading4(Value).ToStringAndClear());
+            Assert.Equal("#### " + TestHelpers.NewLine, mb.AppendHeading4().ToStringAndClear());
         }
 
         [Theory]
@@ -235,8 +235,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"##### {ValueEscaped}{NewLine}", mb.AppendHeading5(Value).ToStringAndClear());
-            Assert.Equal("##### " + NewLine, mb.AppendHeading5().ToStringAndClear());
+            Assert.Equal($"##### {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading5(Value).ToStringAndClear());
+            Assert.Equal("##### " + TestHelpers.NewLine, mb.AppendHeading5().ToStringAndClear());
         }
 
         [Theory]
@@ -249,8 +249,8 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal($"###### {ValueEscaped}{NewLine}", mb.AppendHeading6(Value).ToStringAndClear());
-            Assert.Equal("###### " + NewLine, mb.AppendHeading6().ToStringAndClear());
+            Assert.Equal($"###### {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading6(Value).ToStringAndClear());
+            Assert.Equal("###### " + TestHelpers.NewLine, mb.AppendHeading6().ToStringAndClear());
         }
 
         [Theory]
@@ -264,7 +264,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder(new MarkdownFormat(headingOptions: HeadingOptions.None));
 
-            Assert.Equal($"{new string('#', level)} {ValueEscaped}{NewLine}", mb.AppendHeading(level, Value).ToStringAndClear());
+            Assert.Equal($"{new string('#', level)} {ValueEscaped}{TestHelpers.NewLine}", mb.AppendHeading(level, Value).ToStringAndClear());
         }
 
         [Theory]
@@ -290,7 +290,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal(ValueEscaped + NewLine + new string('=', ValueEscaped.Length) + NewLine, mb.AppendHeading1(Value).ToStringAndClear());
+            Assert.Equal(ValueEscaped + TestHelpers.NewLine + new string('=', ValueEscaped.Length) + TestHelpers.NewLine, mb.AppendHeading1(Value).ToStringAndClear());
         }
 
         [Theory]
@@ -300,19 +300,19 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
 
-            Assert.Equal(ValueEscaped + NewLine + new string('-', ValueEscaped.Length) + NewLine, mb.AppendHeading2(Value).ToStringAndClear());
+            Assert.Equal(ValueEscaped + TestHelpers.NewLine + new string('-', ValueEscaped.Length) + TestHelpers.NewLine, mb.AppendHeading2(Value).ToStringAndClear());
         }
 
         [Fact]
         public void MarkdownBuilder_AppendHeading_EmptyLineBefore()
         {
             string text = HeadingText();
-            const string s = "# " + CharsEscaped + NewLine;
+            const string s = "# " + CharsEscaped + TestHelpers.NewLine;
             Heading heading = Heading(Chars, 1);
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(HeadingOptions.EmptyLineBefore);
 
             Assert.Equal(
-                text + NewLine2 + s + NewLine + s + text,
+                text + NewLine2 + s + TestHelpers.NewLine + s + text,
                 mb.Append(text).Append(heading).Append(heading).Append(text).ToStringAndClear());
         }
 
@@ -320,12 +320,12 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownBuilder_AppendHeading_EmptyLineAfter()
         {
             string text = HeadingText();
-            const string s = "# " + CharsEscaped + NewLine;
+            const string s = "# " + CharsEscaped + TestHelpers.NewLine;
             Heading heading = Heading(Chars, 1);
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(HeadingOptions.EmptyLineAfter);
 
             Assert.Equal(
-                text + NewLine + s + NewLine + s + NewLine + text,
+                text + TestHelpers.NewLine + s + TestHelpers.NewLine + s + TestHelpers.NewLine + text,
                 mb.Append(text).Append(heading).Append(heading).Append(text).ToStringAndClear());
         }
 
@@ -333,12 +333,12 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownBuilder_AppendHeading_EmptyLineBeforeAfter()
         {
             string text = HeadingText();
-            const string s = "# " + CharsEscaped + NewLine;
+            const string s = "# " + CharsEscaped + TestHelpers.NewLine;
             Heading heading = Heading(Chars, 1);
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(HeadingOptions.EmptyLineBeforeAndAfter);
 
             Assert.Equal(
-                text + NewLine2 + s + NewLine + s + NewLine + text,
+                text + NewLine2 + s + TestHelpers.NewLine + s + TestHelpers.NewLine + text,
                 mb.Append(text).Append(heading).Append(heading).Append(text).ToStringAndClear());
         }
 
@@ -352,14 +352,14 @@ namespace Pihrtsoft.Markdown.Tests
             {
                 MarkdownBuilder mb = CreateBuilder();
 
-                Assert.Equal(new string(syntax, i) + NewLine, mb.Append(HorizontalRule(style: style, count: i, space: "")).ToStringAndClear());
+                Assert.Equal(new string(syntax, i) + TestHelpers.NewLine, mb.Append(MarkdownFactory.HorizontalRule(style: style, count: i, space: "")).ToStringAndClear());
             }
 
             for (int i = 3; i <= 5; i++)
             {
                 MarkdownBuilder mb = CreateBuilder();
 
-                Assert.Equal(string.Join("  ", Enumerable.Repeat(syntax, i)) + NewLine, mb.Append(HorizontalRule(style: style, count: i, space: "  ")).ToStringAndClear());
+                Assert.Equal(string.Join("  ", Enumerable.Repeat(syntax, i)) + TestHelpers.NewLine, mb.Append(MarkdownFactory.HorizontalRule(style: style, count: i, space: "  ")).ToStringAndClear());
             }
         }
 
@@ -522,11 +522,10 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
-            string expected = syntax + $" {text + CharsEscaped}" + NewLine;
+            string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
             ListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.AppendListItem(item.Text).ToStringAndClear());
-            Assert.Equal(expected, mb.AppendListItem((object)item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendListItem(item.Text, null).ToStringAndClear());
         }
 
@@ -539,7 +538,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
-            string expected = syntax + $" {text + CharsEscaped}" + NewLine;
+            string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
             ListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -556,11 +555,10 @@ namespace Pihrtsoft.Markdown.Tests
 
             const string text = "OrderedListItemText";
 
-            string expected = number + $". {text + CharsEscaped}" + NewLine;
+            string expected = number + $". {text + CharsEscaped}" + TestHelpers.NewLine;
             OrderedListItem item = OrderedListItem(number, text + Chars);
 
             Assert.Equal(expected, mb.AppendOrderedListItem(number, item.Text).ToStringAndClear());
-            Assert.Equal(expected, mb.AppendOrderedListItem(number, (object)item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendOrderedListItem(number, item.Text, null).ToStringAndClear());
         }
 
@@ -574,7 +572,7 @@ namespace Pihrtsoft.Markdown.Tests
 
             const string text = "OrderedListItemText";
 
-            string expected = number + $". {text + CharsEscaped}" + NewLine;
+            string expected = number + $". {text + CharsEscaped}" + TestHelpers.NewLine;
             OrderedListItem item = OrderedListItem(number, text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -601,11 +599,10 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [ ] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = TaskListItem(text + Chars);
 
             Assert.Equal(expected, mb.AppendTaskListItem(item.Text).ToStringAndClear());
-            Assert.Equal(expected, mb.AppendTaskListItem((object)item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendTaskListItem(item.Text, null).ToStringAndClear());
         }
 
@@ -618,7 +615,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [ ] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = TaskListItem(text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -634,7 +631,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [ ] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = TaskListItem(text + Chars, isCompleted: false);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -650,7 +647,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [x] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = TaskListItem(text + Chars, isCompleted: true);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -666,11 +663,10 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [x] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = CompletedTaskListItem(text + Chars);
 
             Assert.Equal(expected, mb.AppendCompletedTaskListItem(item.Text).ToStringAndClear());
-            Assert.Equal(expected, mb.AppendCompletedTaskListItem((object)item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendCompletedTaskListItem(item.Text, null).ToStringAndClear());
         }
 
@@ -683,7 +679,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
             const string start = "- [x] ";
-            string expected = start + text2 + CharsEscaped + NewLine;
+            string expected = start + text2 + CharsEscaped + TestHelpers.NewLine;
             TaskListItem item = CompletedTaskListItem(text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
@@ -701,7 +697,7 @@ namespace Pihrtsoft.Markdown.Tests
             FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
 
             Assert.Equal(
-                syntax + DefaultText + NewLine + Chars + NewLine + syntax + NewLine,
+                syntax + DefaultText + TestHelpers.NewLine + Chars + TestHelpers.NewLine + syntax + TestHelpers.NewLine,
                 mb.Append(block).ToStringAndClear());
         }
 
@@ -713,7 +709,7 @@ namespace Pihrtsoft.Markdown.Tests
             FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
 
             Assert.Equal(
-                DefaultText + NewLine + CodeBlockMarkdown + CodeBlockMarkdown + DefaultText,
+                DefaultText + TestHelpers.NewLine + CodeBlockMarkdown + CodeBlockMarkdown + DefaultText,
                 mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
         }
 
@@ -725,7 +721,7 @@ namespace Pihrtsoft.Markdown.Tests
             FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
 
             Assert.Equal(
-                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + DefaultText,
+                DefaultText + NewLine2 + CodeBlockMarkdown + TestHelpers.NewLine + CodeBlockMarkdown + DefaultText,
                 mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
         }
 
@@ -737,7 +733,7 @@ namespace Pihrtsoft.Markdown.Tests
             FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
 
             Assert.Equal(
-                DefaultText + NewLine + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
+                DefaultText + TestHelpers.NewLine + CodeBlockMarkdown + TestHelpers.NewLine + CodeBlockMarkdown + TestHelpers.NewLine + DefaultText,
                 mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
         }
 
@@ -749,13 +745,13 @@ namespace Pihrtsoft.Markdown.Tests
             FencedCodeBlock block = FencedCodeBlock(Chars, DefaultText);
 
             Assert.Equal(
-                DefaultText + NewLine2 + CodeBlockMarkdown + NewLine + CodeBlockMarkdown + NewLine + DefaultText,
+                DefaultText + NewLine2 + CodeBlockMarkdown + TestHelpers.NewLine + CodeBlockMarkdown + TestHelpers.NewLine + DefaultText,
                 mb.Append(DefaultText).Append(block).Append(block).Append(DefaultText).ToStringAndClear());
         }
 
         [Theory]
-        [InlineData(Chars, "> " + CharsEscaped + NewLine)]
-        [InlineData(Chars + NewLine + Chars, "> " + CharsEscaped + NewLine + "> " + CharsEscaped + NewLine)]
+        [InlineData(Chars, "> " + CharsEscaped + TestHelpers.NewLine)]
+        [InlineData(Chars + TestHelpers.NewLine + Chars, "> " + CharsEscaped + TestHelpers.NewLine + "> " + CharsEscaped + TestHelpers.NewLine)]
         public void MarkdownBuilder_AppendQuoteBlock(string text1, string text2)
         {
             MarkdownBuilder mb = CreateBuilder();
@@ -764,8 +760,8 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData(Chars, "> " + CharsEscaped + NewLine)]
-        [InlineData(Chars + NewLine + Chars, "> " + CharsEscaped + NewLine + "> " + CharsEscaped + NewLine)]
+        [InlineData(Chars, "> " + CharsEscaped + TestHelpers.NewLine)]
+        [InlineData(Chars + TestHelpers.NewLine + Chars, "> " + CharsEscaped + TestHelpers.NewLine + "> " + CharsEscaped + TestHelpers.NewLine)]
         public void MarkdownBuilder_Append_QuoteBlock(string text1, string text2)
         {
             MarkdownBuilder mb = CreateBuilder();

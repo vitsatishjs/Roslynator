@@ -98,18 +98,6 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("\t")]
-        public void MarkdownFormat_Constructor_IndentChars(string indentChars)
-        {
-            var format = new MarkdownFormat(indentChars: indentChars);
-
-            Assert.Equal(indentChars, format.IndentChars);
-        }
-
-        [Theory]
         [InlineData(EmphasisStyle.Asterisk, EmphasisStyle.Underscore)]
         [InlineData(EmphasisStyle.Underscore, EmphasisStyle.Asterisk)]
         public void MarkdownFormat_AlternativeBoldStyle(EmphasisStyle style, EmphasisStyle alternativeStyle)
