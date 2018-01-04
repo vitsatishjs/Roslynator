@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,9 +18,13 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var document = new MDocument(
                 Heading3("List of Analyzers"),
-                analyzers.OrderBy(f => f.Id, comparer).Select(analyzer => ListItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"))),
+                analyzers
+                    .OrderBy(f => f.Id, comparer)
+                    .Select(analyzer => ListItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"))),
                 Heading3("List of Refactorings"),
-                refactorings.OrderBy(f => f.Title, comparer).Select(refactoring => ListItem(Link(refactoring.Title.TrimEnd('.'), $"docs/refactorings/{refactoring.Id}.md"))));
+                refactorings
+                    .OrderBy(f => f.Title, comparer)
+                    .Select(refactoring => ListItem(Link(refactoring.Title.TrimEnd('.'), $"docs/refactorings/{refactoring.Id}.md"))));
 
             return File.ReadAllText(@"..\text\ReadMe.txt", Encoding.UTF8)
                 + Environment.NewLine

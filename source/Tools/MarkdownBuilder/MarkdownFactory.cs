@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: ContentIf
     public static class MarkdownFactory
     {
         public static string StrikethroughDelimiter => "~~";

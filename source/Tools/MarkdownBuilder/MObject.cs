@@ -2,6 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: Name, Level
     public abstract class MObject
     {
         public abstract MarkdownKind Kind { get; }

@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: LiteralText
     [DebuggerDisplay("{Text,nq}")]
     public struct RawText : IMarkdown, IEquatable<RawText>
     {
