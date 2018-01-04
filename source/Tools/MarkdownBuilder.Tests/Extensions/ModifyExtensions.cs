@@ -137,16 +137,17 @@ namespace Pihrtsoft.Markdown.Tests
         public static MarkdownFormat Modify(this MarkdownFormat x)
         {
             return new MarkdownFormat(
-                boldStyle: x.BoldStyle.Modify(),
-                italicStyle: x.ItalicStyle.Modify(),
-                listItemStyle: x.ListItemStyle.Modify(),
-                horizontalRule: x.HorizontalRule.Modify(),
-                headingStyle: x.HeadingStyle.Modify(),
-                headingOptions: x.HeadingOptions.Modify(),
-                tableOptions: x.TableOptions.Modify(),
-                codeFenceStyle: x.CodeFenceStyle.Modify(),
-                codeBlockOptions: x.CodeBlockOptions.Modify(),
-                indentChars: x.IndentChars.ModifySpaces(1, 3));
+                x.BoldStyle.Modify(),
+                x.ItalicStyle.Modify(),
+                x.ListItemStyle.Modify(),
+                x.HorizontalRule.Modify(),
+                x.HeadingStyle.Modify(),
+                x.HeadingOptions.Modify(),
+                x.TableOptions.Modify(),
+                x.CodeFenceStyle.Modify(),
+                x.CodeBlockOptions.Modify(),
+                x.HtmlEntityFormat.Modify(),
+                x.IndentChars.ModifySpaces(1, 3));
         }
 
         public static ListItemStyle Modify(this ListItemStyle style)
@@ -272,6 +273,24 @@ namespace Pihrtsoft.Markdown.Tests
                     return EmphasisOptions.Bold;
                 default:
                     return EmphasisOptions.None;
+            }
+        }
+
+        public static HtmlEntity Modify(this HtmlEntity htmlEntity)
+        {
+            return new HtmlEntity(htmlEntity.Number.Modify(1, 0xFFFF));
+        }
+
+        public static HtmlEntityFormat Modify(this HtmlEntityFormat format)
+        {
+            switch (format)
+            {
+                case HtmlEntityFormat.Hexadecimal:
+                    return HtmlEntityFormat.Decimal;
+                case HtmlEntityFormat.Decimal:
+                    return HtmlEntityFormat.Hexadecimal;
+                default:
+                    throw new ArgumentException(format.ToString(), nameof(format));
             }
         }
     }

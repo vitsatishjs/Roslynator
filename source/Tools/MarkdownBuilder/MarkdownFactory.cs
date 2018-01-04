@@ -224,6 +224,11 @@ namespace Pihrtsoft.Markdown
             }
         }
 
+        public static HtmlEntity HtmlEntity(int number)
+        {
+            return new HtmlEntity(number);
+        }
+
         public static Table Table()
         {
             return new Table();

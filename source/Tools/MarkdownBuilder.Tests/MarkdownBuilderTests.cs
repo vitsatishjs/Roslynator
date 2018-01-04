@@ -6,6 +6,7 @@ using Xunit;
 using static Pihrtsoft.Markdown.MarkdownFactory;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 using static Pihrtsoft.Markdown.Tests.MarkdownSamples;
+using System.Globalization;
 
 #pragma warning disable CS1718
 
@@ -780,6 +781,36 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilder();
 
             Assert.Throws<ArgumentNullException>(() => mb.AppendQuoteBlock(null));
+        }
+
+        [Theory]
+        [InlineData("&#x", "x", null)]
+        [InlineData("&#x", "x", HtmlEntityFormat.Hexadecimal)]
+        [InlineData("&#", null, HtmlEntityFormat.Decimal)]
+        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, HtmlEntityFormat? htmlEntityFormat)
+        {
+            MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
+
+            int number = HtmlEntityNumber();
+
+            HtmlEntity entity = HtmlEntity(number);
+
+            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.AppendHtmlEntity(number).ToStringAndClear());
+        }
+
+        [Theory]
+        [InlineData("&#x", "x", null)]
+        [InlineData("&#x", "x", HtmlEntityFormat.Hexadecimal)]
+        [InlineData("&#", null, HtmlEntityFormat.Decimal)]
+        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, HtmlEntityFormat? htmlEntityFormat)
+        {
+            MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
+
+            int number = HtmlEntityNumber();
+
+            HtmlEntity htmlEntity = HtmlEntity(number);
+
+            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.Append(htmlEntity).ToStringAndClear());
         }
     }
 }

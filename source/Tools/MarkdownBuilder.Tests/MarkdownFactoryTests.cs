@@ -767,5 +767,15 @@ namespace Pihrtsoft.Markdown.Tests
             Assert.Equal(row4, row[3]);
             Assert.Equal(row5, row[4]);
         }
+
+        [Fact]
+        public void MarkdownFactory_HtmlEntity()
+        {
+            int number = IntValue(1, 0xFFFF);
+
+            var entity = MarkdownFactory.HtmlEntity(number);
+
+            Assert.Equal(number, entity.Number);
+        }
     }
 }

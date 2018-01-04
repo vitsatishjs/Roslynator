@@ -122,7 +122,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 .AddRow("Title", refactoring.Title)
                 .AddRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)))
                 .AddRowIf(!string.IsNullOrEmpty(refactoring.Span), "Span", refactoring.Span)
-                .AddRow("Enabled by Default", RawText(GetBooleanAsText(refactoring.IsEnabledByDefault)))
+                .AddRow("Enabled by Default", CheckboxOrHyphen(refactoring.IsEnabledByDefault))
                 .AppendTo(mb);
 
             mb.AppendHeading3("Usage");
@@ -144,9 +144,9 @@ namespace Roslynator.CodeGeneration.Markdown
                 .AddRow("Id", analyzer.Id)
                 .AddRow("Category", analyzer.Category)
                 .AddRow("Default Severity", analyzer.DefaultSeverity)
-                .AddRow("Enabled by Default", RawText(GetBooleanAsText(analyzer.IsEnabledByDefault)))
-                .AddRow("Supports Fade-Out", RawText(GetBooleanAsText(analyzer.SupportsFadeOut)))
-                .AddRow("Supports Fade-Out Analyzer", RawText(GetBooleanAsText(analyzer.SupportsFadeOutAnalyzer)));
+                .AddRow("Enabled by Default", CheckboxOrHyphen(analyzer.IsEnabledByDefault))
+                .AddRow("Supports Fade-Out", CheckboxOrHyphen(analyzer.SupportsFadeOut))
+                .AddRow("Supports Fade-Out Analyzer", CheckboxOrHyphen(analyzer.SupportsFadeOutAnalyzer));
 
             mb.Append(table);
 
@@ -190,7 +190,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     f => f.Id,
                     f => Link(f.Title.TrimEnd('.'), $"../../docs/analyzers/{f.Id}.md"),
                     f => f.Category,
-                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                    f => CheckboxOrEmpty(f.IsEnabledByDefault)
                 });
 
             return mb.ToString();
@@ -209,7 +209,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 {
                     f => f.Id,
                     f => Link(f.Title.TrimEnd('.'), $"../../docs/refactorings/{f.Id}.md"),
-                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                    f => CheckboxOrEmpty(f.IsEnabledByDefault)
                 });
 
             return mb.ToString();
@@ -229,7 +229,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     f => f.Id,
                     f => f.Title.TrimEnd('.'),
                     f => Join(", ", f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => (object)LinkOrText(x, y.HelpUrl))),
-                    f => RawText((f.IsEnabledByDefault) ? "&#x2713;" : "")
+                    f => CheckboxOrEmpty(f.IsEnabledByDefault)
                 });
 
             return mb.ToString();
@@ -279,7 +279,7 @@ namespace Roslynator.CodeGeneration.Markdown
                         grouping.Key,
                         Link(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
                         analyzer.Id,
-                        RawText((analyzer.IsEnabledByDefault) ? "&#x2713;" : ""));
+                        CheckboxOrEmpty(analyzer.IsEnabledByDefault));
                 }
             }
 
@@ -294,9 +294,28 @@ namespace Roslynator.CodeGeneration.Markdown
             mb.AppendLine();
         }
 
-        private static string GetBooleanAsText(bool value)
+        private static IMarkdown CheckboxOrEmpty(bool value)
         {
-            return (value) ? "&#x2713;" : "-";
+            if (value)
+            {
+                return HtmlEntity(0x2713);
+            }
+            else
+            {
+                return RawText("");
+            }
+        }
+
+        private static IMarkdown CheckboxOrHyphen(bool value)
+        {
+            if (value)
+            {
+                return HtmlEntity(0x2713);
+            }
+            else
+            {
+                return RawText("-");
+            }
         }
     }
 }

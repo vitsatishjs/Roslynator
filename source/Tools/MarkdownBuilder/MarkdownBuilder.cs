@@ -79,6 +79,8 @@ namespace Pihrtsoft.Markdown
 
         private CodeFenceStyle CodeFenceStyle => Format.CodeFenceStyle;
 
+        private HtmlEntityFormat HtmlEntityFormat => Format.HtmlEntityFormat;
+
         public char this[int index]
         {
             get { return StringBuilder[index]; }
@@ -1042,6 +1044,28 @@ namespace Pihrtsoft.Markdown
             {
                 AppendRaw(paddingChar);
             }
+        }
+
+        public MarkdownBuilder AppendHtmlEntity(int number)
+        {
+            AppendSyntax("&#");
+
+            if (HtmlEntityFormat == HtmlEntityFormat.Hexadecimal)
+            {
+                AppendSyntax("x");
+                AppendRaw(number.ToString("x", CultureInfo.InvariantCulture));
+            }
+            else if (HtmlEntityFormat == HtmlEntityFormat.Decimal)
+            {
+                AppendRaw(number.ToString(CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                throw new ArgumentException(ErrorMessages.UnknownEnumValue(HtmlEntityFormat), nameof(HtmlEntityFormat));
+            }
+
+            AppendSyntax(";");
+            return this;
         }
 
         public MarkdownBuilder AppendComment(string value)

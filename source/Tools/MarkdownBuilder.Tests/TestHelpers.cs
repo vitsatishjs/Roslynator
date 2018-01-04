@@ -210,6 +210,7 @@ namespace Pihrtsoft.Markdown.Tests
                 TableOptions(),
                 CodeFenceStyle(),
                 CodeBlockOptions(),
+                HtmlEntityFormat(),
                 StringValue());
         }
 
@@ -253,9 +254,29 @@ namespace Pihrtsoft.Markdown.Tests
             return (CodeBlockOptions)IntValue(0, 3);
         }
 
+        public static HtmlEntity CreateHtmlEntity()
+        {
+            return new HtmlEntity(IntValue(1, 0xFFFF));
+        }
+
+        public static int HtmlEntityNumber()
+        {
+            return IntValue(1, 0xFFFF);
+        }
+
+        public static HtmlEntityFormat HtmlEntityFormat()
+        {
+            return (HtmlEntityFormat)IntValue(0, 1);
+        }
+
         public static MarkdownBuilder CreateBuilder(MarkdownFormat format = null)
         {
             return CreateBuilder(new StringBuilder(), format);
+        }
+
+        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(HtmlEntityFormat? format)
+        {
+            return CreateBuilder((format != null) ? new MarkdownFormat(htmlEntityFormat: format.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
