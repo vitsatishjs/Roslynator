@@ -1,55 +1,38 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Text,nq}")]
-    public struct QuoteBlock : IMarkdown, IEquatable<QuoteBlock>
+    [DebuggerDisplay("{Kind}")]
+    public class QuoteBlock : MBlockContainer
     {
-        internal QuoteBlock(string text)
+        internal QuoteBlock(object content)
+            : base(content)
         {
-            Text = text;
         }
 
-        public string Text { get; }
-
-        public QuoteBlock WithText(string text)
+        internal QuoteBlock(params object[] content)
+            : base(content)
         {
-            return new QuoteBlock(text);
         }
 
-        public MarkdownBuilder AppendTo(MarkdownBuilder mb)
+        public QuoteBlock(QuoteBlock other)
+            : base(other)
         {
-            return mb.AppendQuoteBlock(Text);
         }
 
-        public override bool Equals(object obj)
+        public override MarkdownKind Kind => MarkdownKind.QuoteBlock;
+
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return (obj is QuoteBlock other)
-                && Equals(other);
+            return builder.AppendQuoteBlock(Elements());
         }
 
-        public bool Equals(QuoteBlock other)
+        internal override MElement Clone()
         {
-            return string.Equals(Text, other.Text, StringComparison.Ordinal);
-        }
-
-        public override int GetHashCode()
-        {
-            return EqualityComparer<string>.Default.GetHashCode(Text);
-        }
-
-        public static bool operator ==(QuoteBlock block1, QuoteBlock block2)
-        {
-            return block1.Equals(block2);
-        }
-
-        public static bool operator !=(QuoteBlock block1, QuoteBlock block2)
-        {
-            return !(block1 == block2);
+            return new QuoteBlock(this);
         }
     }
 }

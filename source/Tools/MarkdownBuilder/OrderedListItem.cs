@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("{Kind} Number = {Number}")]
-    public class OrderedListItem : MContainer, IMarkdown
+    public class OrderedListItem : ListItem
     {
         internal OrderedListItem(int number, object content)
             : base(content)
@@ -26,52 +26,27 @@ namespace Pihrtsoft.Markdown
             Number = number;
         }
 
+        public OrderedListItem(OrderedListItem other)
+            : base(other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            Number = other.Number;
+        }
+
         public int Number { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.OrderedListItem;
 
-        //TODO: 
-        //public OrderedListItem WithNumber(int number)
-        //{
-        //    return new OrderedListItem(number, Text);
-        //}
-
-        //public OrderedListItem WithText(string text)
-        //{
-        //    return new OrderedListItem(Number, text);
-        //}
-
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendOrderedListItem(Number, Elements);
+            return builder.AppendOrderedListItem(Number, Elements());
         }
 
-        //TODO: 
-        //public override bool Equals(object obj)
-        //{
-        //    return (obj is OrderedListItem other)
-        //        && Equals(other);
-        //}
-
-        //public bool Equals(OrderedListItem other)
-        //{
-        //    return Number == other.Number
-        //        && string.Equals(Text, other.Text, StringComparison.Ordinal);
-        //}
-
-        //public override int GetHashCode()
-        //{
-        //    return Hash.Combine(Number, Hash.Create(Text));
-        //}
-
-        //public static bool operator ==(OrderedListItem item1, OrderedListItem item2)
-        //{
-        //    return item1.Equals(item2);
-        //}
-
-        //public static bool operator !=(OrderedListItem item1, OrderedListItem item2)
-        //{
-        //    return !(item1 == item2);
-        //}
+        internal override MElement Clone()
+        {
+            return new OrderedListItem(this);
+        }
     }
 }

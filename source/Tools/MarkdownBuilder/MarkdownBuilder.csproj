@@ -36,4 +36,8 @@ Pihrtsoft.Markdown.MarkdownSettings</Description>
     <AssemblyOriginatorKeyFile>MarkdownBuilder.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="_ObjectModel.md" />
+  </ItemGroup>
+
 </Project>

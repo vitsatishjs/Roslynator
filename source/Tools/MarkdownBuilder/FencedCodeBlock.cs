@@ -1,67 +1,46 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Diagnostics;
+using System;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Text,nq} Info = {InfoDebuggerDisplay}")]
-    public class FencedCodeBlock : MElement, IEquatable<FencedCodeBlock>, IMarkdown
+    [DebuggerDisplay("{Kind} Info = {InfoDebuggerDisplay} {Text,nq}")]
+    public class FencedCodeBlock : MElement
     {
         internal FencedCodeBlock(string text, string info = null)
         {
             Text = text;
+
+            //TODO: validate info
             Info = info;
         }
 
-        public string Text { get; }
+        public FencedCodeBlock(FencedCodeBlock other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
 
-        public string Info { get; }
+            Text = other.Text;
+            Info = other.Info;
+        }
+
+        public string Text { get; set; }
+
+        public string Info { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.FencedCodeBlock;
 
         private string InfoDebuggerDisplay => Info ?? "None";
-
-        public FencedCodeBlock WithText(string text)
-        {
-            return new FencedCodeBlock(text, Info);
-        }
-
-        public FencedCodeBlock WithInfo(string info)
-        {
-            return new FencedCodeBlock(Text, info);
-        }
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
             return builder.AppendFencedCodeBlock(Text, Info);
         }
 
-        public override bool Equals(object obj)
+        internal override MElement Clone()
         {
-            return (obj is FencedCodeBlock other)
-                && Equals(other);
-        }
-
-        public bool Equals(FencedCodeBlock other)
-        {
-            return string.Equals(Text, other.Text, StringComparison.Ordinal)
-                && string.Equals(Info, other.Info, StringComparison.Ordinal);
-        }
-
-        public override int GetHashCode()
-        {
-            return Hash.Combine(Text, Hash.Create(Info));
-        }
-
-        public static bool operator ==(FencedCodeBlock left, FencedCodeBlock right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(FencedCodeBlock left, FencedCodeBlock right)
-        {
-            return !(left == right);
+            return new FencedCodeBlock(this);
         }
     }
 }

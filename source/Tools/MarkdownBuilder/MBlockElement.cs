@@ -2,8 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public interface IMarkdown
+    public abstract class MBlockElement : MElement
     {
-        MarkdownBuilder AppendTo(MarkdownBuilder mb);
     }
 }

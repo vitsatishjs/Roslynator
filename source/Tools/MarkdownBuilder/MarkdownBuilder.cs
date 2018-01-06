@@ -235,77 +235,77 @@ namespace Pihrtsoft.Markdown
             return AppendSyntax(CodeDelimiter);
         }
 
-        public MarkdownBuilder AppendHeading1(object value)
+        public MarkdownBuilder AppendHeading1(object content)
         {
-            return AppendHeading(1, value);
+            return AppendHeading(1, content);
         }
 
-        public MarkdownBuilder AppendHeading1(params object[] value)
+        public MarkdownBuilder AppendHeading1(params object[] content)
         {
-            return AppendHeading(1, value);
+            return AppendHeading(1, content);
         }
 
-        public MarkdownBuilder AppendHeading2(object value)
+        public MarkdownBuilder AppendHeading2(object content)
         {
-            return AppendHeading(2, value);
+            return AppendHeading(2, content);
         }
 
-        public MarkdownBuilder AppendHeading2(params object[] value)
+        public MarkdownBuilder AppendHeading2(params object[] content)
         {
-            return AppendHeading(2, value);
+            return AppendHeading(2, content);
         }
 
-        public MarkdownBuilder AppendHeading3(object value)
+        public MarkdownBuilder AppendHeading3(object content)
         {
-            return AppendHeading(3, value);
+            return AppendHeading(3, content);
         }
 
-        public MarkdownBuilder AppendHeading3(params object[] value)
+        public MarkdownBuilder AppendHeading3(params object[] content)
         {
-            return AppendHeading(3, value);
+            return AppendHeading(3, content);
         }
 
-        public MarkdownBuilder AppendHeading4(object value)
+        public MarkdownBuilder AppendHeading4(object content)
         {
-            return AppendHeading(4, value);
+            return AppendHeading(4, content);
         }
 
-        public MarkdownBuilder AppendHeading4(params object[] value)
+        public MarkdownBuilder AppendHeading4(params object[] content)
         {
-            return AppendHeading(4, value);
+            return AppendHeading(4, content);
         }
 
-        public MarkdownBuilder AppendHeading5(object value)
+        public MarkdownBuilder AppendHeading5(object content)
         {
-            return AppendHeading(5, value);
+            return AppendHeading(5, content);
         }
 
-        public MarkdownBuilder AppendHeading5(params object[] value)
+        public MarkdownBuilder AppendHeading5(params object[] content)
         {
-            return AppendHeading(5, value);
+            return AppendHeading(5, content);
         }
 
-        public MarkdownBuilder AppendHeading6(object value)
+        public MarkdownBuilder AppendHeading6(object content)
         {
-            return AppendHeading(6, value);
+            return AppendHeading(6, content);
         }
 
-        public MarkdownBuilder AppendHeading6(params object[] value)
+        public MarkdownBuilder AppendHeading6(params object[] content)
         {
-            return AppendHeading(6, value);
+            return AppendHeading(6, content);
         }
 
-        public MarkdownBuilder AppendHeading(int level, object value)
+        public MarkdownBuilder AppendHeading(int level, object content)
         {
-            return AppendHeadingCore(level, value);
+            return AppendHeadingCore(level, content);
         }
 
-        public MarkdownBuilder AppendHeading(int level, params object[] values)
+        public MarkdownBuilder AppendHeading(int level, params object[] content)
         {
-            return AppendHeadingCore(level, null, values);
+            return AppendHeadingCore(level, (object)content);
         }
 
-        private MarkdownBuilder AppendHeadingCore(int level, object value, params object[] additionalValues)
+        private MarkdownBuilder AppendHeadingCore(int level, object content)
         {
             if (level < 1
                 || level > 6)
@@ -326,7 +326,7 @@ namespace Pihrtsoft.Markdown
 
             int length = Length;
 
-            AppendRange(value, additionalValues);
+            Append(content);
 
             length = Length - length;
 
@@ -364,6 +364,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
+        //TODO: rename
         public MarkdownBuilder AppendListItem(object content)
         {
             return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
@@ -1091,11 +1092,6 @@ namespace Pihrtsoft.Markdown
             return Length - length;
         }
 
-        public MarkdownBuilder Append<TMarkdown>(TMarkdown markdown) where TMarkdown : IMarkdown
-        {
-            return markdown.AppendTo(this);
-        }
-
         public MarkdownBuilder Append(char value)
         {
             return Append(value, escape: true);
@@ -1129,65 +1125,36 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public MarkdownBuilder Append(string value, EmphasisOptions options)
+        public MarkdownBuilder Append(EmphasisOptions options, params object[] content)
         {
+            return Append(options, content);
+        }
+
+        public MarkdownBuilder Append(EmphasisOptions options, object content)
+        {
+            string delimiter = GetDelimiter();
+
             State state = options.ToState();
 
             AddState(state);
-            AppendOpenDelimiter();
-
-            if ((options & EmphasisOptions.Code) != 0)
-            {
-                AppendCode(value);
-            }
-            else
-            {
-                Append(value);
-            }
-
-            AppendCloseDelimiter();
+            AppendSyntax(delimiter);
+            Append(content);
+            AppendSyntax(delimiter);
             RemoveState(state);
             return this;
 
-            void AppendOpenDelimiter()
+            string GetDelimiter()
             {
-                if ((options & EmphasisOptions.Bold) != 0)
+                switch (options)
                 {
-                    AddState(State.Bold);
-                    AppendSyntax(BoldDelimiter);
-                }
-
-                if ((options & EmphasisOptions.Italic) != 0)
-                {
-                    AddState(State.Italic);
-                    AppendSyntax(ItalicDelimiter);
-                }
-
-                if ((options & EmphasisOptions.Strikethrough) != 0)
-                {
-                    AddState(State.Strikethrough);
-                    AppendSyntax(StrikethroughDelimiter);
-                }
-            }
-
-            void AppendCloseDelimiter()
-            {
-                if ((options & EmphasisOptions.Strikethrough) != 0)
-                {
-                    RemoveState(State.Strikethrough);
-                    AppendSyntax(StrikethroughDelimiter);
-                }
-
-                if ((options & EmphasisOptions.Italic) != 0)
-                {
-                    RemoveState(State.Italic);
-                    AppendSyntax(ItalicDelimiter);
-                }
-
-                if ((options & EmphasisOptions.Bold) != 0)
-                {
-                    RemoveState(State.Bold);
-                    AppendSyntax(BoldDelimiter);
+                    case EmphasisOptions.Bold:
+                        return BoldDelimiter;
+                    case EmphasisOptions.Italic:
+                        return ItalicDelimiter;
+                    case EmphasisOptions.Strikethrough:
+                        return StrikethroughDelimiter;
+                    default:
+                        throw new ArgumentException(ErrorMessages.UnknownEnumValue(options), nameof(options));
                 }
             }
         }
@@ -1283,17 +1250,16 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        //TODO: test
         public MarkdownBuilder Append(object value)
         {
             if (value == null)
                 return this;
 
+            if (value is MElement element)
+                return element.AppendTo(this);
+
             if (value is string s)
                 return Append(s, escape: true);
-
-            if (value is IMarkdown markdown)
-                return markdown.AppendTo(this);
 
             if (value is object[] arr)
             {
@@ -1328,6 +1294,17 @@ namespace Pihrtsoft.Markdown
 
             foreach (object value in values)
                 Append(value);
+
+            return this;
+        }
+
+        internal MarkdownBuilder AppendRange(IEnumerable<MElement> elements)
+        {
+            if (elements == null)
+                throw new ArgumentNullException(nameof(elements));
+
+            foreach (MElement element in elements)
+                element.AppendTo(this);
 
             return this;
         }

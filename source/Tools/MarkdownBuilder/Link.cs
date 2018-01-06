@@ -5,8 +5,8 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
-    public class Link : MElement, IEquatable<Link>, IMarkdown
+    [DebuggerDisplay("{Kind} Text = {Text,nq} Url = {Url,nq} Title = {Title,nq}")]
+    public class Link : MElement
     {
         internal Link(string text, string url, string title = null)
         {
@@ -15,60 +15,32 @@ namespace Pihrtsoft.Markdown
             Title = title;
         }
 
-        public string Text { get; }
+        public Link(Link other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
 
-        public string Url { get; }
+            Text = other.Text;
+            Url = other.Url;
+            Title = other.Title;
+        }
 
-        public string Title { get; }
+        public string Text { get; set; }
+
+        public string Url { get; set; }
+
+        public string Title { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.Link;
-
-        public Link WithText(string text)
-        {
-            return new Link(text, Url, Title);
-        }
-
-        public Link WithUrl(string url)
-        {
-            return new Link(Text, url, Title);
-        }
-
-        public Link WithTitle(string title)
-        {
-            return new Link(Text, Url, title);
-        }
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
             return builder.AppendLink(Text, Url, Title);
         }
 
-        public override bool Equals(object obj)
+        internal override MElement Clone()
         {
-            return (obj is Link other)
-                && Equals(other);
-        }
-
-        public bool Equals(Link other)
-        {
-            return string.Equals(Text, other.Text, StringComparison.Ordinal)
-                && string.Equals(Url, other.Url, StringComparison.Ordinal)
-                && string.Equals(Title, other.Title, StringComparison.Ordinal);
-        }
-
-        public override int GetHashCode()
-        {
-            return Hash.Combine(Text, Hash.Combine(Url, Hash.Create(Title)));
-        }
-
-        public static bool operator ==(Link left, Link right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Link left, Link right)
-        {
-            return !(left == right);
+            return new Link(this);
         }
     }
 }

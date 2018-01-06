@@ -344,9 +344,9 @@ namespace Pihrtsoft.Markdown.Tests
             string text = LinkText();
             string url = LinkUrl();
 
-            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text));
-            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text, url: ""));
-            Assert.IsType<MarkdownText>(MarkdownFactory.LinkOrText(text, url: null));
+            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text));
+            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text, url: ""));
+            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text, url: null));
         }
 
         [Fact]

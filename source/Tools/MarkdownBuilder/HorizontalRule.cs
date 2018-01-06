@@ -4,7 +4,7 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
-    public class HorizontalRule : MElement, IEquatable<HorizontalRule>, IMarkdown
+    public class HorizontalRule : MElement
     {
         internal HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
@@ -16,62 +16,32 @@ namespace Pihrtsoft.Markdown
             Space = space ?? "";
         }
 
-        public static HorizontalRule Default { get; } = new HorizontalRule(HorizontalRuleStyle.Hyphen, count: 3, space: " ");
+        public HorizontalRule(HorizontalRule other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
 
-        public HorizontalRuleStyle Style { get; }
+            Style = other.Style;
+            Count = other.Count;
+            Space = other.Space;
+        }
 
-        public int Count { get; }
+        public HorizontalRuleStyle Style { get; set; }
 
-        public string Space { get; }
+        public int Count { get; set; }
+
+        public string Space { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
 
-        public HorizontalRule WithStyle(HorizontalRuleStyle style)
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return new HorizontalRule(style, Count, Space);
+            return builder.AppendHorizontalRule(Style, Count, Space);
         }
 
-        public HorizontalRule WithCount(int count)
+        internal override MElement Clone()
         {
-            return new HorizontalRule(Style, count, Space);
-        }
-
-        public HorizontalRule WithSpace(string space)
-        {
-            return new HorizontalRule(Style, Count, space);
-        }
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder mb)
-        {
-            return mb.AppendHorizontalRule(Style, Count, Space);
-        }
-
-        public override bool Equals(object obj)
-        {
-            return (obj is HorizontalRule other)
-                && Equals(other);
-        }
-
-        public bool Equals(HorizontalRule other)
-        {
-            return Style == other.Style
-                && Count == other.Count
-                && Space == other.Space;
-        }
-
-        public override int GetHashCode()
-        {
-            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Create(Space)));
-        }
-
-        public static bool operator ==(HorizontalRule left, HorizontalRule right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(HorizontalRule left, HorizontalRule right)
-        {
-            return !(left == right);
+            return new HorizontalRule(this);
         }
     }
 }

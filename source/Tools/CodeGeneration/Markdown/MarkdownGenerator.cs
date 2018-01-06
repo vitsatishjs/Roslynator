@@ -39,7 +39,7 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 document.Add(
                     Heading4($"{refactoring.Title} ({refactoring.Id})"),
-                    ListItem(Bold("Syntax"), ": ", Join(", ", refactoring.Syntaxes.Select(f => f.Name))));
+                    ListItem(Bold("Syntax"), ": ", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name))));
 
                 if (!string.IsNullOrEmpty(refactoring.Span))
                     document.Add(ListItem(Bold("Span"), ": ", refactoring.Span));
@@ -112,7 +112,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var format = new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent);
 
-            var doc = new MDocument(
+            var document = new MDocument(
                 Heading2(refactoring.Title),
                 SimpleTable(TableHeader("Property", "Value"),
                     TableRow("Id", refactoring.Id),
@@ -124,7 +124,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 GetRefactoringSamples(refactoring),
                 Link("full list of refactorings", "Refactorings.md"));
 
-            return doc.ToString(format);
+            return document.ToString(format);
         }
 
         public static string CreateAnalyzerMarkdown(AnalyzerDescriptor analyzer)
@@ -140,18 +140,8 @@ namespace Roslynator.CodeGeneration.Markdown
                     TableRow("Default Severity", analyzer.DefaultSeverity),
                     TableRow("Enabled by Default", CheckboxOrHyphen(analyzer.IsEnabledByDefault)),
                     TableRow("Supports Fade-Out", CheckboxOrHyphen(analyzer.SupportsFadeOut)),
-                    TableRow("Supports Fade-Out Analyzer", CheckboxOrHyphen(analyzer.SupportsFadeOutAnalyzer))));
-
-            ReadOnlyCollection<SampleDescriptor> samples = analyzer.Samples;
-
-            if (samples.Count > 0)
-            {
-                document.Add(
-                    Heading2((samples.Count == 1) ? "Example" : "Examples"),
-                    GetSamples(samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix")));
-            }
-
-            document.Add(
+                    TableRow("Supports Fade-Out Analyzer", CheckboxOrHyphen(analyzer.SupportsFadeOutAnalyzer))),
+                Samples(),
                 Heading2("How to Suppress"),
                 Heading3("SuppressMessageAttribute"),
                 FencedCodeBlock($"[assembly: SuppressMessage(\"{analyzer.Category}\", \"{analyzer.Id}:{analyzer.Title}\", Justification = \"<Pending>\")]", LanguageIdentifiers.CSharp),
@@ -161,6 +151,19 @@ namespace Roslynator.CodeGeneration.Markdown
                 ListItem(Link("How to configure rule set", "../HowToConfigureAnalyzers.md")));
 
             return document.ToString(format);
+
+            IEnumerable<MElement> Samples()
+            {
+                ReadOnlyCollection<SampleDescriptor> samples = analyzer.Samples;
+
+                if (samples.Count > 0)
+                {
+                    yield return Heading2((samples.Count == 1) ? "Example" : "Examples");
+
+                    foreach (MElement item in GetSamples(samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix")))
+                        yield return item;
+                }
+            }
         }
 
         public static string CreateAnalyzersReadMe(IEnumerable<AnalyzerDescriptor> analyzers, IComparer<string> comparer)
@@ -208,7 +211,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     {
                         f => f.Id,
                         f => f.Title.TrimEnd('.'),
-                        f => Join(", ", f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => (object)LinkOrText(x, y.HelpUrl))),
+                        f => Join(new MText(", "), f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => LinkOrText(x, y.HelpUrl))),
                         f => CheckboxOrEmpty(f.IsEnabledByDefault)
                     },
                     codeFixes.OrderBy(f => f.Title, comparer)));
@@ -238,7 +241,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
                     yield return TableRow(
                         LinkOrText(diagnostic?.Id ?? grouping.Key, diagnostic?.HelpUrl),
-                        Join(", ", grouping.Select(f => f.CodeFixDescriptor.Id)));
+                        string.Join(", ", grouping.Select(f => f.CodeFixDescriptor.Id)));
                 }
             }
         }
@@ -276,7 +279,7 @@ namespace Roslynator.CodeGeneration.Markdown
             return Image(refactoring.Title, $"../../images/refactorings/{fileName}.png");
         }
 
-        private static IMarkdown CheckboxOrEmpty(bool value)
+        private static MElement CheckboxOrEmpty(bool value)
         {
             if (value)
             {
@@ -284,11 +287,11 @@ namespace Roslynator.CodeGeneration.Markdown
             }
             else
             {
-                return RawText("");
+                return new MText("");
             }
         }
 
-        private static IMarkdown CheckboxOrHyphen(bool value)
+        private static MElement CheckboxOrHyphen(bool value)
         {
             if (value)
             {
@@ -296,7 +299,7 @@ namespace Roslynator.CodeGeneration.Markdown
             }
             else
             {
-                return RawText("-");
+                return new MText("-");
             }
         }
     }

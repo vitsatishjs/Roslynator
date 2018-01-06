@@ -99,14 +99,14 @@ namespace Pihrtsoft.Markdown.Tests
             return new Link(link.Text.Modify(), link.Url.Modify(), link.Title.Modify());
         }
 
-        public static ListItem Modify(this ListItem item)
+        public static BulletListItem Modify(this BulletListItem item)
         {
-            return new ListItem(item.Text.Modify());
+            return new BulletListItem(item.Text.Modify());
         }
 
-        public static MarkdownText Modify(this MarkdownText text)
+        public static MEmphasis Modify(this MEmphasis text)
         {
-            return new MarkdownText(text.Text.Modify(), text.Options.Modify());
+            return new MEmphasis(text.Text.Modify(), text.Options.Modify());
         }
 
         public static RawText Modify(this RawText text)

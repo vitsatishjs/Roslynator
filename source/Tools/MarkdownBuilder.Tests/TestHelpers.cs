@@ -119,9 +119,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static ListItem CreateListItem()
+        public static BulletListItem CreateListItem()
         {
-            return new ListItem(ListItemText());
+            return new BulletListItem(ListItemText());
         }
 
         public static string ListItemText()
@@ -129,9 +129,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static MarkdownText CreateMarkdownText()
+        public static MEmphasis CreateMarkdownText()
         {
-            return new MarkdownText(MarkdownTextText(), MarkdownTextOptions());
+            return new MEmphasis(MarkdownTextText(), MarkdownTextOptions());
         }
 
         public static string MarkdownTextText()

@@ -5,10 +5,11 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Text,nq} Level = {Level}")]
-    public class Heading : MElement, IEquatable<Heading>, IMarkdown
+    [DebuggerDisplay("{Kind} Level = {Level}")]
+    public class Heading : MContainer
     {
-        internal Heading(string text, int level = 1)
+        internal Heading(int level, object content)
+            : base(content)
         {
             if (level < 1
                 || level > 6)
@@ -16,56 +17,39 @@ namespace Pihrtsoft.Markdown
                 throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
             }
 
-            Text = text;
             Level = level;
         }
 
-        public string Text { get; }
+        internal Heading(int level, params object[] content)
+            : base(content)
+        {
+            if (level < 1
+                || level > 6)
+            {
+                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
+            }
 
-        public int Level { get; }
+            Level = level;
+        }
+
+        public Heading(Heading other)
+            : base(other)
+        {
+            Level = other.Level;
+        }
+
+        public int Level { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.Heading;
 
-        public Heading WithText(string text)
-        {
-            return new Heading(text, Level);
-        }
-
-        public Heading WithLevel(int level)
-        {
-            return new Heading(Text, level);
-        }
-
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendHeading(Level, Text);
+            return builder.AppendHeading(Level, Elements());
         }
 
-        public override bool Equals(object obj)
+        internal override MElement Clone()
         {
-            return (obj is Heading other)
-                && Equals(other);
-        }
-
-        public bool Equals(Heading other)
-        {
-            return string.Equals(Text, other.Text, StringComparison.Ordinal)
-                && Level == other.Level;
-        }
-
-        public override int GetHashCode()
-        {
-            return Hash.Combine(Level, Hash.Create(Text));
-        }
-
-        public static bool operator ==(Heading left, Heading right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Heading left, Heading right)
-        {
-            return !(left == right);
+            return new Heading(this);
         }
     }
 }

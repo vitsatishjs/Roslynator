@@ -523,7 +523,7 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
             string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
-            ListItem item = ListItem(text + Chars);
+            BulletListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.AppendListItem(item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendListItem(item.Text, null).ToStringAndClear());
@@ -539,7 +539,7 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
             string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
-            ListItem item = ListItem(text + Chars);
+            BulletListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
             Assert.Equal(expected, mb.Append((object)item).ToStringAndClear());

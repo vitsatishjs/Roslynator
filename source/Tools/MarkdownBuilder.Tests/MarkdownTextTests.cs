@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_Equals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
+            MEmphasis markdownText = CreateMarkdownText();
 
             Assert.True(markdownText.Equals((object)markdownText));
         }
@@ -21,8 +21,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_NotEquals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = markdownText.Modify();
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = markdownText.Modify();
 
             Assert.False(markdownText.Equals((object)markdownText2));
         }
@@ -30,9 +30,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_IEquatableEquals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = markdownText;
-            IEquatable<MarkdownText> equatable = markdownText;
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = markdownText;
+            IEquatable<MEmphasis> equatable = markdownText;
 
             Assert.True(equatable.Equals(markdownText2));
         }
@@ -40,9 +40,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_IEquatableNotEquals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = CreateMarkdownText().Modify();
-            IEquatable<MarkdownText> equatable = markdownText;
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = CreateMarkdownText().Modify();
+            IEquatable<MEmphasis> equatable = markdownText;
 
             Assert.False(markdownText.Equals(markdownText2));
         }
@@ -50,7 +50,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_GetHashCode_Equal()
         {
-            MarkdownText markdownText = CreateMarkdownText();
+            MEmphasis markdownText = CreateMarkdownText();
 
             Assert.Equal(markdownText.GetHashCode(), markdownText.GetHashCode());
         }
@@ -58,8 +58,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_GetHashCode_NotEqual()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = markdownText.Modify();
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = markdownText.Modify();
 
             Assert.NotEqual(markdownText.GetHashCode(), markdownText2.GetHashCode());
         }
@@ -67,8 +67,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_OperatorEquals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = markdownText;
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = markdownText;
 
             Assert.True(markdownText == markdownText2);
         }
@@ -76,8 +76,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_OperatorNotEquals()
         {
-            MarkdownText markdownText = CreateMarkdownText();
-            MarkdownText markdownText2 = markdownText.Modify();
+            MEmphasis markdownText = CreateMarkdownText();
+            MEmphasis markdownText2 = markdownText.Modify();
 
             Assert.True(markdownText != markdownText2);
         }
@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownText_Constructor_AssignText()
         {
             string text = MarkdownTextText();
-            var markdownText = new MarkdownText(text: text, options: MarkdownTextOptions());
+            var markdownText = new MEmphasis(text: text, options: MarkdownTextOptions());
 
             Assert.Equal(text, markdownText.Text);
         }
@@ -103,7 +103,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownOptions_Constructor_AssignOptions()
         {
             EmphasisOptions options = MarkdownTextOptions();
-            var markdownOptions = new MarkdownText(text: MarkdownTextText(), options: options);
+            var markdownOptions = new MEmphasis(text: MarkdownTextText(), options: options);
 
             Assert.Equal(options, markdownOptions.Options);
         }
@@ -111,7 +111,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownText_WithOptions()
         {
-            MarkdownText markdownText = CreateMarkdownText();
+            MEmphasis markdownText = CreateMarkdownText();
             EmphasisOptions options = markdownText.Options.Modify();
 
             Assert.Equal(options, markdownText.WithOptions(options).Options);

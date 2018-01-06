@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: ContentIf
     public static class MarkdownFactory
     {
         public static string StrikethroughDelimiter => "~~";
@@ -18,21 +17,26 @@ namespace Pihrtsoft.Markdown
 
         public static string QuoteBlockStart => "> ";
 
-        public static MarkdownText NewLine { get; } = new MarkdownText(Environment.NewLine);
+        public static MText NewLine { get; } = new MText(Environment.NewLine);
 
-        public static MarkdownText Text(string value, EmphasisOptions options = EmphasisOptions.None)
+        public static MEmphasis Text(EmphasisOptions options, object content)
         {
-            return new MarkdownText(value, options);
+            return new MEmphasis(options, content);
         }
 
-        public static RawText RawText(string value)
+        public static MEmphasis Text(EmphasisOptions options, params object[] content)
         {
-            return new RawText(value);
+            return new MEmphasis(options, content);
         }
 
-        public static MarkdownText Bold(string value)
+        public static MEmphasis Bold(object content)
         {
-            return Text(value, EmphasisOptions.Bold);
+            return Text(EmphasisOptions.Bold, content);
+        }
+
+        public static MEmphasis Bold(params object[] content)
+        {
+            return Text(EmphasisOptions.Bold, content);
         }
 
         public static string BoldDelimiter(EmphasisStyle style)
@@ -46,9 +50,14 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static MarkdownText Italic(string value)
+        public static MEmphasis Italic(object content)
         {
-            return Text(value, EmphasisOptions.Italic);
+            return Text(EmphasisOptions.Italic, content);
+        }
+
+        public static MEmphasis Italic(params object[] content)
+        {
+            return Text(EmphasisOptions.Italic, content);
         }
 
         public static string ItalicDelimiter(EmphasisStyle style)
@@ -62,54 +71,113 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static MarkdownText Strikethrough(string value)
+        public static MEmphasis Strikethrough(object content)
         {
-            return Text(value, EmphasisOptions.Strikethrough);
+            return Text(EmphasisOptions.Strikethrough, content);
         }
 
-        public static MarkdownText Code(string value)
+        public static MEmphasis Strikethrough(params object[] content)
         {
-            return Text(value, EmphasisOptions.Code);
+            return Text(EmphasisOptions.Strikethrough, content);
         }
 
-        public static MarkdownJoin Join(object separator, IEnumerable<object> values)
+        public static CodeText Code(string text)
         {
-            return new MarkdownJoin(separator, values);
+            return new CodeText(text);
         }
 
-        public static Heading Heading(string value, int level)
+        public static IEnumerable<MElement> Join(MElement separator, params MElement[] values)
         {
-            return new Heading(value, level);
+            return Join(separator, (IEnumerable<MElement>)values);
         }
 
-        public static Heading Heading1(string value)
+        public static IEnumerable<MElement> Join(MElement separator, IEnumerable<MElement> values)
         {
-            return new Heading(value, 1);
+            bool addSeparator = false;
+
+            foreach (MElement value in values)
+            {
+                if (addSeparator)
+                {
+                    yield return separator;
+                }
+                else
+                {
+                    addSeparator = true;
+                }
+
+                yield return value;
+            }
         }
 
-        public static Heading Heading2(string value)
+        public static Heading Heading(int level, object content)
         {
-            return new Heading(value, 2);
+            return new Heading(level, content);
         }
 
-        public static Heading Heading3(string value)
+        public static Heading Heading(int level, params object[] content)
         {
-            return new Heading(value, 3);
+            return new Heading(level, content);
         }
 
-        public static Heading Heading4(string value)
+        public static Heading Heading1(object content)
         {
-            return new Heading(value, 4);
+            return new Heading(1, content);
         }
 
-        public static Heading Heading5(string value)
+        public static Heading Heading1(params object[] content)
         {
-            return new Heading(value, 5);
+            return new Heading(1, content);
         }
 
-        public static Heading Heading6(string value)
+        public static Heading Heading2(object content)
         {
-            return new Heading(value, 6);
+            return new Heading(2, content);
+        }
+
+        public static Heading Heading2(params object[] content)
+        {
+            return new Heading(2, content);
+        }
+
+        public static Heading Heading3(object content)
+        {
+            return new Heading(3, content);
+        }
+
+        public static Heading Heading3(params object[] content)
+        {
+            return new Heading(3, content);
+        }
+
+        public static Heading Heading4(object content)
+        {
+            return new Heading(4, content);
+        }
+
+        public static Heading Heading4(params object[] content)
+        {
+            return new Heading(4, content);
+        }
+
+        public static Heading Heading5(object content)
+        {
+            return new Heading(5, content);
+        }
+
+        public static Heading Heading5(params object[] content)
+        {
+            return new Heading(5, content);
+        }
+
+        public static Heading Heading6(object content)
+        {
+            return new Heading(6, content);
+        }
+
+        public static Heading Heading6(params object[] content)
+        {
+            return new Heading(6, content);
         }
 
         internal static char HeadingStartChar(HeadingStyle style)
@@ -123,14 +191,14 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public static ListItem ListItem(object content)
+        public static BulletListItem ListItem(object content)
         {
-            return new ListItem(content);
+            return new BulletListItem(content);
         }
 
-        public static ListItem ListItem(params object[] content)
+        public static BulletListItem ListItem(params object[] content)
         {
-            return new ListItem(content);
+            return new BulletListItem(content);
         }
 
         public static string ListItemStart(ListItemStyle style)
@@ -204,10 +272,10 @@ namespace Pihrtsoft.Markdown
             return new Link(text, url, title);
         }
 
-        public static IMarkdown LinkOrText(string text, string url = null, string title = null)
+        public static MElement LinkOrText(string text, string url = null, string title = null)
         {
             if (string.IsNullOrEmpty(url))
-                return Text(text);
+                return new MText(text);
 
             return new Link(text, url, title);
         }
@@ -222,9 +290,14 @@ namespace Pihrtsoft.Markdown
             return new IndentedCodeBlock(value);
         }
 
-        public static QuoteBlock QuoteBlock(string value)
+        public static QuoteBlock QuoteBlock(object content)
         {
-            return new QuoteBlock(value);
+            return new QuoteBlock(content);
+        }
+
+        public static QuoteBlock QuoteBlock(params object[] content)
+        {
+            return new QuoteBlock(content);
         }
 
         public static HorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
