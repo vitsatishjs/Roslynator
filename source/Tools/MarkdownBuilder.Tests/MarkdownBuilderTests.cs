@@ -146,11 +146,11 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData("**", EmphasisOptions.Bold)]
-        [InlineData("*", EmphasisOptions.Italic)]
-        [InlineData("***", EmphasisOptions.BoldItalic)]
-        [InlineData("~~", EmphasisOptions.Strikethrough)]
-        public void MarkdownBuilder_Append_String_EmphasisOptions(string syntax, EmphasisOptions options)
+        [InlineData("**", EmphasisOption.Bold)]
+        [InlineData("*", EmphasisOption.Italic)]
+        [InlineData("***", EmphasisOption.BoldItalic)]
+        [InlineData("~~", EmphasisOption.Strikethrough)]
+        public void MarkdownBuilder_Append_String_EmphasisOptions(string syntax, EmphasisOption options)
         {
             const string x = Chars;
             const string y = CharsEscaped;
@@ -161,9 +161,9 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData("` ", " `", EmphasisOptions.Code)]
-        [InlineData("***~~` ", " `~~***", EmphasisOptions.Bold | EmphasisOptions.Italic | EmphasisOptions.Strikethrough | EmphasisOptions.Code)]
-        public void MarkdownBuilder_Append_String_EmphasisOptionsCode(string open, string close, EmphasisOptions options)
+        [InlineData("` ", " `", EmphasisOption.Code)]
+        [InlineData("***~~` ", " `~~***", EmphasisOption.Bold | EmphasisOption.Italic | EmphasisOption.Strikethrough | EmphasisOption.Code)]
+        public void MarkdownBuilder_Append_String_EmphasisOptionsCode(string open, string close, EmphasisOption options)
         {
             const string x = CharsEnclosedWithBacktick;
             const string y = CharsEnclosedWithBacktickDoubled;
@@ -523,7 +523,7 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
             string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
-            BulletListItem item = ListItem(text + Chars);
+            ListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.AppendListItem(item.Text).ToStringAndClear());
             Assert.Equal(expected, mb.AppendListItem(item.Text, null).ToStringAndClear());
@@ -539,7 +539,7 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
             string expected = syntax + $" {text + CharsEscaped}" + TestHelpers.NewLine;
-            BulletListItem item = ListItem(text + Chars);
+            ListItem item = ListItem(text + Chars);
 
             Assert.Equal(expected, mb.Append(item).ToStringAndClear());
             Assert.Equal(expected, mb.Append((object)item).ToStringAndClear());

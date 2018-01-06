@@ -8,11 +8,9 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("{Kind} Info = {InfoDebuggerDisplay} {Text,nq}")]
     public class FencedCodeBlock : MElement
     {
-        internal FencedCodeBlock(string text, string info = null)
+        public FencedCodeBlock(string text, string info = null)
         {
             Text = text;
-
-            //TODO: validate info
             Info = info;
         }
 

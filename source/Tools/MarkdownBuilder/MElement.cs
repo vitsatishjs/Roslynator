@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
 namespace Pihrtsoft.Markdown
 {
     public abstract class MElement : MObject
@@ -18,6 +17,7 @@ namespace Pihrtsoft.Markdown
 
         public string ToString(MarkdownFormat format)
         {
+            //TODO: cache
             var builder = new MarkdownBuilder(format ?? MarkdownFormat.Default);
             AppendTo(builder);
             return builder.ToString();

@@ -114,7 +114,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
             var document = new MDocument(
                 Heading2(refactoring.Title),
-                SimpleTable(TableHeader("Property", "Value"),
+                Table(TableHeader("Property", "Value"),
                     TableRow("Id", refactoring.Id),
                     TableRow("Title", refactoring.Title),
                     TableRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name))),
@@ -133,7 +133,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
             var document = new MDocument(
                 Heading1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}"),
-                SimpleTable(
+                Table(
                     TableHeader("Property", "Value"),
                     TableRow("Id", analyzer.Id),
                     TableRow("Category", analyzer.Category),
@@ -171,15 +171,15 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Analyzers"),
                 Table(
-                    TableHeader("Id", "Title", "Category", TableColumn("Enabled by Default", Alignment.Center)),
-                    new Func<AnalyzerDescriptor, object>[]
+                    TableHeader("Id", "Title", "Category", TableColumn(Alignment.Center, "Enabled by Default")),
+                    analyzers.OrderBy(f => f.Id, comparer).Select(f =>
                     {
-                        f => f.Id,
-                        f => Link(f.Title.TrimEnd('.'), $"../../docs/analyzers/{f.Id}.md"),
-                        f => f.Category,
-                        f => CheckboxOrEmpty(f.IsEnabledByDefault)
-                    },
-                    analyzers.OrderBy(f => f.Id, comparer)));
+                        return TableRow(
+                            f.Id,
+                            Link(f.Title.TrimEnd('.'), $"../../docs/analyzers/{f.Id}.md"),
+                            f.Category,
+                            CheckboxOrEmpty(f.IsEnabledByDefault));
+                    })));
 
             return document.ToString();
         }
@@ -189,14 +189,14 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Refactorings"),
                 Table(
-                    TableHeader("Id", "Title", TableColumn("Enabled by Default", Alignment.Center)),
-                    new Func<RefactoringDescriptor, object>[]
+                    TableHeader("Id", "Title", TableColumn(Alignment.Center, "Enabled by Default")),
+                    refactorings.OrderBy(f => f.Title, comparer).Select(f =>
                     {
-                        f => f.Id,
-                        f => Link(f.Title.TrimEnd('.'), $"../../docs/refactorings/{f.Id}.md"),
-                        f => CheckboxOrEmpty(f.IsEnabledByDefault)
-                    },
-                    refactorings.OrderBy(f => f.Title, comparer)));
+                        return TableRow(
+                        f.Id,
+                        Link(f.Title.TrimEnd('.'), $"../../docs/refactorings/{f.Id}.md"),
+                        CheckboxOrEmpty(f.IsEnabledByDefault));
+                    })));
 
             return document.ToString();
         }
@@ -206,15 +206,15 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Code Fixes"),
                 Table(
-                    TableHeader("Id", "Title", "Fixable Diagnostics", TableColumn("Enabled by Default", Alignment.Center)),
-                    new Func<CodeFixDescriptor, object>[]
+                    TableHeader("Id", "Title", "Fixable Diagnostics", TableColumn(Alignment.Center, "Enabled by Default")),
+                    codeFixes.OrderBy(f => f.Title, comparer).Select(f =>
                     {
-                        f => f.Id,
-                        f => f.Title.TrimEnd('.'),
-                        f => Join(new MText(", "), f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => LinkOrText(x, y.HelpUrl))),
-                        f => CheckboxOrEmpty(f.IsEnabledByDefault)
-                    },
-                    codeFixes.OrderBy(f => f.Title, comparer)));
+                        return TableRow(
+                            f.Id,
+                            f.Title.TrimEnd('.'),
+                            Join(new MText(", "), f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => LinkOrText(x, y.HelpUrl))),
+                            CheckboxOrEmpty(f.IsEnabledByDefault));
+                    })));
 
             return document.ToString();
         }
@@ -223,7 +223,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var document = new MDocument(
                 Heading2("Roslynator Code Fixes by Diagnostic Id"),
-                SimpleTable(
+                Table(
                     TableHeader("Diagnostic", "Code Fixes"),
                     GetRows()));
 
@@ -250,8 +250,8 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var document = new MDocument(
                 Heading2("Roslynator Analyzers by Category"),
-                SimpleTable(
-                    TableHeader("Category", "Title", "Id", TableColumn("Enabled by Default", Alignment.Center)),
+                Table(
+                    TableHeader("Category", "Title", "Id", TableColumn(Alignment.Center, "Enabled by Default")),
                     GetRows()));
 
             return document.ToString();

@@ -6,18 +6,18 @@ namespace Pihrtsoft.Markdown
 {
     internal static class EmphasisOptionsExtensions
     {
-        public static State ToState(this EmphasisOptions options)
+        public static State ToState(this EmphasisOption option)
         {
-            switch (options)
+            switch (option)
             {
-                case EmphasisOptions.Bold:
+                case EmphasisOption.Bold:
                     return State.Bold;
-                case EmphasisOptions.Italic:
+                case EmphasisOption.Italic:
                     return State.Italic;
-                case EmphasisOptions.Strikethrough:
+                case EmphasisOption.Strikethrough:
                     return State.Strikethrough;
                 default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(options), nameof(options));
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(option), nameof(option));
             }
         }
     }

@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Text = {Text,nq} Url = {Url,nq} Title = {Title,nq}")]
     public class Link : MElement
     {
-        internal Link(string text, string url, string title = null)
+        public Link(string text, string url, string title = null)
         {
             Text = text;
             Url = url;

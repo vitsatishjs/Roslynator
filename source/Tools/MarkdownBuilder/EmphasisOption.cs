@@ -2,7 +2,11 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public abstract class MBlockElement : MElement
+    //TODO: rename
+    public enum EmphasisOption
     {
+        Bold = 0,
+        Italic = 1,
+        Strikethrough = 2
     }
 }

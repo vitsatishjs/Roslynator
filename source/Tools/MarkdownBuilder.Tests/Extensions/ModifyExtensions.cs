@@ -99,14 +99,14 @@ namespace Pihrtsoft.Markdown.Tests
             return new Link(link.Text.Modify(), link.Url.Modify(), link.Title.Modify());
         }
 
-        public static BulletListItem Modify(this BulletListItem item)
+        public static ListItem Modify(this ListItem item)
         {
-            return new BulletListItem(item.Text.Modify());
+            return new ListItem(item.Text.Modify());
         }
 
-        public static MEmphasis Modify(this MEmphasis text)
+        public static Emphasis Modify(this Emphasis text)
         {
-            return new MEmphasis(text.Text.Modify(), text.Options.Modify());
+            return new Emphasis(text.Text.Modify(), text.Option.Modify());
         }
 
         public static RawText Modify(this RawText text)
@@ -264,14 +264,14 @@ namespace Pihrtsoft.Markdown.Tests
             }
         }
 
-        public static EmphasisOptions Modify(this EmphasisOptions options)
+        public static EmphasisOption Modify(this EmphasisOption options)
         {
             switch (options)
             {
-                case EmphasisOptions.None:
-                    return EmphasisOptions.Bold;
+                case EmphasisOption.None:
+                    return EmphasisOption.Bold;
                 default:
-                    return EmphasisOptions.None;
+                    return EmphasisOption.None;
             }
         }
 

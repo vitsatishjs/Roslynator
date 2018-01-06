@@ -17,19 +17,19 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Text(text).Text);
-            Assert.Equal(EmphasisOptions.None, MarkdownFactory.Text(text).Options);
+            Assert.Equal(EmphasisOption.None, MarkdownFactory.Text(text).Option);
         }
 
         [Theory]
-        [InlineData(EmphasisOptions.None)]
-        [InlineData(EmphasisOptions.Bold)]
-        [InlineData(EmphasisOptions.BoldItalic)]
-        public void MarkdownFactory_Text(EmphasisOptions options)
+        [InlineData(EmphasisOption.None)]
+        [InlineData(EmphasisOption.Bold)]
+        [InlineData(EmphasisOption.BoldItalic)]
+        public void MarkdownFactory_Text(EmphasisOption options)
         {
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Text(text, options).Text);
-            Assert.Equal(options, MarkdownFactory.Text(text, options).Options);
+            Assert.Equal(options, MarkdownFactory.Text(text, options).Option);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Bold(text).Text);
-            Assert.Equal(EmphasisOptions.Bold, MarkdownFactory.Bold(text).Options);
+            Assert.Equal(EmphasisOption.Bold, MarkdownFactory.Bold(text).Option);
         }
 
         [Theory]
@@ -63,7 +63,7 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Italic(text).Text);
-            Assert.Equal(EmphasisOptions.Italic, MarkdownFactory.Italic(text).Options);
+            Assert.Equal(EmphasisOption.Italic, MarkdownFactory.Italic(text).Option);
         }
 
         [Theory]
@@ -80,7 +80,7 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Strikethrough(text).Text);
-            Assert.Equal(EmphasisOptions.Strikethrough, MarkdownFactory.Strikethrough(text).Options);
+            Assert.Equal(EmphasisOption.Strikethrough, MarkdownFactory.Strikethrough(text).Option);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Pihrtsoft.Markdown.Tests
             string text = MarkdownTextText();
 
             Assert.Equal(text, MarkdownFactory.Code(text).Text);
-            Assert.Equal(EmphasisOptions.Code, MarkdownFactory.Code(text).Options);
+            Assert.Equal(EmphasisOption.Code, MarkdownFactory.Code(text).Options);
         }
 
         [Fact]
@@ -344,9 +344,9 @@ namespace Pihrtsoft.Markdown.Tests
             string text = LinkText();
             string url = LinkUrl();
 
-            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text));
-            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text, url: ""));
-            Assert.IsType<MEmphasis>(MarkdownFactory.LinkOrText(text, url: null));
+            Assert.IsType<Emphasis>(MarkdownFactory.LinkOrText(text));
+            Assert.IsType<Emphasis>(MarkdownFactory.LinkOrText(text, url: ""));
+            Assert.IsType<Emphasis>(MarkdownFactory.LinkOrText(text, url: null));
         }
 
         [Fact]

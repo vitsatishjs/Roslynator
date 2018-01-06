@@ -2,10 +2,9 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum EmphasisOptions
+    public enum OrderedListItemStyle
     {
-        Bold = 0,
-        Italic = 1,
-        Strikethrough = 2
+        Dot = 0,
+        Parenthesis = 1
     }
 }

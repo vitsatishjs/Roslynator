@@ -11,10 +11,11 @@ namespace Pihrtsoft.Markdown
             EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
+            OrderedListItemStyle orderedListItemStyle = OrderedListItemStyle.Dot,
             HorizontalRule horizontalRule = default(HorizontalRule),
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
-            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterPipe | TableOptions.Padding,
+            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             HtmlEntityFormat htmlEntityFormat = HtmlEntityFormat.Hexadecimal)
@@ -22,6 +23,7 @@ namespace Pihrtsoft.Markdown
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
             ListItemStyle = listItemStyle;
+            OrderedListItemStyle = orderedListItemStyle;
             HorizontalRule = horizontalRule;
             HeadingStyle = headingStyle;
             HeadingOptions = headingOptions;
@@ -42,6 +44,8 @@ namespace Pihrtsoft.Markdown
         public EmphasisStyle AlternativeItalicStyle => GetAlternativeEmphasisStyle(ItalicStyle);
 
         public ListItemStyle ListItemStyle { get; }
+
+        public OrderedListItemStyle OrderedListItemStyle { get; }
 
         public HorizontalRule HorizontalRule { get; }
 
@@ -65,7 +69,7 @@ namespace Pihrtsoft.Markdown
 
         internal bool TablePadding => (TableOptions & TableOptions.Padding) != 0;
 
-        internal bool TableOuterPipe => (TableOptions & TableOptions.OuterPipe) != 0;
+        internal bool TableOuterDelimiter => (TableOptions & TableOptions.OuterDelimiter) != 0;
 
         internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
 
@@ -99,6 +103,7 @@ namespace Pihrtsoft.Markdown
                 && BoldStyle == other.BoldStyle
                 && ItalicStyle == other.ItalicStyle
                 && ListItemStyle == other.ListItemStyle
+                && OrderedListItemStyle == other.OrderedListItemStyle
                 && HorizontalRule == other.HorizontalRule
                 && HeadingStyle == other.HeadingStyle
                 && HeadingOptions == other.HeadingOptions
@@ -114,6 +119,7 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)BoldStyle, hashCode);
             hashCode = Hash.Combine((int)ItalicStyle, hashCode);
             hashCode = Hash.Combine((int)ListItemStyle, hashCode);
+            hashCode = Hash.Combine((int)OrderedListItemStyle, hashCode);
             hashCode = Hash.Combine(HorizontalRule.GetHashCode(), hashCode);
             hashCode = Hash.Combine((int)HeadingStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
@@ -140,6 +146,7 @@ namespace Pihrtsoft.Markdown
                 boldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -155,6 +162,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 italicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -170,6 +178,23 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 listItemStyle,
+                OrderedListItemStyle,
+                HorizontalRule,
+                HeadingStyle,
+                HeadingOptions,
+                TableOptions,
+                CodeFenceStyle,
+                CodeBlockOptions,
+                HtmlEntityFormat);
+        }
+
+        public MarkdownFormat WithOrderedListItemStyle(OrderedListItemStyle orderedListItemStyle)
+        {
+            return new MarkdownFormat(
+                BoldStyle,
+                ItalicStyle,
+                ListItemStyle,
+                orderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -185,6 +210,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 horizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -200,6 +226,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 headingStyle,
                 HeadingOptions,
@@ -215,6 +242,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 headingOptions,
@@ -230,6 +258,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -245,6 +274,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -260,6 +290,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
@@ -275,6 +306,7 @@ namespace Pihrtsoft.Markdown
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
+                OrderedListItemStyle,
                 HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,

@@ -6,10 +6,10 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} {Number}")]
+    [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
     public class HtmlEntity : MElement
     {
-        internal HtmlEntity(int number)
+        public HtmlEntity(int number)
         {
             Number = number;
         }
@@ -23,6 +23,8 @@ namespace Pihrtsoft.Markdown
         }
 
         public int Number { get; }
+
+        internal string NumberAsHexadecimalString => Number.ToString("x", CultureInfo.InvariantCulture);
 
         public override MarkdownKind Kind => MarkdownKind.HtmlEntity;
 

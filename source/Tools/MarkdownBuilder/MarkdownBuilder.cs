@@ -48,6 +48,10 @@ namespace Pihrtsoft.Markdown
 
         private string ListItemStart => ListItemStart(ListItemStyle);
 
+        private OrderedListItemStyle OrderedListItemStyle => Format.OrderedListItemStyle;
+
+        private string OrderedListItemStart => OrderedListItemStart(OrderedListItemStyle);
+
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
         private bool AddEmptyLineAfterHeading => Format.EmptyLineAfterHeading;
@@ -62,7 +66,7 @@ namespace Pihrtsoft.Markdown
 
         private bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
 
-        private bool TableOuterPipe => Format.TableOuterPipe;
+        private bool TableOuterDelimiter => Format.TableOuterDelimiter;
 
         private bool TablePadding => Format.TablePadding;
 
@@ -307,11 +311,7 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendHeadingCore(int level, object content)
         {
-            if (level < 1
-                || level > 6)
-            {
-                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
-            }
+            Heading.ThrowOnInvalidLevel(level);
 
             bool underline = (level == 1 && UnderlineHeading1)
                 || (level == 2 && UnderlineHeading2);
@@ -364,18 +364,12 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        //TODO: rename
         public MarkdownBuilder AppendListItem(object content)
         {
             return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
         }
 
         public MarkdownBuilder AppendListItem(params object[] content)
-        {
-            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
-        }
-
-        public MarkdownBuilder AppendListItem(IEnumerable<MElement> content)
         {
             return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
         }
@@ -387,35 +381,24 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, object content)
         {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+            OrderedListItem.ThrowOnInvalidNumber(number);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
+            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
         }
 
         public MarkdownBuilder AppendOrderedListItem(int number, params object[] content)
         {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+            OrderedListItem.ThrowOnInvalidNumber(number);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
-        }
-
-        public MarkdownBuilder AppendOrderedListItem(int number, IEnumerable<MElement> content)
-        {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
-
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: ". ", content: content);
+            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
         }
 
         internal MarkdownBuilder AppendOrderedListItemStart(int number)
         {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+            OrderedListItem.ThrowOnInvalidNumber(number);
 
             AppendRaw(number);
-            return AppendSyntax(". ");
+            return AppendSyntax(OrderedListItemStart);
         }
 
         public MarkdownBuilder AppendTaskListItem(object content)
@@ -428,22 +411,12 @@ namespace Pihrtsoft.Markdown
             return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
         }
 
-        public MarkdownBuilder AppendTaskListItem(IEnumerable<MElement> content)
-        {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
-        }
-
         public MarkdownBuilder AppendCompletedTaskListItem(object content)
         {
             return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
         }
 
         public MarkdownBuilder AppendCompletedTaskListItem(params object[] content)
-        {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
-        }
-
-        public MarkdownBuilder AppendCompletedTaskListItem(IEnumerable<MElement> content)
         {
             return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
         }
@@ -462,6 +435,18 @@ namespace Pihrtsoft.Markdown
             AppendRange(content);
             AppendLineIfNecessary();
             RemoveState(state);
+            return this;
+        }
+
+        public MarkdownBuilder AppendOrderedItems(IEnumerable<MElement> items)
+        {
+            int number = 0;
+            foreach (MElement item in items)
+            {
+                AppendOrderedListItem(number, item);
+                number++;
+            }
+
             return this;
         }
 
@@ -513,9 +498,9 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendAutoLink(string url)
         {
-            AddState(State.AutoLink);
+            AddState(State.Autolink);
             AppendAngleBrackets(url);
-            RemoveState(State.AutoLink);
+            RemoveState(State.Autolink);
             return this;
         }
 
@@ -587,7 +572,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendIndentedCodeBlock(string code)
         {
-            AppendLineStart(State.CodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock);
+            AppendLineStart(State.FencedCodeBlock, addEmptyLine: AddEmptyLineBeforeCodeBlock);
             AddState(State.IndentedCodeBlock);
             AppendRaw(code);
             AppendLineIfNecessary();
@@ -601,7 +586,7 @@ namespace Pihrtsoft.Markdown
             AppendLineIfNecessary();
             AppendEmptyLineIf(AddEmptyLineBeforeCodeBlock);
 
-            AddState(State.CodeBlock);
+            AddState(State.FencedCodeBlock);
 
             AppendCodeFence();
             AppendSyntax(info);
@@ -613,7 +598,7 @@ namespace Pihrtsoft.Markdown
             AppendCodeFence();
             AppendLine();
 
-            RemoveState(State.CodeBlock);
+            RemoveState(State.FencedCodeBlock);
             AddStateIf(AddEmptyLineAfterCodeBlock, State.PendingEmptyLine);
             return this;
         }
@@ -657,8 +642,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
         {
-            if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
+            HorizontalRule.ThrowOnInvalidCount(count);
 
             AppendLineIfNecessary();
 
@@ -687,209 +671,242 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendTable(IEnumerable<TableColumn> columns, IEnumerable<IList<object>> rows)
-        {
-            return AppendTable(new TableColumnCollection(columns), rows.ToList());
-        }
-
-        public MarkdownBuilder AppendTable(IList<TableColumn> columns, IList<IList<object>> rows)
+        public MarkdownBuilder AppendTable(IEnumerable<MElement> rows)
         {
             AddState(State.Table);
-            int columnCount = columns.Count;
 
-            if (columnCount == 0)
-                return this;
+            using (IEnumerator<MElement> en = rows.GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    List<int> widths = (FormatTableHeader || FormatTableContent) ? CalculateWidths(rows) : null;
 
-            List<int> widths = (FormatTableContent) ? CalculateWidths(columns, rows, columnCount) : null;
+                    MElement header = en.Current;
 
-            AppendTableHeader(columns, columnCount, widths);
-            AppendTableRows(rows, columnCount, widths);
+                    AppendTableHeader(header, widths);
+
+                    while (en.MoveNext())
+                        AppendTableRow(en.Current, widths);
+                }
+            }
+
             RemoveState(State.Table);
             return this;
         }
 
-        private List<int> CalculateWidths(IList<TableColumn> columns, IList<IList<object>> rows, int columnCount)
+        private List<int> CalculateWidths(IEnumerable<MElement> rows)
         {
-            var widths = new List<int>();
-
-            int index = 0;
-
-            var mb = new MarkdownBuilder(Format);
-
-            foreach (IList<object> row in rows)
+            using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
-                if (row == null)
-                    continue;
-
-                for (int i = 0; i < columnCount; i++)
+                if (en.MoveNext())
                 {
-                    mb.Append(row[i]);
-                    widths.Add(mb.Length - index);
-                    index = mb.Length;
-                }
-            }
+                    MarkdownBuilder mb = MarkdownBuilderCache.GetInstance(Format);
+                    int index = 0;
 
-            int count = widths.Count;
+                    MElement row = en.Current;
 
-            List<int> maxWidths = GetColumnsWidths(columns);
+                    var widths = new List<int>();
 
-            for (int i = 0; i < columnCount; i++)
-            {
-                for (int j = i; j < count; j += columnCount)
-                {
-                    maxWidths[i] = Math.Max(maxWidths[i], widths[j]);
-                }
-            }
-
-            return maxWidths;
-        }
-
-        public MarkdownBuilder AppendTable<T>(
-            IEnumerable<TableColumn> columns,
-            IEnumerable<T> rows,
-            IEnumerable<Func<T, object>> selectors)
-        {
-            return AppendTable(new TableColumnCollection(columns), rows.ToList(), selectors.ToList());
-        }
-
-        public MarkdownBuilder AppendTable<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> selectors)
-        {
-            AddState(State.Table);
-            int columnCount = columns.Count;
-
-            if (columnCount == 0)
-                return this;
-
-            List<int> widths = (FormatTableContent) ? CalculateWidths(columns, items, selectors) : null;
-
-            AppendTableHeader(columns, columnCount, widths);
-            AppendTableRows(items, selectors, columnCount, widths);
-            RemoveState(State.Table);
-            return this;
-        }
-
-        private List<int> CalculateWidths<T>(IList<TableColumn> columns, IList<T> items, IList<Func<T, object>> selectors)
-        {
-            List<int> widths = GetColumnsWidths(columns);
-
-            int index = 0;
-
-            var mb = new MarkdownBuilder(Format);
-
-            for (int i = 0; i < columns.Count; i++)
-            {
-                for (int j = 0; j < items.Count; j++)
-                {
-                    T item = items[j];
-
-                    //TODO: 
-                    if (!EqualityComparer<T>.Default.Equals(item, default(T)))
+                    if (FormatTableHeader)
                     {
-                        mb.Append(selectors[i](item));
-                        widths[i] = Math.Max(widths[i], mb.Length - index);
-                        index = mb.Length;
+                        if (row is MContainer container)
+                        {
+                            foreach (MElement content in container.Elements())
+                            {
+                                mb.Append(content);
+                                widths.Add(mb.Length - index);
+                                index = mb.Length;
+                            }
+                        }
+                        else
+                        {
+                            mb.Append(row);
+                            widths.Add(mb.Length);
+                        }
+                    }
+                    else
+                    {
+                        widths.Add(0);
+
+                        while (en.MoveNext())
+                            widths.Add(0);
+                    }
+
+                    if (FormatTableContent)
+                    {
+                        mb.Clear();
+                        index = 0;
+
+                        while (en.MoveNext())
+                        {
+                            int columnCount = widths.Count;
+
+                            row = en.Current;
+
+                            if (row is MContainer container)
+                            {
+                                int i = 0;
+                                foreach (MElement cell in container.Elements())
+                                {
+                                    mb.Append(cell);
+                                    widths[i] = Math.Max(widths[i], mb.Length - index);
+                                    index = mb.Length;
+                                    i++;
+
+                                    if (i == columnCount)
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                mb.Append(row);
+                                widths[0] = Math.Max(widths[0], mb.Length - index);
+                                index = mb.Length;
+                            }
+                        }
+                    }
+
+                    MarkdownBuilderCache.Free(mb);
+
+                    return widths;
+                }
+            }
+
+            return null;
+        }
+
+        internal void AppendTableHeader(MElement content, IList<int> widths = null)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            bool isFirst = true;
+            bool isLast = false;
+
+            int i = 0;
+
+            if (content is MContainer container)
+            {
+                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        MElement curr = en.Current;
+
+                        isLast = !en.MoveNext();
+
+                        AppendCell(curr);
+
+                        if (!isLast)
+                        {
+                            isFirst = false;
+
+                            do
+                            {
+                                curr = en.Current;
+                                isLast = !en.MoveNext();
+                                i++;
+                                AppendCell(curr);
+                            }
+                            while (!isLast);
+                        }
                     }
                 }
             }
-
-            return widths;
-        }
-
-        private List<int> GetColumnsWidths(IList<TableColumn> columns)
-        {
-            var widths = new List<int>(columns.Count);
-
-            if (FormatTableHeader)
-            {
-                foreach (TableColumn column in columns)
-                    widths.Add(column.Name.Length);
-            }
             else
             {
-                for (int i = 0; i < columns.Count; i++)
-                    widths.Add(0);
+                isLast = true;
+                AppendCell(content);
             }
 
-            return widths;
-        }
+            AppendLine();
+            AppendTableHeaderSeparator(content, widths);
 
-        internal MarkdownBuilder AppendTableHeader(params TableColumn[] columns)
-        {
-            if (columns == null)
-                throw new ArgumentNullException(nameof(columns));
-
-            int length = columns.Length;
-
-            if (length == 0)
-                return this;
-
-            AppendTableHeader(columns, length);
-            return this;
-        }
-
-        internal MarkdownBuilder AppendTableHeader(IList<TableColumn> columns)
-        {
-            if (columns == null)
-                throw new ArgumentNullException(nameof(columns));
-
-            int count = columns.Count;
-
-            if (count == 0)
-                return this;
-
-            AppendTableHeader(columns, count);
-            return this;
-        }
-
-        internal void AppendTableHeader(IList<TableColumn> columns, int columnCount, IList<int> widths = null)
-        {
-            for (int i = 0; i < columnCount; i++)
+            void AppendCell(MElement cellContent)
             {
-                TableColumn column = columns[i];
+                Alignment alignment = (cellContent as TableColumn)?.Alignment ?? Alignment.Left;
 
-                AppendTableRowStart(i, columnCount);
+                AppendTableCellStart(isFirst, isLast);
 
                 if (TablePadding)
                 {
                     AppendSpace();
                 }
                 else if (FormatTableHeader
-                    && column.Alignment == Alignment.Center)
+                    && alignment == Alignment.Center)
                 {
                     AppendSpace();
                 }
 
-                string name = column.Name;
-
-                Append(name);
+                int width = AppendGetLength(cellContent);
 
                 if (FormatTableHeader)
                 {
-                    int width = name.Length;
-
                     int minimalWidth = Math.Max(width, 3);
 
                     AppendPadRight(width, widths?[i], minimalWidth);
 
                     if (!TablePadding
-                        && column.Alignment != Alignment.Left)
+                        && alignment != Alignment.Left)
                     {
                         AppendSpace();
                     }
                 }
 
-                AppendTableCellEnd(i, columnCount, string.IsNullOrWhiteSpace(name));
+                AppendTableCellEnd(isLast);
+            }
+        }
+
+        private void AppendTableHeaderSeparator(MElement content, IList<int> widths = null)
+        {
+            bool isFirst = true;
+            bool isLast = true;
+
+            int i = 0;
+
+            if (content is MContainer container)
+            {
+                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        MElement curr = en.Current;
+
+                        isLast = !en.MoveNext();
+
+                        AppendCell(curr);
+
+                        if (!isLast)
+                        {
+                            isFirst = false;
+
+                            do
+                            {
+                                curr = en.Current;
+                                isLast = !en.MoveNext();
+                                i++;
+                                AppendCell(curr);
+                            }
+                            while (!isLast);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                isLast = true;
+                AppendCell(content);
             }
 
             AppendLine();
 
-            for (int i = 0; i < columnCount; i++)
+            void AppendCell(MElement column)
             {
-                TableColumn column = columns[i];
+                Alignment alignment = (column as TableColumn)?.Alignment ?? Alignment.Left;
 
-                AppendTableRowStart(i, columnCount);
+                AppendTableCellStart(isFirst, isLast);
 
-                if (column.Alignment == Alignment.Center)
+                if (alignment == Alignment.Center)
                 {
                     AppendSyntax(":");
                 }
@@ -901,9 +918,9 @@ namespace Pihrtsoft.Markdown
                 AppendSyntax("---");
 
                 if (FormatTableHeader)
-                    AppendPadRight(3, widths?[i] ?? columns[i].Name.Length, 3, '-');
+                    AppendPadRight(3, widths?[i], 3, '-');
 
-                if (column.Alignment != Alignment.Left)
+                if (alignment != Alignment.Left)
                 {
                     AppendSyntax(":");
                 }
@@ -912,76 +929,80 @@ namespace Pihrtsoft.Markdown
                     AppendTablePadding();
                 }
 
-                if (i == columnCount - 1)
+                if (isLast
+                    && TableOuterDelimiter)
                 {
-                    if (TableOuterPipe
-                        || string.IsNullOrWhiteSpace(column.Name))
+                    AppendTableDelimiter();
+                }
+            }
+        }
+
+        internal MarkdownBuilder AppendTableRow(MElement content, List<int> widths = null)
+        {
+            bool isFirst = true;
+            bool isLast = false;
+
+            int i = 0;
+
+            if (content is MContainer container)
+            {
+                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+                {
+                    if (en.MoveNext())
                     {
-                        AppendTableDelimiter();
+                        MElement curr = en.Current;
+
+                        isLast = !en.MoveNext();
+
+                        AppendCell(curr);
+
+                        if (!isLast)
+                        {
+                            isFirst = false;
+
+                            do
+                            {
+                                curr = en.Current;
+                                isLast = !en.MoveNext();
+                                i++;
+                                AppendCell(curr);
+                            }
+                            while (!isLast);
+                        }
                     }
                 }
             }
+            else
+            {
+                isLast = true;
+                AppendCell(content);
+            }
 
             AppendLine();
-        }
+            return this;
 
-        internal void AppendTableRows(IList<IList<object>> rows, int columnCount, List<int> widths = null)
-        {
-            foreach (IList<object> row in rows)
+            void AppendCell(MElement cell)
             {
-                if (row == null)
-                    continue;
+                AppendTableCellStart(isFirst, isLast);
+                AppendTablePadding();
 
-                for (int i = 0; i < columnCount; i++)
-                {
-                    AppendTableRowStart(i, columnCount);
-                    AppendTablePadding();
+                int length = AppendGetLength(cell);
 
-                    int length = AppendGetLength(row[i]);
+                if (FormatTableContent)
+                    AppendPadRight(length, widths?[i]);
 
-                    if (FormatTableContent)
-                        AppendPadRight(length, widths?[i]);
-
-                    AppendTableCellEnd(i, columnCount);
-                }
-
-                AppendLine();
+                AppendTableCellEnd(isLast);
             }
         }
 
-        internal void AppendTableRows<T>(IList<T> items, IList<Func<T, object>> selectors, int columnCount, List<int> widths = null)
+        private void AppendTableCellStart(bool isFirst, bool isLast)
         {
-            foreach (T item in items)
-            {
-                //TODO: 
-                if (EqualityComparer<T>.Default.Equals(item, default(T)))
-                    continue;
-
-                for (int i = 0; i < columnCount; i++)
-                {
-                    AppendTableRowStart(i, columnCount);
-                    AppendTablePadding();
-
-                    int length = AppendGetLength(selectors[i](item));
-
-                    if (FormatTableContent)
-                        AppendPadRight(length, widths?[i]);
-
-                    AppendTableCellEnd(i, columnCount);
-                }
-
-                AppendLine();
-            }
-        }
-
-        private void AppendTableRowStart(int index, int length)
-        {
-            if (index == 0)
+            if (isFirst)
             {
                 AppendLineStart();
 
-                if (TableOuterPipe
-                    || length == 1)
+                if (TableOuterDelimiter
+                    || isLast)
                 {
                     AppendTableDelimiter();
                 }
@@ -992,11 +1013,11 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void AppendTableCellEnd(int columnIndex, int columnCount, bool isBlankCell = false)
+        private void AppendTableCellEnd(bool isLast, bool isBlankCell = false)
         {
-            if (columnIndex == columnCount - 1)
+            if (isLast)
             {
-                if (TableOuterPipe)
+                if (TableOuterDelimiter)
                 {
                     AppendTablePadding();
                     AppendTableDelimiter();
@@ -1085,10 +1106,10 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        private int AppendGetLength(object value)
+        private int AppendGetLength(object content)
         {
             int length = Length;
-            Append(value);
+            Append(content);
             return Length - length;
         }
 
@@ -1125,16 +1146,16 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public MarkdownBuilder Append(EmphasisOptions options, params object[] content)
+        public MarkdownBuilder Append(EmphasisOption option, params object[] content)
         {
-            return Append(options, content);
+            return Append(option, content);
         }
 
-        public MarkdownBuilder Append(EmphasisOptions options, object content)
+        public MarkdownBuilder Append(EmphasisOption option, object content)
         {
             string delimiter = GetDelimiter();
 
-            State state = options.ToState();
+            State state = option.ToState();
 
             AddState(state);
             AppendSyntax(delimiter);
@@ -1145,16 +1166,16 @@ namespace Pihrtsoft.Markdown
 
             string GetDelimiter()
             {
-                switch (options)
+                switch (option)
                 {
-                    case EmphasisOptions.Bold:
+                    case EmphasisOption.Bold:
                         return BoldDelimiter;
-                    case EmphasisOptions.Italic:
+                    case EmphasisOption.Italic:
                         return ItalicDelimiter;
-                    case EmphasisOptions.Strikethrough:
+                    case EmphasisOption.Strikethrough:
                         return StrikethroughDelimiter;
                     default:
-                        throw new ArgumentException(ErrorMessages.UnknownEnumValue(options), nameof(options));
+                        throw new ArgumentException(ErrorMessages.UnknownEnumValue(option), nameof(option));
                 }
             }
         }
@@ -1305,37 +1326,6 @@ namespace Pihrtsoft.Markdown
 
             foreach (MElement element in elements)
                 element.AppendTo(this);
-
-            return this;
-        }
-
-        //TODO: test
-        public MarkdownBuilder AppendJoin(object separator, params object[] values)
-        {
-            return AppendJoin(separator, (IEnumerable<object>)values);
-        }
-
-        //TODO: test
-        public MarkdownBuilder AppendJoin(object separator, IEnumerable<object> values)
-        {
-            if (values == null)
-                throw new ArgumentNullException(nameof(values));
-
-            bool isFirst = true;
-
-            foreach (object value in values)
-            {
-                if (isFirst)
-                {
-                    isFirst = false;
-                }
-                else
-                {
-                    Append(separator);
-                }
-
-                Append(value);
-            }
 
             return this;
         }

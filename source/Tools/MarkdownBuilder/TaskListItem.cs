@@ -1,20 +1,24 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} IsCompleted = {IsCompleted}")]
-    public class TaskListItem : ListItem
+    [DebuggerDisplay("{Kind} {ToString(),nq}")]
+    public class TaskListItem : MBlockContainer
     {
-        internal TaskListItem(bool isCompleted, object content)
+        public TaskListItem(bool isCompleted)
+        {
+            IsCompleted = isCompleted;
+        }
+
+        public TaskListItem(bool isCompleted, object content)
             : base(content)
         {
             IsCompleted = isCompleted;
         }
 
-        internal TaskListItem(bool isCompleted, params object[] content)
+        public TaskListItem(bool isCompleted, params object[] content)
             : base(content)
         {
             IsCompleted = isCompleted;

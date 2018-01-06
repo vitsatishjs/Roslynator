@@ -2,33 +2,37 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public class BulletListItem : ListItem
+    public class MTable : MContainer
     {
-        public BulletListItem(object content)
+        internal MTable()
+        {
+        }
+
+        internal MTable(object content)
             : base(content)
         {
         }
 
-        public BulletListItem(params object[] content)
+        internal MTable(params object[] content)
             : base(content)
         {
         }
 
-        public BulletListItem(BulletListItem other)
+        internal MTable(MContainer other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.BulletListItem;
+        public override MarkdownKind Kind => MarkdownKind.Table;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendListItem(Elements());
+            return builder.AppendTable(Elements());
         }
 
         internal override MElement Clone()
         {
-            return new BulletListItem(this);
+            return new MTable(this);
         }
     }
 }

@@ -1,43 +1,47 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Options = {Options}")]
-    public class MEmphasis : MContainer
+    [DebuggerDisplay("{Option} {ToString(),nq}")]
+    public class Emphasis : MContainer
     {
-        internal MEmphasis(EmphasisOptions options, object content)
-            : base(content)
+        public Emphasis(EmphasisOption option)
         {
-            Options = options;
+            Option = option;
         }
 
-        internal MEmphasis(EmphasisOptions options, params object[] content)
+        public Emphasis(EmphasisOption option, object content)
             : base(content)
         {
-            Options = options;
+            Option = option;
         }
 
-        public MEmphasis(MEmphasis other)
+        public Emphasis(EmphasisOption option, params object[] content)
+            : base(content)
+        {
+            Option = option;
+        }
+
+        public Emphasis(Emphasis other)
             : base(other)
         {
-            Options = other.Options;
+            Option = other.Option;
         }
 
-        public EmphasisOptions Options { get; set; }
+        public EmphasisOption Option { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.Emphasis;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.Append(Options, Elements());
+            return builder.Append(Option, Elements());
         }
 
         internal override MElement Clone()
         {
-            return new MEmphasis(this);
+            return new Emphasis(this);
         }
     }
 }

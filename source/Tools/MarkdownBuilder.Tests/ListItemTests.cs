@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_Equals()
         {
-            BulletListItem item = CreateListItem();
+            ListItem item = CreateListItem();
 
             Assert.True(item.Equals((object)item));
         }
@@ -21,8 +21,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_NotEquals()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = item.Modify();
+            ListItem item = CreateListItem();
+            ListItem item2 = item.Modify();
 
             Assert.False(item.Equals((object)item2));
         }
@@ -30,9 +30,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_IEquatableEquals()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = item;
-            IEquatable<BulletListItem> equatable = item;
+            ListItem item = CreateListItem();
+            ListItem item2 = item;
+            IEquatable<ListItem> equatable = item;
 
             Assert.True(equatable.Equals(item2));
         }
@@ -40,9 +40,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_IEquatableNotEquals()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = CreateListItem().Modify();
-            IEquatable<BulletListItem> equatable = item;
+            ListItem item = CreateListItem();
+            ListItem item2 = CreateListItem().Modify();
+            IEquatable<ListItem> equatable = item;
 
             Assert.False(item.Equals(item2));
         }
@@ -50,7 +50,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_GetHashCode_Equal()
         {
-            BulletListItem item = CreateListItem();
+            ListItem item = CreateListItem();
 
             Assert.Equal(item.GetHashCode(), item.GetHashCode());
         }
@@ -58,8 +58,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_GetHashCode_NotEqual()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = item.Modify();
+            ListItem item = CreateListItem();
+            ListItem item2 = item.Modify();
 
             Assert.NotEqual(item.GetHashCode(), item2.GetHashCode());
         }
@@ -67,8 +67,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_OperatorEquals()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = item;
+            ListItem item = CreateListItem();
+            ListItem item2 = item;
 
             Assert.True(item == item2);
         }
@@ -76,8 +76,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void ListItem_OperatorNotEquals()
         {
-            BulletListItem item = CreateListItem();
-            BulletListItem item2 = item.Modify();
+            ListItem item = CreateListItem();
+            ListItem item2 = item.Modify();
 
             Assert.True(item != item2);
         }
@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void ListItem_Constructor_AssignText()
         {
             string text = ListItemText();
-            var item = new BulletListItem(text: text);
+            var item = new ListItem(text: text);
 
             Assert.Equal(text, item.Text);
         }

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind}")]
+    [DebuggerDisplay("{Kind} {ToString(),nq}")]
     public abstract class MObject
     {
         internal MContainer parent;
@@ -26,7 +26,6 @@ namespace Pihrtsoft.Markdown
             return x;
         }
 
-        //TODO: MElement?
         public MContainer Parent
         {
             get { return parent; }

@@ -19,24 +19,24 @@ namespace Pihrtsoft.Markdown
 
         public static MText NewLine { get; } = new MText(Environment.NewLine);
 
-        public static MEmphasis Text(EmphasisOptions options, object content)
+        public static Emphasis Text(EmphasisOption option, object content)
         {
-            return new MEmphasis(options, content);
+            return new Emphasis(option, content);
         }
 
-        public static MEmphasis Text(EmphasisOptions options, params object[] content)
+        public static Emphasis Text(EmphasisOption option, params object[] content)
         {
-            return new MEmphasis(options, content);
+            return new Emphasis(option, content);
         }
 
-        public static MEmphasis Bold(object content)
+        public static Emphasis Bold(object content)
         {
-            return Text(EmphasisOptions.Bold, content);
+            return Text(EmphasisOption.Bold, content);
         }
 
-        public static MEmphasis Bold(params object[] content)
+        public static Emphasis Bold(params object[] content)
         {
-            return Text(EmphasisOptions.Bold, content);
+            return Text(EmphasisOption.Bold, content);
         }
 
         public static string BoldDelimiter(EmphasisStyle style)
@@ -50,14 +50,14 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static MEmphasis Italic(object content)
+        public static Emphasis Italic(object content)
         {
-            return Text(EmphasisOptions.Italic, content);
+            return Text(EmphasisOption.Italic, content);
         }
 
-        public static MEmphasis Italic(params object[] content)
+        public static Emphasis Italic(params object[] content)
         {
-            return Text(EmphasisOptions.Italic, content);
+            return Text(EmphasisOption.Italic, content);
         }
 
         public static string ItalicDelimiter(EmphasisStyle style)
@@ -71,14 +71,14 @@ namespace Pihrtsoft.Markdown
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        public static MEmphasis Strikethrough(object content)
+        public static Emphasis Strikethrough(object content)
         {
-            return Text(EmphasisOptions.Strikethrough, content);
+            return Text(EmphasisOption.Strikethrough, content);
         }
 
-        public static MEmphasis Strikethrough(params object[] content)
+        public static Emphasis Strikethrough(params object[] content)
         {
-            return Text(EmphasisOptions.Strikethrough, content);
+            return Text(EmphasisOption.Strikethrough, content);
         }
 
         public static CodeText Code(string text)
@@ -86,27 +86,32 @@ namespace Pihrtsoft.Markdown
             return new CodeText(text);
         }
 
-        public static IEnumerable<MElement> Join(MElement separator, params MElement[] values)
+        public static MContainer Join(object separator, params object[] values)
         {
             return Join(separator, (IEnumerable<MElement>)values);
         }
 
-        public static IEnumerable<MElement> Join(MElement separator, IEnumerable<MElement> values)
+        public static MContainer Join(object separator, IEnumerable<object> values)
         {
-            bool addSeparator = false;
+            return new MContainer(GetContent());
 
-            foreach (MElement value in values)
+            IEnumerable<object> GetContent()
             {
-                if (addSeparator)
-                {
-                    yield return separator;
-                }
-                else
-                {
-                    addSeparator = true;
-                }
+                bool addSeparator = false;
 
-                yield return value;
+                foreach (object value in values)
+                {
+                    if (addSeparator)
+                    {
+                        yield return separator;
+                    }
+                    else
+                    {
+                        addSeparator = true;
+                    }
+
+                    yield return value;
+                }
             }
         }
 
@@ -191,17 +196,17 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public static BulletListItem ListItem(object content)
+        public static ListItem ListItem(object content)
         {
-            return new BulletListItem(content);
+            return new ListItem(content);
         }
 
-        public static BulletListItem ListItem(params object[] content)
+        public static ListItem ListItem(params object[] content)
         {
-            return new BulletListItem(content);
+            return new ListItem(content);
         }
 
-        public static string ListItemStart(ListItemStyle style)
+        internal static string ListItemStart(ListItemStyle style)
         {
             if (style == ListItemStyle.Asterisk)
                 return "* ";
@@ -225,9 +230,17 @@ namespace Pihrtsoft.Markdown
             return new OrderedListItem(number, content);
         }
 
-        public static string OrderedListItemStart(int number)
+        internal static string OrderedListItemStart(OrderedListItemStyle style)
         {
-            return number.ToString() + ". ";
+            switch (style)
+            {
+                case OrderedListItemStyle.Dot:
+                    return ". ";
+                case OrderedListItemStyle.Parenthesis:
+                    return ") ";
+                default:
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+            }
         }
 
         public static TaskListItem TaskListItem(bool isCompleted, object content)
@@ -325,249 +338,44 @@ namespace Pihrtsoft.Markdown
             return new HtmlEntity(number);
         }
 
-        public static Table<T> Table<T>()
+        public static MTable Table(object content)
         {
-            return new Table<T>();
+            return new MTable(content);
         }
 
-        public static Table<T> Table<T>(
-            IEnumerable<TableColumn> columns,
-            IEnumerable<Func<T, object>> selectors,
-            params T[] items)
+        public static MTable Table(params object[] content)
         {
-            return Table(columns, selectors, (IEnumerable<T>)items);
+            return new MTable(content);
         }
 
-        public static Table<T> Table<T>(
-            IEnumerable<TableColumn> columns,
-            IEnumerable<Func<T, object>> selectors,
-            IEnumerable<T> items)
+        public static TableRow TableHeader(object content)
         {
-            Table<T> table = Table<T>();
-
-            table.AddColumns(columns);
-
-            foreach (Func<T, object> selector in selectors)
-                table.Selectors.Add(selector);
-
-            foreach (T item in items)
-                table.Rows.Add(item);
-
-            return table;
+            return new TableRow(content);
         }
 
-        public static Table<T> Table<T>(params TableColumn[] columns)
+        public static TableRow TableHeader(params object[] content)
         {
-            Table<T> table = Table<T>();
-
-            table.AddColumns(columns);
-
-            return table;
+            return new TableRow(content);
         }
 
-        public static Table<T> Table<T>(TableColumn column)
+        public static TableColumn TableColumn(Alignment alignment, object content)
         {
-            Table<T> table = Table<T>();
-
-            table.Columns.Add(column);
-
-            return table;
+            return new TableColumn(alignment, content);
         }
 
-        public static Table<T> Table<T>(TableColumn column1, TableColumn column2)
+        public static TableColumn TableColumn(Alignment alignment, params object[] content)
         {
-            Table<T> table = Table<T>();
-
-            table.AddColumns(column1, column2);
-
-            return table;
+            return new TableColumn(alignment, content);
         }
 
-        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3)
+        public static TableRow TableRow(object content)
         {
-            Table<T> table = Table<T>();
-
-            table.AddColumns(column1, column2, column3);
-
-            return table;
+            return new TableRow(content);
         }
 
-        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
+        public static TableRow TableRow(params object[] content)
         {
-            Table<T> table = Table<T>();
-
-            table.AddColumns(column1, column2, column3, column4);
-
-            return table;
-        }
-
-        public static Table<T> Table<T>(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
-        {
-            var table = new Table<T>();
-
-            table.AddColumns(column1, column2, column3, column4, column5);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable()
-        {
-            return new SimpleTable();
-        }
-
-        public static SimpleTable SimpleTable(IEnumerable<TableColumn> columns, params TableRow[] rows)
-        {
-            return SimpleTable(columns, (IEnumerable<TableRow>)rows);
-        }
-
-        public static SimpleTable SimpleTable(IEnumerable<TableColumn> columns, IEnumerable<TableRow> rows)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.AddColumns(columns);
-
-            foreach (TableRow row in rows)
-                table.Rows.Add(row);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(params TableColumn[] columns)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.AddColumns(columns);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(TableColumn column)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.Columns.Add(column);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.AddColumns(column1, column2);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.AddColumns(column1, column2, column3);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
-        {
-            SimpleTable table = SimpleTable();
-
-            table.AddColumns(column1, column2, column3, column4);
-
-            return table;
-        }
-
-        public static SimpleTable SimpleTable(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
-        {
-            var table = new SimpleTable();
-
-            table.AddColumns(column1, column2, column3, column4, column5);
-
-            return table;
-        }
-
-        public static TableColumnCollection TableHeader()
-        {
-            return new TableColumnCollection();
-        }
-
-        public static TableColumnCollection TableHeader(TableColumn column)
-        {
-            return new TableColumnCollection() { column };
-        }
-
-        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2)
-        {
-            return new TableColumnCollection() { column1, column2 };
-        }
-
-        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3)
-        {
-            return new TableColumnCollection() { column1, column2, column3 };
-        }
-
-        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4)
-        {
-            return new TableColumnCollection() { column1, column2, column3, column4 };
-        }
-
-        public static TableColumnCollection TableHeader(TableColumn column1, TableColumn column2, TableColumn column3, TableColumn column4, TableColumn column5)
-        {
-            return new TableColumnCollection() { column1, column2, column3, column4, column5 };
-        }
-
-        public static TableColumnCollection TableHeader(params TableColumn[] columns)
-        {
-            if (columns == null)
-                throw new ArgumentNullException(nameof(columns));
-
-            TableColumnCollection tableHeader = TableHeader();
-
-            for (int i = 0; i < columns.Length; i++)
-                tableHeader.Add(columns[i]);
-
-            return tableHeader;
-        }
-
-        public static TableColumn TableColumn(string name, Alignment alignment = Alignment.Left)
-        {
-            return new TableColumn(name, alignment);
-        }
-
-        //TODO: test
-        public static TableRow TableRow(params object[] values)
-        {
-            var row = new TableRow();
-
-            foreach (object value in values)
-                row.Add(value);
-
-            return row;
-        }
-
-        public static TableRow TableRow(object value)
-        {
-            return new TableRow() { value };
-        }
-
-        public static TableRow TableRow(object value1, object value2)
-        {
-            return new TableRow() { value1, value2 };
-        }
-
-        public static TableRow TableRow(object value1, object value2, object value3)
-        {
-            return new TableRow() { value1, value2, value3 };
-        }
-
-        public static TableRow TableRow(object value1, object value2, object value3, object value4)
-        {
-            return new TableRow() { value1, value2, value3, value4 };
-        }
-
-        public static TableRow TableRow(object value1, object value2, object value3, object value4, object value5)
-        {
-            return new TableRow() { value1, value2, value3, value4, value5 };
+            return new TableRow(content);
         }
     }
 }

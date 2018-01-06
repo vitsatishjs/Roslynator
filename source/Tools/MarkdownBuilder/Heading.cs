@@ -5,29 +5,28 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Level = {Level}")]
+    [DebuggerDisplay("{Kind} {Level} {ToString(),nq}")]
     public class Heading : MContainer
     {
-        internal Heading(int level, object content)
-            : base(content)
+        public Heading(int level)
         {
-            if (level < 1
-                || level > 6)
-            {
-                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
-            }
+            ThrowOnInvalidLevel(level);
 
             Level = level;
         }
 
-        internal Heading(int level, params object[] content)
+        public Heading(int level, object content)
             : base(content)
         {
-            if (level < 1
-                || level > 6)
-            {
-                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
-            }
+            ThrowOnInvalidLevel(level);
+
+            Level = level;
+        }
+
+        public Heading(int level, params object[] content)
+            : base(content)
+        {
+            ThrowOnInvalidLevel(level);
 
             Level = level;
         }
@@ -50,6 +49,15 @@ namespace Pihrtsoft.Markdown
         internal override MElement Clone()
         {
             return new Heading(this);
+        }
+
+        internal static void ThrowOnInvalidLevel(int level)
+        {
+            if (level < 1
+                || level > 6)
+            {
+                throw new ArgumentOutOfRangeException(nameof(level), level, ErrorMessages.HeadingLevelMustBeInRangeFromOneToSix);
+            }
         }
     }
 }

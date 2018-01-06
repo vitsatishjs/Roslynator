@@ -2,39 +2,37 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public class TableRow : MContainer
+    public class MOrderedList : MContainer
     {
-        public TableRow()
+        public MOrderedList()
         {
         }
 
-        public TableRow(object content)
+        public MOrderedList(object content)
             : base(content)
         {
         }
 
-        public TableRow(params object[] content)
+        public MOrderedList(params object[] content)
             : base(content)
         {
         }
 
-        public TableRow(TableRow other)
+        public MOrderedList(MOrderedList other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.TableRow;
-
-        internal override bool AllowStringConcatenation => false;
+        public override MarkdownKind Kind => MarkdownKind.OrderedList;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendTableRow(this);
+            return builder.AppendOrderedItems(Elements());
         }
 
         internal override MElement Clone()
         {
-            return new TableRow(this);
+            return new MOrderedList(this);
         }
     }
 }

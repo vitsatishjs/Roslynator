@@ -5,24 +5,26 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Number = {Number}")]
-    public class OrderedListItem : ListItem
+    [DebuggerDisplay("{Kind} Number = {Number} {ToString(),nq}")]
+    public class OrderedListItem : MBlockContainer
     {
-        internal OrderedListItem(int number, object content)
-            : base(content)
+        public OrderedListItem(int number)
         {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
-
+            ThrowOnInvalidNumber(number);
             Number = number;
         }
 
-        internal OrderedListItem(int number, params object[] content)
+        public OrderedListItem(int number, object content)
             : base(content)
         {
-            if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
+            ThrowOnInvalidNumber(number);
+            Number = number;
+        }
 
+        public OrderedListItem(int number, params object[] content)
+            : base(content)
+        {
+            ThrowOnInvalidNumber(number);
             Number = number;
         }
 
@@ -47,6 +49,12 @@ namespace Pihrtsoft.Markdown
         internal override MElement Clone()
         {
             return new OrderedListItem(this);
+        }
+
+        internal static void ThrowOnInvalidNumber(int number)
+        {
+            if (number < 0)
+                throw new ArgumentOutOfRangeException(nameof(number), number, ErrorMessages.OrderedListItemNumberCannotBeNegative);
         }
     }
 }

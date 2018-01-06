@@ -2,21 +2,37 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public abstract class ListItem : MBlockContainer
+    public class ListItem : MBlockContainer
     {
-        protected ListItem(object content)
+        public ListItem()
+        {
+        }
+
+        public ListItem(object content)
             : base(content)
         {
         }
 
-        protected ListItem(params object[] content)
+        public ListItem(params object[] content)
             : base(content)
         {
         }
 
-        protected ListItem(ListItem other)
+        public ListItem(ListItem other)
             : base(other)
         {
+        }
+
+        public override MarkdownKind Kind => MarkdownKind.ListItem;
+
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
+        {
+            return builder.AppendListItem(Elements());
+        }
+
+        internal override MElement Clone()
+        {
+            return new ListItem(this);
         }
     }
 }

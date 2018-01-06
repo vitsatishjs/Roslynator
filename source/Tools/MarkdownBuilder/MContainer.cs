@@ -1,32 +1,31 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System;
-using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    public abstract class MContainer : MElement
+    public class MContainer : MElement
     {
         internal object content;
 
-        internal MContainer()
+        public MContainer()
         {
         }
 
-        internal MContainer(object content)
-        {
-            Add(content);
-        }
-
-        internal MContainer(params object[] content)
+        public MContainer(object content)
         {
             Add(content);
         }
 
-        internal MContainer(MContainer other)
+        public MContainer(params object[] content)
+        {
+            Add(content);
+        }
+
+        public MContainer(MContainer other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -49,6 +48,10 @@ namespace Pihrtsoft.Markdown
                 }
             }
         }
+
+        public override MarkdownKind Kind => MarkdownKind.Container;
+
+        internal virtual bool AllowStringConcatenation => true;
 
         public MElement FirstElement
         {
@@ -78,6 +81,16 @@ namespace Pihrtsoft.Markdown
 
                 return (MElement)content;
             }
+        }
+
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
+        {
+            return builder.AppendRange(Elements());
+        }
+
+        internal override MElement Clone()
+        {
+            return new MContainer(this);
         }
 
         public IEnumerable<MElement> Elements()
@@ -227,16 +240,24 @@ namespace Pihrtsoft.Markdown
             }
             else if (s.Length > 0)
             {
-                if (content is string stringContent)
+                if (AllowStringConcatenation)
                 {
-                    content = stringContent + s;
-                }
-                else if (content is MText text)
-                {
-                    text.Value += s;
+                    if (content is string stringContent)
+                    {
+                        content = stringContent + s;
+                    }
+                    else if (content is MText text)
+                    {
+                        text.Value += s;
+                    }
+                    else
+                    {
+                        AppendElement(new MText(s));
+                    }
                 }
                 else
                 {
+                    ConvertTextToElement();
                     AppendElement(new MText(s));
                 }
             }

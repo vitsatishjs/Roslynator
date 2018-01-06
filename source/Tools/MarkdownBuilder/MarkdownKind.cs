@@ -6,11 +6,13 @@ namespace Pihrtsoft.Markdown
     {
         None,
         Document,
+        Text,
         Emphasis,
+        Code,
         Heading,
-        ItemList,
-        BulletListItem,
+        ListItem,
         OrderedListItem,
+        OrderedList,
         TaskListItem,
         Link,
         LinkReference,
@@ -23,10 +25,10 @@ namespace Pihrtsoft.Markdown
         QuoteBlock,
         HorizontalRule,
         Table,
+        TableRow,
+        TableColumn,
         Comment,
-        Text,
-        Code,
         HtmlEntity,
-        Join
+        Container
     }
 }

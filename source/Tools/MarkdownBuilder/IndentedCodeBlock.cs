@@ -8,7 +8,7 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("{Kind} {Text,nq}")]
     public class IndentedCodeBlock : MElement
     {
-        internal IndentedCodeBlock(string text)
+        public IndentedCodeBlock(string text)
         {
             Text = text;
         }

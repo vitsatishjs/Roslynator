@@ -4,6 +4,10 @@ namespace Pihrtsoft.Markdown
 {
     public abstract class MBlockContainer : MContainer
     {
+        protected MBlockContainer()
+        {
+        }
+
         protected MBlockContainer(object content)
             : base(content)
         {

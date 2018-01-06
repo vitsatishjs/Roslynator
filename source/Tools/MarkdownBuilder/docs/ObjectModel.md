@@ -20,6 +20,10 @@
         * BoldText
         * ItalicText
         * StrikethroughText
+      * Table
+      * TableHeader
+      * TableRow
+      * TableCell
       * MBlockContainer (all except MDocument)
         * MDocument
         * BlockQuote

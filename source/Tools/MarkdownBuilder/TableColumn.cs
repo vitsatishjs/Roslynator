@@ -1,63 +1,47 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Name,nq} Alignment = {Alignment}")]
-    public struct TableColumn : IEquatable<TableColumn>
+    [DebuggerDisplay("{Kind} Alignment = {Alignment} {ToString(),nq}")]
+    public class TableColumn : MContainer
     {
-        internal TableColumn(string name, Alignment alignment = Alignment.Left)
+        public TableColumn(Alignment alignment)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
             Alignment = alignment;
         }
 
-        public string Name { get; }
-
-        public Alignment Alignment { get; }
-
-        public TableColumn WithName(string name)
+        public TableColumn(Alignment alignment, object content)
+            : base(content)
         {
-            return new TableColumn(name, Alignment);
+            Alignment = alignment;
         }
 
-        public TableColumn WithAlignment(Alignment alignment)
+        public TableColumn(Alignment alignment, params object[] content)
+            : base(content)
         {
-            return new TableColumn(Name, alignment);
+            Alignment = alignment;
         }
 
-        public override bool Equals(object obj)
+        public TableColumn(TableColumn other)
+            : base(other)
         {
-            return (obj is TableColumn other)
-                && Equals(other);
+            Alignment = other.Alignment;
         }
 
-        public bool Equals(TableColumn other)
+        public Alignment Alignment { get; set; }
+
+        public override MarkdownKind Kind => MarkdownKind.TableColumn;
+
+        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return Alignment == other.Alignment
-                   && string.Equals(Name, other.Name, StringComparison.Ordinal);
+            return builder.AppendRange(Elements());
         }
 
-        public override int GetHashCode()
+        internal override MElement Clone()
         {
-            return Hash.Combine(Name, Hash.Create((int)Alignment));
-        }
-
-        public static bool operator ==(TableColumn column1, TableColumn column2)
-        {
-            return column1.Equals(column2);
-        }
-
-        public static bool operator !=(TableColumn column1, TableColumn column2)
-        {
-            return !(column1 == column2);
-        }
-
-        public static implicit operator TableColumn(string value)
-        {
-            return new TableColumn(value);
+            return new TableColumn(this);
         }
     }
 }
