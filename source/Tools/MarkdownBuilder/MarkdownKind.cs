@@ -7,6 +7,7 @@ namespace Pihrtsoft.Markdown
         None,
         Document,
         Text,
+        RawText,
         Emphasis,
         InlineCode,
         Heading,

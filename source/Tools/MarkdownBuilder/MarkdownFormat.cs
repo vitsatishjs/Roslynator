@@ -35,6 +35,8 @@ namespace Pihrtsoft.Markdown
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
 
+        internal static MarkdownFormat DefaultWithTableOuterDelimiter { get; } = Default.WithTableOptions(Default.TableOptions | TableOptions.OuterDelimiter);
+
         public EmphasisStyle BoldStyle { get; }
 
         public EmphasisStyle AlternativeBoldStyle => GetAlternativeEmphasisStyle(BoldStyle);

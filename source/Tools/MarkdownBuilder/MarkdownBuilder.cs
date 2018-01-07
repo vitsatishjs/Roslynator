@@ -337,73 +337,102 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendListItems(params MElement[] items)
+        public MarkdownBuilder AppendListItems(params MElement[] content)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
+            return AppendListItems((IEnumerable<MElement>)content);
+        }
 
-            for (int i = 0; i < items.Length; i++)
-                AppendListItem(items[i]);
+        public MarkdownBuilder AppendListItems(IEnumerable<MElement> content)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
+            foreach (MElement element in content)
+            {
+                if (element is ListItem item)
+                {
+                    AppendListItem(item.TextOrElements());
+                }
+                else
+                {
+                    AppendListItem(element);
+                }
+            }
+
+            AppendLine();
             return this;
         }
 
-        public MarkdownBuilder AppendListItems(IEnumerable<MElement> items)
+        public MarkdownBuilder AppendOrderedListItems(params MElement[] content)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
-            foreach (MElement item in items)
-                AppendListItem(item);
+            for (int i = 0; i < content.Length; i++)
+            {
+                MElement element = content[i];
 
+                if (element is ListItem item)
+                {
+                    AppendOrderedListItem(i + 1, item.TextOrElements());
+                }
+                else
+                {
+                    AppendOrderedListItem(i + 1, element);
+                }
+            }
+
+            AppendLine();
             return this;
         }
 
-        public MarkdownBuilder AppendOrderedListItems(params MElement[] items)
+        public MarkdownBuilder AppendOrderedListItems(IEnumerable<MElement> content)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
-
-            for (int i = 0; i < items.Length; i++)
-                AppendOrderedListItem(i + 1, items[i]);
-
-            return this;
-        }
-
-        public MarkdownBuilder AppendOrderedListItems(IEnumerable<MElement> items)
-        {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
             int number = 1;
-            foreach (MElement item in items)
+            foreach (MElement element in content)
             {
-                AppendOrderedListItem(number, item);
+                if (element is ListItem item)
+                {
+                    AppendOrderedListItem(number, item.TextOrElements());
+                }
+                else
+                {
+                    AppendOrderedListItem(number, element);
+                }
+
                 number++;
             }
 
+            AppendLine();
             return this;
         }
 
-        public MarkdownBuilder AppendTaskListItems(params MElement[] items)
+        public MarkdownBuilder AppendTaskListItems(params MElement[] content)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
-
-            for (int i = 0; i < items.Length; i++)
-                AppendTaskListItem(items[i]);
-
-            return this;
+            return AppendTaskListItems((IEnumerable<MElement>)content);
         }
 
-        public MarkdownBuilder AppendTaskListItems(IEnumerable<MElement> items)
+        public MarkdownBuilder AppendTaskListItems(IEnumerable<MElement> content)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
 
-            foreach (MElement item in items)
-                AppendTaskListItem(item);
+            foreach (MElement element in content)
+            {
+                if (element is ListItem item)
+                {
+                    AppendTaskListItem(item.TextOrElements());
+                }
+                else
+                {
+                    AppendTaskListItem(element);
+                }
+            }
 
+            AppendLine();
             return this;
         }
 
@@ -562,7 +591,7 @@ namespace Pihrtsoft.Markdown
                 case CodeFenceStyle.Tilde:
                     return AppendSyntax("~~~");
                 default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(CodeFenceStyle), nameof(CodeFenceStyle));
+                    throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CodeFenceStyle));
             }
         }
 
@@ -626,14 +655,14 @@ namespace Pihrtsoft.Markdown
             {
                 if (en.MoveNext())
                 {
-                    List<int> widths = (FormatTableHeader || FormatTableContent) ? CalculateWidths(rows) : null;
+                    List<TableColumnInfo> columns = CalculateWidths(rows);
 
                     MElement header = en.Current;
 
-                    AppendTableHeader(header, widths);
+                    AppendTableHeader(header, columns);
 
                     while (en.MoveNext())
-                        AppendTableRow(en.Current, widths);
+                        AppendTableRow(en.Current, columns);
                 }
             }
 
@@ -641,88 +670,129 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        private List<int> CalculateWidths(IEnumerable<MElement> rows)
+        private List<TableColumnInfo> CalculateWidths(IEnumerable<MElement> rows)
         {
             using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
-                if (en.MoveNext())
+                MarkdownBuilder mb = MarkdownBuilderCache.GetInstance(Format);
+
+                en.MoveNext();
+
+                MElement header = en.Current;
+
+                var infos = new List<TableColumnInfo>();
+
+                if (header is MContainer container)
                 {
-                    MarkdownBuilder mb = MarkdownBuilderCache.GetInstance(Format);
+                    AppendHeaderCells(container, mb, infos);
+                }
+                else
+                {
+                    mb.Append(header);
+                    infos.Add(TableColumnInfo.Create(header, mb));
+                }
+
+                if (FormatTableContent)
+                {
+                    mb.Clear();
                     int index = 0;
 
-                    MElement row = en.Current;
-
-                    var widths = new List<int>();
-
-                    if (FormatTableHeader)
+                    while (en.MoveNext())
                     {
-                        if (row is MContainer container)
+                        int columnCount = infos.Count;
+
+                        MElement row = en.Current;
+
+                        if (row is MContainer rowContainer)
                         {
-                            foreach (MElement content in container.Elements())
+                            int i = 0;
+                            foreach (MElement cell in rowContainer.Elements())
                             {
-                                mb.Append(content);
-                                widths.Add(mb.Length - index);
+                                mb.Append(cell);
+                                infos[i] = infos[i].UpdateWidthIfGreater(mb.Length - index);
                                 index = mb.Length;
+                                i++;
+
+                                if (i == columnCount)
+                                    break;
                             }
                         }
                         else
                         {
                             mb.Append(row);
-                            widths.Add(mb.Length);
+                            infos[0] = infos[0].UpdateWidthIfGreater(mb.Length - index);
+                            index = mb.Length;
                         }
                     }
-                    else
+                }
+
+                MarkdownBuilderCache.Free(mb);
+
+                return infos;
+            }
+        }
+
+        private void AppendHeaderCells(
+            MElement header,
+            MarkdownBuilder mb,
+            List<TableColumnInfo> infos)
+        {
+            if (!(header is MContainer container))
+            {
+                mb.Append(header);
+                infos.Add(TableColumnInfo.Create(header, mb));
+                return;
+            }
+
+            int index = 0;
+
+            bool isFirst = true;
+            bool isLast = false;
+
+            int i = 0;
+
+            using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    MElement curr = en.Current;
+
+                    isLast = !en.MoveNext();
+
+                    AppendHeaderCell(curr);
+
+                    if (!isLast)
                     {
-                        widths.Add(0);
+                        isFirst = false;
 
-                        while (en.MoveNext())
-                            widths.Add(0);
-                    }
-
-                    if (FormatTableContent)
-                    {
-                        mb.Clear();
-                        index = 0;
-
-                        while (en.MoveNext())
+                        do
                         {
-                            int columnCount = widths.Count;
+                            curr = en.Current;
+                            isLast = !en.MoveNext();
+                            i++;
 
-                            row = en.Current;
-
-                            if (row is MContainer container)
-                            {
-                                int i = 0;
-                                foreach (MElement cell in container.Elements())
-                                {
-                                    mb.Append(cell);
-                                    widths[i] = Math.Max(widths[i], mb.Length - index);
-                                    index = mb.Length;
-                                    i++;
-
-                                    if (i == columnCount)
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                mb.Append(row);
-                                widths[0] = Math.Max(widths[0], mb.Length - index);
-                                index = mb.Length;
-                            }
+                            AppendHeaderCell(curr);
                         }
+                        while (!isLast);
                     }
-
-                    MarkdownBuilderCache.Free(mb);
-
-                    return widths;
                 }
             }
 
-            return null;
+            void AppendHeaderCell(MElement cellContent)
+            {
+                if (isFirst
+                    || isLast
+                    || FormatTableHeader)
+                {
+                    mb.Append(cellContent);
+                }
+
+                infos.Add(TableColumnInfo.Create(cellContent, mb, index));
+                index = mb.Length;
+            }
         }
 
-        internal void AppendTableHeader(MElement content, IList<int> widths = null)
+        internal void AppendTableHeader(MElement content, IList<TableColumnInfo> columns)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -767,13 +837,13 @@ namespace Pihrtsoft.Markdown
             }
 
             AppendLine();
-            AppendTableHeaderSeparator(content, widths);
+            AppendTableHeaderSeparator(columns);
 
             void AppendCell(MElement cellContent)
             {
-                Alignment alignment = (cellContent as TableColumn)?.Alignment ?? Alignment.Left;
+                Alignment alignment = columns[i].Alignment;
 
-                AppendTableCellStart(isFirst, isLast);
+                AppendTableCellStart(isFirst, isLast, columns[i].IsWhiteSpace);
 
                 if (TablePadding)
                 {
@@ -791,7 +861,7 @@ namespace Pihrtsoft.Markdown
                 {
                     int minimalWidth = Math.Max(width, 3);
 
-                    AppendPadRight(width, widths?[i], minimalWidth);
+                    AppendPadRight(width, columns[i].Width, minimalWidth);
 
                     if (!TablePadding
                         && alignment != Alignment.Left)
@@ -800,60 +870,23 @@ namespace Pihrtsoft.Markdown
                     }
                 }
 
-                AppendTableCellEnd(isLast);
+                AppendTableCellEnd(isLast, columns[i].IsWhiteSpace);
             }
         }
 
-        private void AppendTableHeaderSeparator(MElement content, IList<int> widths = null)
+        private void AppendTableHeaderSeparator(IList<TableColumnInfo> columns)
         {
-            bool isFirst = true;
-            bool isLast = true;
+            int count = columns.Count;
 
-            int i = 0;
-
-            if (content is MContainer container)
+            for (int i = 0; i < count; i++)
             {
-                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
-                {
-                    if (en.MoveNext())
-                    {
-                        MElement curr = en.Current;
+                TableColumnInfo column = columns[i];
 
-                        isLast = !en.MoveNext();
+                bool isLast = i == count - 1;
 
-                        AppendCell(curr);
+                AppendTableCellStart(i == 0, isLast, column.IsWhiteSpace);
 
-                        if (!isLast)
-                        {
-                            isFirst = false;
-
-                            do
-                            {
-                                curr = en.Current;
-                                isLast = !en.MoveNext();
-                                i++;
-                                AppendCell(curr);
-                            }
-                            while (!isLast);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                isLast = true;
-                AppendCell(content);
-            }
-
-            AppendLine();
-
-            void AppendCell(MElement column)
-            {
-                Alignment alignment = (column as TableColumn)?.Alignment ?? Alignment.Left;
-
-                AppendTableCellStart(isFirst, isLast);
-
-                if (alignment == Alignment.Center)
+                if (column.Alignment == Alignment.Center)
                 {
                     AppendSyntax(":");
                 }
@@ -865,9 +898,9 @@ namespace Pihrtsoft.Markdown
                 AppendSyntax("---");
 
                 if (FormatTableHeader)
-                    AppendPadRight(3, widths?[i], 3, '-');
+                    AppendPadRight(3, columns[i].Width, 3, '-');
 
-                if (alignment != Alignment.Left)
+                if (column.Alignment != Alignment.Left)
                 {
                     AppendSyntax(":");
                 }
@@ -876,15 +909,20 @@ namespace Pihrtsoft.Markdown
                     AppendTablePadding();
                 }
 
-                if (isLast
-                    && TableOuterDelimiter)
+                if (isLast)
                 {
-                    AppendSyntax(TableDelimiter);
+                    if (TableOuterDelimiter
+                        || columns[i].IsWhiteSpace)
+                    {
+                        AppendSyntax(TableDelimiter);
+                    }
                 }
             }
+
+            AppendLine();
         }
 
-        internal MarkdownBuilder AppendTableRow(MElement content, List<int> widths = null)
+        internal MarkdownBuilder AppendTableRow(MElement content, List<TableColumnInfo> columns = null)
         {
             bool isFirst = true;
             bool isLast = false;
@@ -936,20 +974,21 @@ namespace Pihrtsoft.Markdown
                 int length = AppendGetLength(cell);
 
                 if (FormatTableContent)
-                    AppendPadRight(length, widths?[i]);
+                    AppendPadRight(length, columns[i].Width);
 
                 AppendTableCellEnd(isLast);
             }
         }
 
-        private void AppendTableCellStart(bool isFirst, bool isLast)
+        private void AppendTableCellStart(bool isFirst, bool isLast, bool isWhiteSpace = false)
         {
             if (isFirst)
             {
                 AppendLineIfNecessary();
 
                 if (TableOuterDelimiter
-                    || isLast)
+                    || isLast
+                    || isWhiteSpace)
                 {
                     AppendSyntax(TableDelimiter);
                 }
@@ -960,7 +999,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void AppendTableCellEnd(bool isLast, bool isBlankCell = false)
+        private void AppendTableCellEnd(bool isLast, bool isWhiteSpace = false)
         {
             if (isLast)
             {
@@ -969,7 +1008,7 @@ namespace Pihrtsoft.Markdown
                     AppendTablePadding();
                     AppendSyntax(TableDelimiter);
                 }
-                else if (isBlankCell)
+                else if (isWhiteSpace)
                 {
                     AppendSyntax(TableDelimiter);
                 }
@@ -1009,7 +1048,7 @@ namespace Pihrtsoft.Markdown
             }
             else
             {
-                throw new ArgumentException(ErrorMessages.UnknownEnumValue(CharacterReferenceFormat), nameof(CharacterReferenceFormat));
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CharacterReferenceFormat));
             }
 
             AppendSyntax(";");

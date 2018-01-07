@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown
         {
             if (content is string s)
             {
-                return builder.AppendTaskListItem(s);
+                return builder.AppendTaskListItem(s).AppendLine();
             }
             else
             {
