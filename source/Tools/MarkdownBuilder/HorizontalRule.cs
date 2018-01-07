@@ -15,6 +15,12 @@ namespace Pihrtsoft.Markdown
             Space = space ?? "";
         }
 
+        public HorizontalRule(HorizontalRuleFormat format)
+            : this(format.Style, format.Count, format.Space)
+        {
+
+        }
+
         public HorizontalRule(HorizontalRule other)
         {
             if (other == null)

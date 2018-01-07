@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} {ToString(),nq}")]
+    [DebuggerDisplay("{Kind} {GetString(),nq}")]
     public class TaskListItem : MBlockContainer
     {
         public TaskListItem(bool isCompleted)

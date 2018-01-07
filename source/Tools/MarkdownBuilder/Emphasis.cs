@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Option} {ToString(),nq}")]
+    [DebuggerDisplay("{Option} {GetString(),nq}")]
     public class Emphasis : MContainer
     {
         public Emphasis(EmphasisOption option)

@@ -205,12 +205,12 @@ namespace Pihrtsoft.Markdown.Tests
                 ItalicStyle(),
                 ListItemStyle(),
                 CreateHorizontalRule(),
-                HeadingStyle(),
                 HeadingOptions(),
                 TableOptions(),
                 CodeFenceStyle(),
                 CodeBlockOptions(),
-                HtmlEntityFormat());
+                HtmlEntityFormat(),
+                horizontalRuleFormat: HeadingStyle());
         }
 
         public static EmphasisStyle BoldStyle()
@@ -275,7 +275,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(CharacterReferenceFormat? format)
         {
-            return CreateBuilder((format != null) ? new MarkdownFormat(htmlEntityFormat: format.Value) : null);
+            return CreateBuilder((format != null) ? new MarkdownFormat() : null);
         }
 
         public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)

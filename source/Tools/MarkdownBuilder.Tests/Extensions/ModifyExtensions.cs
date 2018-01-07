@@ -140,13 +140,13 @@ namespace Pihrtsoft.Markdown.Tests
                 x.BoldStyle.Modify(),
                 x.ItalicStyle.Modify(),
                 x.ListItemStyle.Modify(),
-                x.HorizontalRule.Modify(),
-                x.HeadingStyle.Modify(),
+                x.HorizontalRuleFormat.Modify(),
                 x.HeadingOptions.Modify(),
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
-                x.CharacterReferenceFormat.Modify());
+                x.CharacterReferenceFormat.Modify(),
+                horizontalRuleFormat: x.HeadingStyle.Modify());
         }
 
         public static ListItemStyle Modify(this ListItemStyle style)

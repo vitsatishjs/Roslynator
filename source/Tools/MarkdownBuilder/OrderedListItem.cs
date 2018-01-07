@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Number = {Number} {ToString(),nq}")]
+    [DebuggerDisplay("{Kind} Number = {Number} {GetString(),nq}")]
     public class OrderedListItem : MBlockContainer
     {
         public OrderedListItem(int number)

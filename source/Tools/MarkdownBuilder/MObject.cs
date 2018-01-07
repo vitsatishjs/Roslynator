@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} {ToString(),nq}")]
+    [DebuggerDisplay("{Kind}")]
     public abstract class MObject
     {
         internal MContainer parent;
@@ -16,6 +16,11 @@ namespace Pihrtsoft.Markdown
             get { return TopmostParentOrSelf() as MDocument; }
         }
 
+        public MContainer Parent
+        {
+            get { return parent; }
+        }
+
         internal MObject TopmostParentOrSelf()
         {
             var x = this;
@@ -24,11 +29,6 @@ namespace Pihrtsoft.Markdown
                 x = x.parent;
 
             return x;
-        }
-
-        public MContainer Parent
-        {
-            get { return parent; }
         }
     }
 }

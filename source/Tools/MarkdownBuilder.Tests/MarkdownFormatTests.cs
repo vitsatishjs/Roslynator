@@ -48,11 +48,11 @@ namespace Pihrtsoft.Markdown.Tests
 
             var horizontalRule = new HorizontalRule(style, count, space);
 
-            var format = new MarkdownFormat(horizontalRule: horizontalRule);
+            var format = new MarkdownFormat();
 
-            Assert.Equal(style, format.HorizontalRule.Style);
-            Assert.Equal(count, format.HorizontalRule.Count);
-            Assert.Equal(space, format.HorizontalRule.Space);
+            Assert.Equal(style, format.HorizontalRuleFormat.Style);
+            Assert.Equal(count, format.HorizontalRuleFormat.Count);
+            Assert.Equal(space, format.HorizontalRuleFormat.Space);
         }
 
         [Theory]

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Alignment = {Alignment} {ToString(),nq}")]
+    [DebuggerDisplay("{Kind} Alignment = {Alignment} {GetString(),nq}")]
     public class TableColumn : MContainer
     {
         public TableColumn(Alignment alignment)

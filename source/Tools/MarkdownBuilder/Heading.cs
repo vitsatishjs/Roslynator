@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} {Level} {ToString(),nq}")]
+    [DebuggerDisplay("{Kind} {Level} {GetString(),nq}")]
     public class Heading : MContainer
     {
         public Heading(int level)

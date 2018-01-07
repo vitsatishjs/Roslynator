@@ -12,30 +12,41 @@ namespace Pihrtsoft.Markdown
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
             ListItemStyle listItemStyle = ListItemStyle.Asterisk,
             OrderedListItemStyle orderedListItemStyle = OrderedListItemStyle.Dot,
-            HorizontalRule horizontalRule = default(HorizontalRule),
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
-            CharacterReferenceFormat characterReferenceFormat = CharacterReferenceFormat.Hexadecimal)
+            CharacterReferenceFormat characterReferenceFormat = CharacterReferenceFormat.Hexadecimal,
+            HorizontalRuleFormat? horizontalRuleFormat = null)
         {
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
             ListItemStyle = listItemStyle;
             OrderedListItemStyle = orderedListItemStyle;
-            HorizontalRule = horizontalRule;
             HeadingStyle = headingStyle;
             HeadingOptions = headingOptions;
+            TableOptions = tableOptions;
             CodeFenceStyle = codeFenceStyle;
             CodeBlockOptions = codeBlockOptions;
-            TableOptions = tableOptions;
             CharacterReferenceFormat = characterReferenceFormat;
+            HorizontalRuleFormat = horizontalRuleFormat ?? HorizontalRuleFormat.Default;
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
 
-        internal static MarkdownFormat DefaultWithTableOuterDelimiter { get; } = Default.WithTableOptions(Default.TableOptions | TableOptions.OuterDelimiter);
+        internal static MarkdownFormat DebugFormat { get; } = new MarkdownFormat(
+            Default.BoldStyle,
+            Default.ItalicStyle,
+            Default.ListItemStyle,
+            Default.OrderedListItemStyle,
+            Default.HeadingStyle,
+            HeadingOptions.None,
+            TableOptions.OuterDelimiter,
+            Default.CodeFenceStyle,
+            CodeBlockOptions.None,
+            Default.CharacterReferenceFormat,
+            Default.HorizontalRuleFormat);
 
         public EmphasisStyle BoldStyle { get; }
 
@@ -49,7 +60,7 @@ namespace Pihrtsoft.Markdown
 
         public OrderedListItemStyle OrderedListItemStyle { get; }
 
-        public HorizontalRule HorizontalRule { get; }
+        public HorizontalRuleFormat HorizontalRuleFormat { get; }
 
         public HeadingStyle HeadingStyle { get; }
 
@@ -106,13 +117,13 @@ namespace Pihrtsoft.Markdown
                 && ItalicStyle == other.ItalicStyle
                 && ListItemStyle == other.ListItemStyle
                 && OrderedListItemStyle == other.OrderedListItemStyle
-                && HorizontalRule == other.HorizontalRule
                 && HeadingStyle == other.HeadingStyle
                 && HeadingOptions == other.HeadingOptions
                 && CodeFenceStyle == other.CodeFenceStyle
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
-                && CharacterReferenceFormat == other.CharacterReferenceFormat;
+                && CharacterReferenceFormat == other.CharacterReferenceFormat
+                && HorizontalRuleFormat == other.HorizontalRuleFormat;
         }
 
         public override int GetHashCode()
@@ -122,13 +133,13 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)ItalicStyle, hashCode);
             hashCode = Hash.Combine((int)ListItemStyle, hashCode);
             hashCode = Hash.Combine((int)OrderedListItemStyle, hashCode);
-            hashCode = Hash.Combine(HorizontalRule.GetHashCode(), hashCode);
             hashCode = Hash.Combine((int)HeadingStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
             hashCode = Hash.Combine((int)CodeFenceStyle, hashCode);
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
             hashCode = Hash.Combine((int)CharacterReferenceFormat, hashCode);
+            hashCode = Hash.Combine(HorizontalRuleFormat.GetHashCode(), hashCode);
             return hashCode;
         }
 
@@ -149,13 +160,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithItalicStyle(EmphasisStyle italicStyle)
@@ -165,13 +176,13 @@ namespace Pihrtsoft.Markdown
                 italicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithListItemStyle(ListItemStyle listItemStyle)
@@ -181,13 +192,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 listItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithOrderedListItemStyle(OrderedListItemStyle orderedListItemStyle)
@@ -197,29 +208,29 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 orderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
-        public MarkdownFormat WithHorizontalRule(HorizontalRule horizontalRule)
+        public MarkdownFormat WithHorizontalRuleFormat(HorizontalRuleFormat horizontalRuleFormat)
         {
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                horizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                horizontalRuleFormat);
         }
 
         public MarkdownFormat WithHeadingOptions(HeadingStyle headingStyle)
@@ -229,13 +240,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 headingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithHeadingOptions(HeadingOptions headingOptions)
@@ -245,13 +256,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 headingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithTableOptions(TableOptions tableOptions)
@@ -261,13 +272,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 tableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithCodeFenceStyle(CodeFenceStyle codeFenceStyle)
@@ -277,13 +288,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 codeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithCodeBlockOptions(CodeBlockOptions codeBlockOptions)
@@ -293,13 +304,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 codeBlockOptions,
-                CharacterReferenceFormat);
+                CharacterReferenceFormat,
+                HorizontalRuleFormat);
         }
 
         public MarkdownFormat WithCharacterReferenceFormat(CharacterReferenceFormat characterReferenceFormat)
@@ -309,13 +320,13 @@ namespace Pihrtsoft.Markdown
                 ItalicStyle,
                 ListItemStyle,
                 OrderedListItemStyle,
-                HorizontalRule,
                 HeadingStyle,
                 HeadingOptions,
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                characterReferenceFormat);
+                characterReferenceFormat,
+                HorizontalRuleFormat);
         }
     }
 }

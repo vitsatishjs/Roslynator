@@ -59,8 +59,8 @@ namespace Pihrtsoft.Markdown
 
         public override bool Equals(object obj)
         {
-            return (obj is TableColumnInfo info)
-                && Equals(info);
+            return (obj is TableColumnInfo other)
+                && Equals(other);
         }
 
         public bool Equals(TableColumnInfo other)

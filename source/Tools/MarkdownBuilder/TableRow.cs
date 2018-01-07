@@ -32,11 +32,6 @@ namespace Pihrtsoft.Markdown
             return builder.AppendTableRow(this);
         }
 
-        public override string ToString()
-        {
-            return ToString(MarkdownFormat.DefaultWithTableOuterDelimiter);
-        }
-
         internal override MElement Clone()
         {
             return new TableRow(this);

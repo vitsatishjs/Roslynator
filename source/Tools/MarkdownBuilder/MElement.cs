@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Diagnostics;
+
 namespace Pihrtsoft.Markdown
 {
+    [DebuggerDisplay("{Kind} {GetString(),nq}")]
     public abstract class MElement : MObject
     {
         internal MElement next;
@@ -20,6 +23,11 @@ namespace Pihrtsoft.Markdown
             var builder = new MarkdownBuilder(format ?? MarkdownFormat.Default);
             AppendTo(builder);
             return builder.ToString();
+        }
+
+        internal string GetString()
+        {
+            return ToString(MarkdownFormat.DebugFormat);
         }
     }
 }
