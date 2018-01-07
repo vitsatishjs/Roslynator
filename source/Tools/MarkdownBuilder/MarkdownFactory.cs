@@ -5,20 +5,20 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: class MarkdownText, MarkdownText.Create
     public static class MarkdownFactory
     {
-        public static string StrikethroughDelimiter => "~~";
+        internal static string StrikethroughDelimiter => "~~";
 
-        public static string CodeDelimiter => "`";
+        internal static string CodeDelimiter => "`";
 
         internal static char CodeDelimiterChar => '`';
 
-        public static string TableDelimiter => "|";
+        internal static string TableDelimiter => "|";
 
-        public static string QuoteBlockStart => "> ";
+        internal static string QuoteBlockStart => "> ";
 
-        public static MText NewLine { get; } = new MText(Environment.NewLine);
-
+        //TODO: Emphasis
         public static Emphasis Text(EmphasisOption option, object content)
         {
             return new Emphasis(option, content);
@@ -39,7 +39,7 @@ namespace Pihrtsoft.Markdown
             return Text(EmphasisOption.Bold, content);
         }
 
-        public static string BoldDelimiter(EmphasisStyle style)
+        internal static string BoldDelimiter(EmphasisStyle style)
         {
             if (style == EmphasisStyle.Asterisk)
                 return "**";
@@ -60,7 +60,7 @@ namespace Pihrtsoft.Markdown
             return Text(EmphasisOption.Italic, content);
         }
 
-        public static string ItalicDelimiter(EmphasisStyle style)
+        internal static string ItalicDelimiter(EmphasisStyle style)
         {
             if (style == EmphasisStyle.Asterisk)
                 return "*";
@@ -127,62 +127,62 @@ namespace Pihrtsoft.Markdown
 
         public static Heading Heading1(object content)
         {
-            return new Heading(1, content);
+            return Heading(1, content);
         }
 
         public static Heading Heading1(params object[] content)
         {
-            return new Heading(1, content);
+            return Heading(1, content);
         }
 
         public static Heading Heading2(object content)
         {
-            return new Heading(2, content);
+            return Heading(2, content);
         }
 
         public static Heading Heading2(params object[] content)
         {
-            return new Heading(2, content);
+            return Heading(2, content);
         }
 
         public static Heading Heading3(object content)
         {
-            return new Heading(3, content);
+            return Heading(3, content);
         }
 
         public static Heading Heading3(params object[] content)
         {
-            return new Heading(3, content);
+            return Heading(3, content);
         }
 
         public static Heading Heading4(object content)
         {
-            return new Heading(4, content);
+            return Heading(4, content);
         }
 
         public static Heading Heading4(params object[] content)
         {
-            return new Heading(4, content);
+            return Heading(4, content);
         }
 
         public static Heading Heading5(object content)
         {
-            return new Heading(5, content);
+            return Heading(5, content);
         }
 
         public static Heading Heading5(params object[] content)
         {
-            return new Heading(5, content);
+            return Heading(5, content);
         }
 
         public static Heading Heading6(object content)
         {
-            return new Heading(6, content);
+            return Heading(6, content);
         }
 
         public static Heading Heading6(params object[] content)
         {
-            return new Heading(6, content);
+            return Heading(6, content);
         }
 
         internal static char HeadingStartChar(HeadingStyle style)
@@ -263,7 +263,7 @@ namespace Pihrtsoft.Markdown
             return TaskListItem(isCompleted: true, content: content);
         }
 
-        public static string TaskListItemStart(bool isCompleted = false)
+        internal static string TaskListItemStart(bool isCompleted = false)
         {
             if (isCompleted)
             {
@@ -293,6 +293,7 @@ namespace Pihrtsoft.Markdown
             return new Link(text, url, title);
         }
 
+        //TODO: CodeBlock
         public static FencedCodeBlock FencedCodeBlock(string value, string info = null)
         {
             return new FencedCodeBlock(value, info);
@@ -318,7 +319,7 @@ namespace Pihrtsoft.Markdown
             return new HorizontalRule(style, count, space);
         }
 
-        public static char HorizontalRuleChar(HorizontalRuleStyle style)
+        internal static char HorizontalRuleChar(HorizontalRuleStyle style)
         {
             switch (style)
             {
@@ -346,16 +347,6 @@ namespace Pihrtsoft.Markdown
         public static MTable Table(params object[] content)
         {
             return new MTable(content);
-        }
-
-        public static TableRow TableHeader(object content)
-        {
-            return new TableRow(content);
-        }
-
-        public static TableRow TableHeader(params object[] content)
-        {
-            return new TableRow(content);
         }
 
         public static TableColumn TableColumn(Alignment alignment, object content)

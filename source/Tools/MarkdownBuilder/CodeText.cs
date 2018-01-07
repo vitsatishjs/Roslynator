@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: InlineCode
     [DebuggerDisplay("{Kind} {Text, nq}")]
     public class CodeText : MElement
     {

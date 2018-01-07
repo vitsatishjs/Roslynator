@@ -30,12 +30,8 @@ namespace Pihrtsoft.Markdown
         QuoteBlock = 131072,
         HorizontalRule = 262144,
         Table = 524288,
-        DoubleQuotes = 1048576,
-        Parentheses = 2097152,
-        AngleBrackets = 4194304,
-        SquareBrackets = 8388608,
-        Comment = 16777216,
-        StartOfLine = 33554432,
-        PendingEmptyLine = 67108864,
+        Comment = 1048576,
+        StartOfLine = 2097152,
+        PendingEmptyLine = 4194304,
     }
 }

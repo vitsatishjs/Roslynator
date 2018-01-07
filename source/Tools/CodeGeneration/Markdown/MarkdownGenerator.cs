@@ -33,24 +33,29 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateRefactoringsMarkdown(IEnumerable<RefactoringDescriptor> refactorings, IComparer<string> comparer)
         {
-            var document = new MDocument(Heading2("Roslynator Refactorings"));
-
-            foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
-            {
-                document.Add(
-                    Heading4($"{refactoring.Title} ({refactoring.Id})"),
-                    ListItem(Bold("Syntax"), ": ", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name))));
-
-                if (!string.IsNullOrEmpty(refactoring.Span))
-                    document.Add(ListItem(Bold("Span"), ": ", refactoring.Span));
-
-                document.Add(GetRefactoringSamples(refactoring));
-            }
+            var document = new MDocument(
+                Heading2("Roslynator Refactorings"),
+                GetRefactorings());
 
             return document.ToString();
+
+            IEnumerable<object> GetRefactorings()
+            {
+                foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
+                {
+                    yield return Heading4($"{refactoring.Title} ({refactoring.Id})");
+                    yield return ListItem(Bold("Syntax"), ": ", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
+
+                    if (!string.IsNullOrEmpty(refactoring.Span))
+                        yield return ListItem(Bold("Span"), ": ", refactoring.Span);
+
+                    foreach (object item in GetRefactoringSamples(refactoring))
+                        yield return item;
+                }
+            }
         }
 
-        private static IEnumerable<MElement> GetRefactoringSamples(RefactoringDescriptor refactoring)
+        private static IEnumerable<object> GetRefactoringSamples(RefactoringDescriptor refactoring)
         {
             if (refactoring.Samples.Count > 0)
             {
@@ -64,21 +69,21 @@ namespace Roslynator.CodeGeneration.Markdown
                 foreach (ImageDescriptor image in refactoring.Images)
                 {
                     if (!isFirst)
-                        yield return NewLine;
+                        yield return Environment.NewLine;
 
                     yield return RefactoringImage(refactoring, image.Name);
-                    yield return NewLine;
+                    yield return Environment.NewLine;
 
                     isFirst = false;
                 }
 
-                yield return NewLine;
+                yield return Environment.NewLine;
             }
             else
             {
                 yield return RefactoringImage(refactoring, refactoring.Identifier);
-                yield return NewLine;
-                yield return NewLine;
+                yield return Environment.NewLine;
+                yield return Environment.NewLine;
             }
         }
 
@@ -114,7 +119,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
             var document = new MDocument(
                 Heading2(refactoring.Title),
-                Table(TableHeader("Property", "Value"),
+                Table(TableRow("Property", "Value"),
                     TableRow("Id", refactoring.Id),
                     TableRow("Title", refactoring.Title),
                     TableRow("Syntax", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name))),
@@ -134,7 +139,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}"),
                 Table(
-                    TableHeader("Property", "Value"),
+                    TableRow("Property", "Value"),
                     TableRow("Id", analyzer.Id),
                     TableRow("Category", analyzer.Category),
                     TableRow("Default Severity", analyzer.DefaultSeverity),
@@ -171,7 +176,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Analyzers"),
                 Table(
-                    TableHeader("Id", "Title", "Category", TableColumn(Alignment.Center, "Enabled by Default")),
+                    TableRow("Id", "Title", "Category", TableColumn(Alignment.Center, "Enabled by Default")),
                     analyzers.OrderBy(f => f.Id, comparer).Select(f =>
                     {
                         return TableRow(
@@ -189,7 +194,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Refactorings"),
                 Table(
-                    TableHeader("Id", "Title", TableColumn(Alignment.Center, "Enabled by Default")),
+                    TableRow("Id", "Title", TableColumn(Alignment.Center, "Enabled by Default")),
                     refactorings.OrderBy(f => f.Title, comparer).Select(f =>
                     {
                         return TableRow(
@@ -206,7 +211,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Code Fixes"),
                 Table(
-                    TableHeader("Id", "Title", "Fixable Diagnostics", TableColumn(Alignment.Center, "Enabled by Default")),
+                    TableRow("Id", "Title", "Fixable Diagnostics", TableColumn(Alignment.Center, "Enabled by Default")),
                     codeFixes.OrderBy(f => f.Title, comparer).Select(f =>
                     {
                         return TableRow(
@@ -224,7 +229,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Code Fixes by Diagnostic Id"),
                 Table(
-                    TableHeader("Diagnostic", "Code Fixes"),
+                    TableRow("Diagnostic", "Code Fixes"),
                     GetRows()));
 
             return document.ToString();
@@ -251,7 +256,7 @@ namespace Roslynator.CodeGeneration.Markdown
             var document = new MDocument(
                 Heading2("Roslynator Analyzers by Category"),
                 Table(
-                    TableHeader("Category", "Title", "Id", TableColumn(Alignment.Center, "Enabled by Default")),
+                    TableRow("Category", "Title", "Id", TableColumn(Alignment.Center, "Enabled by Default")),
                     GetRows()));
 
             return document.ToString();

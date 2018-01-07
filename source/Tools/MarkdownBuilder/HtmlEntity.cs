@@ -6,6 +6,7 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: rename
     [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
     public class HtmlEntity : MElement
     {
