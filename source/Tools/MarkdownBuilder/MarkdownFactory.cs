@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: class MarkdownText, MarkdownText.Create
     public static class MarkdownFactory
     {
         internal static string StrikethroughDelimiter => "~~";
@@ -16,7 +15,94 @@ namespace Pihrtsoft.Markdown
 
         internal static string TableDelimiter => "|";
 
-        internal static string QuoteBlockStart => "> ";
+        internal static string BlockQuoteStart => "> ";
+
+        internal static string BoldDelimiter(EmphasisStyle style)
+        {
+            if (style == EmphasisStyle.Asterisk)
+                return "**";
+
+            if (style == EmphasisStyle.Underscore)
+                return "__";
+
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+        }
+
+        internal static string ItalicDelimiter(EmphasisStyle style)
+        {
+            if (style == EmphasisStyle.Asterisk)
+                return "*";
+
+            if (style == EmphasisStyle.Underscore)
+                return "_";
+
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+        }
+
+        internal static char HeadingStartChar(HeadingStyle style)
+        {
+            switch (style)
+            {
+                case HeadingStyle.NumberSign:
+                    return '#';
+                default:
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+            }
+        }
+
+        internal static string ListItemStart(ListItemStyle style)
+        {
+            if (style == ListItemStyle.Asterisk)
+                return "* ";
+
+            if (style == ListItemStyle.Plus)
+                return "+ ";
+
+            if (style == ListItemStyle.Minus)
+                return "- ";
+
+            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+        }
+
+        internal static string OrderedListItemStart(OrderedListItemStyle style)
+        {
+            switch (style)
+            {
+                case OrderedListItemStyle.Dot:
+                    return ". ";
+                case OrderedListItemStyle.Parenthesis:
+                    return ") ";
+                default:
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+            }
+        }
+
+        internal static string TaskListItemStart(bool isCompleted = false)
+        {
+            if (isCompleted)
+            {
+                return "- [x] ";
+            }
+            else
+            {
+                return "- [ ] ";
+            }
+        }
+
+        internal static char HorizontalRuleChar(HorizontalRuleStyle style)
+        {
+            switch (style)
+            {
+                case HorizontalRuleStyle.Hyphen:
+                    return '-';
+                case HorizontalRuleStyle.Asterisk:
+                    return '*';
+                case HorizontalRuleStyle.Underscore:
+                    return '_';
+                default:
+                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
+            }
+        }
 
         //TODO: Emphasis
         public static Emphasis Text(EmphasisOption option, object content)
@@ -39,17 +125,6 @@ namespace Pihrtsoft.Markdown
             return Text(EmphasisOption.Bold, content);
         }
 
-        internal static string BoldDelimiter(EmphasisStyle style)
-        {
-            if (style == EmphasisStyle.Asterisk)
-                return "**";
-
-            if (style == EmphasisStyle.Underscore)
-                return "__";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
-
         public static Emphasis Italic(object content)
         {
             return Text(EmphasisOption.Italic, content);
@@ -58,17 +133,6 @@ namespace Pihrtsoft.Markdown
         public static Emphasis Italic(params object[] content)
         {
             return Text(EmphasisOption.Italic, content);
-        }
-
-        internal static string ItalicDelimiter(EmphasisStyle style)
-        {
-            if (style == EmphasisStyle.Asterisk)
-                return "*";
-
-            if (style == EmphasisStyle.Underscore)
-                return "_";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
         public static Emphasis Strikethrough(object content)
@@ -81,9 +145,9 @@ namespace Pihrtsoft.Markdown
             return Text(EmphasisOption.Strikethrough, content);
         }
 
-        public static CodeText Code(string text)
+        public static InlineCode Code(string text)
         {
-            return new CodeText(text);
+            return new InlineCode(text);
         }
 
         public static MContainer Join(object separator, params object[] values)
@@ -185,17 +249,6 @@ namespace Pihrtsoft.Markdown
             return Heading(6, content);
         }
 
-        internal static char HeadingStartChar(HeadingStyle style)
-        {
-            switch (style)
-            {
-                case HeadingStyle.NumberSign:
-                    return '#';
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
-        }
-
         public static ListItem ListItem(object content)
         {
             return new ListItem(content);
@@ -206,20 +259,6 @@ namespace Pihrtsoft.Markdown
             return new ListItem(content);
         }
 
-        internal static string ListItemStart(ListItemStyle style)
-        {
-            if (style == ListItemStyle.Asterisk)
-                return "* ";
-
-            if (style == ListItemStyle.Plus)
-                return "+ ";
-
-            if (style == ListItemStyle.Minus)
-                return "- ";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
-
         public static OrderedListItem OrderedListItem(int number, object content)
         {
             return new OrderedListItem(number, content);
@@ -228,19 +267,6 @@ namespace Pihrtsoft.Markdown
         public static OrderedListItem OrderedListItem(int number, params object[] content)
         {
             return new OrderedListItem(number, content);
-        }
-
-        internal static string OrderedListItemStart(OrderedListItemStyle style)
-        {
-            switch (style)
-            {
-                case OrderedListItemStyle.Dot:
-                    return ". ";
-                case OrderedListItemStyle.Parenthesis:
-                    return ") ";
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
         }
 
         public static TaskListItem TaskListItem(bool isCompleted, object content)
@@ -261,18 +287,6 @@ namespace Pihrtsoft.Markdown
         public static TaskListItem CompletedTaskListItem(params object[] content)
         {
             return TaskListItem(isCompleted: true, content: content);
-        }
-
-        internal static string TaskListItemStart(bool isCompleted = false)
-        {
-            if (isCompleted)
-            {
-                return "- [x] ";
-            }
-            else
-            {
-                return "- [ ] ";
-            }
         }
 
         public static Image Image(string text, string url, string title = null)
@@ -304,14 +318,14 @@ namespace Pihrtsoft.Markdown
             return new IndentedCodeBlock(value);
         }
 
-        public static QuoteBlock QuoteBlock(object content)
+        public static BlockQuote BlockQuote(object content)
         {
-            return new QuoteBlock(content);
+            return new BlockQuote(content);
         }
 
-        public static QuoteBlock QuoteBlock(params object[] content)
+        public static BlockQuote BlockQuote(params object[] content)
         {
-            return new QuoteBlock(content);
+            return new BlockQuote(content);
         }
 
         public static HorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
@@ -319,24 +333,14 @@ namespace Pihrtsoft.Markdown
             return new HorizontalRule(style, count, space);
         }
 
-        internal static char HorizontalRuleChar(HorizontalRuleStyle style)
+        public static CharacterReference CharacterReference(int number)
         {
-            switch (style)
-            {
-                case HorizontalRuleStyle.Hyphen:
-                    return '-';
-                case HorizontalRuleStyle.Asterisk:
-                    return '*';
-                case HorizontalRuleStyle.Underscore:
-                    return '_';
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
+            return new CharacterReference(number);
         }
 
-        public static HtmlEntity HtmlEntity(int number)
+        public static EntityReference EntityReference(string name)
         {
-            return new HtmlEntity(number);
+            return new EntityReference(name);
         }
 
         public static MTable Table(object content)

@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Pihrtsoft.Markdown
@@ -85,7 +86,7 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendRange(Elements());
+            return builder.Append(TextOrElements());
         }
 
         internal override MElement Clone()
@@ -105,6 +106,18 @@ namespace Pihrtsoft.Markdown
                     yield return e;
 
                 } while (e.parent == this && e != content);
+            }
+        }
+
+        internal object TextOrElements()
+        {
+            if (content is string)
+            {
+                return content;
+            }
+            else
+            {
+                return Elements();
             }
         }
 

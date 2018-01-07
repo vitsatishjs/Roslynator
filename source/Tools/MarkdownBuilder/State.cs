@@ -27,7 +27,7 @@ namespace Pihrtsoft.Markdown
         Label = 16384,
         FencedCodeBlock = 32768,
         IndentedCodeBlock = 65536,
-        QuoteBlock = 131072,
+        BlockQuote = 131072,
         HorizontalRule = 262144,
         Table = 524288,
         Comment = 1048576,

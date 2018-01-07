@@ -2,37 +2,37 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public class ListItem : MBlockContainer
+    public class BlockQuote : MBlockContainer
     {
-        public ListItem()
+        public BlockQuote()
         {
         }
 
-        public ListItem(object content)
+        public BlockQuote(object content)
             : base(content)
         {
         }
 
-        public ListItem(params object[] content)
+        public BlockQuote(params object[] content)
             : base(content)
         {
         }
 
-        public ListItem(ListItem other)
+        public BlockQuote(BlockQuote other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.ListItem;
+        public override MarkdownKind Kind => MarkdownKind.BlockQuote;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendListItem(TextOrElements());
+            return builder.AppendBlockQuote(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new ListItem(this);
+            return new BlockQuote(this);
         }
     }
 }

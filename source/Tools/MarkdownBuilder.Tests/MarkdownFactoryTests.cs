@@ -388,7 +388,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             string text = QuoteBlockText();
 
-            QuoteBlock block = MarkdownFactory.QuoteBlock(text);
+            BlockQuote block = MarkdownFactory.BlockQuote(text);
 
             Assert.Equal(text, block.Text);
         }
@@ -760,7 +760,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             int number = IntValue(1, 0xFFFF);
 
-            HtmlEntity entity = MarkdownFactory.HtmlEntity(number);
+            CharacterReference entity = MarkdownFactory.CharacterReference(number);
 
             Assert.Equal(number, entity.Number);
         }

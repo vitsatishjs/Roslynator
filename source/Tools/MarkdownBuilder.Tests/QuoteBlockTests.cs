@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_Equals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock = CreateQuoteBlock();
 
             Assert.True(quoteBlock.Equals((object)quoteBlock));
         }
@@ -21,8 +21,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_NotEquals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = quoteBlock.Modify();
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = quoteBlock.Modify();
 
             Assert.False(quoteBlock.Equals((object)quoteBlock2));
         }
@@ -30,9 +30,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_IEquatableEquals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = quoteBlock;
-            IEquatable<QuoteBlock> equatable = quoteBlock;
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = quoteBlock;
+            IEquatable<BlockQuote> equatable = quoteBlock;
 
             Assert.True(equatable.Equals(quoteBlock2));
         }
@@ -40,9 +40,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_IEquatableNotEquals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = CreateQuoteBlock().Modify();
-            IEquatable<QuoteBlock> equatable = quoteBlock;
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = CreateQuoteBlock().Modify();
+            IEquatable<BlockQuote> equatable = quoteBlock;
 
             Assert.False(quoteBlock.Equals(quoteBlock2));
         }
@@ -50,7 +50,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_GetHashCode_Equal()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock = CreateQuoteBlock();
 
             Assert.Equal(quoteBlock.GetHashCode(), quoteBlock.GetHashCode());
         }
@@ -58,8 +58,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_GetHashCode_NotEqual()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = quoteBlock.Modify();
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = quoteBlock.Modify();
 
             Assert.NotEqual(quoteBlock.GetHashCode(), quoteBlock2.GetHashCode());
         }
@@ -67,8 +67,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_OperatorEquals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = quoteBlock;
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = quoteBlock;
 
             Assert.True(quoteBlock == quoteBlock2);
         }
@@ -76,8 +76,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void QuoteBlock_OperatorNotEquals()
         {
-            QuoteBlock quoteBlock = CreateQuoteBlock();
-            QuoteBlock quoteBlock2 = quoteBlock.Modify();
+            BlockQuote quoteBlock = CreateQuoteBlock();
+            BlockQuote quoteBlock2 = quoteBlock.Modify();
 
             Assert.True(quoteBlock != quoteBlock2);
         }
@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void QuoteBlock_Constructor_AssignText()
         {
             string text = QuoteBlockText();
-            var quoteBlock = new QuoteBlock(text: text);
+            var quoteBlock = new BlockQuote(text: text);
 
             Assert.Equal(text, quoteBlock.Text);
         }

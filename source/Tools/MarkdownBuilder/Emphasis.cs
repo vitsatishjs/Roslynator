@@ -36,7 +36,7 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.Append(Option, Elements());
+            return builder.Append(Option, TextOrElements());
         }
 
         internal override MElement Clone()

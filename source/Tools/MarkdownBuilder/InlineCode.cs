@@ -5,16 +5,15 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: InlineCode
     [DebuggerDisplay("{Kind} {Text, nq}")]
-    public class CodeText : MElement
+    public class InlineCode : MElement
     {
-        public CodeText(string text)
+        public InlineCode(string text)
         {
             Text = text;
         }
 
-        public CodeText(CodeText other)
+        public InlineCode(InlineCode other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -24,16 +23,16 @@ namespace Pihrtsoft.Markdown
 
         public string Text { get; }
 
-        public override MarkdownKind Kind => MarkdownKind.Code;
+        public override MarkdownKind Kind => MarkdownKind.InlineCode;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendCode(Text);
+            return builder.AppendInlineCode(Text);
         }
 
         internal override MElement Clone()
         {
-            return new CodeText(this);
+            return new InlineCode(this);
         }
     }
 }

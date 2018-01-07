@@ -6,16 +6,15 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: rename
     [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
-    public class HtmlEntity : MElement
+    public class CharacterReference : MElement
     {
-        public HtmlEntity(int number)
+        public CharacterReference(int number)
         {
             Number = number;
         }
 
-        public HtmlEntity(HtmlEntity other)
+        public CharacterReference(CharacterReference other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -27,25 +26,25 @@ namespace Pihrtsoft.Markdown
 
         internal string NumberAsHexadecimalString => Number.ToString("x", CultureInfo.InvariantCulture);
 
-        public override MarkdownKind Kind => MarkdownKind.HtmlEntity;
+        public override MarkdownKind Kind => MarkdownKind.CharacterReference;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendHtmlEntity(Number);
+            return builder.AppendCharacterReference(Number);
         }
 
         internal override MElement Clone()
         {
-            return new HtmlEntity(this);
+            return new CharacterReference(this);
         }
 
-        internal string NumberAsString(HtmlEntityFormat format)
+        internal string NumberAsString(CharacterReferenceFormat format)
         {
             switch (format)
             {
-                case HtmlEntityFormat.Hexadecimal:
+                case CharacterReferenceFormat.Hexadecimal:
                     return Number.ToString("x", CultureInfo.InvariantCulture);
-                case HtmlEntityFormat.Decimal:
+                case CharacterReferenceFormat.Decimal:
                     return Number.ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentException(ErrorMessages.UnknownEnumValue(format), nameof(format));

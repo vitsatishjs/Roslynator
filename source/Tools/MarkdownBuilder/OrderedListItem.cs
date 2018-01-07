@@ -43,7 +43,7 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendOrderedListItem(Number, Elements());
+            return builder.AppendOrderedListItem(Number, TextOrElements());
         }
 
         internal override MElement Clone()

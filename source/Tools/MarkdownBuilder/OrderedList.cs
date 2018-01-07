@@ -2,24 +2,23 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MUnorderedList
-    public class MOrderedList : MContainer
+    public class OrderedList : MContainer
     {
-        public MOrderedList()
+        public OrderedList()
         {
         }
 
-        public MOrderedList(object content)
+        public OrderedList(object content)
             : base(content)
         {
         }
 
-        public MOrderedList(params object[] content)
+        public OrderedList(params object[] content)
             : base(content)
         {
         }
 
-        public MOrderedList(MOrderedList other)
+        public OrderedList(OrderedList other)
             : base(other)
         {
         }
@@ -28,12 +27,19 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendOrderedItems(Elements());
+            if (content is string s)
+            {
+                return builder.AppendOrderedListItem(1, s);
+            }
+            else
+            {
+                return builder.AppendOrderedListItems(Elements());
+            }
         }
 
         internal override MElement Clone()
         {
-            return new MOrderedList(this);
+            return new OrderedList(this);
         }
     }
 }

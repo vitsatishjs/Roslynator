@@ -119,9 +119,9 @@ namespace Pihrtsoft.Markdown.Tests
             return new OrderedListItem(item.Number.Modify(0, 10), item.Text.Modify());
         }
 
-        public static QuoteBlock Modify(this QuoteBlock quoteBlock)
+        public static BlockQuote Modify(this BlockQuote quoteBlock)
         {
-            return new QuoteBlock(quoteBlock.Text.Modify());
+            return new BlockQuote(quoteBlock.Text.Modify());
         }
 
         public static TableColumn Modify(this TableColumn column)
@@ -146,7 +146,7 @@ namespace Pihrtsoft.Markdown.Tests
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
-                x.HtmlEntityFormat.Modify());
+                x.CharacterReferenceFormat.Modify());
         }
 
         public static ListItemStyle Modify(this ListItemStyle style)
@@ -275,19 +275,19 @@ namespace Pihrtsoft.Markdown.Tests
             }
         }
 
-        public static HtmlEntity Modify(this HtmlEntity htmlEntity)
+        public static CharacterReference Modify(this CharacterReference htmlEntity)
         {
-            return new HtmlEntity(htmlEntity.Number.Modify(1, 0xFFFF));
+            return new CharacterReference(htmlEntity.Number.Modify(1, 0xFFFF));
         }
 
-        public static HtmlEntityFormat Modify(this HtmlEntityFormat format)
+        public static CharacterReferenceFormat Modify(this CharacterReferenceFormat format)
         {
             switch (format)
             {
-                case HtmlEntityFormat.Hexadecimal:
-                    return HtmlEntityFormat.Decimal;
-                case HtmlEntityFormat.Decimal:
-                    return HtmlEntityFormat.Hexadecimal;
+                case CharacterReferenceFormat.Hexadecimal:
+                    return CharacterReferenceFormat.Decimal;
+                case CharacterReferenceFormat.Decimal:
+                    return CharacterReferenceFormat.Hexadecimal;
                 default:
                     throw new ArgumentException(format.ToString(), nameof(format));
             }

@@ -38,11 +38,11 @@ namespace Pihrtsoft.Markdown
         {
             if (IsCompleted)
             {
-                return builder.AppendCompletedTaskListItem(Elements());
+                return builder.AppendCompletedTaskListItem(TextOrElements());
             }
             else
             {
-                return builder.AppendTaskListItem(Elements());
+                return builder.AppendTaskListItem(TextOrElements());
             }
         }
 

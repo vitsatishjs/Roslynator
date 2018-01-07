@@ -105,7 +105,7 @@ namespace Pihrtsoft.Markdown.Tests
             const string y = CharsEnclosedWithBacktickDoubled;
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Equal("` " + y + " `", mb.AppendCode(x).ToStringAndClear());
+            Assert.Equal("` " + y + " `", mb.AppendInlineCode(x).ToStringAndClear());
             Assert.Equal("` " + y + " `", mb.AppendCode((object)x).ToStringAndClear());
             Assert.Equal("` " + y + y + " `", mb.AppendCode(x, x).ToStringAndClear());
         }
@@ -115,7 +115,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Equal("` `` `", mb.AppendCode("`").ToStringAndClear());
+            Assert.Equal("` `` `", mb.AppendInlineCode("`").ToStringAndClear());
         }
 
         [Fact]
@@ -756,7 +756,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Equal(text2, mb.AppendQuoteBlock(text1).ToStringAndClear());
+            Assert.Equal(text2, mb.AppendBlockQuote(text1).ToStringAndClear());
         }
 
         [Theory]
@@ -765,7 +765,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void MarkdownBuilder_Append_QuoteBlock(string text1, string text2)
         {
             MarkdownBuilder mb = CreateBuilder();
-            QuoteBlock quoteBlock = QuoteBlock(text1);
+            BlockQuote quoteBlock = BlockQuote(text1);
 
             Assert.Equal(text2, mb.Append(quoteBlock).ToStringAndClear());
             Assert.Equal(text2, mb.Append((object)quoteBlock).ToStringAndClear());
@@ -776,35 +776,35 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Throws<ArgumentNullException>(() => mb.AppendQuoteBlock(null));
+            Assert.Throws<ArgumentNullException>(() => mb.AppendBlockQuote(null));
         }
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", HtmlEntityFormat.Hexadecimal)]
-        [InlineData("&#", null, HtmlEntityFormat.Decimal)]
-        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, HtmlEntityFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharacterReferenceFormat.Hexadecimal)]
+        [InlineData("&#", null, CharacterReferenceFormat.Decimal)]
+        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, CharacterReferenceFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 
             int number = HtmlEntityNumber();
 
-            HtmlEntity entity = HtmlEntity(number);
+            CharacterReference entity = CharacterReference(number);
 
-            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.AppendHtmlEntity(number).ToStringAndClear());
+            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.AppendCharacterReference(number).ToStringAndClear());
         }
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", HtmlEntityFormat.Hexadecimal)]
-        [InlineData("&#", null, HtmlEntityFormat.Decimal)]
-        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, HtmlEntityFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharacterReferenceFormat.Hexadecimal)]
+        [InlineData("&#", null, CharacterReferenceFormat.Decimal)]
+        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, CharacterReferenceFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 
             int number = HtmlEntityNumber();
 
-            HtmlEntity htmlEntity = HtmlEntity(number);
+            CharacterReference htmlEntity = CharacterReference(number);
 
             Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.Append(htmlEntity).ToStringAndClear());
         }

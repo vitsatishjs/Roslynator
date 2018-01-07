@@ -2,7 +2,6 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: rename
     public enum EmphasisOption
     {
         Bold = 0,

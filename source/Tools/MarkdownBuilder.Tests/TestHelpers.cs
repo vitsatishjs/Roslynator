@@ -13,8 +13,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public const string CharsWithoutSpaces = @"!""#$%&')(*+,-./:;<=>?@][\^_`}{|~";
 
-        //TODO: escape ~
-        public const string CharsEscaped = @"\! "" \# $ % & ' \) \( \* \+ , \- \. / : ; \< = > ? @ \] \[ \\ ^ \_ \` \} \{ \| ~";
+        public const string CharsEscaped = @"\! "" \# $ % & ' \) \( \* \+ , \- \. / : ; \< = > ? @ \] \[ \\ ^ \_ \` \} \{ \| \~";
 
         public const string CharsSquareBracketsBacktickEscaped = @"! "" # $ % & ' ) ( * + , - . / : ; < = > ? @ \] \[ \ ^ _ \` } { | ~";
 
@@ -164,9 +163,9 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(0, 9);
         }
 
-        public static QuoteBlock CreateQuoteBlock()
+        public static BlockQuote CreateQuoteBlock()
         {
-            return new QuoteBlock(QuoteBlockText());
+            return new BlockQuote(QuoteBlockText());
         }
 
         public static string QuoteBlockText()
@@ -254,9 +253,9 @@ namespace Pihrtsoft.Markdown.Tests
             return (CodeBlockOptions)IntValue(0, 3);
         }
 
-        public static HtmlEntity CreateHtmlEntity()
+        public static CharacterReference CreateHtmlEntity()
         {
-            return new HtmlEntity(IntValue(1, 0xFFFF));
+            return new CharacterReference(IntValue(1, 0xFFFF));
         }
 
         public static int HtmlEntityNumber()
@@ -264,9 +263,9 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(1, 0xFFFF);
         }
 
-        public static HtmlEntityFormat HtmlEntityFormat()
+        public static CharacterReferenceFormat HtmlEntityFormat()
         {
-            return (HtmlEntityFormat)IntValue(0, 1);
+            return (CharacterReferenceFormat)IntValue(0, 1);
         }
 
         public static MarkdownBuilder CreateBuilder(MarkdownFormat format = null)
@@ -274,7 +273,7 @@ namespace Pihrtsoft.Markdown.Tests
             return CreateBuilder(new StringBuilder(), format);
         }
 
-        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(HtmlEntityFormat? format)
+        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(CharacterReferenceFormat? format)
         {
             return CreateBuilder((format != null) ? new MarkdownFormat(htmlEntityFormat: format.Value) : null);
         }

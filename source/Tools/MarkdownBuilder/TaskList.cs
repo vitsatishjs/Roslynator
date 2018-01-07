@@ -2,38 +2,44 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: BlockQuote
-    public class QuoteBlock : MBlockContainer
+    public class TaskList : MContainer
     {
-        public QuoteBlock()
+        public TaskList()
         {
         }
 
-        public QuoteBlock(object content)
+        public TaskList(object content)
             : base(content)
         {
         }
 
-        public QuoteBlock(params object[] content)
+        public TaskList(params object[] content)
             : base(content)
         {
         }
 
-        public QuoteBlock(QuoteBlock other)
+        public TaskList(TaskList other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.QuoteBlock;
+        public override MarkdownKind Kind => MarkdownKind.TaskList;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendQuoteBlock(Elements());
+            if (content is string s)
+            {
+                return builder.AppendTaskListItem(s);
+            }
+            else
+            {
+                return builder.AppendTaskListItems(Elements());
+            }
         }
 
         internal override MElement Clone()
         {
-            return new QuoteBlock(this);
+            return new TaskList(this);
         }
     }
 }

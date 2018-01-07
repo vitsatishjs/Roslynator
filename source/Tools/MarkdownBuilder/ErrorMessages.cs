@@ -10,6 +10,10 @@ namespace Pihrtsoft.Markdown
 
         public const string NumberOfCharactersInHorizontalRuleCannotBeLessThanThree = "Number of characters in horizontal rule cannot be less than 3.";
 
+        public const string EntityNameCannotBeEmpty = "Entity name cannot be empty.";
+
+        public const string EntityNameCanContainsOnlyAlphanumericCharacters = "Entity name can contains only alphanumeric characters.";
+
         public static string UnknownEnumValue(object value)
         {
             return $"Unknown enum value '{value}'.";
