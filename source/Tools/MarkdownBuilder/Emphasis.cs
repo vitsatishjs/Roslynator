@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: Bold, Italic, Strikethrough
     [DebuggerDisplay("{Option} {GetString(),nq}")]
     public class Emphasis : MContainer
     {

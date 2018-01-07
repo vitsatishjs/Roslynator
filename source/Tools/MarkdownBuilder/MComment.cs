@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: Comment
     [DebuggerDisplay("{Kind} {Value,nq}")]
     public class MComment : MElement
     {

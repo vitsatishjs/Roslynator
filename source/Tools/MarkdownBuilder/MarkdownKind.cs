@@ -2,6 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: SyntaxKind
     public enum MarkdownKind
     {
         None,

@@ -6,6 +6,7 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: CharReference
     [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
     public class CharacterReference : MElement
     {

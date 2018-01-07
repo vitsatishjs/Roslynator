@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: MFactory
     public static class MarkdownFactory
     {
         public static RawText RawText(string text)
@@ -12,44 +13,44 @@ namespace Pihrtsoft.Markdown
             return new RawText(text);
         }
 
-        public static Emphasis Emphasis(EmphasisOption option, object content)
-        {
-            return new Emphasis(option, content);
-        }
-
-        public static Emphasis Emphasis(EmphasisOption option, params object[] content)
-        {
-            return new Emphasis(option, content);
-        }
-
         public static Emphasis Bold(object content)
         {
-            return Emphasis(EmphasisOption.Bold, content);
+            return new Emphasis(EmphasisOption.Bold, content);
         }
 
         public static Emphasis Bold(params object[] content)
         {
-            return Emphasis(EmphasisOption.Bold, content);
+            return new Emphasis(EmphasisOption.Bold, content);
         }
 
         public static Emphasis Italic(object content)
         {
-            return Emphasis(EmphasisOption.Italic, content);
+            return new Emphasis(EmphasisOption.Italic, content);
         }
 
         public static Emphasis Italic(params object[] content)
         {
-            return Emphasis(EmphasisOption.Italic, content);
+            return new Emphasis(EmphasisOption.Italic, content);
+        }
+
+        public static Emphasis BoldItalic(object content)
+        {
+            return Bold(Italic(content));
+        }
+
+        public static Emphasis BoldItalic(params object[] content)
+        {
+            return Bold(Italic(content));
         }
 
         public static Emphasis Strikethrough(object content)
         {
-            return Emphasis(EmphasisOption.Strikethrough, content);
+            return new Emphasis(EmphasisOption.Strikethrough, content);
         }
 
         public static Emphasis Strikethrough(params object[] content)
         {
-            return Emphasis(EmphasisOption.Strikethrough, content);
+            return new Emphasis(EmphasisOption.Strikethrough, content);
         }
 
         public static InlineCode Code(string text)

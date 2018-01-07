@@ -143,6 +143,11 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendDelimiter(State state, string delimiter, object value)
         {
+            //TODO: 
+            if (HasState(state))
+            {
+            }
+
             AddState(state);
             AppendSyntax(delimiter);
             Append(value);
