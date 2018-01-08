@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown
 {
     public class MarkdownBuilder
     {
-        private const State InitialState = State.StartOfLine;
+        private const State InitialState = State.StartOfDocument | State.StartOfLine;
 
         private MarkdownFormat _format;
 
@@ -1212,12 +1212,14 @@ namespace Pihrtsoft.Markdown
                         }
                     }
 
-                    StringBuilder.Append(value, lastIndex, value.Length - lastIndex);
+                    BeforeAppend();
+                    AppendDirect(value, lastIndex, value.Length - lastIndex);
                     return this;
                 }
             }
 
-            StringBuilder.Append(value);
+            BeforeAppend();
+            AppendDirect(value);
             return this;
 
             void AppendLinefeed(int startIndex, int index)
@@ -1230,16 +1232,16 @@ namespace Pihrtsoft.Markdown
                 }
 
                 BeforeAppend();
-                StringBuilder.Append(value, startIndex, index - startIndex);
+                AppendDirect(value, startIndex, index - startIndex);
                 AppendLine();
             }
 
             void AppendEscapedChar(int startIndex, int index, char ch)
             {
                 BeforeAppend();
-                StringBuilder.Append(value, startIndex, index - startIndex);
-                StringBuilder.Append(escapingChar);
-                StringBuilder.Append(ch);
+                AppendDirect(value, startIndex, index - startIndex);
+                AppendDirect(escapingChar);
+                AppendDirect(ch);
             }
         }
 
@@ -1287,15 +1289,8 @@ namespace Pihrtsoft.Markdown
 
         private void AppendLineIfNecessary()
         {
-            int length = Length;
-
-            if (length == 0)
-                return;
-
-            if (IsCarriageReturnOrLinefeed(this[length - 1]))
-                return;
-
-            AppendLine();
+            if (!HasState(State.StartOfLine))
+                AppendLine();
         }
 
         private void AppendEmptyLineIf(bool condition)
@@ -1306,42 +1301,8 @@ namespace Pihrtsoft.Markdown
 
         private void AppendEmptyLine()
         {
-            int length = Length;
-
-            if (length == 0)
-                return;
-
-            int index = length - 1;
-
-            char ch = this[index];
-
-            if (ch == '\n')
-            {
-                if (--index >= 0)
-                {
-                    ch = this[index];
-
-                    if (ch == '\n')
-                        return;
-
-                    if (ch == '\r'
-                        && --index >= 0
-                        && IsCarriageReturnOrLinefeed(this[index]))
-                    {
-                        return;
-                    }
-                }
-            }
-            else if (ch == '\r')
-            {
-                if (--index >= 0
-                    && IsCarriageReturnOrLinefeed(this[index]))
-                {
-                    return;
-                }
-            }
-
-            AppendLine();
+            if (!HasState(State.StartOfDocument | State.EmptyLine))
+                AppendLine();
         }
 
         private MarkdownBuilder AppendRaw(char value)
@@ -1349,7 +1310,7 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeAppend();
-            StringBuilder.Append(value);
+            AppendDirect(value);
             return this;
         }
 
@@ -1358,14 +1319,14 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeAppend();
-            StringBuilder.Append(value, repeatCount);
+            AppendDirect(value, repeatCount);
             return this;
         }
 
         private MarkdownBuilder AppendSyntax(string value)
         {
             BeforeAppend();
-            StringBuilder.Append(value);
+            AppendDirect(value);
             return this;
         }
 
@@ -1378,15 +1339,24 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder AppendRaw(int value)
         {
             BeforeAppend();
-            StringBuilder.Append(value);
+            AppendDirect(value);
             return this;
         }
 
         public MarkdownBuilder AppendLine()
         {
             RemoveState(State.PendingEmptyLine);
-            StringBuilder.AppendLine();
-            AddState(State.StartOfLine);
+            AppendLineDirect();
+
+            if (HasState(State.StartOfLine))
+            {
+                AddState(State.EmptyLine);
+            }
+            else
+            {
+                AddState(State.StartOfLine);
+            }
+
             return this;
         }
 
@@ -1400,20 +1370,20 @@ namespace Pihrtsoft.Markdown
             else if (HasState(State.StartOfLine))
             {
                 AppendIndentation();
-                RemoveState(State.StartOfLine);
+                RemoveState(State.StartOfDocument | State.StartOfLine | State.EmptyLine);
             }
         }
 
         private void AppendIndentation()
         {
             for (int i = 1; i <= QuoteLevel; i++)
-                StringBuilder.Append(BlockQuoteStart);
+                AppendDirect(BlockQuoteStart);
 
             if (HasState(State.ListItem | State.OrderedListItem | State.TaskListItem))
-                StringBuilder.Append("  ");
+                AppendDirect("  ");
 
             if (HasState(State.IndentedCodeBlock))
-                StringBuilder.Append("    ");
+                AppendDirect("    ");
         }
 
         internal MarkdownBuilder AppendSpace()
@@ -1430,6 +1400,36 @@ namespace Pihrtsoft.Markdown
         public override string ToString()
         {
             return StringBuilder.ToString();
+        }
+
+        public void AppendDirect(string value)
+        {
+            StringBuilder.Append(value);
+        }
+
+        public void AppendDirect(string value, int startIndex, int count)
+        {
+            StringBuilder.Append(value, startIndex, count);
+        }
+
+        public void AppendDirect(char value)
+        {
+            StringBuilder.Append(value);
+        }
+
+        public void AppendDirect(char value, int repeatCount)
+        {
+            StringBuilder.Append(value, repeatCount);
+        }
+
+        public void AppendDirect(int value)
+        {
+            StringBuilder.Append(value);
+        }
+
+        public void AppendLineDirect()
+        {
+            StringBuilder.AppendLine();
         }
     }
 }

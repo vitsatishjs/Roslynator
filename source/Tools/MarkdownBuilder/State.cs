@@ -31,7 +31,9 @@ namespace Pihrtsoft.Markdown
         HorizontalRule = 262144,
         Table = 524288,
         Comment = 1048576,
-        StartOfLine = 2097152,
-        PendingEmptyLine = 4194304,
+        StartOfDocument = 2097152,
+        StartOfLine = 4194304,
+        EmptyLine = 8388608,
+        PendingEmptyLine = 16777216,
     }
 }
