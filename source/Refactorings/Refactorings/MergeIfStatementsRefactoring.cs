@@ -64,7 +64,7 @@ namespace Roslynator.CSharp.Refactorings
             CancellationToken cancellationToken = default(CancellationToken))
         {
             IfStatementSyntax newIfStatement = IfStatement(
-                CreateCondition(ifStatements),
+                BinaryExpression(SyntaxKind.LogicalOrExpression, ifStatements.Select(f => f.Condition)),
                 Block(CreateStatements(ifStatements)));
 
             SyntaxList<StatementSyntax> statements = statementsInfo.Statements;
@@ -81,26 +81,6 @@ namespace Roslynator.CSharp.Refactorings
                 newStatements = newStatements.RemoveAt(index + 1);
 
             return document.ReplaceStatementsAsync(statementsInfo, newStatements, cancellationToken);
-        }
-
-        private static BinaryExpressionSyntax CreateCondition(ImmutableArray<IfStatementSyntax> ifStatements)
-        {
-            BinaryExpressionSyntax condition = LogicalOrExpression(
-                AddParenthesesIfNecessary(ifStatements[0].Condition),
-                AddParenthesesIfNecessary(ifStatements[1].Condition));
-
-            for (int i = 2; i < ifStatements.Length; i++)
-                condition = LogicalOrExpression(condition, AddParenthesesIfNecessary(ifStatements[i].Condition));
-
-            return condition;
-        }
-
-        private static ExpressionSyntax AddParenthesesIfNecessary(ExpressionSyntax expression)
-        {
-            if (expression.IsKind(SyntaxKind.ConditionalExpression))
-                return ParenthesizedExpression(expression);
-
-            return expression;
         }
 
         private static List<StatementSyntax> CreateStatements(ImmutableArray<IfStatementSyntax> ifStatements)
