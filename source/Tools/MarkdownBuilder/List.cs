@@ -2,24 +2,23 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: List
-    public class UnorderedList : MContainer
+    public class List : MContainer
     {
-        public UnorderedList()
+        public List()
         {
         }
 
-        public UnorderedList(object content)
+        public List(object content)
             : base(content)
         {
         }
 
-        public UnorderedList(params object[] content)
+        public List(params object[] content)
             : base(content)
         {
         }
 
-        public UnorderedList(UnorderedList other)
+        public List(List other)
             : base(other)
         {
         }
@@ -40,7 +39,7 @@ namespace Pihrtsoft.Markdown
 
         internal override MElement Clone()
         {
-            return new UnorderedList(this);
+            return new List(this);
         }
     }
 }

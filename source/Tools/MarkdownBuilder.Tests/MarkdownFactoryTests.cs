@@ -760,7 +760,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             int number = IntValue(1, 0xFFFF);
 
-            CharacterReference entity = MarkdownFactory.CharacterReference(number);
+            CharReference entity = MarkdownFactory.CharReference(number);
 
             Assert.Equal(number, entity.Number);
         }

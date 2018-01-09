@@ -2,38 +2,37 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: Table
-    public class MTable : MContainer
+    public class ItalicText : MContainer
     {
-        internal MTable()
+        public ItalicText()
         {
         }
 
-        internal MTable(object content)
+        public ItalicText(object content)
             : base(content)
         {
         }
 
-        internal MTable(params object[] content)
+        public ItalicText(params object[] content)
             : base(content)
         {
         }
 
-        internal MTable(MContainer other)
+        public ItalicText(ItalicText other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Table;
+        public override MarkdownKind Kind => MarkdownKind.Italic;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendTable(Elements());
+            return builder.AppendItalic(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new MTable(this);
+            return new ItalicText(this);
         }
     }
 }

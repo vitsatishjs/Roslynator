@@ -275,6 +275,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
+        //TODO: ValidateElement
         internal virtual void ValidateElement(MElement element, MElement previous)
         {
         }

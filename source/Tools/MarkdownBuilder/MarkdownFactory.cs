@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: MFactory
     public static class MarkdownFactory
     {
         public static RawText RawText(string text)
@@ -13,44 +12,44 @@ namespace Pihrtsoft.Markdown
             return new RawText(text);
         }
 
-        public static Emphasis Bold(object content)
+        public static BoldText Bold(object content)
         {
-            return new Emphasis(EmphasisOption.Bold, content);
+            return new BoldText(content);
         }
 
-        public static Emphasis Bold(params object[] content)
+        public static BoldText Bold(params object[] content)
         {
-            return new Emphasis(EmphasisOption.Bold, content);
+            return new BoldText(content);
         }
 
-        public static Emphasis Italic(object content)
+        public static ItalicText Italic(object content)
         {
-            return new Emphasis(EmphasisOption.Italic, content);
+            return new ItalicText(content);
         }
 
-        public static Emphasis Italic(params object[] content)
+        public static ItalicText Italic(params object[] content)
         {
-            return new Emphasis(EmphasisOption.Italic, content);
+            return new ItalicText(content);
         }
 
-        public static Emphasis BoldItalic(object content)
+        public static MContainer BoldItalic(object content)
         {
             return Bold(Italic(content));
         }
 
-        public static Emphasis BoldItalic(params object[] content)
+        public static MContainer BoldItalic(params object[] content)
         {
             return Bold(Italic(content));
         }
 
-        public static Emphasis Strikethrough(object content)
+        public static StrikethroughText Strikethrough(object content)
         {
-            return new Emphasis(EmphasisOption.Strikethrough, content);
+            return new StrikethroughText(content);
         }
 
-        public static Emphasis Strikethrough(params object[] content)
+        public static StrikethroughText Strikethrough(params object[] content)
         {
-            return new Emphasis(EmphasisOption.Strikethrough, content);
+            return new StrikethroughText(content);
         }
 
         public static InlineCode Code(string text)
@@ -197,14 +196,14 @@ namespace Pihrtsoft.Markdown
             return TaskListItem(isCompleted: true, content: content);
         }
 
-        public static UnorderedList List(object content)
+        public static List List(object content)
         {
-            return new UnorderedList(content);
+            return new List(content);
         }
 
-        public static UnorderedList List(params object[] content)
+        public static List List(params object[] content)
         {
-            return new UnorderedList(content);
+            return new List(content);
         }
 
         public static OrderedList OrderedList(int number, object content)
@@ -270,9 +269,9 @@ namespace Pihrtsoft.Markdown
             return new HorizontalRule(style, count, space);
         }
 
-        public static CharacterReference CharacterReference(int number)
+        public static CharReference CharReference(int number)
         {
-            return new CharacterReference(number);
+            return new CharReference(number);
         }
 
         public static EntityReference EntityReference(string name)
@@ -280,14 +279,14 @@ namespace Pihrtsoft.Markdown
             return new EntityReference(name);
         }
 
-        public static MTable Table(object content)
+        public static Table Table(object content)
         {
-            return new MTable(content);
+            return new Table(content);
         }
 
-        public static MTable Table(params object[] content)
+        public static Table Table(params object[] content)
         {
-            return new MTable(content);
+            return new Table(content);
         }
 
         public static TableColumn TableColumn(Alignment alignment, object content)

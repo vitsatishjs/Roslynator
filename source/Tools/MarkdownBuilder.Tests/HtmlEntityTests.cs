@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_Equals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity = CreateHtmlEntity();
 
             Assert.True(htmlEntity.Equals((object)htmlEntity));
         }
@@ -21,8 +21,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_NotEquals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = htmlEntity.Modify();
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = htmlEntity.Modify();
 
             Assert.False(htmlEntity.Equals((object)htmlEntity2));
         }
@@ -30,9 +30,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_IEquatableEquals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = htmlEntity;
-            IEquatable<CharacterReference> equatable = htmlEntity;
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = htmlEntity;
+            IEquatable<CharReference> equatable = htmlEntity;
 
             Assert.True(equatable.Equals(htmlEntity2));
         }
@@ -40,9 +40,9 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_IEquatableNotEquals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = CreateHtmlEntity().Modify();
-            IEquatable<CharacterReference> equatable = htmlEntity;
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = CreateHtmlEntity().Modify();
+            IEquatable<CharReference> equatable = htmlEntity;
 
             Assert.False(htmlEntity.Equals(htmlEntity2));
         }
@@ -50,7 +50,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_GetHashCode_Equal()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity = CreateHtmlEntity();
 
             Assert.Equal(htmlEntity.GetHashCode(), htmlEntity.GetHashCode());
         }
@@ -58,8 +58,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_GetHashCode_NotEqual()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = htmlEntity.Modify();
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = htmlEntity.Modify();
 
             Assert.NotEqual(htmlEntity.GetHashCode(), htmlEntity2.GetHashCode());
         }
@@ -67,8 +67,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_OperatorEquals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = htmlEntity;
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = htmlEntity;
 
             Assert.True(htmlEntity == htmlEntity2);
         }
@@ -76,8 +76,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void HtmlEntity_OperatorNotEquals()
         {
-            CharacterReference htmlEntity = CreateHtmlEntity();
-            CharacterReference htmlEntity2 = htmlEntity.Modify();
+            CharReference htmlEntity = CreateHtmlEntity();
+            CharReference htmlEntity2 = htmlEntity.Modify();
 
             Assert.True(htmlEntity != htmlEntity2);
         }
@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
         public void HtmlEntity_Constructor_AssignNumber()
         {
             int number = HtmlEntityNumber();
-            var htmlEntity = new CharacterReference(number: number);
+            var htmlEntity = new CharReference(number: number);
 
             Assert.Equal(number, htmlEntity.Number);
         }

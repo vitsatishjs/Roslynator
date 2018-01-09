@@ -89,13 +89,13 @@ namespace Pihrtsoft.Markdown
                 case '[':
                 case ']':
                 case '`':
+                case '<':
                     return true;
                 default:
                     return false;
             }
         }
 
-        //TODO: replace space with %20
         internal static bool ShouldBeEscapedInLinkUrl(char ch)
         {
             switch (ch)

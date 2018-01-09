@@ -80,7 +80,7 @@ namespace Pihrtsoft.Markdown
 
         private CodeFenceStyle CodeFenceStyle => Format.CodeFenceStyle;
 
-        private CharacterReferenceFormat CharacterReferenceFormat => Format.CharacterReferenceFormat;
+        private CharReferenceFormat CharReferenceFormat => Format.CharReferenceFormat;
 
         public char this[int index]
         {
@@ -89,21 +89,33 @@ namespace Pihrtsoft.Markdown
 
         private State State { get; set; } = InitialState;
 
-        private MarkdownBuilder AddState(State state)
+        private void AddState(State state)
         {
+            Debug.Assert((State & state) == 0, $"State {State & state} is already set.");
+
             State |= state;
-            return this;
         }
 
-        private MarkdownBuilder AddStateIf(bool condition, State state)
+        private bool TryAddState(State state)
         {
-            return (condition) ? AddState(state) : this;
+            if ((State & state) != 0)
+            {
+                AddState(state);
+                return true;
+            }
+
+            return false;
         }
 
-        private MarkdownBuilder RemoveState(State state)
+        private void AddStateIf(bool condition, State state)
+        {
+            if (condition)
+                AddState(state);
+        }
+
+        private void RemoveState(State state)
         {
             State &= ~state;
-            return this;
         }
 
         private bool HasState(State state)
@@ -141,18 +153,23 @@ namespace Pihrtsoft.Markdown
             return AppendDelimiter(State.Strikethrough, StrikethroughDelimiter, content);
         }
 
+        //TODO: Trim value
         private MarkdownBuilder AppendDelimiter(State state, string delimiter, object value)
         {
-            //TODO: 
-            if (HasState(state))
+            bool isSet = TryAddState(state);
+
+            if (isSet)
             {
+                Append(value);
+            }
+            else
+            {
+                AppendSyntax(delimiter);
+                Append(value);
+                AppendSyntax(delimiter);
+                RemoveState(state);
             }
 
-            AddState(state);
-            AppendSyntax(delimiter);
-            Append(value);
-            AppendSyntax(delimiter);
-            RemoveState(state);
             return this;
         }
 
@@ -249,7 +266,7 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownBuilder AppendHeadingCore(int level, object content)
         {
-            Heading.ThrowOnInvalidLevel(level);
+            Error.ThrowOnInvalidHeadingLevel(level);
 
             bool underline = (level == 1 && UnderlineHeading1)
                 || (level == 2 && UnderlineHeading2);
@@ -300,7 +317,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, object content)
         {
-            OrderedListItem.ThrowOnInvalidNumber(number);
+            Error.ThrowOnInvalidOrderedListNumber(number);
 
             return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
         }
@@ -533,6 +550,7 @@ namespace Pihrtsoft.Markdown
             if (!string.IsNullOrEmpty(title))
             {
                 AppendSpace();
+                //TODO: ' instead of "
                 AppendSyntax("\"");
                 Append(title, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkTitle);
                 AppendSyntax("\"");
@@ -618,7 +636,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
         {
-            HorizontalRule.ThrowOnInvalidCount(count);
+            Error.ThrowOnInvalidHorizontalRuleCount(count);
 
             AppendLineIfNecessary();
 
@@ -1038,22 +1056,22 @@ namespace Pihrtsoft.Markdown
                 AppendRaw(paddingChar);
         }
 
-        public MarkdownBuilder AppendCharacterReference(int number)
+        public MarkdownBuilder AppendCharReference(int number)
         {
             AppendSyntax("&#");
 
-            if (CharacterReferenceFormat == CharacterReferenceFormat.Hexadecimal)
+            if (CharReferenceFormat == CharReferenceFormat.Hexadecimal)
             {
                 AppendSyntax("x");
                 AppendRaw(number.ToString("x", CultureInfo.InvariantCulture));
             }
-            else if (CharacterReferenceFormat == CharacterReferenceFormat.Decimal)
+            else if (CharReferenceFormat == CharReferenceFormat.Decimal)
             {
                 AppendRaw(number.ToString(CultureInfo.InvariantCulture));
             }
             else
             {
-                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CharacterReferenceFormat));
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CharReferenceFormat));
             }
 
             AppendSyntax(";");
@@ -1169,7 +1187,13 @@ namespace Pihrtsoft.Markdown
 
                 if (ch == 10)
                 {
-                    AppendLinefeed(0, i);
+                    AppendLine(0, i);
+                    f = true;
+                }
+                else if (ch == 13
+                    && (i == length - 1 || value[i + 1] != 10))
+                {
+                    AppendLine(0, i);
                     f = true;
                 }
                 else if (shouldBeEscaped(ch))
@@ -1191,7 +1215,13 @@ namespace Pihrtsoft.Markdown
 
                         if (ch == 10)
                         {
-                            AppendLinefeed(lastIndex, i);
+                            AppendLine(lastIndex, i);
+                            f = true;
+                        }
+                        else if (ch == 13
+                            && (i == length - 1 || value[i + 1] != 10))
+                        {
+                            AppendLine(0, i);
                             f = true;
                         }
                         else if (shouldBeEscaped(ch))
@@ -1213,35 +1243,28 @@ namespace Pihrtsoft.Markdown
                     }
 
                     BeforeAppend();
-                    AppendDirect(value, lastIndex, value.Length - lastIndex);
+                    AppendCore(value, lastIndex, value.Length - lastIndex);
                     return this;
                 }
             }
 
             BeforeAppend();
-            AppendDirect(value);
+            AppendCore(value);
             return this;
 
-            void AppendLinefeed(int startIndex, int index)
+            void AppendLine(int startIndex, int index)
             {
-                index--;
-                if (index > 0
-                    && value[index - 1] == '\r')
-                {
-                    index--;
-                }
-
                 BeforeAppend();
-                AppendDirect(value, startIndex, index - startIndex);
-                AppendLine();
+                AppendCore(value, startIndex, index - startIndex);
+                AfterAppendLine();
             }
 
             void AppendEscapedChar(int startIndex, int index, char ch)
             {
                 BeforeAppend();
-                AppendDirect(value, startIndex, index - startIndex);
-                AppendDirect(escapingChar);
-                AppendDirect(ch);
+                AppendCore(value, startIndex, index - startIndex);
+                AppendCore(escapingChar);
+                AppendCore(ch);
             }
         }
 
@@ -1310,7 +1333,7 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeAppend();
-            AppendDirect(value);
+            AppendCore(value);
             return this;
         }
 
@@ -1319,14 +1342,14 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeAppend();
-            AppendDirect(value, repeatCount);
+            AppendCore(value, repeatCount);
             return this;
         }
 
         private MarkdownBuilder AppendSyntax(string value)
         {
             BeforeAppend();
-            AppendDirect(value);
+            AppendCore(value);
             return this;
         }
 
@@ -1339,14 +1362,20 @@ namespace Pihrtsoft.Markdown
         public MarkdownBuilder AppendRaw(int value)
         {
             BeforeAppend();
-            AppendDirect(value);
+            AppendCore(value);
             return this;
         }
 
         public MarkdownBuilder AppendLine()
         {
+            AppendLineCore();
+            AfterAppendLine();
+            return this;
+        }
+
+        private void AfterAppendLine()
+        {
             RemoveState(State.PendingEmptyLine);
-            AppendLineDirect();
 
             if (HasState(State.StartOfLine))
             {
@@ -1356,8 +1385,6 @@ namespace Pihrtsoft.Markdown
             {
                 AddState(State.StartOfLine);
             }
-
-            return this;
         }
 
         private void BeforeAppend()
@@ -1377,13 +1404,13 @@ namespace Pihrtsoft.Markdown
         private void AppendIndentation()
         {
             for (int i = 1; i <= QuoteLevel; i++)
-                AppendDirect(BlockQuoteStart);
+                AppendCore(BlockQuoteStart);
 
             if (HasState(State.ListItem | State.OrderedListItem | State.TaskListItem))
-                AppendDirect("  ");
+                AppendCore("  ");
 
             if (HasState(State.IndentedCodeBlock))
-                AppendDirect("    ");
+                AppendCore("    ");
         }
 
         internal MarkdownBuilder AppendSpace()
@@ -1402,32 +1429,32 @@ namespace Pihrtsoft.Markdown
             return StringBuilder.ToString();
         }
 
-        public void AppendDirect(string value)
+        public void AppendCore(string value)
         {
             StringBuilder.Append(value);
         }
 
-        public void AppendDirect(string value, int startIndex, int count)
+        public void AppendCore(string value, int startIndex, int count)
         {
             StringBuilder.Append(value, startIndex, count);
         }
 
-        public void AppendDirect(char value)
+        public void AppendCore(char value)
         {
             StringBuilder.Append(value);
         }
 
-        public void AppendDirect(char value, int repeatCount)
+        public void AppendCore(char value, int repeatCount)
         {
             StringBuilder.Append(value, repeatCount);
         }
 
-        public void AppendDirect(int value)
+        public void AppendCore(int value)
         {
             StringBuilder.Append(value);
         }
 
-        public void AppendLineDirect()
+        public void AppendLineCore()
         {
             StringBuilder.AppendLine();
         }

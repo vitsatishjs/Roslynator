@@ -2,14 +2,15 @@
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: SyntaxKind
     public enum MarkdownKind
     {
         None,
         Document,
         Text,
+        Bold,
+        Italic,
+        Strikethrough,
         RawText,
-        Emphasis,
         InlineCode,
         Heading,
         ListItem,
@@ -32,7 +33,7 @@ namespace Pihrtsoft.Markdown
         TableRow,
         TableColumn,
         Comment,
-        CharacterReference,
+        CharReference,
         Container,
         EntityReference,
     }

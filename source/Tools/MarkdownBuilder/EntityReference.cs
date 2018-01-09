@@ -8,29 +8,23 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("{Kind} {Name}")]
     public class EntityReference : MElement
     {
+        private string _name;
+
         public EntityReference(string name)
-            : this(name, validate: true)
+            : this(name, isTrustedName: false)
         {
         }
 
-        internal EntityReference(string name, bool validate)
+        private EntityReference(string name, bool isTrustedName)
         {
-            if (validate)
-                ThrowOnInvalidName(name);
-
-            Name = name;
-        }
-
-        internal static void ThrowOnInvalidName(string name)
-        {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-
-            if (name.Length == 0)
-                throw new ArgumentException(ErrorMessages.EntityNameCannotBeEmpty, nameof(name));
-
-            if (!TextUtility.IsAlphanumeric(name))
-                throw new ArgumentException(ErrorMessages.EntityNameCanContainsOnlyAlphanumericCharacters, nameof(name));
+            if (isTrustedName)
+            {
+                _name = name;
+            }
+            else
+            {
+                Name = name;
+            }
         }
 
         public EntityReference(EntityReference other)
@@ -41,7 +35,15 @@ namespace Pihrtsoft.Markdown
             Name = other.Name;
         }
 
-        public string Name { get; }
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                Error.ThrowOnInvalidEntityName(value);
+                _name = value;
+            }
+        }
 
         public override MarkdownKind Kind => MarkdownKind.EntityReference;
 
@@ -55,9 +57,9 @@ namespace Pihrtsoft.Markdown
             return new EntityReference(this);
         }
 
-        internal static EntityReference CreateTrusted(string name)
+        private static EntityReference CreateTrusted(string name)
         {
-            return new EntityReference(name, validate: false);
+            return new EntityReference(name, isTrustedName: true);
         }
 
         public static EntityReference NonBreakingSpace() => CreateTrusted("nbsp");

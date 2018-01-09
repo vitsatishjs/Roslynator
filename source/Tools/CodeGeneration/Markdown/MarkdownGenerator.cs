@@ -288,7 +288,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             if (value)
             {
-                return CharacterReference(0x2713);
+                return CharReference(0x2713);
             }
             else
             {
@@ -300,7 +300,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             if (value)
             {
-                return CharacterReference(0x2713);
+                return CharReference(0x2713);
             }
             else
             {

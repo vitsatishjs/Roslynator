@@ -289,6 +289,9 @@
       <CodeFix Id="RCF0091" IsEnabled="true" /> <!-- ChangeForEachType (fixes CS0030) -->
       <CodeFix Id="RCF0092" IsEnabled="true" /> <!-- ChangeTypeToVar (fixes CS0029, CS0030) -->
       <CodeFix Id="RCF0093" IsEnabled="true" /> <!-- RemoveDefaultValueFromParameter (fixes CS1751) -->
+      <CodeFix Id="RCF0094" IsEnabled="true" /> <!-- ReplaceConstantWithField (fixes CS0133) -->
+      <CodeFix Id="RCF0095" IsEnabled="true" /> <!-- ReplaceStructWithClass (fixes CS0527) -->
+      <CodeFix Id="RCF0096" IsEnabled="true" /> <!-- ReplaceYieldReturnWithForEach (fixes CS0029) -->
     </CodeFixes>
   </Settings>
 </Roslynator>

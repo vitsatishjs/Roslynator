@@ -6,10 +6,10 @@ namespace Pihrtsoft.Markdown
 {
     public class HorizontalRule : MElement
     {
+        private int _count;
+
         internal HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
-            ThrowOnInvalidCount(count);
-
             Style = style;
             Count = count;
             Space = space ?? "";
@@ -18,7 +18,6 @@ namespace Pihrtsoft.Markdown
         public HorizontalRule(HorizontalRuleFormat format)
             : this(format.Style, format.Count, format.Space)
         {
-
         }
 
         public HorizontalRule(HorizontalRule other)
@@ -33,7 +32,15 @@ namespace Pihrtsoft.Markdown
 
         public HorizontalRuleStyle Style { get; set; }
 
-        public int Count { get; set; }
+        public int Count
+        {
+            get { return _count; }
+            set
+            {
+                Error.ThrowOnInvalidHorizontalRuleCount(value);
+                _count = value;
+            }
+        }
 
         public string Space { get; set; }
 
@@ -47,12 +54,6 @@ namespace Pihrtsoft.Markdown
         internal override MElement Clone()
         {
             return new HorizontalRule(this);
-        }
-
-        internal static void ThrowOnInvalidCount(int count)
-        {
-            if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, ErrorMessages.NumberOfCharactersInHorizontalRuleCannotBeLessThanThree);
         }
     }
 }

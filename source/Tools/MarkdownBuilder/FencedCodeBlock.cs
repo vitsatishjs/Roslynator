@@ -5,7 +5,7 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("{Kind} Info = {InfoDebuggerDisplay} {Text,nq}")]
+    [DebuggerDisplay("{Kind}{InfoDebuggerDisplay,nq} {Text,nq}")]
     public class FencedCodeBlock : MElement
     {
         public FencedCodeBlock(string text, string info = null)
@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownKind Kind => MarkdownKind.FencedCodeBlock;
 
-        private string InfoDebuggerDisplay => Info ?? "None";
+        private string InfoDebuggerDisplay => (!string.IsNullOrEmpty(Info)) ? " " + Info : "";
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {

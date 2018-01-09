@@ -781,30 +781,30 @@ namespace Pihrtsoft.Markdown.Tests
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", CharacterReferenceFormat.Hexadecimal)]
-        [InlineData("&#", null, CharacterReferenceFormat.Decimal)]
-        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, CharacterReferenceFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharReferenceFormat.Hexadecimal)]
+        [InlineData("&#", null, CharReferenceFormat.Decimal)]
+        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, CharReferenceFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 
             int number = HtmlEntityNumber();
 
-            CharacterReference entity = CharacterReference(number);
+            CharReference entity = CharReference(number);
 
-            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.AppendCharacterReference(number).ToStringAndClear());
+            Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.AppendCharReference(number).ToStringAndClear());
         }
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", CharacterReferenceFormat.Hexadecimal)]
-        [InlineData("&#", null, CharacterReferenceFormat.Decimal)]
-        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, CharacterReferenceFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharReferenceFormat.Hexadecimal)]
+        [InlineData("&#", null, CharReferenceFormat.Decimal)]
+        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, CharReferenceFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 
             int number = HtmlEntityNumber();
 
-            CharacterReference htmlEntity = CharacterReference(number);
+            CharReference htmlEntity = CharReference(number);
 
             Assert.Equal(syntax + number.ToString(format, CultureInfo.InvariantCulture) + ";", mb.Append(htmlEntity).ToStringAndClear());
         }

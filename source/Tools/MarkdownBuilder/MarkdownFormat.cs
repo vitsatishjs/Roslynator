@@ -17,7 +17,7 @@ namespace Pihrtsoft.Markdown
             TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
-            CharacterReferenceFormat characterReferenceFormat = CharacterReferenceFormat.Hexadecimal,
+            CharReferenceFormat charReferenceFormat = CharReferenceFormat.Hexadecimal,
             HorizontalRuleFormat? horizontalRuleFormat = null)
         {
             BoldStyle = boldStyle;
@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown
             TableOptions = tableOptions;
             CodeFenceStyle = codeFenceStyle;
             CodeBlockOptions = codeBlockOptions;
-            CharacterReferenceFormat = characterReferenceFormat;
+            CharReferenceFormat = charReferenceFormat;
             HorizontalRuleFormat = horizontalRuleFormat ?? HorizontalRuleFormat.Default;
         }
 
@@ -45,7 +45,7 @@ namespace Pihrtsoft.Markdown
             TableOptions.OuterDelimiter,
             Default.CodeFenceStyle,
             CodeBlockOptions.None,
-            Default.CharacterReferenceFormat,
+            Default.CharReferenceFormat,
             Default.HorizontalRuleFormat);
 
         public EmphasisStyle BoldStyle { get; }
@@ -92,7 +92,7 @@ namespace Pihrtsoft.Markdown
 
         internal bool CloseHeading => (HeadingOptions & HeadingOptions.Close) != 0;
 
-        public CharacterReferenceFormat CharacterReferenceFormat { get; }
+        public CharReferenceFormat CharReferenceFormat { get; }
 
         private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
         {
@@ -122,7 +122,7 @@ namespace Pihrtsoft.Markdown
                 && CodeFenceStyle == other.CodeFenceStyle
                 && CodeBlockOptions == other.CodeBlockOptions
                 && TableOptions == other.TableOptions
-                && CharacterReferenceFormat == other.CharacterReferenceFormat
+                && CharReferenceFormat == other.CharReferenceFormat
                 && HorizontalRuleFormat == other.HorizontalRuleFormat;
         }
 
@@ -138,7 +138,7 @@ namespace Pihrtsoft.Markdown
             hashCode = Hash.Combine((int)CodeFenceStyle, hashCode);
             hashCode = Hash.Combine((int)CodeBlockOptions, hashCode);
             hashCode = Hash.Combine((int)TableOptions, hashCode);
-            hashCode = Hash.Combine((int)CharacterReferenceFormat, hashCode);
+            hashCode = Hash.Combine((int)CharReferenceFormat, hashCode);
             hashCode = Hash.Combine(HorizontalRuleFormat.GetHashCode(), hashCode);
             return hashCode;
         }
@@ -165,7 +165,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -181,7 +181,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -197,7 +197,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -213,7 +213,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -229,7 +229,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 horizontalRuleFormat);
         }
 
@@ -245,7 +245,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -261,7 +261,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -277,7 +277,7 @@ namespace Pihrtsoft.Markdown
                 tableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -293,7 +293,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 codeFenceStyle,
                 CodeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
@@ -309,11 +309,11 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 codeBlockOptions,
-                CharacterReferenceFormat,
+                CharReferenceFormat,
                 HorizontalRuleFormat);
         }
 
-        public MarkdownFormat WithCharacterReferenceFormat(CharacterReferenceFormat characterReferenceFormat)
+        public MarkdownFormat WithCharReferenceFormat(CharReferenceFormat charReferenceFormat)
         {
             return new MarkdownFormat(
                 BoldStyle,
@@ -325,7 +325,7 @@ namespace Pihrtsoft.Markdown
                 TableOptions,
                 CodeFenceStyle,
                 CodeBlockOptions,
-                characterReferenceFormat,
+                charReferenceFormat,
                 HorizontalRuleFormat);
         }
     }
