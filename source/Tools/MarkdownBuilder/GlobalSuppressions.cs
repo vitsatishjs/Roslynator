@@ -6,6 +6,6 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1212:Remove redundant assignment.", Justification = "<Pending>", Scope = "member", Target = "~M:Pihrtsoft.Markdown.MarkdownFormat.GetHashCode~System.Int32")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>", Scope = "member", Target = "~P:Pihrtsoft.Markdown.Linq.FencedCodeBlock.InfoDebuggerDisplay")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Pihrtsoft.Markdown.MarkdownBuilder.AppendRaw(System.String)~Pihrtsoft.Markdown.MarkdownBuilder")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>", Scope = "member", Target = "~P:Pihrtsoft.Markdown.FencedCodeBlock.InfoDebuggerDisplay")]
 

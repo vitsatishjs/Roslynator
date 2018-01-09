@@ -40,4 +40,8 @@ Pihrtsoft.Markdown.MarkdownSettings</Description>
     <None Remove="_ObjectModel.md" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Linq\" />
+  </ItemGroup>
+
 </Project>

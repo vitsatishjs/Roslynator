@@ -7,8 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Pihrtsoft.Markdown;
+using Pihrtsoft.Markdown.Linq;
 using Roslynator.Metadata;
-using static Pihrtsoft.Markdown.MarkdownFactory;
+using static Pihrtsoft.Markdown.Linq.MarkdownFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
 {

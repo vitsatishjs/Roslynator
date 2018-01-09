@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using static Pihrtsoft.Markdown.MarkdownFactory;
+using static Pihrtsoft.Markdown.Linq.MarkdownFactory;
 using static Pihrtsoft.Markdown.TextUtility;
+using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
@@ -317,7 +318,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendOrderedListItem(int number, object content)
         {
-            Error.ThrowOnInvalidOrderedListNumber(number);
+            Error.ThrowOnInvalidItemNumber(number);
 
             return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
         }
@@ -463,8 +464,7 @@ namespace Pihrtsoft.Markdown
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            if (url == null)
-                throw new ArgumentNullException(nameof(url));
+            Error.ThrowOnInvalidUrl(url);
 
             AddState(State.Image);
             AppendSyntax("!");
@@ -478,8 +478,7 @@ namespace Pihrtsoft.Markdown
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            if (url == null)
-                throw new ArgumentNullException(nameof(url));
+            Error.ThrowOnInvalidUrl(url);
 
             AddState(State.Link);
             AppendLinkCore(text, url, title);
@@ -504,6 +503,8 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendAutolink(string url)
         {
+            Error.ThrowOnInvalidUrl(url);
+
             AddState(State.Autolink);
             AppendAngleBrackets(url);
             RemoveState(State.Autolink);
@@ -536,6 +537,8 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownBuilder AppendLabel(string label, string url, string title = null)
         {
+            Error.ThrowOnInvalidUrl(url);
+
             AddState(State.Label);
             AppendSquareBrackets(label);
             AppendSyntax(": ");
@@ -550,7 +553,7 @@ namespace Pihrtsoft.Markdown
             if (!string.IsNullOrEmpty(title))
             {
                 AppendSpace();
-                //TODO: ' instead of "
+
                 AppendSyntax("\"");
                 Append(title, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkTitle);
                 AppendSyntax("\"");
@@ -1133,40 +1136,6 @@ namespace Pihrtsoft.Markdown
             else
             {
                 return AppendRaw(value);
-            }
-        }
-
-        public MarkdownBuilder Append(EmphasisOption option, params object[] content)
-        {
-            return Append(option, (object)content);
-        }
-
-        public MarkdownBuilder Append(EmphasisOption option, object content)
-        {
-            string delimiter = GetDelimiter();
-
-            State state = option.ToState();
-
-            AddState(state);
-            AppendSyntax(delimiter);
-            Append(content);
-            AppendSyntax(delimiter);
-            RemoveState(state);
-            return this;
-
-            string GetDelimiter()
-            {
-                switch (option)
-                {
-                    case EmphasisOption.Bold:
-                        return BoldDelimiter;
-                    case EmphasisOption.Italic:
-                        return ItalicDelimiter;
-                    case EmphasisOption.Strikethrough:
-                        return StrikethroughDelimiter;
-                    default:
-                        throw new ArgumentException(ErrorMessages.UnknownEnumValue(option), nameof(option));
-                }
             }
         }
 

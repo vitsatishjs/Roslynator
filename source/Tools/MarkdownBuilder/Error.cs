@@ -33,21 +33,29 @@ namespace Pihrtsoft.Markdown
                 throw new ArgumentException("Entity name can contains only alphanumeric characters.", nameof(name));
         }
 
-        public static void ThrowOnInvalidOrderedListNumber(int number)
+        public static void ThrowOnInvalidItemNumber(int number)
         {
             if (number < 0)
-                throw new ArgumentOutOfRangeException(nameof(number), number, "Ordered list item number cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(number), number, "Item number must be greater than or equal to 0.");
         }
 
-        public static void ThrowIfContainsWhitespace(string url)
+        public static void ThrowOnInvalidUrl(string url)
         {
             if (url == null)
+                throw new ArgumentNullException(nameof(url));
+
+            ThrowIfContainsWhitespace(url, nameof(url));
+        }
+
+        public static void ThrowIfContainsWhitespace(string value, string parameterName = null)
+        {
+            if (value == null)
                 return;
 
-            for (int i = 0; i < url.Length; i++)
+            for (int i = 0; i < value.Length; i++)
             {
-                if (char.IsWhiteSpace(url[i]))
-                    throw new ArgumentException("Link or image url cannot contain whitespace character(s).", nameof(url));
+                if (char.IsWhiteSpace(value[i]))
+                    throw new ArgumentException("Link or image url cannot contain whitespace character(s).", (parameterName != null) ? nameof(parameterName) : nameof(value));
             }
         }
     }
