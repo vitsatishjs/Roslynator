@@ -1159,12 +1159,13 @@ namespace Pihrtsoft.Markdown
                     AppendLine(0, i);
                     f = true;
                 }
-                else if (ch == 13
-                    && (i == length - 1 || value[i + 1] != 10))
-                {
-                    AppendLine(0, i);
-                    f = true;
-                }
+                //TODO: NewLineHandling
+                //else if (ch == 13
+                //    && (i == length - 1 || value[i + 1] != 10))
+                //{
+                //    AppendLine(0, i);
+                //    f = true;
+                //}
                 else if (shouldBeEscaped(ch))
                 {
                     AppendEscapedChar(0, i, ch);
@@ -1187,12 +1188,13 @@ namespace Pihrtsoft.Markdown
                             AppendLine(lastIndex, i);
                             f = true;
                         }
-                        else if (ch == 13
-                            && (i == length - 1 || value[i + 1] != 10))
-                        {
-                            AppendLine(0, i);
-                            f = true;
-                        }
+                        //TODO: NewLineHandling
+                        //else if (ch == 13
+                        //    && (i == length - 1 || value[i + 1] != 10))
+                        //{
+                        //    AppendLine(0, i);
+                        //    f = true;
+                        //}
                         else if (shouldBeEscaped(ch))
                         {
                             AppendEscapedChar(lastIndex, i, ch);
@@ -1223,9 +1225,17 @@ namespace Pihrtsoft.Markdown
 
             void AppendLine(int startIndex, int index)
             {
+                //TODO: NewLineHandling
+                index--;
+                if (index > 0
+                    && value[index - 1] == '\r')
+                {
+                    index--;
+                }
+
                 BeforeAppend();
                 AppendCore(value, startIndex, index - startIndex);
-                AfterAppendLine();
+                this.AppendLine();
             }
 
             void AppendEscapedChar(int startIndex, int index, char ch)

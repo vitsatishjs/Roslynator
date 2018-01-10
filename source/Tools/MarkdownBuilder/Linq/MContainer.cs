@@ -53,6 +53,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal virtual bool AllowStringConcatenation => true;
 
+        public bool IsEmpty
+        {
+            get { return content == null; }
+        }
+
         public MElement FirstElement
         {
             get { return LastElement?.next; }
@@ -120,6 +125,11 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        public IEnumerable<MContainer> AncestorsAndSelf()
+        {
+            return GetAncestors(true);
+        }
+
         public IEnumerable<MElement> Descendants()
         {
             return GetDescendants(false);
@@ -166,6 +176,56 @@ namespace Pihrtsoft.Markdown.Linq
 
                 c = e as MContainer;
             }
+        }
+
+        internal void RemoveElement(MElement e)
+        {
+            var p = (MElement)content;
+
+            while (p.next != e)
+                p = p.next;
+
+            if (p == e)
+            {
+                content = null;
+            }
+            else
+            {
+                if (content == e)
+                    content = p;
+
+                p.next = e.next;
+            }
+
+            e.parent = null;
+            e.next = null;
+        }
+
+        public void RemoveAll()
+        {
+            if (content == null)
+                return;
+
+            if (content is string)
+            {
+                content = null;
+                return;
+            }
+
+            var e = (MElement)content;
+
+            do
+            {
+                MElement n = e.next;
+
+                e.parent = null;
+                e.next = null;
+
+                e = n;
+
+            } while (e != content);
+
+            content = null;
         }
 
         public void Add(object content)

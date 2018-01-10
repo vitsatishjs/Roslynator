@@ -150,7 +150,7 @@
 | Simplification | [Simplify LINQ method chain](../../docs/analyzers/RCS1077.md) | RCS1077 | &#x2713; |
 | Simplification | [Simplify logical negation](../../docs/analyzers/RCS1068.md) | RCS1068 | &#x2713; |
 | Simplification | [Simplify nested using statement](../../docs/analyzers/RCS1005.md) | RCS1005 | &#x2713; |
-| Simplification | [Simplify Nullable<T> to T?](../../docs/analyzers/RCS1020.md) | RCS1020 | &#x2713; |
+| Simplification | [Simplify Nullable\<T> to T?](../../docs/analyzers/RCS1020.md) | RCS1020 | &#x2713; |
 | Simplification | [Use --/++ operator instead of assignment](../../docs/analyzers/RCS1089.md) | RCS1089 | &#x2713; |
 | Simplification | [Use ^ operator](../../docs/analyzers/RCS1195.md) | RCS1195 | &#x2713; |
 | Simplification | [Use auto-implemented property](../../docs/analyzers/RCS1085.md) | RCS1085 | &#x2713; |
@@ -189,7 +189,7 @@
 | Usage | [Use conditional access instead of conditional expression](../../docs/analyzers/RCS1206.md) | RCS1206 | &#x2713; |
 | Usage | [Use conditional access](../../docs/analyzers/RCS1146.md) | RCS1146 | &#x2713; |
 | Usage | [Use EventArgs.Empty](../../docs/analyzers/RCS1204.md) | RCS1204 | &#x2713; |
-| Usage | [Use EventHandler<T>](../../docs/analyzers/RCS1159.md) | RCS1159 | &#x2713; |
+| Usage | [Use EventHandler\<T>](../../docs/analyzers/RCS1159.md) | RCS1159 | &#x2713; |
 | Usage | [Use expression-bodied member](../../docs/analyzers/RCS1016.md) | RCS1016 |  |
 | Usage | [Use lambda expression instead of anonymous method](../../docs/analyzers/RCS1048.md) | RCS1048 | &#x2713; |
 | Usage | [Use predefined type](../../docs/analyzers/RCS1013.md) | RCS1013 |  |

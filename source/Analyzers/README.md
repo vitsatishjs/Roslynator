@@ -20,7 +20,7 @@
 | RCS1017 | [Avoid multiline expression body](../../docs/analyzers/RCS1017.md) | Style |  |
 | RCS1018 | [Add default access modifier](../../docs/analyzers/RCS1018.md) | Readability | &#x2713; |
 | RCS1019 | [Reorder modifiers](../../docs/analyzers/RCS1019.md) | Readability |  |
-| RCS1020 | [Simplify Nullable<T> to T?](../../docs/analyzers/RCS1020.md) | Simplification | &#x2713; |
+| RCS1020 | [Simplify Nullable\<T> to T?](../../docs/analyzers/RCS1020.md) | Simplification | &#x2713; |
 | RCS1021 | [Simplify lambda expression](../../docs/analyzers/RCS1021.md) | Simplification | &#x2713; |
 | RCS1023 | [Format empty block](../../docs/analyzers/RCS1023.md) | Formatting |  |
 | RCS1024 | [Format accessor list](../../docs/analyzers/RCS1024.md) | Formatting |  |
@@ -142,7 +142,7 @@
 | RCS1156 | [Use string.Length instead of comparison with empty string](../../docs/analyzers/RCS1156.md) | Usage | &#x2713; |
 | RCS1157 | [Composite enum value contains undefined flag](../../docs/analyzers/RCS1157.md) | Design | &#x2713; |
 | RCS1158 | [Static member in generic type should use a type parameter](../../docs/analyzers/RCS1158.md) | Design | &#x2713; |
-| RCS1159 | [Use EventHandler<T>](../../docs/analyzers/RCS1159.md) | Usage | &#x2713; |
+| RCS1159 | [Use EventHandler\<T>](../../docs/analyzers/RCS1159.md) | Usage | &#x2713; |
 | RCS1160 | [Abstract type should not have public constructors](../../docs/analyzers/RCS1160.md) | Design | &#x2713; |
 | RCS1161 | [Enum member should declare explicit value](../../docs/analyzers/RCS1161.md) | Readability | &#x2713; |
 | RCS1162 | [Avoid chain of assignments](../../docs/analyzers/RCS1162.md) | Readability |  |

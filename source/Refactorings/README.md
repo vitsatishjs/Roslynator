@@ -59,7 +59,7 @@
 | RR0057 | [Generate enum values](../../docs/refactorings/RR0057.md) | &#x2713; |
 | RR0058 | [Generate event invoking method](../../docs/refactorings/RR0058.md) | &#x2713; |
 | RR0059 | [Generate switch sections](../../docs/refactorings/RR0059.md) | &#x2713; |
-| RR0179 | [Implement IEquatable<T>](../../docs/refactorings/RR0179.md) | &#x2713; |
+| RR0179 | [Implement IEquatable\<T>](../../docs/refactorings/RR0179.md) | &#x2713; |
 | RR0197 | [Initialize field from constructor](../../docs/refactorings/RR0197.md) | &#x2713; |
 | RR0060 | [Initialize local with default value](../../docs/refactorings/RR0060.md) | &#x2713; |
 | RR0061 | [Inline alias expression](../../docs/refactorings/RR0061.md) | &#x2713; |
@@ -180,7 +180,7 @@
 | RR0167 | [Use element access instead of 'First/Last'ElementAt' method](../../docs/refactorings/RR0167.md) | &#x2713; |
 | RR0169 | [Use expression-bodied member](../../docs/refactorings/RR0169.md) | &#x2713; |
 | RR0170 | [Use lambda expression instead of anonymous method](../../docs/refactorings/RR0170.md) | &#x2713; |
-| RR0183 | [Use List<T> instead of yield](../../docs/refactorings/RR0183.md) | &#x2713; |
+| RR0183 | [Use List\<T> instead of yield](../../docs/refactorings/RR0183.md) | &#x2713; |
 | RR0171 | [Use string.Empty instead of ""](../../docs/refactorings/RR0171.md) |  |
 | RR0182 | [Use StringBuilder instead of concatenation](../../docs/refactorings/RR0182.md) | &#x2713; |
 | RR0174 | [Wrap in #if directive](../../docs/refactorings/RR0174.md) | &#x2713; |
