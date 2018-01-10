@@ -32,6 +32,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendTableRow(this);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteTableRow(this);
+        }
+
         internal override MElement Clone()
         {
             return new TableRow(this);

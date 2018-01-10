@@ -37,6 +37,18 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            if (content is string s)
+            {
+                return writer.WriteTaskListItem(s).WriteLine();
+            }
+            else
+            {
+                return writer.WriteTaskListItems(Elements());
+            }
+        }
+
         internal override MElement Clone()
         {
             return new TaskList(this);

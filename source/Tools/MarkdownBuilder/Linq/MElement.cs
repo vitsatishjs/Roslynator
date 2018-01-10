@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Pihrtsoft.Markdown.Linq
 {
@@ -13,23 +14,36 @@ namespace Pihrtsoft.Markdown.Linq
 
         public abstract MarkdownBuilder AppendTo(MarkdownBuilder builder);
 
+        public abstract MarkdownWriter WriteTo(MarkdownWriter writer);
+
         internal abstract MElement Clone();
 
         public override string ToString()
         {
-            return ToString(null);
+            return ToString(default(MarkdownWriterSettings));
         }
 
         public string ToString(MarkdownFormat format)
         {
-            var builder = new MarkdownBuilder(format ?? MarkdownFormat.Default);
-            AppendTo(builder);
-            return builder.ToString();
+            return ToString((format != null) ? new MarkdownWriterSettings(format) : null);
+        }
+
+        public string ToString(MarkdownWriterSettings settings)
+        {
+            using (var sw = new StringWriter())
+            {
+                using (MarkdownWriter mw = MarkdownWriter.Create(sw, settings))
+                {
+                    WriteTo(mw);
+                }
+
+                return sw.ToString();
+            }
         }
 
         internal string GetString()
         {
-            return ToString(MarkdownFormat.DebugFormat);
+            return ToString(MarkdownWriterSettings.Debugging);
         }
 
         public MElement NextElement

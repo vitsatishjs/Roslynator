@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendItalic(TextOrElements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteItalic(TextOrElements());
+        }
+
         internal override MElement Clone()
         {
             return new Italic(this);

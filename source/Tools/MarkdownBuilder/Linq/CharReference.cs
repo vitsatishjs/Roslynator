@@ -33,6 +33,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendCharReference(Number);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteCharReference(Number);
+        }
+
         internal override MElement Clone()
         {
             return new CharReference(this);

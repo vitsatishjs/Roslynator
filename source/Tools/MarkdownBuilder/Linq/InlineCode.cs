@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendInlineCode(Text);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteInlineCode(Text);
+        }
+
         internal override MElement Clone()
         {
             return new InlineCode(this);

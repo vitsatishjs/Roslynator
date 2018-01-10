@@ -36,6 +36,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.Append(Value, escape: false);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.Write(Value, escape: false);
+        }
+
         internal override MElement Clone()
         {
             return new RawText(this);

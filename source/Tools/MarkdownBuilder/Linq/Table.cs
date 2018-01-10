@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendTable(Elements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteTable(Elements());
+        }
+
         internal override MElement Clone()
         {
             return new Table(this);

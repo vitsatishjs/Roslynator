@@ -52,6 +52,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendEntityReference(Name);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteEntityReference(Name);
+        }
+
         internal override MElement Clone()
         {
             return new EntityReference(this);

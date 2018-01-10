@@ -37,6 +37,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendComment(Value);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteComment(Value);
+        }
+
         internal override MElement Clone()
         {
             return new MComment(this);

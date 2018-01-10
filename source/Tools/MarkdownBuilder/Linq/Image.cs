@@ -19,6 +19,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendImage(Text, Url, Title);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteImage(Text, Url, Title);
+        }
+
         internal override MElement Clone()
         {
             return new Image(this);

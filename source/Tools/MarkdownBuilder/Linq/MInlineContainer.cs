@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.Append(TextOrElements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.Write(TextOrElements());
+        }
+
         internal override MElement Clone()
         {
             return new MInlineContainer(this);

@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendIndentedCodeBlock(Text);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteIndentedCodeBlock(Text);
+        }
+
         internal override MElement Clone()
         {
             return new IndentedCodeBlock(this);

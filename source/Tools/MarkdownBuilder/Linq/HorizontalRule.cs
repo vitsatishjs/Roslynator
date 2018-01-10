@@ -51,6 +51,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendHorizontalRule(Style, Count, Space);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteHorizontalRule(Style, Count, Space);
+        }
+
         internal override MElement Clone()
         {
             return new HorizontalRule(this);

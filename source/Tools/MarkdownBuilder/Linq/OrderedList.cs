@@ -37,6 +37,18 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            if (content is string s)
+            {
+                return writer.WriteOrderedListItem(1, s).WriteLine();
+            }
+            else
+            {
+                return writer.WriteOrderedListItems(Elements());
+            }
+        }
+
         internal override MElement Clone()
         {
             return new OrderedList(this);

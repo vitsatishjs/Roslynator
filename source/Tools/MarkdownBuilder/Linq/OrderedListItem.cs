@@ -53,6 +53,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendOrderedListItem(Number, TextOrElements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteOrderedListItem(Number, TextOrElements());
+        }
+
         internal override MElement Clone()
         {
             return new OrderedListItem(this);

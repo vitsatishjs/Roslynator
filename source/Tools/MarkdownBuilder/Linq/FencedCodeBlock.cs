@@ -36,6 +36,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendFencedCodeBlock(Text, Info);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteFencedCodeBlock(Text, Info);
+        }
+
         internal override MElement Clone()
         {
             return new FencedCodeBlock(this);

@@ -37,6 +37,18 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            if (content is string s)
+            {
+                return writer.WriteListItem(s).WriteLine();
+            }
+            else
+            {
+                return writer.WriteListItems(Elements());
+            }
+        }
+
         internal override MElement Clone()
         {
             return new List(this);

@@ -52,6 +52,18 @@ namespace Pihrtsoft.Markdown.Linq
                 TextUtility.IsWhiteSpace(mb.StringBuilder, index, length));
         }
 
+        public static TableColumnInfo Create(MElement element, MarkdownStringWriter writer, int index = 0)
+        {
+            Alignment alignment = (element as TableColumn)?.Alignment ?? Alignment.Left;
+
+            int length = writer.Length - index;
+
+            return new TableColumnInfo(
+                alignment,
+                length,
+                TextUtility.IsWhiteSpace(writer.StringBuilder, index, length));
+        }
+
         public override bool Equals(object obj)
         {
             return (obj is TableColumnInfo other)

@@ -35,7 +35,7 @@ namespace Pihrtsoft.Markdown
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
 
-        internal static MarkdownFormat DebugFormat { get; } = new MarkdownFormat(
+        internal static MarkdownFormat Debugging { get; } = new MarkdownFormat(
             Default.BoldStyle,
             Default.ItalicStyle,
             Default.ListItemStyle,

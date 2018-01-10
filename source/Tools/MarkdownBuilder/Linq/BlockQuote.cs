@@ -30,6 +30,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendBlockQuote(TextOrElements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteBlockQuote(TextOrElements());
+        }
+
         internal override MElement Clone()
         {
             return new BlockQuote(this);

@@ -52,6 +52,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendLink(Text, Url, Title);
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteLink(Text, Url, Title);
+        }
+
         internal override MElement Clone()
         {
             return new Link(this);

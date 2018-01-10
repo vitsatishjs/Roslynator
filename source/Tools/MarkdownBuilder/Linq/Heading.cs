@@ -49,6 +49,11 @@ namespace Pihrtsoft.Markdown.Linq
             return builder.AppendHeading(Level, TextOrElements());
         }
 
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteHeading(Level, TextOrElements());
+        }
+
         internal override MElement Clone()
         {
             return new Heading(this);
