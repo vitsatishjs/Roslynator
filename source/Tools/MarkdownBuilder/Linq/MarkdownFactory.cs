@@ -12,44 +12,44 @@ namespace Pihrtsoft.Markdown.Linq
             return new RawText(text);
         }
 
-        public static BoldText Bold(object content)
+        public static Bold Bold(object content)
         {
-            return new BoldText(content);
+            return new Bold(content);
         }
 
-        public static BoldText Bold(params object[] content)
+        public static Bold Bold(params object[] content)
         {
-            return new BoldText(content);
+            return new Bold(content);
         }
 
-        public static ItalicText Italic(object content)
+        public static Italic Italic(object content)
         {
-            return new ItalicText(content);
+            return new Italic(content);
         }
 
-        public static ItalicText Italic(params object[] content)
+        public static Italic Italic(params object[] content)
         {
-            return new ItalicText(content);
+            return new Italic(content);
         }
 
-        public static MContainer BoldItalic(object content)
+        public static MInlineContainer BoldItalic(object content)
         {
             return Bold(Italic(content));
         }
 
-        public static MContainer BoldItalic(params object[] content)
+        public static MInlineContainer BoldItalic(params object[] content)
         {
             return Bold(Italic(content));
         }
 
-        public static StrikethroughText Strikethrough(object content)
+        public static Strikethrough Strikethrough(object content)
         {
-            return new StrikethroughText(content);
+            return new Strikethrough(content);
         }
 
-        public static StrikethroughText Strikethrough(params object[] content)
+        public static Strikethrough Strikethrough(params object[] content)
         {
-            return new StrikethroughText(content);
+            return new Strikethrough(content);
         }
 
         public static InlineCode Code(string text)
@@ -57,14 +57,14 @@ namespace Pihrtsoft.Markdown.Linq
             return new InlineCode(text);
         }
 
-        public static MContainer Join(object separator, params object[] values)
+        public static MInlineContainer Join(object separator, params object[] values)
         {
             return Join(separator, (IEnumerable<MElement>)values);
         }
 
-        public static MContainer Join(object separator, IEnumerable<object> values)
+        public static MInlineContainer Join(object separator, IEnumerable<object> values)
         {
-            return new MContainer(GetContent());
+            return new MInlineContainer(GetContent());
 
             IEnumerable<object> GetContent()
             {

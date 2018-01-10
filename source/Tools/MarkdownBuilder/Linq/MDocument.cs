@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MDocument : MContainer
+    public class MDocument : MBlockContainer
     {
         public MDocument()
         {

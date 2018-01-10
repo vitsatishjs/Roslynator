@@ -2,23 +2,23 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class StrikethroughText : MContainer
+    public class Strikethrough : MInlineContainer
     {
-        public StrikethroughText()
+        public Strikethrough()
         {
         }
 
-        public StrikethroughText(object content)
+        public Strikethrough(object content)
             : base(content)
         {
         }
 
-        public StrikethroughText(params object[] content)
+        public Strikethrough(params object[] content)
             : base(content)
         {
         }
 
-        public StrikethroughText(StrikethroughText other)
+        public Strikethrough(Strikethrough other)
             : base(other)
         {
         }
@@ -32,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new StrikethroughText(this);
+            return new Strikethrough(this);
         }
     }
 }

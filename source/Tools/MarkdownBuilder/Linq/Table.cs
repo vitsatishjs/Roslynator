@@ -34,5 +34,17 @@ namespace Pihrtsoft.Markdown.Linq
         {
             return new Table(this);
         }
+
+        internal override void ValidateElement(MElement element)
+        {
+            switch (element.Kind)
+            {
+                case MarkdownKind.TableColumn:
+                case MarkdownKind.TableRow:
+                    return;
+            }
+
+            base.ValidateElement(element);
+        }
     }
 }

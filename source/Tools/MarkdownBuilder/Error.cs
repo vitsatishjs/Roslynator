@@ -1,11 +1,17 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
     internal static class Error
     {
+        public static void ThrowInvalidContent(MContainer container, MElement element)
+        {
+            throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
+        }
+
         public static void ThrowOnInvalidHorizontalRuleCount(int count)
         {
             if (count < 3)

@@ -7,25 +7,25 @@ using System.Threading;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MContainer : MElement
+    public abstract class MContainer : MElement
     {
         internal object content;
 
-        public MContainer()
+        protected MContainer()
         {
         }
 
-        public MContainer(object content)
-        {
-            Add(content);
-        }
-
-        public MContainer(params object[] content)
+        protected MContainer(object content)
         {
             Add(content);
         }
 
-        public MContainer(MContainer other)
+        protected MContainer(params object[] content)
+        {
+            Add(content);
+        }
+
+        protected MContainer(MContainer other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -48,8 +48,6 @@ namespace Pihrtsoft.Markdown.Linq
                 }
             }
         }
-
-        public override MarkdownKind Kind => MarkdownKind.Container;
 
         internal virtual bool AllowStringConcatenation => true;
 
@@ -86,16 +84,6 @@ namespace Pihrtsoft.Markdown.Linq
 
                 return (MElement)content;
             }
-        }
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.Append(TextOrElements());
-        }
-
-        internal override MElement Clone()
-        {
-            return new MContainer(this);
         }
 
         public IEnumerable<MElement> Elements()
@@ -271,7 +259,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal void AddElement(MElement e)
         {
-            ValidateElement(e, this);
+            ValidateElement(e);
 
             if (e.parent != null
                 || e == TopmostParentOrSelf())
@@ -335,9 +323,29 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        //TODO: ValidateElement
-        internal virtual void ValidateElement(MElement element, MElement previous)
+        internal virtual void ValidateElement(MElement element)
         {
+            switch (element.Kind)
+            {
+                case MarkdownKind.Text:
+                case MarkdownKind.RawText:
+                case MarkdownKind.Link:
+                case MarkdownKind.LinkReference:
+                case MarkdownKind.Image:
+                case MarkdownKind.ImageReference:
+                case MarkdownKind.Autolink:
+                case MarkdownKind.InlineCode:
+                case MarkdownKind.CharReference:
+                case MarkdownKind.EntityReference:
+                case MarkdownKind.Comment:
+                case MarkdownKind.Bold:
+                case MarkdownKind.Italic:
+                case MarkdownKind.Strikethrough:
+                case MarkdownKind.InlineContainer:
+                    return;
+            }
+
+            Error.ThrowInvalidContent(this, element);
         }
 
         internal virtual void ValidateString(string s)

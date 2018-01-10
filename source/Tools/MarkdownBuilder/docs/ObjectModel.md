@@ -1,34 +1,35 @@
 ﻿* MObject
   * MElement 
-    * MSimpleElememt (-)
-      * Link
-      * Image
-      * Autolink
-      * LinkReference
-      * EntityReference
-      * CharacterReference
-      * Comment
-	  * MText
-      * InlineCode
-    * MSimpleBlock (-)
-      * IndentedCodeBlock
-      * FencedCodeBlock
-      * HorizontalRule
+    * MText
+	* RawText
+    * Link
+    * LinkReference
+    * Image
+    * ImageReference
+    * Autolink
+    * InlineCode
+    * CharReference
+    * EntityReference
+    * MComment
+    * FencedCodeBlock
+    * IndentedCodeBlock
+    * HorizontalRule
+	* Label
     * MContainer
-      * Heading (Emphasis, MSimpleElement)
-      * Emphasis (Emphasis, MSimpleElement) RENAME
+	  * MInlineContainer
         * Bold
         * Italic
         * Strikethrough
-      * MTable
+      * Heading
+      * Table
       * TableColumn
       * TableRow
-      * MBlockContainer (all except MDocument)
+      * MBlockContainer
         * MDocument
         * BlockQuote
-        * UnorderedList
-        * OrderedList
-        * TaskList
+        * List
         * ListItem
+        * OrderedList
         * OrderedListItem
+        * TaskList
         * TaskListItem
