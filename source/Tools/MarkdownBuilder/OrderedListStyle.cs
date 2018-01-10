@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum OrderedListItemStyle
+    public enum OrderedListStyle
     {
         Dot = 0,
         Parenthesis = 1

@@ -187,10 +187,10 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData("* ", ListItemStyle.Asterisk)]
-        [InlineData("- ", ListItemStyle.Minus)]
-        [InlineData("+ ", ListItemStyle.Plus)]
-        public void MarkdownFactory_ListItemStart(string syntax, ListItemStyle style)
+        [InlineData("* ", ListStyle.Asterisk)]
+        [InlineData("- ", ListStyle.Minus)]
+        [InlineData("+ ", ListStyle.Plus)]
+        public void MarkdownFactory_ListItemStart(string syntax, ListStyle style)
         {
             Assert.Equal(syntax, MarkdownFactory.ListItemStart(style));
         }

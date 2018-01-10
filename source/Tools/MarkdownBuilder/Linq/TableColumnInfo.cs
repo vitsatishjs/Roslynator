@@ -56,7 +56,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
             Alignment alignment = (element as TableColumn)?.Alignment ?? Alignment.Left;
 
-            int length = writer.Length - index;
+            int length = writer.StringBuilder.Length - index;
 
             return new TableColumnInfo(
                 alignment,

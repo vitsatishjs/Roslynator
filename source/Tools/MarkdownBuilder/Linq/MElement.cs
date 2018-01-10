@@ -12,40 +12,6 @@ namespace Pihrtsoft.Markdown.Linq
     {
         internal MElement next;
 
-        public abstract MarkdownBuilder AppendTo(MarkdownBuilder builder);
-
-        public abstract MarkdownWriter WriteTo(MarkdownWriter writer);
-
-        internal abstract MElement Clone();
-
-        public override string ToString()
-        {
-            return ToString(default(MarkdownWriterSettings));
-        }
-
-        public string ToString(MarkdownFormat format)
-        {
-            return ToString((format != null) ? new MarkdownWriterSettings(format) : null);
-        }
-
-        public string ToString(MarkdownWriterSettings settings)
-        {
-            using (var sw = new StringWriter())
-            {
-                using (MarkdownWriter mw = MarkdownWriter.Create(sw, settings))
-                {
-                    WriteTo(mw);
-                }
-
-                return sw.ToString();
-            }
-        }
-
-        internal string GetString()
-        {
-            return ToString(MarkdownWriterSettings.Debugging);
-        }
-
         public MElement NextElement
         {
             get
@@ -75,6 +41,48 @@ namespace Pihrtsoft.Markdown.Linq
                 }
 
                 return p;
+            }
+        }
+
+        public abstract MarkdownBuilder AppendTo(MarkdownBuilder builder);
+
+        public abstract MarkdownWriter WriteTo(MarkdownWriter writer);
+
+        internal abstract MElement Clone();
+
+        public override string ToString()
+        {
+            return ToString(default(MarkdownWriterSettings));
+        }
+
+        public string ToString(MarkdownFormat format)
+        {
+            return ToString(MarkdownWriterSettings.From(format));
+        }
+
+        public string ToString(MarkdownWriterSettings settings)
+        {
+            using (var sw = new StringWriter())
+            {
+                using (MarkdownWriter mw = MarkdownWriter.Create(sw, settings))
+                {
+                    WriteTo(mw);
+                }
+
+                return sw.ToString();
+            }
+        }
+
+        internal string GetString()
+        {
+            return ToString(MarkdownWriterSettings.Debugging);
+        }
+
+        public void Save(TextWriter writer, MarkdownFormat format = null)
+        {
+            using (MarkdownWriter mw = MarkdownWriter.Create(writer, MarkdownWriterSettings.From(format)))
+            {
+                WriteTo(mw);
             }
         }
 

@@ -352,27 +352,27 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        internal static string ListItemStart(ListItemStyle style)
+        internal static string ListItemStart(ListStyle style)
         {
-            if (style == ListItemStyle.Asterisk)
+            if (style == ListStyle.Asterisk)
                 return "* ";
 
-            if (style == ListItemStyle.Plus)
+            if (style == ListStyle.Plus)
                 return "+ ";
 
-            if (style == ListItemStyle.Minus)
+            if (style == ListStyle.Minus)
                 return "- ";
 
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        internal static string OrderedListItemStart(OrderedListItemStyle style)
+        internal static string OrderedListItemStart(OrderedListStyle style)
         {
             switch (style)
             {
-                case OrderedListItemStyle.Dot:
+                case OrderedListStyle.Dot:
                     return ". ";
-                case OrderedListItemStyle.Parenthesis:
+                case OrderedListStyle.Parenthesis:
                     return ") ";
                 default:
                     throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));

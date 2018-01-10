@@ -29,14 +29,14 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData(ListItemStyle.Asterisk)]
-        [InlineData(ListItemStyle.Minus)]
-        [InlineData(ListItemStyle.Plus)]
-        public void MarkdownFormat_Constructor_ListItemStyle(ListItemStyle listItemStyle)
+        [InlineData(ListStyle.Asterisk)]
+        [InlineData(ListStyle.Minus)]
+        [InlineData(ListStyle.Plus)]
+        public void MarkdownFormat_Constructor_ListItemStyle(ListStyle listItemStyle)
         {
-            var format = new MarkdownFormat(listItemStyle: listItemStyle);
+            var format = new MarkdownFormat(listStyle: listItemStyle);
 
-            Assert.Equal(listItemStyle, format.ListItemStyle);
+            Assert.Equal(listItemStyle, format.ListStyle);
         }
 
         [Fact]

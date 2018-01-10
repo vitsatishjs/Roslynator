@@ -14,39 +14,37 @@ namespace Pihrtsoft.Markdown
 
         public StringBuilder StringBuilder { get; }
 
+        protected override int Length
+        {
+            get { return StringBuilder.Length; }
+            set { StringBuilder.Length = value; }
+        }
+
         protected override void WriteCore(string value)
         {
             StringBuilder.Append(value);
-
-            if (value != null)
-                Length += value.Length;
         }
 
         protected override void WriteCore(string value, int startIndex, int count)
         {
             StringBuilder.Append(value, startIndex, count);
-            Length += count;
         }
 
         protected override void WriteCore(char value)
         {
             StringBuilder.Append(value);
-            Length++;
         }
 
         protected override void WriteCore(char value, int repeatCount)
         {
             for (int i = 0; i < repeatCount; i++)
                 StringBuilder.Append(value);
-
-            Length += repeatCount;
         }
 
         public void Clear()
         {
             StringBuilder.Clear();
             ResetState();
-            Length = 0;
         }
     }
 }

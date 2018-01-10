@@ -17,6 +17,8 @@ namespace Pihrtsoft.Markdown
             _writer = writer;
         }
 
+        protected override int Length { get; set; }
+
         public override void Close()
         {
             try
@@ -50,7 +52,7 @@ namespace Pihrtsoft.Markdown
         protected override void WriteCore(string value, int startIndex, int count)
         {
             //TODO: optimize
-            _writer.Write(value.ToCharArray(), startIndex, count);
+            _writer.Write(value.Substring(startIndex, count));
             Length += count;
         }
 

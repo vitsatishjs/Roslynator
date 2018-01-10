@@ -32,19 +32,23 @@ namespace Pihrtsoft.Markdown
 
         public int QuoteLevel { get; private set; }
 
-        protected internal int Length { get; protected set; }
+        protected abstract int Length { get; set; }
+
+        private string NewLineChars => Settings.NewLineChars;
+
+        private NewLineHandling NewLineHandling => Settings.NewLineHandling;
 
         private string BoldDelimiter => BoldDelimiter(Format.BoldStyle);
 
         private string ItalicDelimiter => ItalicDelimiter(Format.ItalicStyle);
 
-        private ListItemStyle ListItemStyle => Format.ListItemStyle;
+        private ListStyle ListStyle => Format.ListStyle;
 
-        private string ListItemStart => ListItemStart(ListItemStyle);
+        private string ListItemStart => ListItemStart(ListStyle);
 
-        private OrderedListItemStyle OrderedListItemStyle => Format.OrderedListItemStyle;
+        private OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
 
-        private string OrderedListItemStart => OrderedListItemStart(OrderedListItemStyle);
+        private string OrderedListItemStart => OrderedListItemStart(OrderedListStyle);
 
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
@@ -105,6 +109,7 @@ namespace Pihrtsoft.Markdown
 
         public virtual void Close()
         {
+            Dispose();
         }
 
         private void AddState(State state)
@@ -176,7 +181,6 @@ namespace Pihrtsoft.Markdown
             return WriteDelimiter(State.Strikethrough, StrikethroughDelimiter, content);
         }
 
-        //TODO: Trim value
         private MarkdownWriter WriteDelimiter(State state, string delimiter, object value)
         {
             bool isSet = TryAddState(state);
@@ -1247,7 +1251,7 @@ namespace Pihrtsoft.Markdown
 
             void WriteLine(int startIndex, int index)
             {
-                if (Settings.NewLineHandling == NewLineHandling.Replace)
+                if (NewLineHandling == NewLineHandling.Replace)
                 {
                     index--;
                     if (index > 0
@@ -1260,7 +1264,7 @@ namespace Pihrtsoft.Markdown
                 BeforeWrite();
                 WriteCore(value, startIndex, index - startIndex);
 
-                if (Settings.NewLineHandling == NewLineHandling.Replace)
+                if (NewLineHandling == NewLineHandling.Replace)
                 {
                     this.WriteLine();
                 }
@@ -1444,7 +1448,7 @@ namespace Pihrtsoft.Markdown
 
         protected void WriteLineCore()
         {
-            WriteCore(Settings.NewLineChars);
+            WriteCore(NewLineChars);
         }
     }
 }

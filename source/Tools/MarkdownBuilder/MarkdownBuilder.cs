@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using System.Xml;
 using Pihrtsoft.Markdown.Linq;
 using static Pihrtsoft.Markdown.Linq.MarkdownFactory;
 using static Pihrtsoft.Markdown.TextUtility;
@@ -48,13 +47,13 @@ namespace Pihrtsoft.Markdown
 
         private string ItalicDelimiter => ItalicDelimiter(Format.ItalicStyle);
 
-        private ListItemStyle ListItemStyle => Format.ListItemStyle;
+        private ListStyle ListStyle => Format.ListStyle;
 
-        private string ListItemStart => ListItemStart(ListItemStyle);
+        private string ListItemStart => ListItemStart(ListStyle);
 
-        private OrderedListItemStyle OrderedListItemStyle => Format.OrderedListItemStyle;
+        private OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
 
-        private string OrderedListItemStart => OrderedListItemStart(OrderedListItemStyle);
+        private string OrderedListItemStart => OrderedListItemStart(OrderedListStyle);
 
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 

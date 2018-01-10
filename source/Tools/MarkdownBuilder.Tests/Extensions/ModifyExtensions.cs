@@ -139,7 +139,7 @@ namespace Pihrtsoft.Markdown.Tests
             return new MarkdownFormat(
                 x.BoldStyle.Modify(),
                 x.ItalicStyle.Modify(),
-                x.ListItemStyle.Modify(),
+                x.ListStyle.Modify(),
                 x.HorizontalRuleFormat.Modify(),
                 x.HeadingOptions.Modify(),
                 x.TableOptions.Modify(),
@@ -149,16 +149,16 @@ namespace Pihrtsoft.Markdown.Tests
                 horizontalRuleFormat: x.HeadingStyle.Modify());
         }
 
-        public static ListItemStyle Modify(this ListItemStyle style)
+        public static ListStyle Modify(this ListStyle style)
         {
             switch (style)
             {
-                case ListItemStyle.Asterisk:
-                    return ListItemStyle.Plus;
-                case ListItemStyle.Plus:
-                    return ListItemStyle.Minus;
-                case ListItemStyle.Minus:
-                    return ListItemStyle.Asterisk;
+                case ListStyle.Asterisk:
+                    return ListStyle.Plus;
+                case ListStyle.Plus:
+                    return ListStyle.Minus;
+                case ListStyle.Minus:
+                    return ListStyle.Asterisk;
                 default:
                     throw new ArgumentException(style.ToString(), nameof(style));
             }

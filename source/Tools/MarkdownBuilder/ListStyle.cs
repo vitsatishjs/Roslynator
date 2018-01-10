@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum ListItemStyle
+    public enum ListStyle
     {
         Asterisk = 0,
         Plus = 1,

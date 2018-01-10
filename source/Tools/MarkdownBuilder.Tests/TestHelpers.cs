@@ -223,9 +223,9 @@ namespace Pihrtsoft.Markdown.Tests
             return (EmphasisStyle)IntValue(0, 1);
         }
 
-        public static ListItemStyle ListItemStyle()
+        public static ListStyle ListItemStyle()
         {
-            return (ListItemStyle)IntValue(0, 2);
+            return (ListStyle)IntValue(0, 2);
         }
 
         public static HeadingStyle HeadingStyle()
@@ -303,9 +303,9 @@ namespace Pihrtsoft.Markdown.Tests
             return CreateBuilder((headingOptions != null) ? new MarkdownFormat(headingOptions: headingOptions.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithListItemStyle(ListItemStyle? style)
+        public static MarkdownBuilder CreateBuilderWithListItemStyle(ListStyle? style)
         {
-            return CreateBuilder((style != null) ? new MarkdownFormat(listItemStyle: style.Value) : null);
+            return CreateBuilder((style != null) ? new MarkdownFormat(listStyle: style.Value) : null);
         }
 
         public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownFormat format = null)

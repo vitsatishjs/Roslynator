@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace Pihrtsoft.Markdown
 {
     [DebuggerDisplay("Encoding = {Encoding.WebName,nq} CloseOutput = {CloseOutput}")]
-    public class MarkdownWriterSettings : IEquatable<MarkdownWriterSettings>
+    public class MarkdownWriterSettings
     {
         public MarkdownWriterSettings(
             MarkdownFormat format = null,
@@ -38,38 +37,15 @@ namespace Pihrtsoft.Markdown
 
         public bool CloseOutput { get; }
 
-        public override bool Equals(object obj)
+        internal static MarkdownWriterSettings From(MarkdownFormat format)
         {
-            return Equals(obj as MarkdownWriterSettings);
-        }
+            if (format == null
+                || object.ReferenceEquals(format, MarkdownFormat.Default))
+            {
+                return Default;
+            }
 
-        public bool Equals(MarkdownWriterSettings other)
-        {
-            return other != null
-                && EqualityComparer<MarkdownFormat>.Default.Equals(Format, other.Format)
-                && EqualityComparer<Encoding>.Default.Equals(Encoding, other.Encoding)
-                && NewLineChars == other.NewLineChars
-                && NewLineHandling == other.NewLineHandling
-                && CloseOutput == other.CloseOutput;
-        }
-
-        public override int GetHashCode()
-        {
-            int hash = Hash.Create(Format);
-            hash = Hash.Combine(Encoding, hash);
-            hash = Hash.Combine(NewLineChars, hash);
-            hash = Hash.Combine((int)NewLineHandling, hash);
-            return Hash.Combine(CloseOutput, hash);
-        }
-
-        public static bool operator ==(MarkdownWriterSettings settings1, MarkdownWriterSettings settings2)
-        {
-            return EqualityComparer<MarkdownWriterSettings>.Default.Equals(settings1, settings2);
-        }
-
-        public static bool operator !=(MarkdownWriterSettings settings1, MarkdownWriterSettings settings2)
-        {
-            return !(settings1 == settings2);
+            return new MarkdownWriterSettings(format);
         }
     }
 }
