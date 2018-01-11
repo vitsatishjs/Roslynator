@@ -366,7 +366,6 @@ namespace Roslynator.CSharp.CodeFixes
                                 break;
                             }
 
-                            //TODO: xxx
                             if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.ChangeTypeAccordingToInitializer))
                             {
                                 SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
