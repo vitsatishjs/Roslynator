@@ -53,5 +53,18 @@ namespace Pihrtsoft.Markdown.Linq
         {
             return new List(this);
         }
+
+        internal override void ValidateElement(MElement element)
+        {
+            switch (element.Kind)
+            {
+                case MarkdownKind.ListItem:
+                case MarkdownKind.OrderedListItem:
+                case MarkdownKind.TaskListItem:
+                    return;
+            }
+
+            base.ValidateElement(element);
+        }
     }
 }
