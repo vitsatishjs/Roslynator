@@ -1357,7 +1357,10 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeWrite();
-            WriteCore(value, repeatCount);
+
+            for (int i = 0; i < repeatCount; i++)
+                WriteCore(value);
+
             return this;
         }
 
@@ -1439,14 +1442,12 @@ namespace Pihrtsoft.Markdown
 
         protected abstract void WriteCore(char value);
 
-        protected abstract void WriteCore(char value, int repeatCount);
-
-        protected void WriteCore(int value)
+        protected virtual void WriteCore(int value)
         {
             WriteCore(value.ToString());
         }
 
-        protected void WriteLineCore()
+        protected virtual void WriteLineCore()
         {
             WriteCore(NewLineChars);
         }

@@ -5,18 +5,17 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    //TODO: Comment
     [DebuggerDisplay("{Kind} {Value,nq}")]
-    public class MComment : MElement
+    public class Comment : MElement
     {
         private string _value;
 
-        public MComment(string value)
+        public Comment(string value)
         {
             Value = value;
         }
 
-        public MComment(MComment other)
+        public Comment(Comment other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -44,7 +43,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new MComment(this);
+            return new Comment(this);
         }
     }
 }
