@@ -50,11 +50,7 @@ namespace Pihrtsoft.Markdown
 
         public EmphasisStyle BoldStyle { get; }
 
-        public EmphasisStyle AlternativeBoldStyle => GetAlternativeEmphasisStyle(BoldStyle);
-
         public EmphasisStyle ItalicStyle { get; }
-
-        public EmphasisStyle AlternativeItalicStyle => GetAlternativeEmphasisStyle(ItalicStyle);
 
         public ListStyle ListStyle { get; }
 
@@ -93,17 +89,6 @@ namespace Pihrtsoft.Markdown
         internal bool CloseHeading => (HeadingOptions & HeadingOptions.Close) != 0;
 
         public CharReferenceFormat CharReferenceFormat { get; }
-
-        private static EmphasisStyle GetAlternativeEmphasisStyle(EmphasisStyle style)
-        {
-            if (style == EmphasisStyle.Asterisk)
-                return EmphasisStyle.Underscore;
-
-            if (style == EmphasisStyle.Underscore)
-                return EmphasisStyle.Asterisk;
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
 
         public override bool Equals(object obj)
         {

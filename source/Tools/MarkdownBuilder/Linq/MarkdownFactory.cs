@@ -7,6 +7,16 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public static class MarkdownFactory
     {
+        public static MDocument Document(object content)
+        {
+            return new MDocument(content);
+        }
+
+        public static MDocument Document(params object[] content)
+        {
+            return new MDocument(content);
+        }
+
         public static RawText RawText(string text)
         {
             return new RawText(text);

@@ -17,7 +17,7 @@ namespace Roslynator.CodeGeneration.Markdown
     {
         public static string CreateReadMe(IEnumerable<AnalyzerDescriptor> analyzers, IEnumerable<RefactoringDescriptor> refactorings, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading3("List of Analyzers"),
                 analyzers
                     .OrderBy(f => f.Id, comparer)
@@ -34,7 +34,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateRefactoringsMarkdown(IEnumerable<RefactoringDescriptor> refactorings, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Refactorings"),
                 GetRefactorings());
 
@@ -118,7 +118,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var format = new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent);
 
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2(refactoring.Title),
                 Table(TableRow("Property", "Value"),
                     TableRow("Id", refactoring.Id),
@@ -137,7 +137,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             var format = new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent);
 
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading1($"{((analyzer.IsObsolete) ? "[deprecated] " : "")}{analyzer.Id}: {analyzer.Title.TrimEnd('.')}"),
                 Table(
                     TableRow("Property", "Value"),
@@ -174,7 +174,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateAnalyzersReadMe(IEnumerable<AnalyzerDescriptor> analyzers, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Analyzers"),
                 Table(
                     TableRow("Id", "Title", "Category", TableColumn(Alignment.Center, "Enabled by Default")),
@@ -192,7 +192,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateRefactoringsReadMe(IEnumerable<RefactoringDescriptor> refactorings, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Refactorings"),
                 Table(
                     TableRow("Id", "Title", TableColumn(Alignment.Center, "Enabled by Default")),
@@ -209,7 +209,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateCodeFixesReadMe(IEnumerable<CodeFixDescriptor> codeFixes, IEnumerable<CompilerDiagnosticDescriptor> diagnostics, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Code Fixes"),
                 Table(
                     TableRow("Id", "Title", "Fixable Diagnostics", TableColumn(Alignment.Center, "Enabled by Default")),
@@ -227,7 +227,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateCodeFixesByDiagnosticId(IEnumerable<CodeFixDescriptor> codeFixes, IEnumerable<CompilerDiagnosticDescriptor> diagnostics)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Code Fixes by Diagnostic Id"),
                 Table(
                     TableRow("Diagnostic", "Code Fixes"),
@@ -254,7 +254,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         public static string CreateAnalyzersByCategoryMarkdown(IEnumerable<AnalyzerDescriptor> analyzers, IComparer<string> comparer)
         {
-            var document = new MDocument(
+            MDocument document = Document(
                 Heading2("Roslynator Analyzers by Category"),
                 Table(
                     TableRow("Category", "Title", "Id", TableColumn(Alignment.Center, "Enabled by Default")),
