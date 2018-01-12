@@ -62,9 +62,19 @@ namespace Pihrtsoft.Markdown.Linq
             return new Strikethrough(content);
         }
 
-        public static InlineCode Code(string text)
+        public static InlineCode InlineCode(string text)
         {
             return new InlineCode(text);
+        }
+
+        public static MInlineContainer Inline(object content)
+        {
+            return new MInlineContainer(content);
+        }
+
+        public static MInlineContainer Inline(params object[] content)
+        {
+            return new MInlineContainer(content);
         }
 
         public static MInlineContainer Join(object separator, params object[] values)
@@ -166,44 +176,44 @@ namespace Pihrtsoft.Markdown.Linq
             return Heading(6, content);
         }
 
-        public static BulletListItem ListItem(object content)
+        public static BulletItem BulletItem(object content)
         {
-            return new BulletListItem(content);
+            return new BulletItem(content);
         }
 
-        public static BulletListItem ListItem(params object[] content)
+        public static BulletItem BulletItem(params object[] content)
         {
-            return new BulletListItem(content);
+            return new BulletItem(content);
         }
 
-        public static OrderedListItem OrderedListItem(int number, object content)
+        public static OrderedItem OrderedItem(int number, object content)
         {
-            return new OrderedListItem(number, content);
+            return new OrderedItem(number, content);
         }
 
-        public static OrderedListItem OrderedListItem(int number, params object[] content)
+        public static OrderedItem OrderedItem(int number, params object[] content)
         {
-            return new OrderedListItem(number, content);
+            return new OrderedItem(number, content);
         }
 
-        public static TaskListItem TaskListItem(bool isCompleted, object content)
+        public static TaskItem TaskItem(bool isCompleted, object content)
         {
-            return new TaskListItem(isCompleted, content);
+            return new TaskItem(isCompleted, content);
         }
 
-        public static TaskListItem TaskListItem(bool isCompleted, params object[] content)
+        public static TaskItem TaskItem(bool isCompleted, params object[] content)
         {
-            return new TaskListItem(isCompleted, content);
+            return new TaskItem(isCompleted, content);
         }
 
-        public static TaskListItem CompletedTaskListItem(object content)
+        public static TaskItem CompletedTaskItem(object content)
         {
-            return TaskListItem(isCompleted: true, content: content);
+            return TaskItem(isCompleted: true, content: content);
         }
 
-        public static TaskListItem CompletedTaskListItem(params object[] content)
+        public static TaskItem CompletedTaskItem(params object[] content)
         {
-            return TaskListItem(isCompleted: true, content: content);
+            return TaskItem(isCompleted: true, content: content);
         }
 
         public static BulletList List(object content)
@@ -362,7 +372,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        internal static string ListItemStart(ListStyle style)
+        internal static string BulletItemStart(ListStyle style)
         {
             if (style == ListStyle.Asterisk)
                 return "* ";
@@ -376,7 +386,7 @@ namespace Pihrtsoft.Markdown.Linq
             throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
         }
 
-        internal static string OrderedListItemStart(OrderedListStyle style)
+        internal static string OrderedItemStart(OrderedListStyle style)
         {
             switch (style)
             {
@@ -389,7 +399,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        internal static string TaskListItemStart(bool isCompleted = false)
+        internal static string TaskItemStart(bool isCompleted = false)
         {
             if (isCompleted)
             {

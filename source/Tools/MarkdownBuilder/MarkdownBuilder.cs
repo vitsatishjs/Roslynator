@@ -49,11 +49,11 @@ namespace Pihrtsoft.Markdown
 
         private ListStyle ListStyle => Format.ListStyle;
 
-        private string ListItemStart => ListItemStart(ListStyle);
+        private string BulletItemStart => BulletItemStart(ListStyle);
 
         private OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
 
-        private string OrderedListItemStart => OrderedListItemStart(OrderedListStyle);
+        private string OrderedItemStart => OrderedItemStart(OrderedListStyle);
 
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
@@ -307,46 +307,46 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendListItem(object content)
+        public MarkdownBuilder AppendBulletItem(object content)
         {
-            return AppendItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
+            return AppendItemCore(state: State.BulletItem, prefix1: null, prefix2: BulletItemStart, content: content);
         }
 
-        public MarkdownBuilder AppendListItem(params object[] content)
+        public MarkdownBuilder AppendBulletItem(params object[] content)
         {
-            return AppendListItem((object)content);
+            return AppendBulletItem((object)content);
         }
 
-        public MarkdownBuilder AppendOrderedListItem(int number, object content)
+        public MarkdownBuilder AppendOrderedItem(int number, object content)
         {
             Error.ThrowOnInvalidItemNumber(number);
 
-            return AppendItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
+            return AppendItemCore(state: State.OrderedItem, prefix1: number.ToString(), prefix2: OrderedItemStart, content: content);
         }
 
-        public MarkdownBuilder AppendOrderedListItem(int number, params object[] content)
+        public MarkdownBuilder AppendOrderedItem(int number, params object[] content)
         {
-            return AppendOrderedListItem(number, (object)content);
+            return AppendOrderedItem(number, (object)content);
         }
 
-        public MarkdownBuilder AppendTaskListItem(object content)
+        public MarkdownBuilder AppendTaskItem(object content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
+            return AppendItemCore(state: State.TaskItem, prefix1: null, prefix2: TaskItemStart(), content: content);
         }
 
-        public MarkdownBuilder AppendTaskListItem(params object[] content)
+        public MarkdownBuilder AppendTaskItem(params object[] content)
         {
-            return AppendTaskListItem((object)content);
+            return AppendTaskItem((object)content);
         }
 
-        public MarkdownBuilder AppendCompletedTaskListItem(object content)
+        public MarkdownBuilder AppendCompletedTaskItem(object content)
         {
-            return AppendItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
+            return AppendItemCore(state: State.TaskItem, prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
         }
 
-        public MarkdownBuilder AppendCompletedTaskListItem(params object[] content)
+        public MarkdownBuilder AppendCompletedTaskItem(params object[] content)
         {
-            return AppendCompletedTaskListItem((object)content);
+            return AppendCompletedTaskItem((object)content);
         }
 
         private MarkdownBuilder AppendItemCore(State state, string prefix1, string prefix2, object content)
@@ -361,25 +361,25 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendListItems(params MElement[] content)
+        public MarkdownBuilder AppendBulletItems(params MElement[] content)
         {
-            return AppendListItems((IEnumerable<MElement>)content);
+            return AppendBulletItems((IEnumerable<MElement>)content);
         }
 
-        public MarkdownBuilder AppendListItems(IEnumerable<MElement> content)
+        public MarkdownBuilder AppendBulletItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    AppendListItem(item.TextOrElements());
+                    AppendBulletItem(item.TextOrElements());
                 }
                 else
                 {
-                    AppendListItem(element);
+                    AppendBulletItem(element);
                 }
             }
 
@@ -387,7 +387,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendOrderedListItems(params MElement[] content)
+        public MarkdownBuilder AppendOrderedItems(params MElement[] content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -396,13 +396,13 @@ namespace Pihrtsoft.Markdown
             {
                 MElement element = content[i];
 
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    AppendOrderedListItem(i + 1, item.TextOrElements());
+                    AppendOrderedItem(i + 1, item.TextOrElements());
                 }
                 else
                 {
-                    AppendOrderedListItem(i + 1, element);
+                    AppendOrderedItem(i + 1, element);
                 }
             }
 
@@ -410,7 +410,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendOrderedListItems(IEnumerable<MElement> content)
+        public MarkdownBuilder AppendOrderedItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -418,13 +418,13 @@ namespace Pihrtsoft.Markdown
             int number = 1;
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    AppendOrderedListItem(number, item.TextOrElements());
+                    AppendOrderedItem(number, item.TextOrElements());
                 }
                 else
                 {
-                    AppendOrderedListItem(number, element);
+                    AppendOrderedItem(number, element);
                 }
 
                 number++;
@@ -434,25 +434,25 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownBuilder AppendTaskListItems(params MElement[] content)
+        public MarkdownBuilder AppendTaskItems(params MElement[] content)
         {
-            return AppendTaskListItems((IEnumerable<MElement>)content);
+            return AppendTaskItems((IEnumerable<MElement>)content);
         }
 
-        public MarkdownBuilder AppendTaskListItems(IEnumerable<MElement> content)
+        public MarkdownBuilder AppendTaskItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    AppendTaskListItem(item.TextOrElements());
+                    AppendTaskItem(item.TextOrElements());
                 }
                 else
                 {
-                    AppendTaskListItem(element);
+                    AppendTaskItem(element);
                 }
             }
 
@@ -1396,7 +1396,7 @@ namespace Pihrtsoft.Markdown
             for (int i = 1; i <= QuoteLevel; i++)
                 AppendCore(BlockQuoteStart);
 
-            if (HasState(State.ListItem | State.OrderedListItem | State.TaskListItem))
+            if (HasState(State.BulletItem | State.OrderedItem | State.TaskItem))
                 AppendCore("  ");
 
             if (HasState(State.IndentedCodeBlock))

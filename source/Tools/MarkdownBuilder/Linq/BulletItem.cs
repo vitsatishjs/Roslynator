@@ -2,42 +2,42 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class BulletListItem : ListItem
+    public class BulletItem : MBlockContainer
     {
-        public BulletListItem()
+        public BulletItem()
         {
         }
 
-        public BulletListItem(object content)
+        public BulletItem(object content)
             : base(content)
         {
         }
 
-        public BulletListItem(params object[] content)
+        public BulletItem(params object[] content)
             : base(content)
         {
         }
 
-        public BulletListItem(BulletListItem other)
+        public BulletItem(BulletItem other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.ListItem;
+        public override MarkdownKind Kind => MarkdownKind.BulletItem;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
-            return builder.AppendListItem(TextOrElements());
+            return builder.AppendBulletItem(TextOrElements());
         }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteListItem(TextOrElements());
+            return writer.WriteBulletItem(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new BulletListItem(this);
+            return new BulletItem(this);
         }
     }
 }

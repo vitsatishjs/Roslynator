@@ -10,7 +10,7 @@
     * InlineCode
     * CharReference
     * EntityReference
-    * MComment
+    * Comment
     * FencedCodeBlock
     * IndentedCodeBlock
     * HorizontalRule
@@ -27,9 +27,10 @@
       * MBlockContainer
         * MDocument
         * BlockQuote
+        * BulletItem
+        * OrderedItem
+        * TaskItem
         * List
-        * ListItem
-        * OrderedList
-        * OrderedListItem
-        * TaskList
-        * TaskListItem
+          * BulletList
+          * OrderedList
+          * TaskList

@@ -587,7 +587,7 @@ namespace Pihrtsoft.Markdown.Tests
         {
             MarkdownBuilder mb = CreateBuilder();
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendOrderedListItem(number));
+            Assert.Throws<ArgumentOutOfRangeException>(() => mb.AppendOrderedItem(number));
         }
 
         [Theory]
