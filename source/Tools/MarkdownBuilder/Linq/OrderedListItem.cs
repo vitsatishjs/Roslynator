@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Number} {GetString(),nq}")]
-    public class OrderedListItem : MBlockContainer
+    public class OrderedListItem : ListItem
     {
         private int _number;
 

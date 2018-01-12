@@ -373,7 +373,7 @@ namespace Pihrtsoft.Markdown
 
             foreach (MElement element in content)
             {
-                if (element is ListItem item)
+                if (element is BulletListItem item)
                 {
                     AppendListItem(item.TextOrElements());
                 }
@@ -396,7 +396,7 @@ namespace Pihrtsoft.Markdown
             {
                 MElement element = content[i];
 
-                if (element is ListItem item)
+                if (element is BulletListItem item)
                 {
                     AppendOrderedListItem(i + 1, item.TextOrElements());
                 }
@@ -418,7 +418,7 @@ namespace Pihrtsoft.Markdown
             int number = 1;
             foreach (MElement element in content)
             {
-                if (element is ListItem item)
+                if (element is BulletListItem item)
                 {
                     AppendOrderedListItem(number, item.TextOrElements());
                 }
@@ -446,7 +446,7 @@ namespace Pihrtsoft.Markdown
 
             foreach (MElement element in content)
             {
-                if (element is ListItem item)
+                if (element is BulletListItem item)
                 {
                     AppendTaskListItem(item.TextOrElements());
                 }

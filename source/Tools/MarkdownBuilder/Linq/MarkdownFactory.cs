@@ -166,14 +166,14 @@ namespace Pihrtsoft.Markdown.Linq
             return Heading(6, content);
         }
 
-        public static ListItem ListItem(object content)
+        public static BulletListItem ListItem(object content)
         {
-            return new ListItem(content);
+            return new BulletListItem(content);
         }
 
-        public static ListItem ListItem(params object[] content)
+        public static BulletListItem ListItem(params object[] content)
         {
-            return new ListItem(content);
+            return new BulletListItem(content);
         }
 
         public static OrderedListItem OrderedListItem(int number, object content)
@@ -206,14 +206,14 @@ namespace Pihrtsoft.Markdown.Linq
             return TaskListItem(isCompleted: true, content: content);
         }
 
-        public static List List(object content)
+        public static BulletList List(object content)
         {
-            return new List(content);
+            return new BulletList(content);
         }
 
-        public static List List(params object[] content)
+        public static BulletList List(params object[] content)
         {
-            return new List(content);
+            return new BulletList(content);
         }
 
         public static OrderedList OrderedList(int number, object content)

@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TaskList : MContainer
+    public class TaskList : List
     {
         public TaskList()
         {
@@ -52,19 +52,6 @@ namespace Pihrtsoft.Markdown.Linq
         internal override MElement Clone()
         {
             return new TaskList(this);
-        }
-
-        internal override void ValidateElement(MElement element)
-        {
-            switch (element.Kind)
-            {
-                case MarkdownKind.ListItem:
-                case MarkdownKind.OrderedListItem:
-                case MarkdownKind.TaskListItem:
-                    return;
-            }
-
-            base.ValidateElement(element);
         }
     }
 }
