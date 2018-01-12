@@ -80,6 +80,7 @@
 | RCF0054 | Reorder modifiers | [CS0267](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0267) | &#x2713; |
 | RCF0074 | Replace as expression with cast expression | [CS0077](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0077) | &#x2713; |
 | RCF0079 | Replace 'break' with 'continue' | [CS0139](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0139) | &#x2713; |
+| RCF0097 | Replace comparison with assignment | [CS0201](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0201) | &#x2713; |
 | RCF0087 | Replace conditional expression with if\-else | [CS0201](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0201) | &#x2713; |
 | RCF0094 | Replace constant with field | [CS0133](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0133) | &#x2713; |
 | RCF0077 | Replace element access with invocation | [CS0021](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0021) | &#x2713; |

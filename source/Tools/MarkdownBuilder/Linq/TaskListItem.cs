@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {GetString(),nq}")]
-    public class TaskListItem : MBlockContainer
+    public class TaskListItem : ListItem
     {
         public TaskListItem(bool isCompleted)
         {

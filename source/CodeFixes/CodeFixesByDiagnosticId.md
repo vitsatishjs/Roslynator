@@ -37,7 +37,7 @@
 | [CS0173](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0173) | RCF0063 |
 | [CS0177](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0177) | RCF0067 |
 | [CS0192](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0192) | RCF0027, RCF0070 |
-| [CS0201](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0201) | RCF0039, RCF0047, RCF0076, RCF0080, RCF0087 |
+| [CS0201](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0201) | RCF0039, RCF0047, RCF0076, RCF0080, RCF0087, RCF0097 |
 | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | RCF0050, RCF0051 |
 | [CS0216](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0216) | RCF0082 |
 | [CS0219](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0219) | RCF0001 |

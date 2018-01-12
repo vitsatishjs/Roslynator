@@ -2,38 +2,38 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TaskList : List
+    public class BulletList : List
     {
-        public TaskList()
+        public BulletList()
         {
         }
 
-        public TaskList(object content)
+        public BulletList(object content)
             : base(content)
         {
         }
 
-        public TaskList(params object[] content)
+        public BulletList(params object[] content)
             : base(content)
         {
         }
 
-        public TaskList(TaskList other)
+        public BulletList(BulletList other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.TaskList;
+        public override MarkdownKind Kind => MarkdownKind.List;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
             if (content is string s)
             {
-                return builder.AppendTaskListItem(s).AppendLine();
+                return builder.AppendListItem(s).AppendLine();
             }
             else
             {
-                return builder.AppendTaskListItems(Elements());
+                return builder.AppendListItems(Elements());
             }
         }
 
@@ -41,17 +41,17 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                return writer.WriteTaskListItem(s).WriteLine();
+                return writer.WriteListItem(s).WriteLine();
             }
             else
             {
-                return writer.WriteTaskListItems(Elements());
+                return writer.WriteListItems(Elements());
             }
         }
 
         internal override MElement Clone()
         {
-            return new TaskList(this);
+            return new BulletList(this);
         }
     }
 }

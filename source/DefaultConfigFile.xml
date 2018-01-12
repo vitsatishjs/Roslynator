@@ -292,6 +292,7 @@
       <CodeFix Id="RCF0094" IsEnabled="true" /> <!-- ReplaceConstantWithField (fixes CS0133) -->
       <CodeFix Id="RCF0095" IsEnabled="true" /> <!-- ReplaceStructWithClass (fixes CS0527) -->
       <CodeFix Id="RCF0096" IsEnabled="true" /> <!-- ReplaceYieldReturnWithForEach (fixes CS0029) -->
+      <CodeFix Id="RCF0097" IsEnabled="true" /> <!-- ReplaceComparisonWithAssignment (fixes CS0201) -->
     </CodeFixes>
   </Settings>
 </Roslynator>
