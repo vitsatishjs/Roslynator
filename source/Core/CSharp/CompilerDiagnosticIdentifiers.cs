@@ -10,6 +10,7 @@ namespace Roslynator.CSharp
         public const string CannotApplyIndexingToExpression = "CS0021";
         public const string OperatorCannotBeAppliedToOperandOfType = "CS0023";
         public const string CannotImplicitlyConvertType = "CS0029";
+        public const string CannotConvertType = "CS0030";
         public const string CannotConvertNullToTypeBecauseItIsNonNullableValueType = "CS0037";
         public const string EventInInterfaceCannotHaveAddOrRemoveAccessors = "CS0069";
         public const string AsOperatorMustBeUsedWithReferenceTypeOrNullableType = "CS0077";
@@ -44,9 +45,11 @@ namespace Roslynator.CSharp
         public const string ReadOnlyFieldCannotBeUsedAsRefOrOutValue = "CS0192";
         public const string OnlyAssignmentCallIncrementDecrementAndNewObjectExpressionsCanBeUsedAsStatement = "CS0201";
         public const string PointersAndFixedSizeBuffersMayOnlyBeUsedInUnsafeContext = "CS0214";
+        public const string OperatorRequiresMatchingOperatorToAlsoBeDefined = "CS0216";
         public const string VariableIsAssignedButItsValueIsNeverUsed = "CS0219";
         public const string ConstantValueCannotBeConverted = "CS0221";
         public const string ParamsParameterMustBeSingleDimensionalArray = "CS0225";
+        public const string TypeOrNamespaceNameCouldNotBeFound = "CS0246";
         public const string MissingPartialModifier = "CS0260";
         public const string PartialDeclarationsHaveConfictingAccessibilityModifiers = "CS0262";
         public const string CannotImplicitlyConvertTypeExplicitConversionExists = "CS0266";
@@ -71,6 +74,7 @@ namespace Roslynator.CSharp
         public const string MethodReturnTypeMustMatchOverriddenMethodReturnType = "CS0508";
         public const string MemberIsAbstractButItIsContainedInNonAbstractClass = "CS0513";
         public const string AccessModifiersAreNotAllowedOnStaticConstructors = "CS0515";
+        public const string TypeInInterfaceListIsNotInterface = "CS0527";
         public const string InterfaceMembersCannotHaveDefinition = "CS0531";
         public const string ExplicitInterfaceDeclarationCanOnlyBeDeclaredInClassOrStruct = "CS0541";
         public const string UserDefinedOperatorMustBeDeclaredStaticAndPublic = "CS0558";
@@ -79,6 +83,9 @@ namespace Roslynator.CSharp
         public const string AttributeIsNotValidOnThisDeclarationType = "CS0592";
         public const string VirtualOrAbstractmembersCannotBePrivate  = "CS0621";
         public const string NewProtectedMemberDeclaredInSealedClass = "CS0628";
+        public const string TypeOverridesObjectEqualsButDoesNotOverrideObjectGetHashCode = "CS0659";
+        public const string TypeDefinesEqualityOperatorButDoesNotOverrideObjectEquals = "CS0660";
+        public const string TypeDefinesEqualityOperatorButDoesNotOverrideObjectGetHashCode = "CS0661";
         public const string FieldCanNotBeBothVolatileAndReadOnly = "CS0678";
         public const string TypeParameterHasSameNameAsTypeParameterFromOuterType = "CS0693";
         public const string CannotDeclareInstanceMembersInStaticClass = "CS0708";
@@ -97,6 +104,7 @@ namespace Roslynator.CSharp
         public const string SemicolonExpected = "CS1002";
         public const string DuplicateModifier = "CS1004";
         public const string EmbeddedStatementCannotBeDeclarationOrLabeledStatement = "CS1023";
+        public const string TypeExpected = "CS1031";
         public const string StaticClassesCannotContainProtectedMembers = "CS1057";
         public const string TypeDoesNotContainDefinitionAndNoExtensionMethodCouldBeFound = "CS1061";
         public const string MethodHasParameterModifierThisWhichIsNotOnFirstParameter = "CS1100";
@@ -104,8 +112,10 @@ namespace Roslynator.CSharp
         public const string ExtensionMethodMustBeDefinedInNonGenericStaticClass = "CS1106";
         public const string CannotConvertArgumentType = "CS1503";
         public const string EmptySwitchBlock = "CS1522";
+        public const string NewExpressionRequiresParenthesesOrBracketsOrBracesAfterType = "CS1526";
         public const string ElementsDefinedInNamespaceCannotBeExplicitlyDeclaredAsPrivateProtectedOrProtectedInternal = "CS1527";
         public const string MissingXmlCommentForPubliclyVisibleTypeOrMember = "CS1591";
+        public const string SemicolonAfterMethodOrAccessorBlockIsNotValid = "CS1597";
         public const string ModifiersCannotBePlacedOnEventAccessorDeclarations = "CS1609";
         public const string ArgumentMayNotBePassedWithRefKeyword = "CS1615";
         public const string ArgumentMustBePassedWithOutKeyword = "CS1620";
@@ -119,10 +129,12 @@ namespace Roslynator.CSharp
         public const string AssignmentMadeToSameVariable = "CS1717";
         public const string BaseClassMustComeBeforeAnyInterface = "CS1722";
         public const string ValueCannotBeUsedAsDefaultParameter = "CS1750";
+        public const string CannotSpecifyDefaultValueForParameterArray = "CS1751";
         public const string NonInvocableMemberCannotBeUsedLikeMethod = "CS1955";
         public const string AsyncMethodsCannotHaveRefOrOutParameters = "CS1988";
         public const string AsyncModifierCanOnlyBeUsedInMethodsThatHaveBody = "CS1994";
         public const string SinceMethodIsAsyncMethodThatReturnsTaskReturnKeywordMustNotBeFollowedByObjectExpression = "CS1997";
         public const string ControlCannotFallOutOfSwitchFromFinalCaseLabel = "CS8070";
+        public const string LocalFunctionMustAlwaysHaveBody = "CS8112";
     }
 }

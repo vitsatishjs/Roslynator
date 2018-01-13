@@ -5,22 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
-using Roslynator.Diagnostics;
 
 namespace Roslynator
 {
     public static class SyntaxExtensions
     {
-        private static readonly SyntaxAnnotation[] _formatterAnnotationArray = new SyntaxAnnotation[] { Formatter.Annotation };
-
-        private static readonly SyntaxAnnotation[] _simplifierAnnotationArray = new SyntaxAnnotation[] { Simplifier.Annotation };
-
-        private static readonly SyntaxAnnotation[] _formatterAndSimplifierAnnotations = new SyntaxAnnotation[] { Formatter.Annotation, Simplifier.Annotation };
-
         #region SeparatedSyntaxList<T>
         public static SeparatedSyntaxList<TNode> ReplaceAt<TNode>(this SeparatedSyntaxList<TNode> list, int index, TNode newNode) where TNode : SyntaxNode
         {
@@ -67,9 +57,9 @@ namespace Roslynator
             return true;
         }
 
-        internal static TNode SingleOrDefault<TNode>(this SeparatedSyntaxList<TNode> list, bool throwException) where TNode : SyntaxNode
+        internal static TNode SingleOrDefault<TNode>(this SeparatedSyntaxList<TNode> list, bool shouldthrow) where TNode : SyntaxNode
         {
-            return (throwException) ? list.SingleOrDefault() : ((list.Count == 1) ? list[0] : default(TNode));
+            return (shouldthrow) ? list.SingleOrDefault() : ((list.Count == 1) ? list[0] : default(TNode));
         }
 
         public static bool SpanContainsDirectives<TNode>(this SeparatedSyntaxList<TNode> list) where TNode : SyntaxNode
@@ -149,9 +139,9 @@ namespace Roslynator
             return list.IndexOf(node) != -1;
         }
 
-        internal static TNode SingleOrDefault<TNode>(this SyntaxList<TNode> list, bool throwException) where TNode : SyntaxNode
+        internal static TNode SingleOrDefault<TNode>(this SyntaxList<TNode> list, bool shouldThrow) where TNode : SyntaxNode
         {
-            return (throwException) ? list.SingleOrDefault() : ((list.Count == 1) ? list[0] : default(TNode));
+            return (shouldThrow) ? list.SingleOrDefault() : ((list.Count == 1) ? list[0] : default(TNode));
         }
 
         public static bool SpanContainsDirectives<TNode>(this SyntaxList<TNode> list) where TNode : SyntaxNode
@@ -387,35 +377,6 @@ namespace Roslynator
             return node.Parent?.FirstAncestorOrSelf(predicate, ascendOutOfTrivia);
         }
 
-        public static TNode WithFormatterAnnotation<TNode>(this TNode node) where TNode : SyntaxNode
-        {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
-
-            return node.WithAdditionalAnnotations(_formatterAnnotationArray);
-        }
-
-        public static TNode WithSimplifierAnnotation<TNode>(this TNode node) where TNode : SyntaxNode
-        {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
-
-            return node.WithAdditionalAnnotations(_simplifierAnnotationArray);
-        }
-
-        internal static TNode WithSimplifierAnnotationIf<TNode>(this TNode node, bool condition) where TNode : SyntaxNode
-        {
-            return (condition) ? node.WithAdditionalAnnotations(_simplifierAnnotationArray) : node;
-        }
-
-        internal static TNode WithFormatterAndSimplifierAnnotations<TNode>(this TNode node) where TNode : SyntaxNode
-        {
-            if (node == null)
-                throw new ArgumentNullException(nameof(node));
-
-            return node.WithAdditionalAnnotations(_formatterAndSimplifierAnnotations);
-        }
-
         internal static string ToString(this SyntaxNode node, TextSpan span)
         {
             return GetSubstring(node, node.ToString(), span);
@@ -445,6 +406,11 @@ namespace Roslynator
                 throw new ArgumentNullException(nameof(node));
 
             return TextSpan.FromBounds(node.Span.End, node.FullSpan.End);
+        }
+
+        internal static TNode WithAdditionalAnnotationsIf<TNode>(this TNode node, bool condition, params SyntaxAnnotation[] annotations) where TNode : SyntaxNode
+        {
+            return (condition) ? node.WithAdditionalAnnotations(annotations) : node;
         }
         #endregion SyntaxNode
 
@@ -588,26 +554,6 @@ namespace Roslynator
         public static SyntaxToken WithoutTrailingTrivia(this SyntaxToken token)
         {
             return token.WithTrailingTrivia(default(SyntaxTriviaList));
-        }
-
-        public static SyntaxToken WithFormatterAnnotation(this SyntaxToken token)
-        {
-            return token.WithAdditionalAnnotations(_formatterAnnotationArray);
-        }
-
-        public static SyntaxToken WithSimplifierAnnotation(this SyntaxToken token)
-        {
-            return token.WithAdditionalAnnotations(_simplifierAnnotationArray);
-        }
-
-        internal static SyntaxToken WithFormatterAndSimplifierAnnotations(this SyntaxToken token)
-        {
-            return token.WithAdditionalAnnotations(_formatterAndSimplifierAnnotations);
-        }
-
-        public static SyntaxToken WithRenameAnnotation(this SyntaxToken token)
-        {
-            return token.WithAdditionalAnnotations(RenameAnnotation.Create());
         }
 
         public static SyntaxToken WithTriviaFrom(this SyntaxToken token, SyntaxNode node)

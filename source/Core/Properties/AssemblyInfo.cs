@@ -20,6 +20,12 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
+[assembly: InternalsVisibleTo("Roslynator.Workspaces, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c5f40467c21537"
+    + "61c5b2d17b492c32ba431160c1ffda1818efa6c93c9a8803fd8fb3794939680fe8a4709f081f02"
+    + "09b436ff4d01d44f0f75cfefc49848efa655249cc7268d6d4679e7c9853b6a5ab9a74c31d2a908"
+    + "1139c77babf90da04720275dd9e3049ff416a1abb052afd9efdcfffc9d59276b6ee3c08082b672"
+    + "3ed120c6")]
+
 [assembly: InternalsVisibleTo("Roslynator.CSharp.Analyzers, PublicKey=002400000480000094000000060200000024000052534131000400000100010047f923980de8a2"
     + "f3f091a587e29c4969e7c116fbe59d5a884e7d95369213f850faaa52fe90215d04a56874049848"
     + "bd5ccc5ed968f6a68b7a05690a78f911246d43d89ac9c81f8f2528e49e53a2dda2d98aa513bc65"
@@ -77,6 +83,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.5.12")]
+[assembly: AssemblyVersion("1.6.20")]
 //[assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-US")]

@@ -181,34 +181,31 @@ namespace Roslynator.CSharp.Refactorings
 
                     Debug.WriteLine(node.Kind().ToString());
 
-                    if (!fDirectiveTrivia)
+                    if (!fDirectiveTrivia
+                        && (node is DirectiveTriviaSyntax directiveTrivia))
                     {
-                        var directiveTrivia = node as DirectiveTriviaSyntax;
-                        if (directiveTrivia != null)
+                        DirectiveTriviaRefactoring.ComputeRefactorings(this, directiveTrivia);
+
+                        SyntaxKind kind = node.Kind();
+
+                        if (kind == SyntaxKind.RegionDirectiveTrivia
+                            || kind == SyntaxKind.EndRegionDirectiveTrivia)
                         {
-                            DirectiveTriviaRefactoring.ComputeRefactorings(this, directiveTrivia);
-
-                            SyntaxKind kind = node.Kind();
-
-                            if (kind == SyntaxKind.RegionDirectiveTrivia
-                                || kind == SyntaxKind.EndRegionDirectiveTrivia)
-                            {
-                                RegionDirectiveTriviaRefactoring.ComputeRefactorings(this);
-                            }
-
-                            RemoveAllPreprocessorDirectivesRefactoring.ComputeRefactorings(this);
-
-                            if (kind == SyntaxKind.RegionDirectiveTrivia)
-                            {
-                                RegionDirectiveTriviaRefactoring.ComputeRefactorings(this, (RegionDirectiveTriviaSyntax)node);
-                            }
-                            else if (kind == SyntaxKind.EndRegionDirectiveTrivia)
-                            {
-                                RegionDirectiveTriviaRefactoring.ComputeRefactorings(this, (EndRegionDirectiveTriviaSyntax)node);
-                            }
-
-                            fDirectiveTrivia = true;
+                            RegionDirectiveTriviaRefactoring.ComputeRefactorings(this);
                         }
+
+                        RemoveAllPreprocessorDirectivesRefactoring.ComputeRefactorings(this);
+
+                        if (kind == SyntaxKind.RegionDirectiveTrivia)
+                        {
+                            RegionDirectiveTriviaRefactoring.ComputeRefactorings(this, (RegionDirectiveTriviaSyntax)node);
+                        }
+                        else if (kind == SyntaxKind.EndRegionDirectiveTrivia)
+                        {
+                            RegionDirectiveTriviaRefactoring.ComputeRefactorings(this, (EndRegionDirectiveTriviaSyntax)node);
+                        }
+
+                        fDirectiveTrivia = true;
                     }
                 }
             }
@@ -280,6 +277,14 @@ namespace Roslynator.CSharp.Refactorings
                                 cancellationToken => UncommentRefactoring.RefactorAsync(Document, trivia, cancellationToken));
                         }
 
+                        if (IsRefactoringEnabled(RefactoringIdentifiers.ReplaceCommentWithDocumentationComment)
+                            && ReplaceCommentWithDocumentationCommentRefactoring.IsFixable(trivia))
+                        {
+                            RegisterRefactoring(
+                                ReplaceCommentWithDocumentationCommentRefactoring.Title,
+                                cancellationToken => ReplaceCommentWithDocumentationCommentRefactoring.RefactorAsync(Document, (MemberDeclarationSyntax)trivia.Token.Parent, cancellationToken));
+                        }
+
                         break;
                     }
             }
@@ -304,6 +309,7 @@ namespace Roslynator.CSharp.Refactorings
             bool fParameterList = false;
             bool fSwitchSection = false;
             bool fVariableDeclaration = false;
+            bool fVariableDeclarator = false;
             bool fInterpolatedStringText = false;
             bool fElseClause = false;
             bool fCaseSwitchLabel = false;
@@ -366,15 +372,12 @@ namespace Roslynator.CSharp.Refactorings
 
                     Debug.WriteLine(kind.ToString());
 
-                    if (!fAccessor)
+                    if (!fAccessor
+                        && (node is AccessorDeclarationSyntax accessor))
                     {
-                        var accessor = node as AccessorDeclarationSyntax;
-                        if (accessor != null)
-                        {
-                            AccessorDeclarationRefactoring.ComputeRefactorings(this, accessor);
-                            fAccessor = true;
-                            continue;
-                        }
+                        AccessorDeclarationRefactoring.ComputeRefactorings(this, accessor);
+                        fAccessor = true;
+                        continue;
                     }
 
                     if (!fArgument
@@ -441,6 +444,14 @@ namespace Roslynator.CSharp.Refactorings
                         continue;
                     }
 
+                    if (!fVariableDeclarator
+                        && kind == SyntaxKind.VariableDeclarator)
+                    {
+                        VariableDeclaratorRefactoring.ComputeRefactorings(this, (VariableDeclaratorSyntax)node);
+                        fVariableDeclarator = true;
+                        continue;
+                    }
+
                     if (!fInterpolatedStringText
                         && kind == SyntaxKind.InterpolatedStringText)
                     {
@@ -497,8 +508,7 @@ namespace Roslynator.CSharp.Refactorings
                         continue;
                     }
 
-                    var expression = node as ExpressionSyntax;
-                    if (expression != null)
+                    if (node is ExpressionSyntax expression)
                     {
                         if (!fExpression)
                         {
@@ -506,14 +516,11 @@ namespace Roslynator.CSharp.Refactorings
                             fExpression = true;
                         }
 
-                        if (!fAssignmentExpression)
+                        if (!fAssignmentExpression
+                            && (node is AssignmentExpressionSyntax assignmentExpression))
                         {
-                            var assignmentExpression = node as AssignmentExpressionSyntax;
-                            if (assignmentExpression != null)
-                            {
-                                await AssignmentExpressionRefactoring.ComputeRefactoringsAsync(this, assignmentExpression).ConfigureAwait(false);
-                                fAssignmentExpression = true;
-                            }
+                            await AssignmentExpressionRefactoring.ComputeRefactoringsAsync(this, assignmentExpression).ConfigureAwait(false);
+                            fAssignmentExpression = true;
                         }
 
                         if (!fAnonymousMethod
@@ -523,14 +530,11 @@ namespace Roslynator.CSharp.Refactorings
                             fAnonymousMethod = true;
                         }
 
-                        if (!fBinaryExpression)
+                        if (!fBinaryExpression
+                            && (node is BinaryExpressionSyntax binaryExpression))
                         {
-                            var binaryExpression = node as BinaryExpressionSyntax;
-                            if (binaryExpression != null)
-                            {
-                                await BinaryExpressionRefactoring.ComputeRefactoringsAsync(this, binaryExpression).ConfigureAwait(false);
-                                fBinaryExpression = true;
-                            }
+                            await BinaryExpressionRefactoring.ComputeRefactoringsAsync(this, binaryExpression).ConfigureAwait(false);
+                            fBinaryExpression = true;
                         }
 
                         if (!fConditionalExpression
@@ -561,14 +565,11 @@ namespace Roslynator.CSharp.Refactorings
                             fIdentifierName = true;
                         }
 
-                        if (!fInitializerExpression)
+                        if (!fInitializerExpression
+                            && (node is InitializerExpressionSyntax initializer))
                         {
-                            var initializer = node as InitializerExpressionSyntax;
-                            if (initializer != null)
-                            {
-                                await InitializerExpressionRefactoring.ComputeRefactoringsAsync(this, initializer).ConfigureAwait(false);
-                                fInitializerExpression = true;
-                            }
+                            await InitializerExpressionRefactoring.ComputeRefactoringsAsync(this, initializer).ConfigureAwait(false);
+                            fInitializerExpression = true;
                         }
 
                         if (!fInterpolatedStringExpression
@@ -585,24 +586,18 @@ namespace Roslynator.CSharp.Refactorings
                             fInvocationExpression = true;
                         }
 
-                        if (!fLambdaExpression)
+                        if (!fLambdaExpression
+                            && (node is LambdaExpressionSyntax lambdaExpression))
                         {
-                            var lambdaExpression = node as LambdaExpressionSyntax;
-                            if (lambdaExpression != null)
-                            {
-                                LambdaExpressionRefactoring.ComputeRefactorings(this, lambdaExpression);
-                                fLambdaExpression = true;
-                            }
+                            LambdaExpressionRefactoring.ComputeRefactorings(this, lambdaExpression);
+                            fLambdaExpression = true;
                         }
 
-                        if (!fLiteralExpression)
+                        if (!fLiteralExpression
+                            && (node is LiteralExpressionSyntax literalExpression))
                         {
-                            var literalExpression = node as LiteralExpressionSyntax;
-                            if (literalExpression != null)
-                            {
-                                await LiteralExpressionRefactoring.ComputeRefactoringsAsync(this, literalExpression).ConfigureAwait(false);
-                                fLiteralExpression = true;
-                            }
+                            await LiteralExpressionRefactoring.ComputeRefactoringsAsync(this, literalExpression).ConfigureAwait(false);
+                            fLiteralExpression = true;
                         }
 
                         if (!fSimpleMemberAccessExpression
@@ -619,24 +614,18 @@ namespace Roslynator.CSharp.Refactorings
                             fParenthesizedExpression = true;
                         }
 
-                        if (!fPostfixUnaryExpression)
+                        if (!fPostfixUnaryExpression
+                            && (node is PostfixUnaryExpressionSyntax postfixUnaryExpression))
                         {
-                            var postfixUnaryExpression = node as PostfixUnaryExpressionSyntax;
-                            if (postfixUnaryExpression != null)
-                            {
-                                PostfixUnaryExpressionRefactoring.ComputeRefactorings(this, postfixUnaryExpression);
-                                fPostfixUnaryExpression = true;
-                            }
+                            PostfixUnaryExpressionRefactoring.ComputeRefactorings(this, postfixUnaryExpression);
+                            fPostfixUnaryExpression = true;
                         }
 
-                        if (!fPrefixUnaryExpression)
+                        if (!fPrefixUnaryExpression
+                            && (node is PrefixUnaryExpressionSyntax prefixUnaryExpression))
                         {
-                            var prefixUnaryExpression = node as PrefixUnaryExpressionSyntax;
-                            if (prefixUnaryExpression != null)
-                            {
-                                PrefixUnaryExpressionRefactoring.ComputeRefactorings(this, prefixUnaryExpression);
-                                fPrefixUnaryExpression = true;
-                            }
+                            PrefixUnaryExpressionRefactoring.ComputeRefactorings(this, prefixUnaryExpression);
+                            fPrefixUnaryExpression = true;
                         }
 
                         if (!fAwaitExpression
@@ -677,8 +666,7 @@ namespace Roslynator.CSharp.Refactorings
                         continue;
                     }
 
-                    var memberDeclaration = node as MemberDeclarationSyntax;
-                    if (memberDeclaration != null)
+                    if (node is MemberDeclarationSyntax memberDeclaration)
                     {
                         if (!fMemberDeclaration)
                         {
@@ -691,8 +679,7 @@ namespace Roslynator.CSharp.Refactorings
                         continue;
                     }
 
-                    var statement = node as StatementSyntax;
-                    if (statement != null)
+                    if (node is StatementSyntax statement)
                     {
                         if (!fDoStatement
                             && kind == SyntaxKind.DoStatement)
@@ -764,14 +751,11 @@ namespace Roslynator.CSharp.Refactorings
                             fWhileStatement = true;
                         }
 
-                        if (!fYieldReturnStatement)
+                        if (!fYieldReturnStatement
+                            && (node is YieldStatementSyntax yieldStatement))
                         {
-                            var yieldStatement = node as YieldStatementSyntax;
-                            if (yieldStatement != null)
-                            {
-                                await YieldStatementRefactoring.ComputeRefactoringsAsync(this, yieldStatement).ConfigureAwait(false);
-                                fYieldReturnStatement = true;
-                            }
+                            await YieldStatementRefactoring.ComputeRefactoringsAsync(this, yieldStatement).ConfigureAwait(false);
+                            fYieldReturnStatement = true;
                         }
 
                         if (!fLockStatement
@@ -807,6 +791,7 @@ namespace Roslynator.CSharp.Refactorings
                             AddBracesRefactoring.ComputeRefactoring(this, statement);
                             RemoveBracesRefactoring.ComputeRefactoring(this, statement);
                             ExtractStatementRefactoring.ComputeRefactoring(this, statement);
+                            EmbeddedStatementRefactoring.ComputeRefactoring(this, statement);
                             fStatement = true;
                         }
 

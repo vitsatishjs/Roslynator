@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
+using static Roslynator.CSharp.CSharpTypeFactory;
 
 namespace Roslynator.CSharp.Refactorings
 {
@@ -231,7 +232,7 @@ namespace Roslynator.CSharp.Refactorings
             return await document.ReplaceNodeAsync(node, newNode, cancellationToken).ConfigureAwait(false);
         }
 
-        private static SyntaxNode GetNewNode(
+        private static MethodDeclarationSyntax GetNewNode(
             MethodDeclarationSyntax methodDeclaration,
             TypeParameterConstraintSyntax constraint,
             SemanticModel semanticModel,
@@ -247,7 +248,7 @@ namespace Roslynator.CSharp.Refactorings
             return newNode;
         }
 
-        private static SyntaxNode GetNewNode(
+        private static ClassDeclarationSyntax GetNewNode(
             ClassDeclarationSyntax classDeclaration,
             TypeParameterConstraintSyntax constraint,
             SemanticModel semanticModel)
@@ -262,7 +263,7 @@ namespace Roslynator.CSharp.Refactorings
             return newNode;
         }
 
-        private static SyntaxNode GetNewNode(
+        private static StructDeclarationSyntax GetNewNode(
             StructDeclarationSyntax structDeclaration,
             TypeParameterConstraintSyntax typeParameterConstraint,
             SemanticModel semanticModel)
@@ -277,7 +278,7 @@ namespace Roslynator.CSharp.Refactorings
             return newNode;
         }
 
-        private static SyntaxNode GetNewNode(
+        private static InterfaceDeclarationSyntax GetNewNode(
             InterfaceDeclarationSyntax interfaceDeclaration,
             TypeParameterConstraintSyntax constraint,
             SemanticModel semanticModel)
@@ -292,7 +293,7 @@ namespace Roslynator.CSharp.Refactorings
             return newNode;
         }
 
-        private static SyntaxNode GetNewNode(
+        private static DelegateDeclarationSyntax GetNewNode(
             DelegateDeclarationSyntax delegateDeclaration,
             TypeParameterConstraintSyntax constraint,
             SemanticModel semanticModel)
@@ -313,7 +314,7 @@ namespace Roslynator.CSharp.Refactorings
             return newNode;
         }
 
-        private static SyntaxNode GetNewNode(
+        private static LocalFunctionStatementSyntax GetNewNode(
             LocalFunctionStatementSyntax localFunctionStatement,
             TypeParameterConstraintSyntax constraint,
             SemanticModel semanticModel,

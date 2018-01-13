@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="RefactoringIdentifiers.Deprecated.Generated.cs" />
+    <Compile Include="Refactorings\AddMemberToInterfaceRefactoring.cs" />
     <Compile Include="Refactorings\AddOrRemoveParameterName\AddParameterNameRefactoring.cs" />
     <Compile Include="Refactorings\AddOrRemoveParameterName\AddParameterNameRewriter.cs" />
     <Compile Include="Refactorings\AddOrRemoveParameterName\RemoveParameterNameRefactoring.cs" />
@@ -50,7 +51,9 @@
     <Compile Include="RefactoringIdentifiers.Deprecated.cs" />
     <Compile Include="Refactorings\AccessModifierRefactoring.cs" />
     <Compile Include="Refactorings\DeclarationPatternRefactoring.cs" />
+    <Compile Include="Refactorings\EmbeddedStatementRefactoring.cs" />
     <Compile Include="Refactorings\FormatConstraintClausesRefactoring.cs" />
+    <Compile Include="Refactorings\InitializeFieldFromConstructorRefactoring.cs" />
     <Compile Include="Refactorings\InlineConstantRefactoring.cs" />
     <Compile Include="Refactorings\InlineMethod\AbstractInlineMethodRefactoring.cs" />
     <Compile Include="Refactorings\InlineMethod\InlineMethodExpressionRefactoring.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Refactorings\MakeMemberVirtual\MakeMemberAbstractHelper.cs" />
     <Compile Include="Refactorings\MakeMemberVirtual\MakeMethodVirtualRefactoring.cs" />
     <Compile Include="Refactorings\MakeMemberVirtual\MakePropertyVirtualRefactoring.cs" />
+    <Compile Include="Refactorings\MergeIfWithParentIfRefactoring.cs" />
     <Compile Include="Refactorings\NamespaceDeclarationRefactoring.cs" />
     <Compile Include="Refactorings\GenerateCombinedEnumMemberRefactoring.cs" />
     <Compile Include="Refactorings\GenerateEnumMemberRefactoring.cs" />
@@ -107,12 +111,14 @@
     <Compile Include="Refactorings\ReplaceEqualsExpression\ReplaceEqualsExpressionWithStringIsNullOrEmptyRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceEqualsExpression\ReplaceEqualsExpressionWithStringIsNullOrWhiteSpaceRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceIfElseWithIfReturnRefactoring.cs" />
+    <Compile Include="Refactorings\ReplaceInterpolatedStringWithConcatenationRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceInterpolatedStringWithInterpolationExpressionRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceObjectCreationWithDefaultValueRefactoring.cs" />
     <Compile Include="Refactorings\ReplacePropertyWithMethod\ReplacePropertyWithMethodSyntaxRewriter.cs" />
     <Compile Include="Refactorings\ReplaceStatementWithIf\ReplaceReturnStatementWithIfStatementRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceStatementWithIf\ReplaceStatementWithIfStatementRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceStatementWithIf\ReplaceYieldStatementWithIfStatementRefactoring.cs" />
+    <Compile Include="Refactorings\SelectedMemberDeclarationsRefactoring.cs" />
     <Compile Include="Refactorings\SelectedStatementsRefactoring.cs" />
     <Compile Include="Refactorings\ExtractCondition\ExtractConditionRefactoring`1.cs" />
     <Compile Include="Refactorings\PromoteLocalToParameterRefactoring.cs" />
@@ -130,12 +136,14 @@
     <Compile Include="Refactorings\SelectedSwitchSectionsRefactoring.cs" />
     <Compile Include="Refactorings\SemicolonTokenRefactoring.cs" />
     <Compile Include="Refactorings\SortMemberDeclarations\SortMemberDeclarationsRewriter.cs" />
+    <Compile Include="Refactorings\SplitDeclarationAndInitializationRefactoring.cs" />
     <Compile Include="Refactorings\SplitIfStatementRefactoring.cs" />
     <Compile Include="Refactorings\ThrowExpressionRefactoring.cs" />
     <Compile Include="Refactorings\TypeParameterConstraintClauseRefactoring.cs" />
     <Compile Include="Refactorings\UseCSharp6DictionaryInitializerRefactoring.cs" />
     <Compile Include="Refactorings\UseStringBuilderInsteadOfConcatenationRefactoring.cs" />
     <Compile Include="Refactorings\UseListInsteadOfYieldRefactoring.cs" />
+    <Compile Include="Refactorings\VariableDeclaratorRefactoring.cs" />
     <Compile Include="Refactorings\WrapInUsingStatementRefactoring.cs" />
     <Compile Include="Refactorings\WrapSelectedLines\WrapInIfDirectiveRefactoring.cs" />
     <Compile Include="Refactorings\AddUsingDirectiveRefactoring.cs" />
@@ -185,7 +193,6 @@
     <Compile Include="Refactorings\ReplaceStringLiteralRefactoring.cs" />
     <Compile Include="Refactorings\RemovePropertyInitializerRefactoring.cs" />
     <Compile Include="Refactorings\AddOrRemoveParameterName\AddOrRemoveParameterNameRefactoring.cs" />
-    <Compile Include="Refactorings\ReplaceConstantWithFieldRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceMethodWithProperty\ReplaceMethodWithPropertyRefactoring.cs" />
     <Compile Include="Refactorings\ReplacePropertyWithMethod\ReplacePropertyWithMethodRefactoring.cs" />
     <Compile Include="Refactorings\ExtractExpressionFromParenthesesRefactoring.cs" />
@@ -265,7 +272,7 @@
     <Compile Include="Refactorings\ConditionalExpressionRefactoring.cs" />
     <Compile Include="Refactorings\SwitchStatementRefactoring.cs" />
     <Compile Include="Refactorings\SwitchSectionRefactoring.cs" />
-    <Compile Include="Refactorings\UseIfElseInsteadOfConditionalExpressionRefactoring.cs" />
+    <Compile Include="Refactorings\ReplaceConditionalExpressionWithIfElseRefactoring.cs" />
     <Compile Include="Refactorings\ReverseForLoopRefactoring.cs" />
     <Compile Include="Refactorings\ReplaceForWithForEachRefactoring.cs" />
     <Compile Include="Refactorings\SwapExpressionsInBinaryExpressionRefactoring.cs" />
@@ -309,6 +316,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{34a3e42e-2254-4ee7-a152-eedb18e3d7e3}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Workspaces\Workspaces.csproj">
+      <Project>{56da29a3-c179-471c-9941-42426eeb84d0}</Project>
+      <Name>Workspaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

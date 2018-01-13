@@ -81,7 +81,7 @@ namespace Roslynator.CSharp.CodeFixes
 
                                             UnsafeStatementSyntax unsafeStatement = SyntaxFactory.UnsafeStatement(block).WithFormatterAnnotation();
 
-                                            return context.Document.ReplaceNodeAsync(statement, unsafeStatement, context.CancellationToken);
+                                            return context.Document.ReplaceNodeAsync(statement, unsafeStatement, cancellationToken);
                                         },
                                         GetEquivalenceKey(diagnostic, CodeFixIdentifiers.WrapInUnsafeStatement));
 
@@ -99,20 +99,13 @@ namespace Roslynator.CSharp.CodeFixes
                                     if (!ancestor.Kind().SupportsModifiers())
                                         continue;
 
-                                    var memberDeclaration = (MemberDeclarationSyntax)ancestor;
-
-                                    CodeAction codeAction = CodeAction.Create(
-                                        "Add 'unsafe' modifier to containing declaration",
-                                        cancellationToken =>
-                                        {
-                                            SyntaxNode newNode = ancestor.InsertModifier(SyntaxKind.UnsafeKeyword, ModifierComparer.Instance);
-
-                                            return context.Document.ReplaceNodeAsync(ancestor, newNode, context.CancellationToken);
-                                        },
-                                        GetEquivalenceKey(diagnostic, CodeFixIdentifiers.AddUnsafeModifier));
-
-                                    context.RegisterCodeFix(codeAction, diagnostic);
-                                    continue;
+                                    ModifiersCodeFixRegistrator.AddModifier(
+                                        context,
+                                        diagnostic,
+                                        ancestor,
+                                        SyntaxKind.UnsafeKeyword,
+                                        title: "Add 'unsafe' modifier to containing declaration",
+                                        additionalKey: CodeFixIdentifiers.AddUnsafeModifier);
                                 }
                             }
 

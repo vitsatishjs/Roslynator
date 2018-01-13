@@ -28,19 +28,19 @@ namespace Roslynator.CodeGeneration
 
             WriteAllText(
                 @"Analyzers\AnalyzersByCategory.md",
-                MarkdownGenerator.CreateAnalyzersByCategoryMarkDown(Analyzers.Where(f => !f.IsObsolete), Comparer));
+                MarkdownGenerator.CreateAnalyzersByCategoryMarkdown(Analyzers.Where(f => !f.IsObsolete), Comparer));
 
             foreach (AnalyzerDescriptor analyzer in Analyzers)
             {
                 WriteAllText(
                     $@"..\docs\analyzers\{analyzer.Id}.md",
-                    MarkdownGenerator.CreateAnalyzerMarkDown(analyzer),
+                    MarkdownGenerator.CreateAnalyzerMarkdown(analyzer),
                     fileMustExists: false);
             }
 
             WriteAllText(
                 @"..\docs\refactorings\Refactorings.md",
-                MarkdownGenerator.CreateRefactoringsMarkDown(Refactorings, Comparer));
+                MarkdownGenerator.CreateRefactoringsMarkdown(Refactorings, Comparer));
 
             WriteAllText(
                 @"Refactorings\README.md",
@@ -50,7 +50,7 @@ namespace Roslynator.CodeGeneration
             {
                 WriteAllText(
                     $@"..\docs\refactorings\{refactoring.Id}.md",
-                    MarkdownGenerator.CreateRefactoringMarkDown(refactoring),
+                    MarkdownGenerator.CreateRefactoringMarkdown(refactoring),
                     fileMustExists: false);
             }
 
@@ -65,14 +65,6 @@ namespace Roslynator.CodeGeneration
             WriteAllText(
                 "DefaultConfigFile.xml",
                 XmlGenerator.CreateDefaultConfigFile(Refactorings, CodeFixes));
-
-            WriteAllText(
-                @"VisualStudio\description.txt",
-                File.ReadAllText(@"..\text\RoslynatorDescription.txt", Encoding.UTF8));
-
-            WriteAllText(
-                @"VisualStudio.Refactorings\description.txt",
-                File.ReadAllText(@"..\text\RoslynatorRefactoringsDescription.txt", Encoding.UTF8));
         }
 
         public void WriteAllText(string relativePath, string content, bool onlyIfChanges = true, bool fileMustExists = true)
@@ -96,17 +88,21 @@ namespace Roslynator.CodeGeneration
             }
         }
 
-        public void FindMissingImages()
+        public void FindMissingSamples()
         {
             foreach (RefactoringDescriptor refactoring in Refactorings)
             {
-                foreach (ImageDescriptor image in refactoring.ImagesOrDefaultImage())
+                if (refactoring.Samples.Count == 0)
                 {
-                    string imagePath = Path.Combine(GetPath(@"..\images\refactorings"), image.Name + ".png");
+                    foreach (ImageDescriptor image in refactoring.ImagesOrDefaultImage())
+                    {
+                        string imagePath = Path.Combine(GetPath(@"..\images\refactorings"), image.Name + ".png");
 
-                    if (!File.Exists(imagePath))
-                        Console.WriteLine($"MISSING IMAGE: {imagePath}");
+                        if (!File.Exists(imagePath))
+                            Console.WriteLine($"MISSING SAMPLE: {imagePath}");
+                    }
                 }
             }
-        }    }
+        }
+    }
 }

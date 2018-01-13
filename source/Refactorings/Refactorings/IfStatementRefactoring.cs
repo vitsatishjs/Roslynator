@@ -25,7 +25,8 @@ namespace Roslynator.CSharp.Refactorings
                     var options = new IfAnalysisOptions(
                         useCoalesceExpression: context.IsRefactoringEnabled(RefactoringIdentifiers.UseCoalesceExpressionInsteadOfIf),
                         useConditionalExpression: context.IsRefactoringEnabled(RefactoringIdentifiers.UseConditionalExpressionInsteadOfIf),
-                        useBooleanExpression: context.IsRefactoringEnabled(RefactoringIdentifiers.SimplifyIf));
+                        useBooleanExpression: context.IsRefactoringEnabled(RefactoringIdentifiers.SimplifyIf),
+                        useExpression: false);
 
                     foreach (IfRefactoring refactoring in IfRefactoring.Analyze(ifStatement, options, semanticModel, context.CancellationToken))
                     {
@@ -43,6 +44,12 @@ namespace Roslynator.CSharp.Refactorings
 
                 if (context.IsRefactoringEnabled(RefactoringIdentifiers.SplitIfStatement))
                     SplitIfStatementRefactoring.ComputeRefactoring(context, ifStatement);
+
+                if (context.IsRefactoringEnabled(RefactoringIdentifiers.MergeIfWithParentIf)
+                    && context.Span.IsEmptyAndContainedInSpan(ifStatement.IfKeyword))
+                {
+                    MergeIfWithParentIfRefactoring.ComputeRefactoring(context, ifStatement);
+                }
             }
 
             if (context.IsRefactoringEnabled(RefactoringIdentifiers.ReduceIfNesting)
@@ -64,13 +71,13 @@ namespace Roslynator.CSharp.Refactorings
                 {
                     context.RegisterRefactoring(
                         "Reduce if nesting",
-                        cancellationToken => ReduceIfNestingRefactoring.RefactorAsync(context.Document, ifStatement, analysis.JumpKind, false, context.CancellationToken));
+                        cancellationToken => ReduceIfNestingRefactoring.RefactorAsync(context.Document, ifStatement, analysis.JumpKind, false, cancellationToken));
 
                     if (ReduceIfNestingRefactoring.IsFixableRecursively(ifStatement, analysis.JumpKind))
                     {
                         context.RegisterRefactoring(
                             "Reduce if nesting (recursively)",
-                            cancellationToken => ReduceIfNestingRefactoring.RefactorAsync(context.Document, ifStatement, analysis.JumpKind, true, context.CancellationToken));
+                            cancellationToken => ReduceIfNestingRefactoring.RefactorAsync(context.Document, ifStatement, analysis.JumpKind, true, cancellationToken));
                     }
                 }
             }

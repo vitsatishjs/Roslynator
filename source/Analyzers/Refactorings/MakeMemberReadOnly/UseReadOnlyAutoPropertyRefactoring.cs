@@ -40,15 +40,11 @@ namespace Roslynator.CSharp.Refactorings.MakeMemberReadOnly
                         IMethodSymbol setMethod = propertySymbol.SetMethod;
 
                         if (setMethod?.IsPrivate() == true
-                            && setMethod.GetAttributes().IsDefaultOrEmpty)
+                            && setMethod.GetAttributes().IsDefaultOrEmpty
+                            && setMethod.GetSyntaxOrDefault(context.CancellationToken) is AccessorDeclarationSyntax accessor
+                            && accessor.BodyOrExpressionBody() == null)
                         {
-                            var accessor = setMethod.GetSyntaxOrDefault(context.CancellationToken) as AccessorDeclarationSyntax;
-
-                            if (accessor != null
-                                && accessor.BodyOrExpressionBody() == null)
-                            {
-                                (properties ?? (properties = new HashSet<ISymbol>())).Add(propertySymbol);
-                            }
+                            (properties ?? (properties = new HashSet<ISymbol>())).Add(propertySymbol);
                         }
                     }
                 }
@@ -64,7 +60,7 @@ namespace Roslynator.CSharp.Refactorings.MakeMemberReadOnly
 
         public override void ReportFixableSymbols(SymbolAnalysisContext context, INamedTypeSymbol containingType, HashSet<ISymbol> symbols)
         {
-            foreach (PropertyDeclarationSyntax node in symbols.Select(f => f.GetSyntax(context.CancellationToken)))
+            foreach (PropertyDeclarationSyntax node in symbols.Select(f => (PropertyDeclarationSyntax)f.GetSyntax(context.CancellationToken)))
             {
                 AccessorDeclarationSyntax setter = node.Setter();
 

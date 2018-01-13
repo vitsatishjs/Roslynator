@@ -31,7 +31,7 @@ namespace Roslynator.CSharp.Comparers
             return GetInsertIndex(modifiers, GetOrderIndex(modifierKind));
         }
 
-        private int GetInsertIndex(SyntaxTokenList modifiers, int orderIndex)
+        private static int GetInsertIndex(SyntaxTokenList modifiers, int orderIndex)
         {
             if (modifiers.Any())
             {
@@ -50,12 +50,12 @@ namespace Roslynator.CSharp.Comparers
             return 0;
         }
 
-        private int GetOrderIndex(SyntaxToken token)
+        private static int GetOrderIndex(SyntaxToken token)
         {
             return GetOrderIndex(token.Kind());
         }
 
-        private int GetOrderIndex(SyntaxKind kind)
+        private static int GetOrderIndex(SyntaxKind kind)
         {
             switch (kind)
             {
@@ -63,11 +63,11 @@ namespace Roslynator.CSharp.Comparers
                     return 0;
                 case SyntaxKind.PublicKeyword:
                     return 1;
-                case SyntaxKind.ProtectedKeyword:
-                    return 2;
-                case SyntaxKind.InternalKeyword:
-                    return 3;
                 case SyntaxKind.PrivateKeyword:
+                    return 2;
+                case SyntaxKind.ProtectedKeyword:
+                    return 3;
+                case SyntaxKind.InternalKeyword:
                     return 4;
                 case SyntaxKind.ConstKeyword:
                     return 5;
@@ -101,7 +101,7 @@ namespace Roslynator.CSharp.Comparers
             }
         }
 
-        private SyntaxKind GetKind(int orderIndex)
+        private static SyntaxKind GetKind(int orderIndex)
         {
             switch (orderIndex)
             {

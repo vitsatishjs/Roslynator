@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
 
 namespace Roslynator.CSharp.Refactorings
@@ -16,27 +18,37 @@ namespace Roslynator.CSharp.Refactorings
 
         private static CallExtensionMethodAsInstanceMethodAnalysis Fail { get; }
 
-        public static CallExtensionMethodAsInstanceMethodAnalysis Analyze(InvocationExpressionSyntax invocationExpression, SemanticModel semanticModel, CancellationToken cancellationToken)
+        public static CallExtensionMethodAsInstanceMethodAnalysis Analyze(
+            InvocationExpressionSyntax invocationExpression,
+            SemanticModel semanticModel,
+            bool allowAnyExpression = false,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            ArgumentListSyntax argumentList = invocationExpression.ArgumentList;
+            ExpressionSyntax expression = invocationExpression
+                .ArgumentList?
+                .Arguments
+                .FirstOrDefault()?
+                .Expression?
+                .WalkDownParentheses();
 
-            if (argumentList == null)
+            if (expression == null)
                 return Fail;
 
-            SeparatedSyntaxList<ArgumentSyntax> arguments = argumentList.Arguments;
-
-            if (!arguments.Any())
-                return Fail;
-
-            if (arguments[0].Expression?.IsKind(
-                SyntaxKind.IdentifierName,
-                SyntaxKind.GenericName,
-                SyntaxKind.InvocationExpression,
-                SyntaxKind.SimpleMemberAccessExpression,
-                SyntaxKind.ElementAccessExpression,
-                SyntaxKind.ConditionalAccessExpression) != true)
+            if (!allowAnyExpression)
             {
-                return Fail;
+                switch (expression.Kind())
+                {
+                    case SyntaxKind.IdentifierName:
+                    case SyntaxKind.GenericName:
+                    case SyntaxKind.InvocationExpression:
+                    case SyntaxKind.SimpleMemberAccessExpression:
+                    case SyntaxKind.ElementAccessExpression:
+                    case SyntaxKind.ConditionalAccessExpression:
+                    case SyntaxKind.CastExpression:
+                        break;
+                    default:
+                        return Fail;
+                }
             }
 
             if (!semanticModel.TryGetMethodInfo(invocationExpression, out MethodInfo methodInfo, cancellationToken))
@@ -45,7 +57,10 @@ namespace Roslynator.CSharp.Refactorings
             if (!methodInfo.Symbol.IsNonReducedExtensionMethod())
                 return Fail;
 
-            InvocationExpressionSyntax newInvocationExpression = GetNewInvocation(invocationExpression);
+            InvocationExpressionSyntax newInvocationExpression = GetNewInvocationForAnalysis(invocationExpression);
+
+            if (newInvocationExpression == null)
+                return Fail;
 
             if (semanticModel
                 .GetSpeculativeMethodSymbol(invocationExpression.SpanStart, newInvocationExpression)?
@@ -68,12 +83,9 @@ namespace Roslynator.CSharp.Refactorings
                     return ((GenericNameSyntax)expression).Identifier;
                 case SyntaxKind.SimpleMemberAccessExpression:
                     return ((MemberAccessExpressionSyntax)expression).Name;
-                case SyntaxKind.MemberBindingExpression:
+                default:
                     return null;
             }
-
-            Debug.Fail(expression.Kind().ToString());
-            return null;
         }
 
         public static Task<Document> RefactorAsync(
@@ -93,45 +105,83 @@ namespace Roslynator.CSharp.Refactorings
             SeparatedSyntaxList<ArgumentSyntax> arguments = argumentList.Arguments;
             ArgumentSyntax argument = arguments.First();
 
-            MemberAccessExpressionSyntax newMemberAccess = null;
-
-            switch (expression.Kind())
-            {
-                case SyntaxKind.IdentifierName:
-                case SyntaxKind.GenericName:
-                    {
-                        ExpressionSyntax newExpression = argument.Expression
-                            .WithLeadingTrivia(expression.GetLeadingTrivia())
-                            .Parenthesize();
-
-                        newMemberAccess = SimpleMemberAccessExpression(
-                            newExpression,
-                            (SimpleNameSyntax)expression.WithoutLeadingTrivia());
-
-                        break;
-                    }
-                case SyntaxKind.SimpleMemberAccessExpression:
-                    {
-                        var memberAccess = (MemberAccessExpressionSyntax)expression;
-
-                        ExpressionSyntax newExpression = argument.Expression
-                            .WithTriviaFrom(memberAccess.Expression)
-                            .Parenthesize();
-
-                        newMemberAccess = memberAccess.WithExpression(newExpression);
-
-                        break;
-                    }
-                default:
-                    {
-                        Debug.Fail(expression.Kind().ToString());
-                        return invocation;
-                    }
-            }
+            MemberAccessExpressionSyntax newMemberAccess = CreateNewMemberAccessExpression();
 
             return invocation
                 .WithExpression(newMemberAccess)
                 .WithArgumentList(argumentList.WithArguments(arguments.Remove(argument)));
+
+            MemberAccessExpressionSyntax CreateNewMemberAccessExpression()
+            {
+                switch (expression.Kind())
+                {
+                    case SyntaxKind.IdentifierName:
+                    case SyntaxKind.GenericName:
+                        {
+                            ExpressionSyntax newExpression = argument.Expression
+                                .WithLeadingTrivia(expression.GetLeadingTrivia())
+                                .Parenthesize();
+
+                            return SimpleMemberAccessExpression(
+                                newExpression,
+                                (SimpleNameSyntax)expression.WithoutLeadingTrivia());
+                        }
+                    case SyntaxKind.SimpleMemberAccessExpression:
+                        {
+                            var memberAccess = (MemberAccessExpressionSyntax)expression;
+
+                            ExpressionSyntax newExpression = argument.Expression
+                                .WithTriviaFrom(memberAccess.Expression)
+                                .Parenthesize();
+
+                            return memberAccess.WithExpression(newExpression);
+                        }
+                }
+
+                throw new InvalidOperationException();
+            }
+        }
+
+        private static InvocationExpressionSyntax GetNewInvocationForAnalysis(InvocationExpressionSyntax invocation)
+        {
+            ExpressionSyntax expression = invocation.Expression;
+            ArgumentListSyntax argumentList = invocation.ArgumentList;
+            SeparatedSyntaxList<ArgumentSyntax> arguments = argumentList.Arguments;
+            ArgumentSyntax argument = arguments.First();
+
+            MemberAccessExpressionSyntax newMemberAccess = CreateNewMemberAccessExpression();
+
+            if (newMemberAccess == null)
+                return null;
+
+            return invocation
+                .WithExpression(newMemberAccess)
+                .WithArgumentList(argumentList.WithArguments(arguments.Remove(argument)));
+
+            MemberAccessExpressionSyntax CreateNewMemberAccessExpression()
+            {
+                switch (expression.Kind())
+                {
+                    case SyntaxKind.IdentifierName:
+                    case SyntaxKind.GenericName:
+                        {
+                            return SimpleMemberAccessExpression(
+                                ParenthesizedExpression(argument.Expression),
+                                (SimpleNameSyntax)expression);
+                        }
+                    case SyntaxKind.SimpleMemberAccessExpression:
+                        {
+                            var memberAccess = (MemberAccessExpressionSyntax)expression;
+
+                            return memberAccess.WithExpression(ParenthesizedExpression(argument.Expression));
+                        }
+                    default:
+                        {
+                            Debug.Fail(expression.Kind().ToString());
+                            return null;
+                        }
+                }
+            }
         }
     }
 }

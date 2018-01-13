@@ -60,7 +60,7 @@ namespace Roslynator.CSharp.Helpers
             {
                 node = Modifier.RemoveAt(node, Math.Max(info.TokenIndex, info.SecondTokenIndex));
 
-                if (accessibility == Accessibility.ProtectedOrInternal)
+                if (info.SecondTokenIndex != -1)
                     node = Modifier.RemoveAt(node, Math.Min(info.TokenIndex, info.SecondTokenIndex));
             }
 
@@ -84,6 +84,12 @@ namespace Roslynator.CSharp.Helpers
                     {
                         return node.InsertModifier(SyntaxKind.ProtectedKeyword, comparer);
                     }
+                case Accessibility.ProtectedAndInternal:
+                    {
+                        node = node.InsertModifier(SyntaxKind.PrivateKeyword, comparer);
+
+                        return node.InsertModifier(SyntaxKind.ProtectedKeyword, comparer);
+                    }
                 case Accessibility.Internal:
                     {
                         return node.InsertModifier(SyntaxKind.InternalKeyword, comparer);
@@ -95,9 +101,8 @@ namespace Roslynator.CSharp.Helpers
                 case Accessibility.ProtectedOrInternal:
                     {
                         node = node.InsertModifier(SyntaxKind.ProtectedKeyword, comparer);
-                        node = node.InsertModifier(SyntaxKind.InternalKeyword, comparer);
 
-                        return node;
+                        return node.InsertModifier(SyntaxKind.InternalKeyword, comparer);
                     }
             }
 

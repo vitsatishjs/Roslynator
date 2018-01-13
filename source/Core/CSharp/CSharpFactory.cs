@@ -30,6 +30,42 @@ namespace Roslynator.CSharp
             }
         }
 
+        internal static SyntaxTriviaList IncreaseIndentation(SyntaxTrivia trivia)
+        {
+            return TriviaList(trivia, SingleIndentation(trivia));
+        }
+
+        internal static SyntaxTrivia SingleIndentation(SyntaxTrivia trivia)
+        {
+            if (trivia.IsWhitespaceTrivia())
+            {
+                string s = trivia.ToString();
+
+                int length = s.Length;
+
+                if (length > 0)
+                {
+                    if (s.All(f => f == '\t'))
+                    {
+                        return Tab;
+                    }
+                    else if (s.All(f => f == ' '))
+                    {
+                        if (length % 4 == 0)
+                            return Whitespace("    ");
+
+                        if (length % 3 == 0)
+                            return Whitespace("   ");
+
+                        if (length % 2 == 0)
+                            return Whitespace("  ");
+                    }
+                }
+            }
+
+            return DefaultIndentation;
+        }
+
         internal static SyntaxTrivia DefaultIndentation { get; } = Whitespace("    ");
         #endregion Trivia
 
@@ -1040,78 +1076,78 @@ namespace Roslynator.CSharp
         }
         #endregion Token
 
-        #region PredefinedType
-        public static PredefinedTypeSyntax BoolType()
+        #region Type
+        public static PredefinedTypeSyntax BoolPredefinedType()
         {
             return PredefinedType(SyntaxKind.BoolKeyword);
         }
 
-        public static PredefinedTypeSyntax ByteType()
+        public static PredefinedTypeSyntax BytePredefinedType()
         {
             return PredefinedType(SyntaxKind.ByteKeyword);
         }
 
-        public static PredefinedTypeSyntax SByteType()
+        public static PredefinedTypeSyntax SBytePredefinedType()
         {
             return PredefinedType(SyntaxKind.SByteKeyword);
         }
 
-        public static PredefinedTypeSyntax IntType()
+        public static PredefinedTypeSyntax IntPredefinedType()
         {
             return PredefinedType(SyntaxKind.IntKeyword);
         }
 
-        public static PredefinedTypeSyntax UIntType()
+        public static PredefinedTypeSyntax UIntPredefinedType()
         {
             return PredefinedType(SyntaxKind.UIntKeyword);
         }
 
-        public static PredefinedTypeSyntax ShortType()
+        public static PredefinedTypeSyntax ShortPredefinedType()
         {
             return PredefinedType(SyntaxKind.ShortKeyword);
         }
 
-        public static PredefinedTypeSyntax UShortType()
+        public static PredefinedTypeSyntax UShortPredefinedType()
         {
             return PredefinedType(SyntaxKind.UShortKeyword);
         }
 
-        public static PredefinedTypeSyntax LongType()
+        public static PredefinedTypeSyntax LongPredefinedType()
         {
             return PredefinedType(SyntaxKind.LongKeyword);
         }
 
-        public static PredefinedTypeSyntax ULongType()
+        public static PredefinedTypeSyntax ULongPredefinedType()
         {
             return PredefinedType(SyntaxKind.ULongKeyword);
         }
 
-        public static PredefinedTypeSyntax FloatType()
+        public static PredefinedTypeSyntax FloatPredefinedType()
         {
             return PredefinedType(SyntaxKind.FloatKeyword);
         }
 
-        public static PredefinedTypeSyntax DoubleType()
+        public static PredefinedTypeSyntax DoublePredefinedType()
         {
             return PredefinedType(SyntaxKind.DoubleKeyword);
         }
 
-        public static PredefinedTypeSyntax DecimalType()
+        public static PredefinedTypeSyntax DecimalPredefinedType()
         {
             return PredefinedType(SyntaxKind.DecimalKeyword);
         }
 
-        public static PredefinedTypeSyntax StringType()
+        public static PredefinedTypeSyntax StringPredefinedType()
         {
             return PredefinedType(SyntaxKind.StringKeyword);
         }
 
-        public static PredefinedTypeSyntax CharType()
+        public static PredefinedTypeSyntax CharPredefinedType()
         {
             return PredefinedType(SyntaxKind.CharKeyword);
         }
 
-        public static PredefinedTypeSyntax ObjectType()
+        public static PredefinedTypeSyntax ObjectPredefinedType()
         {
             return PredefinedType(SyntaxKind.ObjectKeyword);
         }
@@ -1125,7 +1161,8 @@ namespace Roslynator.CSharp
         {
             return SyntaxFactory.PredefinedType(Token(syntaxKind));
         }
-        #endregion PredefinedType
+
+        #endregion Type
 
         #region List
         public static ArgumentListSyntax ArgumentList(params ArgumentSyntax[] arguments)
@@ -1278,6 +1315,48 @@ namespace Roslynator.CSharp
                 members);
         }
 
+        public static ClassDeclarationSyntax ClassDeclaration(StructDeclarationSyntax structDeclaration)
+        {
+            if (structDeclaration == null)
+                throw new ArgumentNullException(nameof(structDeclaration));
+
+            SyntaxToken keyword = structDeclaration.Keyword;
+
+            return SyntaxFactory.ClassDeclaration(
+                structDeclaration.AttributeLists,
+                structDeclaration.Modifiers,
+                SyntaxFactory.Token(keyword.LeadingTrivia, SyntaxKind.ClassKeyword, keyword.TrailingTrivia),
+                structDeclaration.Identifier,
+                structDeclaration.TypeParameterList,
+                structDeclaration.BaseList,
+                structDeclaration.ConstraintClauses,
+                structDeclaration.OpenBraceToken,
+                structDeclaration.Members,
+                structDeclaration.CloseBraceToken,
+                structDeclaration.SemicolonToken);
+        }
+
+        public static StructDeclarationSyntax StructDeclaration(ClassDeclarationSyntax classDeclaration)
+        {
+            if (classDeclaration == null)
+                throw new ArgumentNullException(nameof(classDeclaration));
+
+            SyntaxToken keyword = classDeclaration.Keyword;
+
+            return SyntaxFactory.StructDeclaration(
+                classDeclaration.AttributeLists,
+                classDeclaration.Modifiers,
+                SyntaxFactory.Token(keyword.LeadingTrivia, SyntaxKind.StructKeyword, keyword.TrailingTrivia),
+                classDeclaration.Identifier,
+                classDeclaration.TypeParameterList,
+                classDeclaration.BaseList,
+                classDeclaration.ConstraintClauses,
+                classDeclaration.OpenBraceToken,
+                classDeclaration.Members,
+                classDeclaration.CloseBraceToken,
+                classDeclaration.SemicolonToken);
+        }
+
         public static ConstructorDeclarationSyntax ConstructorDeclaration(SyntaxTokenList modifiers, string identifier, ParameterListSyntax parameterList, BlockSyntax body)
         {
             return ConstructorDeclaration(
@@ -1379,6 +1458,26 @@ namespace Roslynator.CSharp
                 default(ArrowExpressionClauseSyntax));
         }
 
+        public static MethodDeclarationSyntax MethodDeclaration(
+            SyntaxTokenList modifiers,
+            TypeSyntax returnType,
+            SyntaxToken identifier,
+            ParameterListSyntax parameterList,
+            ArrowExpressionClauseSyntax expressionBody)
+        {
+            return SyntaxFactory.MethodDeclaration(
+                default(SyntaxList<AttributeListSyntax>),
+                modifiers,
+                returnType,
+                default(ExplicitInterfaceSpecifierSyntax),
+                identifier,
+                default(TypeParameterListSyntax),
+                parameterList,
+                default(SyntaxList<TypeParameterConstraintClauseSyntax>),
+                default(BlockSyntax),
+                expressionBody);
+        }
+
         public static PropertyDeclarationSyntax PropertyDeclaration(
             SyntaxTokenList modifiers,
             TypeSyntax type,
@@ -1473,7 +1572,7 @@ namespace Roslynator.CSharp
                 case SyntaxKind.UnknownAccessorDeclaration:
                     return SyntaxKind.IdentifierToken;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(kind));
             }
         }
         #endregion AccessorDeclaration
@@ -2211,14 +2310,18 @@ namespace Roslynator.CSharp
             return SyntaxFactory.VariableDeclarator(identifier, default(BracketedArgumentListSyntax), initializer);
         }
 
-        public static VariableDeclarationSyntax VariableDeclaration(TypeSyntax type, string identifier, EqualsValueClauseSyntax initializer)
+        public static VariableDeclarationSyntax VariableDeclaration(TypeSyntax type, string identifier, EqualsValueClauseSyntax initializer = null)
         {
             return VariableDeclaration(type, Identifier(identifier), initializer);
         }
 
-        public static VariableDeclarationSyntax VariableDeclaration(TypeSyntax type, SyntaxToken identifier, EqualsValueClauseSyntax initializer)
+        public static VariableDeclarationSyntax VariableDeclaration(TypeSyntax type, SyntaxToken identifier, EqualsValueClauseSyntax initializer = null)
         {
-            return VariableDeclaration(type, VariableDeclarator(identifier, initializer));
+            return VariableDeclaration(
+                type,
+                (initializer != null)
+                    ? VariableDeclarator(identifier, initializer)
+                    : SyntaxFactory.VariableDeclarator(identifier));
         }
 
         public static VariableDeclarationSyntax VariableDeclaration(TypeSyntax type, VariableDeclaratorSyntax variable)

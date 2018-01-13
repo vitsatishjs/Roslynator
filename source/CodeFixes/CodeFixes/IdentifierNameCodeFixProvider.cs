@@ -110,30 +110,24 @@ namespace Roslynator.CSharp.CodeFixes
 
             var localSymbol = semanticModel.GetSymbol(identifierName, cancellationToken) as ILocalSymbol;
 
-            if (localSymbol?.Type?.IsErrorType() == false)
+            if (localSymbol?.Type?.IsErrorType() == false
+                && localSymbol.GetSyntax(cancellationToken) is VariableDeclaratorSyntax variableDeclarator)
             {
-                ITypeSymbol typeSymbol = localSymbol.Type;
+                SyntaxToken identifier = variableDeclarator.Identifier;
 
-                var variableDeclarator = localSymbol.GetSyntax(cancellationToken) as VariableDeclaratorSyntax;
+                var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
 
-                if (variableDeclarator != null)
-                {
-                    SyntaxToken identifier = variableDeclarator.Identifier;
+                ExpressionSyntax value = localSymbol.Type.ToDefaultValueSyntax(variableDeclaration.Type.WithoutTrivia());
 
-                    var variableDeclaration = (VariableDeclarationSyntax)variableDeclarator.Parent;
+                EqualsValueClauseSyntax newEqualsValue = EqualsValueClause(value)
+                    .WithLeadingTrivia(TriviaList(Space))
+                    .WithTrailingTrivia(identifier.TrailingTrivia);
 
-                    ExpressionSyntax value = typeSymbol.ToDefaultValueSyntax(variableDeclaration.Type.WithoutTrivia());
+                VariableDeclaratorSyntax newNode = variableDeclarator
+                    .WithInitializer(newEqualsValue)
+                    .WithIdentifier(identifier.WithoutTrailingTrivia());
 
-                    EqualsValueClauseSyntax newEqualsValue = EqualsValueClause(value)
-                        .WithLeadingTrivia(TriviaList(Space))
-                        .WithTrailingTrivia(identifier.TrailingTrivia);
-
-                    VariableDeclaratorSyntax newNode = variableDeclarator
-                        .WithInitializer(newEqualsValue)
-                        .WithIdentifier(identifier.WithoutTrailingTrivia());
-
-                    return await document.ReplaceNodeAsync(variableDeclarator, newNode, cancellationToken).ConfigureAwait(false);
-                }
+                return await document.ReplaceNodeAsync(variableDeclarator, newNode, cancellationToken).ConfigureAwait(false);
             }
 
             Debug.Fail(identifierName.ToString());

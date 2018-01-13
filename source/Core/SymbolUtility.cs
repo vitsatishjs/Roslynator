@@ -8,6 +8,21 @@ namespace Roslynator
 {
     internal static class SymbolUtility
     {
+        public static bool IsEventHandlerMethod(IMethodSymbol methodSymbol, INamedTypeSymbol eventArgsSymbol)
+        {
+            if (methodSymbol == null)
+                return false;
+
+            if (!methodSymbol.ReturnsVoid)
+                return false;
+
+            ImmutableArray<IParameterSymbol> parameters = methodSymbol.Parameters;
+
+            return parameters.Length == 2
+                && parameters[0].Type.IsObject()
+                && parameters[1].Type.EqualsOrInheritsFrom(eventArgsSymbol);
+        }
+
         public static bool HasAccessibleIndexer(
             ITypeSymbol typeSymbol,
             SemanticModel semanticModel,
@@ -39,7 +54,8 @@ namespace Roslynator
 
             if (typeSymbol.ImplementsAny(
                 SpecialType.System_Collections_Generic_IList_T,
-                SpecialType.System_Collections_Generic_IReadOnlyList_T))
+                SpecialType.System_Collections_Generic_IReadOnlyList_T,
+                allInterfaces: true))
             {
                 if (typeSymbol.TypeKind == TypeKind.Interface)
                     return true;

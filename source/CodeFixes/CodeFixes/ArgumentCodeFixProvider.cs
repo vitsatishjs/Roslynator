@@ -2,12 +2,15 @@
 
 using System.Collections.Immutable;
 using System.Composition;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CSharp.Helpers;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Roslynator.CSharp.CodeFixes
 {
@@ -31,7 +34,9 @@ namespace Roslynator.CSharp.CodeFixes
             if (!Settings.IsAnyCodeFixEnabled(
                 CodeFixIdentifiers.AddOutModifierToArgument,
                 CodeFixIdentifiers.RemoveRefModifier,
-                CodeFixIdentifiers.CreateSingletonArray))
+                CodeFixIdentifiers.CreateSingletonArray,
+                CodeFixIdentifiers.AddArgumentList,
+                CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue))
             {
                 return;
             }
@@ -58,7 +63,7 @@ namespace Roslynator.CSharp.CodeFixes
                                    .WithRefOrOutKeyword(CSharpFactory.OutKeyword())
                                    .WithFormatterAnnotation();
 
-                               return context.Document.ReplaceNodeAsync(argument, newArgument, context.CancellationToken);
+                               return context.Document.ReplaceNodeAsync(argument, newArgument, cancellationToken);
                            },
                            GetEquivalenceKey(diagnostic));
 
@@ -80,7 +85,7 @@ namespace Roslynator.CSharp.CodeFixes
                                         .PrependToLeadingTrivia(argument.RefOrOutKeyword.GetLeadingAndTrailingTrivia())
                                         .WithFormatterAnnotation();
 
-                                    return context.Document.ReplaceNodeAsync(argument, newArgument, context.CancellationToken);
+                                    return context.Document.ReplaceNodeAsync(argument, newArgument, cancellationToken);
                                 },
                                 GetEquivalenceKey(diagnostic));
 
@@ -89,35 +94,101 @@ namespace Roslynator.CSharp.CodeFixes
                         }
                     case CompilerDiagnosticIdentifiers.CannotConvertArgumentType:
                         {
-                            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddOutModifierToArgument))
-                                return;
-
-                            ExpressionSyntax expression = argument.Expression;
-
-                            if (expression?.IsMissing == false)
+                            if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue))
                             {
-                                SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+                                ExpressionSyntax expression = argument.Expression;
 
-                                ITypeSymbol typeSymbol = semanticModel.GetTypeSymbol(expression);
-
-                                if (typeSymbol?.IsErrorType() == false)
+                                if (expression.Kind() == SyntaxKind.NullLiteralExpression
+                                    && argument.Parent is ArgumentListSyntax argumentList)
                                 {
-                                    foreach (ITypeSymbol typeSymbol2 in DetermineParameterTypeHelper.DetermineParameterTypes(argument, semanticModel, context.CancellationToken))
+                                    SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                                    ImmutableArray<IParameterSymbol> parameterSymbols = FindParameters(argumentList, semanticModel, context.CancellationToken);
+
+                                    if (!parameterSymbols.IsDefault)
                                     {
-                                        if (!typeSymbol.Equals(typeSymbol2)
-                                            && typeSymbol2.IsArrayType())
+                                        int index = argumentList.Arguments.IndexOf(argument);
+
+                                        IParameterSymbol parameterSymbol = parameterSymbols[index];
+
+                                        ITypeSymbol typeSymbol = parameterSymbol.Type;
+
+                                        if (typeSymbol.IsValueType)
                                         {
-                                            var arrayType = (IArrayTypeSymbol)typeSymbol2;
+                                            CodeFixRegistrator.ReplaceNullWithDefaultValue(
+                                                context,
+                                                diagnostic,
+                                                expression,
+                                                typeSymbol,
+                                                semanticModel,
+                                                CodeFixIdentifiers.ReplaceNullLiteralExpressionWithDefaultValue);
+                                        }
+                                    }
+                                }
+                            }
 
-                                            if (semanticModel.IsImplicitConversion(expression, arrayType.ElementType))
+                            if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddArgumentList))
+                            {
+                                ExpressionSyntax expression = argument.Expression;
+
+                                if (expression?.IsKind(
+                                    SyntaxKind.IdentifierName,
+                                    SyntaxKind.GenericName,
+                                    SyntaxKind.SimpleMemberAccessExpression) == true)
+                                {
+                                    InvocationExpressionSyntax invocationExpression = InvocationExpression(
+                                        expression.WithoutTrailingTrivia(),
+                                        ArgumentList().WithTrailingTrivia(expression.GetTrailingTrivia()));
+
+                                    SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                                    if (semanticModel.GetSpeculativeMethodSymbol(expression.SpanStart, invocationExpression) != null)
+                                    {
+                                        CodeAction codeAction = CodeAction.Create(
+                                            "Add argument list",
+                                            cancellationToken =>
                                             {
-                                                CodeAction codeAction = CodeAction.Create(
-                                                    "Create singleton array",
-                                                    cancellationToken => CreateSingletonArrayRefactoring.RefactorAsync(context.Document, expression, arrayType.ElementType, semanticModel, cancellationToken),
-                                                    GetEquivalenceKey(diagnostic));
+                                                ArgumentSyntax newNode = argument.WithExpression(invocationExpression);
 
-                                                context.RegisterCodeFix(codeAction, diagnostic);
-                                                break;
+                                                return context.Document.ReplaceNodeAsync(argument, newNode, cancellationToken);
+                                            },
+                                            GetEquivalenceKey(diagnostic, CodeFixIdentifiers.AddArgumentList));
+
+                                        context.RegisterCodeFix(codeAction, diagnostic);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.CreateSingletonArray))
+                            {
+                                ExpressionSyntax expression = argument.Expression;
+
+                                if (expression?.IsMissing == false)
+                                {
+                                    SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+
+                                    ITypeSymbol typeSymbol = semanticModel.GetTypeSymbol(expression);
+
+                                    if (typeSymbol?.IsErrorType() == false)
+                                    {
+                                        foreach (ITypeSymbol typeSymbol2 in DetermineParameterTypeHelper.DetermineParameterTypes(argument, semanticModel, context.CancellationToken))
+                                        {
+                                            if (!typeSymbol.Equals(typeSymbol2)
+                                                && typeSymbol2.IsArrayType())
+                                            {
+                                                var arrayType = (IArrayTypeSymbol)typeSymbol2;
+
+                                                if (semanticModel.IsImplicitConversion(expression, arrayType.ElementType))
+                                                {
+                                                    CodeAction codeAction = CodeAction.Create(
+                                                        "Create singleton array",
+                                                        cancellationToken => CreateSingletonArrayRefactoring.RefactorAsync(context.Document, expression, arrayType.ElementType, semanticModel, cancellationToken),
+                                                        GetEquivalenceKey(diagnostic, CodeFixIdentifiers.CreateSingletonArray));
+
+                                                    context.RegisterCodeFix(codeAction, diagnostic);
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -128,6 +199,38 @@ namespace Roslynator.CSharp.CodeFixes
                         }
                 }
             }
+        }
+
+        private static ImmutableArray<IParameterSymbol> FindParameters(
+            ArgumentListSyntax argumentList,
+            SemanticModel semanticModel,
+            CancellationToken cancellationToken)
+        {
+            SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(argumentList.Parent, cancellationToken);
+
+            ImmutableArray<ISymbol> candidateSymbols = symbolInfo.CandidateSymbols;
+
+            if (candidateSymbols.IsEmpty)
+                return default(ImmutableArray<IParameterSymbol>);
+
+            int argumentCount = argumentList.Arguments.Count;
+
+            var parameters = default(ImmutableArray<IParameterSymbol>);
+
+            foreach (ISymbol symbol in candidateSymbols)
+            {
+                ImmutableArray<IParameterSymbol> parameters2 = symbol.GetParameters();
+
+                if (parameters2.Length == argumentCount)
+                {
+                    if (!parameters.IsDefault)
+                        return default(ImmutableArray<IParameterSymbol>);
+
+                    parameters = parameters2;
+                }
+            }
+
+            return parameters;
         }
     }
 }

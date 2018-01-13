@@ -25,7 +25,7 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                     DiagnosticDescriptors.SimplifyLinqMethodChain,
                     DiagnosticDescriptors.UseCountOrLengthPropertyInsteadOfAnyMethod,
                     DiagnosticDescriptors.UseCountOrLengthPropertyInsteadOfCountMethod,
-                    DiagnosticDescriptors.UseAnyMethodInsteadOfCountMethod,
+                    DiagnosticDescriptors.CallAnyInsteadOfCount,
                     DiagnosticDescriptors.UseBitwiseOperationInsteadOfCallingHasFlag,
                     DiagnosticDescriptors.RemoveRedundantToStringCall,
                     DiagnosticDescriptors.RemoveRedundantStringToCharArrayCall,
@@ -44,7 +44,8 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                     DiagnosticDescriptors.AvoidNullReferenceException,
                     DiagnosticDescriptors.UseStringComparison,
                     DiagnosticDescriptors.UseNameOfOperator,
-                    DiagnosticDescriptors.RemoveRedundantCast);
+                    DiagnosticDescriptors.RemoveRedundantCast,
+                    DiagnosticDescriptors.SimplifyLogicalNegation);
            }
         }
 
@@ -137,7 +138,7 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
             {
                 if (!invocation.SpanContainsDirectives())
                 {
-                    CallExtensionMethodAsInstanceMethodAnalysis analysis = CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocation, context.SemanticModel, context.CancellationToken);
+                    CallExtensionMethodAsInstanceMethodAnalysis analysis = CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocation, context.SemanticModel, allowAnyExpression: false, cancellationToken: context.CancellationToken);
 
                     if (analysis.Success
                         && context.SemanticModel
@@ -214,6 +215,12 @@ namespace Roslynator.CSharp.DiagnosticAnalyzers
                             {
                                 switch (methodName)
                                 {
+                                    case "All":
+                                    case "Any":
+                                        {
+                                            SimplifyLogicalNegationRefactoring.Analyze(context, invocationInfo);
+                                            break;
+                                        }
                                     case "ElementAt":
                                         {
                                             if (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)

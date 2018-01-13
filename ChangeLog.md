@@ -1,3 +1,66 @@
+### 1.6.20 (2018-01-03)
+
+#### Analyzers
+
+* Add analyzer [AvoidInterpolatedStringWithNoInterpolatedText](http://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1214.md) (RCS1214).
+* Add analyzer [ExpressionIsAlwaysEqualToTrueOrFalse](http://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1215.md) (RCS1215).
+
+#### Refactorings
+
+* Add refactoring [InitializeFieldFromConstructor](http://github.com/JosefPihrt/Roslynator/blob/master/docs/refactorings/RR0197.md) (RR0197).
+
+#### Code Fixes
+
+* Add code fixes for CS1503, CS1751.
+
+### 1.6.10 (2017-12-21)
+
+#### Analyzers
+
+* Add analyzer [UnusedMemberDeclaration](http://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1213.md) (RCS1213).
+* Improve analyzer [UnusedParameter](http://github.com/JosefPihrt/Roslynator/blob/master/docs/analyzers/RCS1163.md)
+  * Report unused parameters of lambda expressions and anonymous methods.
+
+#### Code Fixes
+
+* Add code fixes for CS0030, CS1597.
+
+### 1.6.0 (2017-12-13)
+
+#### Refactorings
+
+* Add refactoring [AddMemberToInterface](http://github.com/JosefPihrt/Roslynator/blob/master/docs/refactorings/RR0195.md) (RR0195).
+* Add refactoring [MergeIfWithParentIf](http://github.com/JosefPihrt/Roslynator/blob/master/docs/refactorings/RR0196.md) (RR0196).
+
+#### Code Fixes
+
+Add code fix for CS1031 and CS8112. 
+
+### 1.5.14 (2017-11-29)
+
+#### Refactorings
+
+* Add refactoring ReplaceInterpolatedStringWithConcatenation (RR0193).
+* Add refactoring SplitDeclarationAndInitialization (RR0194).
+
+#### Code Fixes
+
+* Add code fixes for CS0246.
+
+### 1.5.13 (2017-11-09)
+
+#### Analyzers
+
+* Add analyzer RemoveRedundantAssignment (RCS1212).
+
+#### Refactorings
+
+* Add refactoring ReplaceCommentWithDocumentationComment (RR0192).
+
+#### Code Fixes
+
+* Add code fixes for CS0216, CS0659, CS0660, CS0661 and CS1526.
+
 ### 1.5.12 (2017-10-19)
 
 #### Analyzers

@@ -24,7 +24,7 @@ namespace Roslynator.CSharp.Refactorings
                         {
                             context.RegisterRefactoring(
                                 "Format braces on separate lines",
-                                cancellationToken => CSharpFormatter.ToMultiLineAsync(context.Document, accessor, cancellationToken));
+                                cancellationToken => DocumentFormatter.ToMultiLineAsync(context.Document, accessor, cancellationToken));
                         }
                     }
                     else
@@ -36,7 +36,7 @@ namespace Roslynator.CSharp.Refactorings
                         {
                             context.RegisterRefactoring(
                                 "Format braces on a single line",
-                                cancellationToken => CSharpFormatter.ToSingleLineAsync(context.Document, accessor, cancellationToken));
+                                cancellationToken => DocumentFormatter.ToSingleLineAsync(context.Document, accessor, cancellationToken));
                         }
                     }
                 }
@@ -49,19 +49,15 @@ namespace Roslynator.CSharp.Refactorings
             {
                 SyntaxNode node = accessor;
 
-                var accessorList = accessor.Parent as AccessorListSyntax;
-
-                if (accessorList != null)
+                if (accessor.Parent is AccessorListSyntax accessorList)
                 {
                     SyntaxList<AccessorDeclarationSyntax> accessors = accessorList.Accessors;
 
                     if (accessors.Count == 1
-                        && accessors.First().IsKind(SyntaxKind.GetAccessorDeclaration))
+                        && accessors.First().IsKind(SyntaxKind.GetAccessorDeclaration)
+                        && (accessorList.Parent is MemberDeclarationSyntax parent))
                     {
-                        var parent = accessorList.Parent as MemberDeclarationSyntax;
-
-                        if (parent != null)
-                            node = parent;
+                        node = parent;
                     }
                 }
 

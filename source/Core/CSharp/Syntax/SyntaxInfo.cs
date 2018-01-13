@@ -109,6 +109,11 @@ namespace Roslynator.CSharp.Syntax
             return Syntax.GenericInfo.Create(declaration);
         }
 
+        public static GenericInfo GenericInfo(TypeParameterListSyntax typeParameterList)
+        {
+            return Syntax.GenericInfo.Create(typeParameterList);
+        }
+
         public static GenericInfo GenericInfo(ClassDeclarationSyntax classDeclaration)
         {
             return Syntax.GenericInfo.Create(classDeclaration);
@@ -208,6 +213,15 @@ namespace Roslynator.CSharp.Syntax
                 allowMissing);
         }
 
+        public static MemberInvocationStatementInfo MemberInvocationStatementInfo(
+            InvocationExpressionSyntax invocationExpression,
+            bool allowMissing = false)
+        {
+            return Syntax.MemberInvocationStatementInfo.Create(
+                invocationExpression,
+                allowMissing);
+        }
+
         public static NullCheckExpressionInfo NullCheckExpressionInfo(
             SyntaxNode node,
             NullCheckKind allowedKinds = NullCheckKind.All,
@@ -223,6 +237,76 @@ namespace Roslynator.CSharp.Syntax
                 allowMissing,
                 semanticModel,
                 cancellationToken);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            ConstructorDeclarationSyntax constructorDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(constructorDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            MethodDeclarationSyntax methodDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(methodDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            OperatorDeclarationSyntax operatorDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(operatorDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            ConversionOperatorDeclarationSyntax conversionOperatorDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(conversionOperatorDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            DelegateDeclarationSyntax delegateDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(delegateDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            LocalFunctionStatementSyntax localFunction,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(localFunction, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            IndexerDeclarationSyntax indexerDeclaration,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(indexerDeclaration, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            SimpleLambdaExpressionSyntax simpleLambda,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(simpleLambda, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            ParenthesizedLambdaExpressionSyntax parenthesizedLambda,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(parenthesizedLambda, allowMissing);
+        }
+
+        internal static ParametersInfo ParametersInfo(
+            AnonymousMethodExpressionSyntax anonymousMethod,
+            bool allowMissing = false)
+        {
+            return Syntax.ParametersInfo.Create(anonymousMethod, allowMissing);
         }
 
         public static SimpleAssignmentExpressionInfo SimpleAssignmentExpressionInfo(
@@ -247,6 +331,14 @@ namespace Roslynator.CSharp.Syntax
             bool allowMissing = false)
         {
             return Syntax.SimpleAssignmentStatementInfo.Create(node, walkDownParentheses, allowMissing);
+        }
+
+        public static SimpleAssignmentStatementInfo SimpleAssignmentStatementInfo(
+            AssignmentExpressionSyntax assignmentExpression,
+            bool walkDownParentheses = true,
+            bool allowMissing = false)
+        {
+            return Syntax.SimpleAssignmentStatementInfo.Create(assignmentExpression, walkDownParentheses, allowMissing);
         }
 
         public static SimpleAssignmentStatementInfo SimpleAssignmentStatementInfo(

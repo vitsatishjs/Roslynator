@@ -45,6 +45,9 @@
     <Compile Include="CSharp\Refactorings\CallExtensionMethodAsInstanceMethodAnalysis.cs" />
     <Compile Include="CSharp\Refactorings\ChangeAccessibilityRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\GenerateBaseConstructorsRefactoring.cs" />
+    <Compile Include="CSharp\Refactorings\If\IfElseToAssignmentWithCondition.cs" />
+    <Compile Include="CSharp\Refactorings\If\IfElseToAssignmentWithExpression.cs" />
+    <Compile Include="CSharp\Refactorings\If\IfToReturnWithExpression.cs" />
     <Compile Include="CSharp\Refactorings\IntroduceFieldRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\IntroduceLocalVariableRefactoring.cs" />
     <Compile Include="CSharp\CodeFixes\ModifiersCodeFixRegistrator.cs" />
@@ -56,6 +59,8 @@
     <Compile Include="CSharp\Refactorings\RefactoringHelper.cs" />
     <Compile Include="CSharp\Refactorings\CallExtensionMethodAsInstanceMethodRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\ReplaceAsWithCastRefactoring.cs" />
+    <Compile Include="CSharp\Refactorings\ReplaceCommentWithDocumentationCommentRefactoring.cs" />
+    <Compile Include="CSharp\Refactorings\ReplaceConstantWithFieldRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\UseConstantInsteadOfFieldRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\UseElementAccessInsteadOfElementAtRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\UseElementAccessInsteadOfFirstRefactoring.cs" />
@@ -76,19 +81,16 @@
     <Compile Include="CSharp\Refactorings\If\IfRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\If\IfRefactoringHelper.cs" />
     <Compile Include="CSharp\Refactorings\If\IfReturnToReturnWithBooleanExpression.cs" />
-    <Compile Include="CSharp\Refactorings\If\IfReturnToReturnWithCoalesceExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfReturnToReturnWithConditionalExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\ToAssignmentWithConditionalExpression`1.cs" />
     <Compile Include="CSharp\Refactorings\If\ToAssignmentWithConditionalExpression.cs" />
     <Compile Include="CSharp\Refactorings\RefactoringKind.cs" />
-    <Compile Include="CSharp\Refactorings\If\IfElseToReturnWithCoalesceExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfToReturnWithBooleanExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfElseToReturnWithBooleanExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfToReturnWithCoalesceExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfToReturnWithConditionalExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfElseToReturnWithConditionalExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfElseToYieldReturnWithBooleanExpression.cs" />
-    <Compile Include="CSharp\Refactorings\If\IfElseToYieldReturnWithCoalesceExpression.cs" />
     <Compile Include="CSharp\Refactorings\If\IfElseToYieldReturnWithConditionalExpression.cs" />
     <Compile Include="CSharp\Refactorings\ExpandExpressionBodyRefactoring.cs" />
     <Compile Include="CSharp\Refactorings\ExtractTypeDeclarationToNewDocumentRefactoring.cs" />
@@ -125,6 +127,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{34a3e42e-2254-4ee7-a152-eedb18e3d7e3}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Workspaces\Workspaces.csproj">
+      <Project>{56da29a3-c179-471c-9941-42426eeb84d0}</Project>
+      <Name>Workspaces</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

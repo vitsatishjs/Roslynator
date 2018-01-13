@@ -11,6 +11,54 @@ namespace Roslynator.CSharp.CodeFixes
 {
     internal static class CodeFixRegistrator
     {
+        public static void ChangeType(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            TypeSyntax type,
+            ITypeSymbol newTypeSymbol,
+            SemanticModel semanticModel,
+            string additionalKey = null)
+        {
+            string typeName = SymbolDisplay.GetMinimalString(newTypeSymbol, semanticModel, type.SpanStart);
+
+            string title = $"Change type to '{typeName}'";
+
+            Document document = context.Document;
+
+            CodeAction codeAction = CodeAction.Create(
+                title,
+                cancellationToken =>
+                {
+                    TypeSyntax newType = newTypeSymbol.ToMinimalTypeSyntax(semanticModel, type.SpanStart).WithTriviaFrom(type);
+
+                    return document.ReplaceNodeAsync(type, newType, cancellationToken);
+                },
+                EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
+
+            context.RegisterCodeFix(codeAction, diagnostic);
+        }
+
+        public static void ChangeTypeToVar(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            TypeSyntax type,
+            string additionalKey = null)
+        {
+            Document document = context.Document;
+
+            CodeAction codeAction = CodeAction.Create(
+                "Change type to 'var'",
+                cancellationToken =>
+                {
+                    TypeSyntax newType = CSharpFactory.VarType().WithTriviaFrom(type);
+
+                    return document.ReplaceNodeAsync(type, newType, cancellationToken);
+                },
+                EquivalenceKeyProvider.GetEquivalenceKey(diagnostic, additionalKey));
+
+            context.RegisterCodeFix(codeAction, diagnostic);
+        }
+
         public static void AddCastExpression(
             CodeFixContext context,
             Diagnostic diagnostic,
@@ -75,7 +123,21 @@ namespace Roslynator.CSharp.CodeFixes
         {
             ITypeSymbol typeSymbol = semanticModel.GetTypeInfo(expression, context.CancellationToken).ConvertedType;
 
-            if (typeSymbol?.SupportsExplicitDeclaration() != true)
+            if (typeSymbol == null)
+                return;
+
+            ReplaceNullWithDefaultValue(context, diagnostic, expression, typeSymbol, semanticModel, additionalKey);
+        }
+
+        public static void ReplaceNullWithDefaultValue(
+            CodeFixContext context,
+            Diagnostic diagnostic,
+            ExpressionSyntax expression,
+            ITypeSymbol typeSymbol,
+            SemanticModel semanticModel,
+            string additionalKey = null)
+        {
+            if (!typeSymbol.SupportsExplicitDeclaration())
                 return;
 
             Document document = context.Document;

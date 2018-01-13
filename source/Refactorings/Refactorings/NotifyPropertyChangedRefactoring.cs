@@ -24,7 +24,7 @@ namespace Roslynator.CSharp.Refactorings
 
                 if (body != null)
                 {
-                    StatementSyntax statement = body.Statements.SingleOrDefault(throwException: false);
+                    StatementSyntax statement = body.Statements.SingleOrDefault(shouldThrow: false);
 
                     if (statement?.IsKind(SyntaxKind.ExpressionStatement) == true)
                     {
@@ -77,7 +77,7 @@ namespace Roslynator.CSharp.Refactorings
                         return semanticModel
                             .GetDeclaredSymbol(property, context.CancellationToken)?
                             .ContainingType?
-                            .Implements(semanticModel.GetTypeByMetadataName(MetadataNames.System_ComponentModel_INotifyPropertyChanged)) == true;
+                            .Implements(semanticModel.GetTypeByMetadataName(MetadataNames.System_ComponentModel_INotifyPropertyChanged), allInterfaces: true) == true;
                     }
                 }
             }

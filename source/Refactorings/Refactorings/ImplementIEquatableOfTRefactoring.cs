@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using Roslynator.CSharp.Comparers;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
+using static Roslynator.CSharp.CSharpTypeFactory;
 
 namespace Roslynator.CSharp.Refactorings
 {
@@ -47,7 +48,7 @@ namespace Roslynator.CSharp.Refactorings
                         {
                             equatableSymbol = equatableSymbol.Construct(classSymbol);
 
-                            if (!classSymbol.Implements(equatableSymbol))
+                            if (!classSymbol.Implements(equatableSymbol, allInterfaces: true))
                             {
                                 context.RegisterRefactoring(
                                     GetTitle(equatableSymbol, semanticModel, classDeclaration.SpanStart),
@@ -91,7 +92,7 @@ namespace Roslynator.CSharp.Refactorings
                         {
                             equatableSymbol = equatableSymbol.Construct(typeSymbol);
 
-                            if (!typeSymbol.Implements(equatableSymbol))
+                            if (!typeSymbol.Implements(equatableSymbol, allInterfaces: true))
                             {
                                 context.RegisterRefactoring(
                                     GetTitle(equatableSymbol, semanticModel, structDeclaration.SpanStart),

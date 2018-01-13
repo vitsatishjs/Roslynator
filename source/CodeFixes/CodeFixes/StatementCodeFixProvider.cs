@@ -82,7 +82,40 @@ namespace Roslynator.CSharp.CodeFixes
                                                     null,
                                                     breakStatement.SemicolonToken);
 
-                                                return context.Document.ReplaceNodeAsync(statement, newStatement, context.CancellationToken);
+                                                return context.Document.ReplaceNodeAsync(statement, newStatement, cancellationToken);
+                                            },
+                                            GetEquivalenceKey(diagnostic, CodeFixIdentifiers.ReplaceBreakWithContinue));
+
+                                        context.RegisterCodeFix(codeAction, diagnostic);
+                                    }
+                                }
+                            }
+
+                            if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.RemoveJumpStatement))
+                                CodeFixRegistrator.RemoveStatement(context, diagnostic, statement);
+
+                            if (Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceBreakWithContinue)
+                                && statement.Kind() == SyntaxKind.BreakStatement)
+                            {
+                                SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+                                if (semanticModel.GetEnclosingSymbol(statement.SpanStart, context.CancellationToken) is IMethodSymbol methodSymbol)
+                                {
+                                    if (methodSymbol.ReturnsVoid
+                                        || (methodSymbol.IsAsync && methodSymbol.ReturnType.Equals(semanticModel.GetTypeByMetadataName(MetadataNames.System_Threading_Tasks_Task))))
+                                    {
+                                        CodeAction codeAction = CodeAction.Create(
+                                            "Replace 'break' with 'return'",
+                                            cancellationToken =>
+                                            {
+                                                var breakStatement = (BreakStatementSyntax)statement;
+                                                SyntaxToken breakKeyword = breakStatement.BreakKeyword;
+
+                                                ReturnStatementSyntax newStatement = SyntaxFactory.ReturnStatement(
+                                                    SyntaxFactory.Token(breakKeyword.LeadingTrivia, SyntaxKind.ReturnKeyword, breakKeyword.TrailingTrivia),
+                                                    null,
+                                                    breakStatement.SemicolonToken);
+
+                                                return context.Document.ReplaceNodeAsync(statement, newStatement, cancellationToken);
                                             },
                                             GetEquivalenceKey(diagnostic, CodeFixIdentifiers.ReplaceBreakWithContinue));
 

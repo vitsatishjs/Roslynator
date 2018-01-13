@@ -169,9 +169,7 @@ namespace Roslynator.CSharp.Refactorings
             SemanticModel semanticModel,
             CancellationToken cancellationToken)
         {
-            var typeSymbol = semanticModel.GetSymbol(objectCreationExpression.Type, cancellationToken) as ITypeSymbol;
-
-            if (typeSymbol != null)
+            if (semanticModel.GetSymbol(objectCreationExpression.Type, cancellationToken) is ITypeSymbol typeSymbol)
             {
                 foreach (ISymbol symbol in semanticModel.LookupSymbols(objectCreationExpression.SpanStart, typeSymbol, "Add"))
                 {
@@ -180,7 +178,7 @@ namespace Roslynator.CSharp.Refactorings
                     {
                         var methodSymbol = (IMethodSymbol)symbol;
 
-                        IParameterSymbol parameter = methodSymbol.Parameters.SingleOrDefault(throwException: false);
+                        IParameterSymbol parameter = methodSymbol.Parameters.SingleOrDefault(shouldThrow: false);
 
                         if (parameter != null)
                         {
@@ -202,9 +200,7 @@ namespace Roslynator.CSharp.Refactorings
             SemanticModel semanticModel,
             CancellationToken cancellationToken)
         {
-            var typeSymbol = semanticModel.GetSymbol(objectCreationExpression.Type, cancellationToken) as ITypeSymbol;
-
-            if (typeSymbol != null)
+            if (semanticModel.GetSymbol(objectCreationExpression.Type, cancellationToken) is ITypeSymbol typeSymbol)
             {
                 int position = objectCreationExpression.SpanStart;
 
@@ -215,7 +211,7 @@ namespace Roslynator.CSharp.Refactorings
                     if (!propertySymbol.IsReadOnly
                         && semanticModel.IsAccessible(position, propertySymbol.SetMethod))
                     {
-                        IParameterSymbol parameter = propertySymbol.Parameters.SingleOrDefault(throwException: false);
+                        IParameterSymbol parameter = propertySymbol.Parameters.SingleOrDefault(shouldThrow: false);
 
                         if (parameter != null)
                         {

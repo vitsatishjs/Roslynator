@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator
@@ -52,27 +53,57 @@ namespace Roslynator
             return accessibility.Is(Accessibility.Protected, Accessibility.ProtectedAndInternal, Accessibility.ProtectedOrInternal);
         }
 
-        internal static bool IsMoreRestrictiveThan(this Accessibility accessibility, Accessibility value)
+        internal static AccessibilityFlags GetAccessibilityFlag(this Accessibility accessibility)
         {
-            switch (value)
+            switch (accessibility)
+            {
+                case Accessibility.NotApplicable:
+                    return AccessibilityFlags.None;
+                case Accessibility.Private:
+                    return AccessibilityFlags.Private;
+                case Accessibility.ProtectedAndInternal:
+                    return AccessibilityFlags.ProtectedAndInternal;
+                case Accessibility.Protected:
+                    return AccessibilityFlags.Protected;
+                case Accessibility.Internal:
+                    return AccessibilityFlags.Internal;
+                case Accessibility.ProtectedOrInternal:
+                    return AccessibilityFlags.ProtectedOrInternal;
+                case Accessibility.Public:
+                    return AccessibilityFlags.Public;
+            }
+
+            Debug.Fail(accessibility.ToString());
+
+            return AccessibilityFlags.None;
+        }
+
+
+        internal static bool IsMoreRestrictiveThan(this Accessibility accessibility, Accessibility other)
+        {
+            switch (other)
             {
                 case Accessibility.Public:
                     {
                         return accessibility == Accessibility.Internal
                             || accessibility == Accessibility.ProtectedOrInternal
+                            || accessibility == Accessibility.ProtectedAndInternal
                             || accessibility == Accessibility.Protected
                             || accessibility == Accessibility.Private;
                     }
                 case Accessibility.Internal:
                     {
-                        return accessibility == Accessibility.Private;
+                        return accessibility == Accessibility.ProtectedAndInternal
+                            || accessibility == Accessibility.Private;
                     }
                 case Accessibility.ProtectedOrInternal:
                     {
                         return accessibility == Accessibility.Internal
                             || accessibility == Accessibility.Protected
+                            || accessibility == Accessibility.ProtectedAndInternal
                             || accessibility == Accessibility.Private;
                     }
+                case Accessibility.ProtectedAndInternal:
                 case Accessibility.Protected:
                     {
                         return accessibility == Accessibility.Private;
@@ -94,6 +125,8 @@ namespace Roslynator
                     return "private";
                 case Accessibility.Protected:
                     return "protected";
+                case Accessibility.ProtectedAndInternal:
+                    return "private protected";
                 case Accessibility.Internal:
                     return "internal";
                 case Accessibility.ProtectedOrInternal:

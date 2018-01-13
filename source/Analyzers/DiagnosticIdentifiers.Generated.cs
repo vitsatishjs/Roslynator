@@ -70,7 +70,7 @@ namespace Roslynator.CSharp
         public const string AvoidUsageOfWhileStatementToCreateInfiniteLoop = "RCS1065";
         public const string RemoveEmptyFinallyClause = "RCS1066";
         public const string RemoveArgumentListFromObjectCreation = "RCS1067";
-        public const string SimplifyLogicalNotExpression = "RCS1068";
+        public const string SimplifyLogicalNegation = "RCS1068";
         public const string RemoveUnnecessaryCaseLabel = "RCS1069";
         public const string RemoveRedundantDefaultSwitchSection = "RCS1070";
         public const string RemoveRedundantBaseConstructorCall = "RCS1071";
@@ -85,7 +85,7 @@ namespace Roslynator.CSharp
         public const string UseCountOrLengthPropertyInsteadOfAnyMethod = "RCS1080";
         public const string SplitVariableDeclaration = "RCS1081";
         public const string UseCountOrLengthPropertyInsteadOfCountMethod = "RCS1082";
-        public const string UseAnyMethodInsteadOfCountMethod = "RCS1083";
+        public const string CallAnyInsteadOfCount = "RCS1083";
         public const string UseCoalesceExpressionInsteadOfConditionalExpression = "RCS1084";
         public const string UseAutoProperty = "RCS1085";
         public const string UseLinefeedAsNewLine = "RCS1086";
@@ -159,7 +159,7 @@ namespace Roslynator.CSharp
         public const string ParameterNameDiffersFromBase = "RCS1168";
         public const string MarkFieldAsReadOnly = "RCS1169";
         public const string UseReadOnlyAutoProperty = "RCS1170";
-        public const string SimplifyLazilyInitializedProperty = "RCS1171";
+        public const string SimplifyLazyInitialization = "RCS1171";
         public const string UseIsOperatorInsteadOfAsOperator = "RCS1172";
         public const string UseCoalesceExpressionInsteadOfIf = "RCS1173";
         public const string RemoveRedundantAsyncAwait = "RCS1174";
@@ -200,5 +200,9 @@ namespace Roslynator.CSharp
         public const string ReorderTypeParameterConstraints = "RCS1209";
         public const string ReturnTaskInsteadOfNull = "RCS1210";
         public const string RemoveUnnecessaryElseClause = "RCS1211";
+        public const string RemoveRedundantAssignment = "RCS1212";
+        public const string RemoveUnusedMemberDeclaration = "RCS1213";
+        public const string AvoidInterpolatedStringWithNoInterpolatedText = "RCS1214";
+        public const string ExpressionIsAlwaysEqualToTrueOrFalse = "RCS1215";
     }
 }

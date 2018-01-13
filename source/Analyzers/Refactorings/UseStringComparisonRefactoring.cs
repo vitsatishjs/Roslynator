@@ -13,6 +13,7 @@ using Roslynator.CSharp;
 using Roslynator.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
+using static Roslynator.CSharp.CSharpTypeFactory;
 
 namespace Roslynator.CSharp.Refactorings
 {
@@ -76,7 +77,6 @@ namespace Roslynator.CSharp.Refactorings
             string name = invocationInfo.NameText;
 
             MemberInvocationExpressionInfo invocationInfo3;
-            string name3 = null;
 
             bool isStringLiteral = argumentExpression.IsKind(SyntaxKind.StringLiteralExpression);
 
@@ -87,7 +87,7 @@ namespace Roslynator.CSharp.Refactorings
                 if (!invocationInfo3.Success)
                     return;
 
-                name3 = invocationInfo3.NameText;
+                string name3 = invocationInfo3.NameText;
 
                 if (name != name3)
                     return;

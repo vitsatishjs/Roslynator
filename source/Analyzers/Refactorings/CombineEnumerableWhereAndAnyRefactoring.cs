@@ -24,7 +24,7 @@ namespace Roslynator.CSharp.Refactorings
                 if (invocationInfo.Success
                     && invocationInfo.NameText == "Any")
                 {
-                    ArgumentSyntax argument1 = invocationInfo.Arguments.SingleOrDefault(throwException: false);
+                    ArgumentSyntax argument1 = invocationInfo.Arguments.SingleOrDefault(shouldthrow: false);
 
                     if (argument1 != null)
                     {
@@ -32,34 +32,30 @@ namespace Roslynator.CSharp.Refactorings
                         if (invocationInfo2.Success
                             && invocationInfo2.NameText == "Where")
                         {
-                            ArgumentSyntax argument2 = invocationInfo2.Arguments.SingleOrDefault(throwException: false);
+                            ArgumentSyntax argument2 = invocationInfo2.Arguments.SingleOrDefault(shouldthrow: false);
 
                             if (argument2 != null)
                             {
                                 SemanticModel semanticModel = context.SemanticModel;
                                 CancellationToken cancellationToken = context.CancellationToken;
 
-                                MethodInfo methodInfo;
-                                if (semanticModel.TryGetExtensionMethodInfo(invocationExpression, out methodInfo, ExtensionMethodKind.None, cancellationToken)
-                                    && methodInfo.IsLinqExtensionOfIEnumerableOfTWithPredicate("Any"))
+                                if (semanticModel.TryGetExtensionMethodInfo(invocationExpression, out MethodInfo methodInfo, ExtensionMethodKind.None, cancellationToken)
+                                    && methodInfo.IsLinqExtensionOfIEnumerableOfTWithPredicate("Any")
+                                    && semanticModel.TryGetExtensionMethodInfo(invocationInfo2.InvocationExpression, out MethodInfo methodInfo2, ExtensionMethodKind.None, cancellationToken)
+                                    && methodInfo2.IsLinqWhere(allowImmutableArrayExtension: true))
                                 {
-                                    MethodInfo methodInfo2;
-                                    if (semanticModel.TryGetExtensionMethodInfo(invocationInfo2.InvocationExpression, out methodInfo2, ExtensionMethodKind.None, cancellationToken)
-                                        && methodInfo2.IsLinqWhere(allowImmutableArrayExtension: true))
+                                    SingleParameterLambdaExpressionInfo lambda = SyntaxInfo.SingleParameterLambdaExpressionInfo(argument1.Expression);
+                                    if (lambda.Success
+                                        && lambda.Body is ExpressionSyntax)
                                     {
-                                        SingleParameterLambdaExpressionInfo lambda = SyntaxInfo.SingleParameterLambdaExpressionInfo(argument1.Expression);
-                                        if (lambda.Success
-                                            && lambda.Body is ExpressionSyntax)
+                                        SingleParameterLambdaExpressionInfo lambda2 = SyntaxInfo.SingleParameterLambdaExpressionInfo(argument2.Expression);
+                                        if (lambda2.Success
+                                            && lambda2.Body is ExpressionSyntax
+                                            && lambda.ParameterName.Equals(lambda2.ParameterName, StringComparison.Ordinal))
                                         {
-                                            SingleParameterLambdaExpressionInfo lambda2 = SyntaxInfo.SingleParameterLambdaExpressionInfo(argument2.Expression);
-                                            if (lambda2.Success
-                                                && lambda2.Body is ExpressionSyntax
-                                                && lambda.ParameterName.Equals(lambda2.ParameterName, StringComparison.Ordinal))
-                                            {
-                                                context.ReportDiagnostic(
-                                                    DiagnosticDescriptors.SimplifyLinqMethodChain,
-                                                    Location.Create(context.SyntaxTree(), TextSpan.FromBounds(invocationInfo2.Name.SpanStart, invocationExpression.Span.End)));
-                                            }
+                                            context.ReportDiagnostic(
+                                                DiagnosticDescriptors.SimplifyLinqMethodChain,
+                                                Location.Create(context.SyntaxTree(), TextSpan.FromBounds(invocationInfo2.Name.SpanStart, invocationExpression.Span.End)));
                                         }
                                     }
                                 }

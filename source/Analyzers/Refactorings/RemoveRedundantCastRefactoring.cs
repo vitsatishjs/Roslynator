@@ -93,7 +93,10 @@ namespace Roslynator.CSharp.Refactorings
         {
             ISymbol implementation = typeSymbol.FindImplementationForInterfaceMember(symbol);
 
-            switch (implementation?.Kind)
+            if (implementation == null)
+                return false;
+
+            switch (implementation.Kind)
             {
                 case SymbolKind.Property:
                     {
@@ -117,7 +120,7 @@ namespace Roslynator.CSharp.Refactorings
                     }
                 default:
                     {
-                        Debug.Fail(implementation?.Kind.ToString());
+                        Debug.Fail(implementation.Kind.ToString());
                         return false;
                     }
             }
@@ -134,7 +137,8 @@ namespace Roslynator.CSharp.Refactorings
         {
             Accessibility accessibility = accessedSymbol.DeclaredAccessibility;
 
-            if (accessibility == Accessibility.Protected)
+            if (accessibility == Accessibility.Protected
+                || accessibility == Accessibility.ProtectedAndInternal)
             {
                 INamedTypeSymbol containingType = semanticModel.GetEnclosingNamedType(position, cancellationToken);
 
@@ -201,7 +205,7 @@ namespace Roslynator.CSharp.Refactorings
             if (!extensionMethodInfo.MethodInfo.IsLinqCast())
                 return;
 
-            ITypeSymbol typeArgument = extensionMethodInfo.ReducedSymbol.TypeArguments.SingleOrDefault(throwException: false);
+            ITypeSymbol typeArgument = extensionMethodInfo.ReducedSymbol.TypeArguments.SingleOrDefault(shouldThrow: false);
 
             if (typeArgument == null)
                 return;

@@ -13,10 +13,10 @@ namespace Roslynator.CSharp.Refactorings
         public static async Task ComputeRefactoringsAsync(RefactoringContext context, InvocationExpressionSyntax invocationExpression)
         {
             if (context.IsAnyRefactoringEnabled(
-                    RefactoringIdentifiers.UseElementAccessInsteadOfEnumerableMethod,
-                    RefactoringIdentifiers.ReplaceAnyWithAllOrAllWithAny,
-                    RefactoringIdentifiers.CallExtensionMethodAsInstanceMethod,
-                    RefactoringIdentifiers.ReplaceStringContainsWithStringIndexOf))
+                RefactoringIdentifiers.UseElementAccessInsteadOfEnumerableMethod,
+                RefactoringIdentifiers.ReplaceAnyWithAllOrAllWithAny,
+                RefactoringIdentifiers.CallExtensionMethodAsInstanceMethod,
+                RefactoringIdentifiers.ReplaceStringContainsWithStringIndexOf))
             {
                 ExpressionSyntax expression = invocationExpression.Expression;
 
@@ -44,7 +44,7 @@ namespace Roslynator.CSharp.Refactorings
                         {
                             SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
-                            CallExtensionMethodAsInstanceMethodAnalysis analysis = CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocationExpression, semanticModel, context.CancellationToken);
+                            CallExtensionMethodAsInstanceMethodAnalysis analysis = CallExtensionMethodAsInstanceMethodRefactoring.Analyze(invocationExpression, semanticModel, allowAnyExpression: true, cancellationToken: context.CancellationToken);
 
                             if (analysis.Success)
                             {
@@ -55,7 +55,7 @@ namespace Roslynator.CSharp.Refactorings
                                         return context.Document.ReplaceNodeAsync(
                                             analysis.InvocationExpression,
                                             analysis.NewInvocationExpression,
-                                            context.CancellationToken);
+                                            cancellationToken);
                                     });
                             }
                         }

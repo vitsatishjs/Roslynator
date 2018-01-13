@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Roslynator.CSharp.CSharpFactory;
 
 namespace Roslynator.CSharp.CodeFixes
 {
@@ -19,105 +18,44 @@ namespace Roslynator.CSharp.CodeFixes
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(CompilerDiagnosticIdentifiers.UsingGenericTypeRequiresTypeArguments); }
+            get { return ImmutableArray.Create(CompilerDiagnosticIdentifiers.TypeInInterfaceListIsNotInterface); }
         }
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.AddTypeArgument))
+            if (!Settings.IsCodeFixEnabled(CodeFixIdentifiers.ReplaceStructWithClass))
                 return;
 
             SyntaxNode root = await context.GetSyntaxRootAsync().ConfigureAwait(false);
 
-            if (!TryFindFirstAncestorOrSelf(root, context.Span, out TypeSyntax type))
-                return;
-
-            if (!type.IsKind(SyntaxKind.IdentifierName))
+            if (!TryFindFirstAncestorOrSelf(root, context.Span, out BaseTypeSyntax baseType))
                 return;
 
             foreach (Diagnostic diagnostic in context.Diagnostics)
             {
                 switch (diagnostic.Id)
                 {
-                    case CompilerDiagnosticIdentifiers.UsingGenericTypeRequiresTypeArguments:
+                    case CompilerDiagnosticIdentifiers.TypeInInterfaceListIsNotInterface:
                         {
-                            SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
+                            SyntaxNode parent = baseType.Parent;
 
-                            SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(type, context.CancellationToken);
+                            if (parent.Kind() != SyntaxKind.BaseList)
+                                break;
 
-                            foreach (ISymbol symbol in symbolInfo.CandidateSymbols)
-                            {
-                                var namedTypeSymbol = symbol as INamedTypeSymbol;
+                            parent = parent.Parent;
 
-                                if (namedTypeSymbol != null)
-                                {
-                                    ImmutableArray<ITypeParameterSymbol> typeParameters = namedTypeSymbol.TypeParameters;
+                            if (!(parent is StructDeclarationSyntax structDeclaration))
+                                break;
 
-                                    if (typeParameters.Any())
-                                    {
-                                        CodeAction codeAction = CodeAction.Create(
-                                            GetTitle(typeParameters),
-                                            cancellationToken =>
-                                            {
-                                                SeparatedSyntaxList<TypeSyntax> typeArguments = CreateTypeArguments(typeParameters, type.SpanStart, semanticModel).ToSeparatedSyntaxList();
+                            CodeAction codeAction = CodeAction.Create(
+                                "Replace 'struct' with 'class'",
+                                cancellationToken => context.Document.ReplaceNodeAsync(structDeclaration, ClassDeclaration(structDeclaration), cancellationToken),
+                                GetEquivalenceKey(diagnostic));
 
-                                                var identifierName = (IdentifierNameSyntax)type;
-
-                                                GenericNameSyntax newNode = SyntaxFactory.GenericName(identifierName.Identifier, SyntaxFactory.TypeArgumentList(typeArguments));
-
-                                                return context.Document.ReplaceNodeAsync(type, newNode, context.CancellationToken);
-                                            },
-                                            GetEquivalenceKey(diagnostic, SymbolDisplay.GetString(namedTypeSymbol)));
-
-                                        context.RegisterCodeFix(codeAction, diagnostic);
-                                    }
-                                }
-                            }
-
+                            context.RegisterCodeFix(codeAction, diagnostic);
                             break;
                         }
                 }
-            }
-        }
-
-        private static string GetTitle(ImmutableArray<ITypeParameterSymbol> typeParameters)
-        {
-            if (typeParameters.Length == 1)
-            {
-                return $"Add type argument {typeParameters[0].Name}";
-            }
-            else
-            {
-                return $"Add type arguments {string.Join(", ", typeParameters.Select(f => f.Name))}";
-            }
-        }
-
-        private static IEnumerable<TypeSyntax> CreateTypeArguments(
-            ImmutableArray<ITypeParameterSymbol> typeParameters,
-            int position,
-            SemanticModel semanticModel)
-        {
-            bool isFirst = true;
-
-            ImmutableArray<ISymbol> symbols = semanticModel.LookupSymbols(position);
-
-            foreach (ITypeParameterSymbol typeParameter in typeParameters)
-            {
-                string name = typeParameter.Name;
-
-                name = NameGenerator.Default.EnsureUniqueName(
-                    typeParameter.Name,
-                    symbols);
-
-                SyntaxToken identifier = SyntaxFactory.Identifier(name);
-
-                if (isFirst)
-                {
-                    identifier = identifier.WithRenameAnnotation();
-                    isFirst = false;
-                }
-
-                yield return SyntaxFactory.IdentifierName(identifier);
             }
         }
     }

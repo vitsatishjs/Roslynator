@@ -25,9 +25,7 @@ namespace Roslynator.VisualStudio
 
         private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
         {
-            var clickedHeader = e.OriginalSource as GridViewColumnHeader;
-
-            if (clickedHeader != null)
+            if (e.OriginalSource is GridViewColumnHeader clickedHeader)
             {
                 ListSortDirection direction;
 
@@ -37,16 +35,13 @@ namespace Roslynator.VisualStudio
                     {
                         direction = ListSortDirection.Ascending;
                     }
+                    else if (_lastDirection == ListSortDirection.Ascending)
+                    {
+                        direction = ListSortDirection.Descending;
+                    }
                     else
                     {
-                        if (_lastDirection == ListSortDirection.Ascending)
-                        {
-                            direction = ListSortDirection.Descending;
-                        }
-                        else
-                        {
-                            direction = ListSortDirection.Ascending;
-                        }
+                        direction = ListSortDirection.Ascending;
                     }
 
                     var propertyName = clickedHeader.Column.Header as string;
@@ -87,10 +82,12 @@ namespace Roslynator.VisualStudio
 
         private bool FilterRefactorings(object item)
         {
-            string s = tbxFilter.Text?.Trim();
+            string s = tbxFilter.Text;
 
-            if (!string.IsNullOrEmpty(s))
+            if (!string.IsNullOrWhiteSpace(s))
             {
+                s = s.Trim();
+
                 var refactoring = (BaseModel)item;
 
                 return refactoring.Id.IndexOf(s, StringComparison.CurrentCultureIgnoreCase) != -1

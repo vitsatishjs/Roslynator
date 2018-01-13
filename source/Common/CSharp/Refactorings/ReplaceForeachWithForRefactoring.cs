@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
+using static Roslynator.CSharp.CSharpTypeFactory;
 
 namespace Roslynator.CSharp.Refactorings
 {
@@ -108,8 +109,6 @@ namespace Roslynator.CSharp.Refactorings
             SemanticModel semanticModel,
             CancellationToken cancellationToken)
         {
-            string name = forEachStatement.Identifier.ValueText;
-
             ILocalSymbol symbol = semanticModel.GetDeclaredSymbol(forEachStatement, cancellationToken);
 
             foreach (SyntaxNode node in forEachStatement.Statement.DescendantNodes())

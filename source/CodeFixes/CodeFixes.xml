@@ -133,6 +133,7 @@
     <FixableDiagnosticIds>
       <Id>CS0501</Id>
       <Id>CS0756</Id>
+      <Id>CS8112</Id>
     </FixableDiagnosticIds>
   </CodeFix>
   <CodeFix Id="RCF0027" Identifier="RemoveRefModifier" Title="Remove 'ref' modifier">
@@ -205,8 +206,10 @@
   </CodeFix>
   <CodeFix Id="RCF0039" Identifier="AddArgumentList" Title="Add argument list">
     <FixableDiagnosticIds>
-      <Id>CS0428</Id>
       <Id>CS0023</Id>
+      <Id>CS0428</Id>
+      <Id>CS0201</Id>
+      <Id>CS1526</Id>
     </FixableDiagnosticIds>
   </CodeFix>
   <CodeFix Id="RCF0040" Identifier="InitializeLocalVariableWithDefaultValue" Title="Initialize local variable with default value">
@@ -320,6 +323,7 @@
     <FixableDiagnosticIds>
       <Id>CS0037</Id>
       <Id>CS0403</Id>
+      <Id>CS1503</Id>
       <Id>CS1750</Id>
     </FixableDiagnosticIds>
   </CodeFix>
@@ -451,6 +455,88 @@
   <CodeFix Id="RCF0081" Identifier="ReturnDefaultValue" Title="Return default value">
     <FixableDiagnosticIds>
       <Id>CS0126</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0082" Identifier="DefineMatchingOperator" Title="Define matching operator">
+    <FixableDiagnosticIds>
+      <Id>CS0216</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0083" Identifier="DefineObjectEquals" Title="Define object.Equals">
+    <FixableDiagnosticIds>
+      <Id>CS0660</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0084" Identifier="DefineObjectGetHashCode" Title="Define object.GetHashCode">
+    <FixableDiagnosticIds>
+      <Id>CS0659</Id>
+      <Id>CS0661</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0085" Identifier="ChangeArrayType" Title="Change array type">
+    <FixableDiagnosticIds>
+      <Id>CS0246</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0086" Identifier="AddMissingType" Title="Add missing type">
+    <FixableDiagnosticIds>
+      <Id>CS1031</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0087" Identifier="ReplaceConditionalExpressionWithIfElse" Title="Replace conditional expression with if-else">
+    <FixableDiagnosticIds>
+      <Id>CS0201</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0088" Identifier="RemoveSemicolon" Title="Remove semicolon">
+    <FixableDiagnosticIds>
+      <Id>CS1597</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0089" Identifier="RemoveConditionalAccess" Title="Remove conditional access">
+    <FixableDiagnosticIds>
+      <Id>CS0023</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0090" Identifier="ChangeTypeAccordingToInitializer" Title="Change type according to initializer">
+    <FixableDiagnosticIds>
+      <Id>CS0029</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0091" Identifier="ChangeForEachType" Title="Change foreach type">
+    <FixableDiagnosticIds>
+      <Id>CS0030</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0092" Identifier="ChangeTypeToVar" Title="Change type to var">
+    <FixableDiagnosticIds>
+      <Id>CS0029</Id>
+      <Id>CS0030</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0093" Identifier="RemoveDefaultValueFromParameter" Title="Remove default value from parameter">
+    <FixableDiagnosticIds>
+      <Id>CS1751</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0094" Identifier="ReplaceConstantWithField" Title="Replace constant with field">
+    <FixableDiagnosticIds>
+      <Id>CS0133</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0095" Identifier="ReplaceStructWithClass" Title="Replace struct with class">
+    <FixableDiagnosticIds>
+      <Id>CS0527</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0096" Identifier="ReplaceYieldReturnWithForEach" Title="Replace yield return with foreach">
+    <FixableDiagnosticIds>
+      <Id>CS0029</Id>
+    </FixableDiagnosticIds>
+  </CodeFix>
+  <CodeFix Id="RCF0097" Identifier="ReplaceComparisonWithAssignment" Title="Replace comparison with assignment">
+    <FixableDiagnosticIds>
+      <Id>CS0201</Id>
     </FixableDiagnosticIds>
   </CodeFix>
 </CodeFixes>

@@ -49,7 +49,7 @@ namespace Roslynator.CSharp.Refactorings
         {
             context.RegisterRefactoring(
                 "Negate is",
-                cancellationToken => RefactorAsync(context.Document, expression, context.CancellationToken));
+                cancellationToken => RefactorAsync(context.Document, expression, cancellationToken));
         }
 
         private static async Task<Document> RefactorAsync(
@@ -59,7 +59,7 @@ namespace Roslynator.CSharp.Refactorings
         {
             SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
-            ExpressionSyntax newNode = CSharpUtility.LogicallyNegate(expression, semanticModel, cancellationToken);
+            ExpressionSyntax newNode = LogicalNegationHelper.LogicallyNegate(expression, semanticModel, cancellationToken);
 
             return await document.ReplaceNodeAsync(expression, newNode, cancellationToken).ConfigureAwait(false);
         }

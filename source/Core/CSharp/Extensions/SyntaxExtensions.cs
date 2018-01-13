@@ -562,9 +562,7 @@ namespace Roslynator.CSharp
             if (elseClause == null)
                 throw new ArgumentNullException(nameof(elseClause));
 
-            var ifStatement = elseClause.Parent as IfStatementSyntax;
-
-            if (ifStatement != null)
+            if (elseClause.Parent is IfStatementSyntax ifStatement)
                 return ifStatement.GetTopmostIf();
 
             return null;
@@ -662,39 +660,6 @@ namespace Roslynator.CSharp
         #endregion EventFieldDeclarationSyntax
 
         #region ExpressionSyntax
-        public static ParenthesizedExpressionSyntax Parenthesize(
-            this ExpressionSyntax expression,
-            bool includeElasticTrivia = true,
-            bool simplifiable = true)
-        {
-            ParenthesizedExpressionSyntax parenthesizedExpression = null;
-
-            if (includeElasticTrivia)
-            {
-                parenthesizedExpression = ParenthesizedExpression(expression.WithoutTrivia());
-            }
-            else
-            {
-                parenthesizedExpression = ParenthesizedExpression(
-                    Token(SyntaxTriviaList.Empty, SyntaxKind.OpenParenToken, SyntaxTriviaList.Empty),
-                    expression.WithoutTrivia(),
-                    Token(SyntaxTriviaList.Empty, SyntaxKind.CloseParenToken, SyntaxTriviaList.Empty));
-            }
-
-            return parenthesizedExpression
-                .WithTriviaFrom(expression)
-                .WithSimplifierAnnotationIf(simplifiable);
-        }
-
-        internal static ExpressionSyntax ParenthesizeIf(
-            this ExpressionSyntax expression,
-            bool condition,
-            bool includeElasticTrivia = true,
-            bool simplifiable = true)
-        {
-            return (condition) ? Parenthesize(expression, includeElasticTrivia, simplifiable) : expression;
-        }
-
         public static ExpressionSyntax WalkUpParentheses(this ExpressionSyntax expression)
         {
             while (expression?.Parent?.Kind() == SyntaxKind.ParenthesizedExpression)
@@ -1634,9 +1599,9 @@ namespace Roslynator.CSharp
             return false;
         }
 
-        internal static MemberDeclarationSyntax WithNewSingleLineDocumentationComment(
-            this MemberDeclarationSyntax member,
-            DocumentationCommentGeneratorSettings settings = null)
+        internal static TMember WithNewSingleLineDocumentationComment<TMember>(
+            this TMember member,
+            DocumentationCommentGeneratorSettings settings = null) where TMember : MemberDeclarationSyntax
         {
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
@@ -1654,11 +1619,11 @@ namespace Roslynator.CSharp
             return member.WithLeadingTrivia(newLeadingTrivia);
         }
 
-        internal static MemberDeclarationSyntax WithBaseOrNewSingleLineDocumentationComment(
-            this MemberDeclarationSyntax member,
+        internal static TMember WithBaseOrNewSingleLineDocumentationComment<TMember>(
+            this TMember member,
             SemanticModel semanticModel,
             DocumentationCommentGeneratorSettings settings = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default(CancellationToken)) where TMember : MemberDeclarationSyntax
         {
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
@@ -1674,10 +1639,10 @@ namespace Roslynator.CSharp
             return WithNewSingleLineDocumentationComment(member, settings);
         }
 
-        public static MemberDeclarationSyntax WithDocumentationComment(
-            this MemberDeclarationSyntax member,
+        public static TMember WithDocumentationComment<TMember>(
+            this TMember member,
             SyntaxTrivia comment,
-            bool indent = false)
+            bool indent = false) where TMember : MemberDeclarationSyntax
         {
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
@@ -2070,19 +2035,12 @@ namespace Roslynator.CSharp
         }
         #endregion SeparatedSyntaxList<T>
 
-        #region SimpleNameSyntax
-        public static MemberAccessExpressionSyntax QualifyWithThis(this SimpleNameSyntax simpleName, bool simplifiable = true)
-        {
-            return SimpleMemberAccessExpression(ThisExpression(), simpleName).WithSimplifierAnnotationIf(simplifiable);
-        }
-        #endregion SimpleNameSyntax
-
         #region StatementSyntax
         private static StatementSyntax GetSingleStatementOrDefault(StatementSyntax statement)
         {
             if (statement?.IsKind(SyntaxKind.Block) == true)
             {
-                return ((BlockSyntax)statement).Statements.SingleOrDefault(throwException: false);
+                return ((BlockSyntax)statement).Statements.SingleOrDefault(shouldThrow: false);
             }
             else
             {
@@ -2095,8 +2053,7 @@ namespace Roslynator.CSharp
             if (statement == null)
                 throw new ArgumentNullException(nameof(statement));
 
-            SyntaxList<StatementSyntax> statements;
-            if (statement.TryGetContainingList(out statements))
+            if (statement.TryGetContainingList(out SyntaxList<StatementSyntax> statements))
             {
                 int index = statements.IndexOf(statement);
 
@@ -2112,8 +2069,7 @@ namespace Roslynator.CSharp
             if (statement == null)
                 throw new ArgumentNullException(nameof(statement));
 
-            SyntaxList<StatementSyntax> statements;
-            if (statement.TryGetContainingList(out statements))
+            if (statement.TryGetContainingList(out SyntaxList<StatementSyntax> statements))
             {
                 int index = statements.IndexOf(statement);
 
@@ -2537,6 +2493,8 @@ namespace Roslynator.CSharp
                     return "conversion method";
                 case SyntaxKind.ConstructorDeclaration:
                     return "constructor";
+                case SyntaxKind.DestructorDeclaration:
+                    return "destructor";
                 case SyntaxKind.PropertyDeclaration:
                     return "property";
                 case SyntaxKind.IndexerDeclaration:
@@ -2545,7 +2503,9 @@ namespace Roslynator.CSharp
                 case SyntaxKind.EventFieldDeclaration:
                     return "event";
                 case SyntaxKind.FieldDeclaration:
-                    return "field";
+                    return (((FieldDeclarationSyntax)node).Modifiers.Contains(SyntaxKind.ConstKeyword)) ? "const" : "field";
+                case SyntaxKind.DelegateDeclaration:
+                    return "delegate";
                 case SyntaxKind.NamespaceDeclaration:
                     return "namespace";
                 case SyntaxKind.ClassDeclaration:
@@ -2556,6 +2516,20 @@ namespace Roslynator.CSharp
                     return "interface";
                 case SyntaxKind.EnumDeclaration:
                     return "enum";
+                case SyntaxKind.IncompleteMember:
+                    return "member";
+                case SyntaxKind.GetAccessorDeclaration:
+                case SyntaxKind.SetAccessorDeclaration:
+                case SyntaxKind.AddAccessorDeclaration:
+                case SyntaxKind.RemoveAccessorDeclaration:
+                case SyntaxKind.UnknownAccessorDeclaration:
+                    return "accessor";
+                case SyntaxKind.LocalDeclarationStatement:
+                    return "local declaration";
+                case SyntaxKind.LocalFunctionStatement:
+                    return "local function";
+                case SyntaxKind.Parameter:
+                    return "parameter";
                 default:
                     {
                         Debug.Fail(node.Kind().ToString());
@@ -2566,7 +2540,7 @@ namespace Roslynator.CSharp
                         if (node is MemberDeclarationSyntax)
                             return "member";
 
-                        return "";
+                        throw new ArgumentException("", nameof(node));
                     }
             }
         }
@@ -2580,12 +2554,11 @@ namespace Roslynator.CSharp
         {
             foreach (SyntaxTrivia trivia in node.DescendantTrivia(descendIntoTrivia: true))
             {
-                if (trivia.IsDirective && trivia.HasStructure)
+                if (trivia.IsDirective
+                    && trivia.HasStructure
+                    && (trivia.GetStructure() is DirectiveTriviaSyntax directive))
                 {
-                    var directive = trivia.GetStructure() as DirectiveTriviaSyntax;
-
-                    if (directive != null)
-                        yield return directive;
+                    yield return directive;
                 }
             }
         }
@@ -2981,12 +2954,11 @@ namespace Roslynator.CSharp
         {
             SyntaxNode parent = node.Parent;
 
-            if (parent == null && ascendOutOfTrivia)
+            if (parent == null
+                && ascendOutOfTrivia
+                && (node is IStructuredTriviaSyntax structuredTrivia))
             {
-                var structuredTrivia = node as IStructuredTriviaSyntax;
-
-                if (structuredTrivia != null)
-                    parent = structuredTrivia.ParentTrivia.Token.Parent;
+                parent = structuredTrivia.ParentTrivia.Token.Parent;
             }
 
             return parent;
@@ -2999,9 +2971,7 @@ namespace Roslynator.CSharp
         {
             foreach (SyntaxNode descendant in node.DescendantNodesAndSelf(descendIntoChildren: descendIntoChildren, descendIntoTrivia: descendIntoTrivia))
             {
-                var tnode = descendant as TNode;
-
-                if (tnode != null)
+                if (descendant is TNode tnode)
                     return tnode;
             }
 
@@ -3016,9 +2986,7 @@ namespace Roslynator.CSharp
         {
             foreach (SyntaxNode descendant in node.DescendantNodesAndSelf(span, descendIntoChildren: descendIntoChildren, descendIntoTrivia: descendIntoTrivia))
             {
-                var tnode = descendant as TNode;
-
-                if (tnode != null)
+                if (descendant is TNode tnode)
                     return tnode;
             }
 
@@ -3144,6 +3112,46 @@ namespace Roslynator.CSharp
                 throw new ArgumentNullException(nameof(node));
 
             return (TNode)ChangeAccessibilityHelper.ChangeAccessibility(node, newAccessibility, comparer);
+        }
+
+        internal static SyntaxTrivia GetIndentation(this SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            SyntaxTree tree = node.SyntaxTree;
+
+            if (tree != null)
+            {
+                TextSpan span = node.Span;
+
+                int lineStartIndex = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
+
+                while (!node.FullSpan.Contains(lineStartIndex))
+                    node = node.Parent;
+
+                SyntaxToken token = node.FindToken(lineStartIndex);
+
+                if (!token.IsKind(SyntaxKind.None))
+                {
+                    SyntaxTriviaList leadingTrivia = token.LeadingTrivia;
+
+                    if (leadingTrivia.Any()
+                        && leadingTrivia.FullSpan.Contains(lineStartIndex))
+                    {
+                        SyntaxTrivia trivia = leadingTrivia.Last();
+
+                        if (trivia.IsWhitespaceTrivia())
+                            return trivia;
+                    }
+                }
+            }
+
+            return EmptyWhitespace();
+        }
+
+        internal static SyntaxTriviaList GetIncreasedIndentation(this SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            SyntaxTrivia trivia = GetIndentation(node, cancellationToken);
+
+            return IncreaseIndentation(trivia);
         }
         #endregion SyntaxNode
 
@@ -3382,28 +3390,48 @@ namespace Roslynator.CSharp
                 switch (tokenList[i].Kind())
                 {
                     case SyntaxKind.PublicKeyword:
-                        return Accessibility.Public;
+                        {
+                            return Accessibility.Public;
+                        }
                     case SyntaxKind.PrivateKeyword:
-                        return Accessibility.Private;
+                        {
+                            for (int j = i + 1; j < count; j++)
+                            {
+                                if (tokenList[j].Kind() == SyntaxKind.ProtectedKeyword)
+                                    return Accessibility.ProtectedAndInternal;
+                            }
+
+                            return Accessibility.Private;
+                        }
                     case SyntaxKind.InternalKeyword:
-                        return GetAccessModifier(tokenList, i + 1, count, SyntaxKind.ProtectedKeyword, Accessibility.Internal);
+                        {
+                            for (int j = i + 1; j < count; j++)
+                            {
+                                if (tokenList[j].Kind() == SyntaxKind.ProtectedKeyword)
+                                    return Accessibility.ProtectedOrInternal;
+                            }
+
+                            return Accessibility.Internal;
+                        }
                     case SyntaxKind.ProtectedKeyword:
-                        return GetAccessModifier(tokenList, i + 1, count, SyntaxKind.InternalKeyword, Accessibility.Protected);
+                        {
+                            for (int j = i + 1; j < count; j++)
+                            {
+                                switch (tokenList[j].Kind())
+                                {
+                                    case SyntaxKind.InternalKeyword:
+                                        return Accessibility.ProtectedOrInternal;
+                                    case SyntaxKind.PrivateKeyword:
+                                        return Accessibility.ProtectedAndInternal;
+                                }
+                            }
+
+                            return Accessibility.Protected;
+                        }
                 }
             }
 
             return Accessibility.NotApplicable;
-        }
-
-        private static Accessibility GetAccessModifier(SyntaxTokenList tokenList, int startIndex, int count, SyntaxKind kind, Accessibility accessModifier)
-        {
-            for (int i = startIndex; i < count; i++)
-            {
-                if (tokenList[i].Kind() == kind)
-                    return Accessibility.ProtectedOrInternal;
-            }
-
-            return accessModifier;
         }
 
         public static SyntaxToken Find(this SyntaxTokenList tokenList, SyntaxKind kind)

@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\RefactoringsTests.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,7 +37,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddMemberToInterface.cs" />
+    <Compile Include="InitializeFieldFromConstructorRefactoring.cs" />
+    <Compile Include="MergeIfWithParentIf.cs" />
     <Compile Include="RemoveUnnecessaryElseClauseRefactoring.cs" />
+    <Compile Include="ReplaceCommentWithDocumentationCommentRefactoring.cs" />
     <Compile Include="ReplaceIfElseWithIfReturnRefactoring.cs" />
     <Compile Include="AddExceptionToDocumentationCommentRefactoring.cs" />
     <Compile Include="AddTypeParameterRefactoring.cs" />
@@ -92,6 +97,8 @@
     <Compile Include="ReplaceForWithWhileRefactoring.cs" />
     <Compile Include="ReplaceIfWithSwitchRefactoring.cs" />
     <Compile Include="GenerateEnumMemberRefactoring.cs" />
+    <Compile Include="ReplaceInterpolatedStringWithConcatenationRefactoring.cs" />
+    <Compile Include="SplitDeclarationAndInitializationRefactoring.cs" />
     <Compile Include="UseCSharp6DictionaryInitializerRefactoring.cs" />
     <Compile Include="UseListInsteadOfYield.cs" />
     <Compile Include="ReplaceObjectCreationWithDefaultValue.cs" />
@@ -230,6 +237,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tests\Tests.csproj">
+      <Project>{6e6106a6-d2bd-4c72-bc8a-5eb37c5a2e42}</Project>
+      <Name>Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
