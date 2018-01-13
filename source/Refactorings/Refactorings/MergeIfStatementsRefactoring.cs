@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -81,6 +82,33 @@ namespace Roslynator.CSharp.Refactorings
                 newStatements = newStatements.RemoveAt(index + 1);
 
             return document.ReplaceStatementsAsync(statementsInfo, newStatements, cancellationToken);
+        }
+
+        private static BinaryExpressionSyntax BinaryExpression(SyntaxKind kind, IEnumerable<ExpressionSyntax> expressions)
+        {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions));
+
+            using (IEnumerator<ExpressionSyntax> en = expressions.GetEnumerator())
+            {
+                if (!en.MoveNext())
+                    throw new ArgumentException("Sequence cannot be empty.", nameof(expressions));
+
+                ExpressionSyntax first = en.Current;
+
+                if (!en.MoveNext())
+                    throw new ArgumentException("Sequence must contain at least two elements.", nameof(expressions));
+
+                BinaryExpressionSyntax binaryExpression = SyntaxFactory.BinaryExpression(
+                    kind,
+                    first.Parenthesize(),
+                    en.Current.Parenthesize());
+
+                while (en.MoveNext())
+                    binaryExpression = SyntaxFactory.BinaryExpression(kind, binaryExpression.Parenthesize(), en.Current.Parenthesize());
+
+                return binaryExpression;
+            }
         }
 
         private static List<StatementSyntax> CreateStatements(ImmutableArray<IfStatementSyntax> ifStatements)
