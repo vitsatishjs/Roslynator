@@ -138,7 +138,7 @@ namespace Roslynator.CSharp.Refactorings
 
                 if (parameterSymbol.HasExplicitDefaultValue)
                 {
-                    ExpressionSyntax defaultValue = parameterSymbol.GetDefaultValueSyntax();
+                    ExpressionSyntax defaultValue = parameterSymbol.GetDefaultValueMinimalSyntax(semanticModel, position);
 
                     if (defaultValue != null)
                         @default = EqualsValueClause(defaultValue.WithSimplifierAnnotation());
@@ -162,7 +162,8 @@ namespace Roslynator.CSharp.Refactorings
                 {
                     accessibility = Accessibility.Internal;
                 }
-                else if (accessibility == Accessibility.Protected)
+                else if (accessibility == Accessibility.Protected
+                    || accessibility == Accessibility.ProtectedAndInternal)
                 {
                     accessibility = Accessibility.Private;
                 }
