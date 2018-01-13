@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -1645,214 +1646,241 @@ namespace Roslynator.CSharp
         #endregion Statement
 
         #region BinaryExpression
+        internal static BinaryExpressionSyntax BinaryExpression(SyntaxKind kind, IEnumerable<ExpressionSyntax> expressions)
+        {
+            if (expressions == null)
+                throw new ArgumentNullException(nameof(expressions));
+
+            using (IEnumerator<ExpressionSyntax> en = expressions.GetEnumerator())
+            {
+                if (!en.MoveNext())
+                    throw new ArgumentException("Sequence cannot be empty.", nameof(expressions));
+
+                ExpressionSyntax first = en.Current;
+
+                if (!en.MoveNext())
+                    throw new ArgumentException("Sequence must contain at least two elements.", nameof(expressions));
+
+                BinaryExpressionSyntax binaryExpression = SyntaxFactory.BinaryExpression(
+                    kind,
+                    first.Parenthesize(),
+                    en.Current.Parenthesize());
+
+                while (en.MoveNext())
+                    binaryExpression = SyntaxFactory.BinaryExpression(kind, binaryExpression.Parenthesize(), en.Current.Parenthesize());
+
+                return binaryExpression;
+            }
+        }
+
         public static BinaryExpressionSyntax AddExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.AddExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.AddExpression, left, right);
         }
 
         public static BinaryExpressionSyntax AddExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.AddExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.AddExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax SubtractExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.SubtractExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.SubtractExpression, left, right);
         }
 
         public static BinaryExpressionSyntax SubtractExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.SubtractExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.SubtractExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax MultiplyExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.MultiplyExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.MultiplyExpression, left, right);
         }
 
         public static BinaryExpressionSyntax MultiplyExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.MultiplyExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.MultiplyExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax DivideExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.DivideExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.DivideExpression, left, right);
         }
 
         public static BinaryExpressionSyntax DivideExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.DivideExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.DivideExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax ModuloExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.ModuloExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.ModuloExpression, left, right);
         }
 
         public static BinaryExpressionSyntax ModuloExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.ModuloExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.ModuloExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax LeftShiftExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LeftShiftExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LeftShiftExpression, left, right);
         }
 
         public static BinaryExpressionSyntax LeftShiftExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LeftShiftExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LeftShiftExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax RightShiftExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.RightShiftExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.RightShiftExpression, left, right);
         }
 
         public static BinaryExpressionSyntax RightShiftExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.RightShiftExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.RightShiftExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax LogicalOrExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LogicalOrExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LogicalOrExpression, left, right);
         }
 
         public static BinaryExpressionSyntax LogicalOrExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LogicalOrExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LogicalOrExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax LogicalAndExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LogicalAndExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, left, right);
         }
 
         public static BinaryExpressionSyntax LogicalAndExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LogicalAndExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax BitwiseOrExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.BitwiseOrExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseOrExpression, left, right);
         }
 
         public static BinaryExpressionSyntax BitwiseOrExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.BitwiseOrExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseOrExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax BitwiseAndExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.BitwiseAndExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseAndExpression, left, right);
         }
 
         public static BinaryExpressionSyntax BitwiseAndExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.BitwiseAndExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.BitwiseAndExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax ExclusiveOrExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.ExclusiveOrExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.ExclusiveOrExpression, left, right);
         }
 
         public static BinaryExpressionSyntax ExclusiveOrExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.ExclusiveOrExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.ExclusiveOrExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax EqualsExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.EqualsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax EqualsExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.EqualsExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax NotEqualsExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.NotEqualsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax NotEqualsExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.NotEqualsExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax LessThanExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LessThanExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LessThanExpression, left, right);
         }
 
         public static BinaryExpressionSyntax LessThanExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LessThanExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LessThanExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax LessThanOrEqualExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LessThanOrEqualExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LessThanOrEqualExpression, left, right);
         }
 
         public static BinaryExpressionSyntax LessThanOrEqualExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.LessThanOrEqualExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.LessThanOrEqualExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax GreaterThanExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.GreaterThanExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.GreaterThanExpression, left, right);
         }
 
         public static BinaryExpressionSyntax GreaterThanExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.GreaterThanExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.GreaterThanExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax GreaterThanOrEqualExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.GreaterThanOrEqualExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.GreaterThanOrEqualExpression, left, right);
         }
 
         public static BinaryExpressionSyntax GreaterThanOrEqualExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.GreaterThanOrEqualExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.GreaterThanOrEqualExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax IsExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.IsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.IsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax IsExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.IsExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.IsExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax AsExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.AsExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.AsExpression, left, right);
         }
 
         public static BinaryExpressionSyntax AsExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.AsExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.AsExpression, left, operatorToken, right);
         }
 
         public static BinaryExpressionSyntax CoalesceExpression(ExpressionSyntax left, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.CoalesceExpression, left, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.CoalesceExpression, left, right);
         }
 
         public static BinaryExpressionSyntax CoalesceExpression(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
         {
-            return BinaryExpression(SyntaxKind.CoalesceExpression, left, operatorToken, right);
+            return SyntaxFactory.BinaryExpression(SyntaxKind.CoalesceExpression, left, operatorToken, right);
         }
         #endregion BinaryExpression
 
