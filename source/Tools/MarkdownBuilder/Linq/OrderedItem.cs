@@ -48,11 +48,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedItem;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendOrderedItem(Number, TextOrElements());
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteOrderedItem(Number, TextOrElements());

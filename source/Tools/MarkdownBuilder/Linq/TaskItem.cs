@@ -34,18 +34,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.TaskItem;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (IsCompleted)
-            {
-                return builder.AppendCompletedTaskItem(TextOrElements());
-            }
-            else
-            {
-                return builder.AppendTaskItem(TextOrElements());
-            }
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             if (IsCompleted)

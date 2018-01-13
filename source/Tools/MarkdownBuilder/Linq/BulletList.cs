@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class BulletList : List
+    public class BulletList : MList
     {
         public BulletList()
         {
@@ -24,18 +24,6 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public override MarkdownKind Kind => MarkdownKind.List;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (content is string s)
-            {
-                return builder.AppendBulletItem(s).AppendLine();
-            }
-            else
-            {
-                return builder.AppendBulletItems(Elements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

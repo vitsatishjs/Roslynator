@@ -37,6 +37,36 @@ namespace Pihrtsoft.Markdown
 
         public bool CloseOutput { get; }
 
+        internal BulletListStyle BulletListStyle => Format.BulletListStyle;
+
+        internal OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
+
+        internal bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
+
+        internal bool AddEmptyLineAfterHeading => Format.EmptyLineAfterHeading;
+
+        internal bool AddEmptyLineBeforeCodeBlock => Format.EmptyLineBeforeCodeBlock;
+
+        internal bool AddEmptyLineAfterCodeBlock => Format.EmptyLineAfterCodeBlock;
+
+        internal TableOptions TableOptions => Format.TableOptions;
+
+        internal bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
+
+        internal bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
+
+        internal bool TableOuterDelimiter => Format.TableOuterDelimiter;
+
+        internal bool TablePadding => Format.TablePadding;
+
+        internal bool UnderlineHeading1 => Format.UnderlineHeading1;
+
+        internal bool UnderlineHeading2 => Format.UnderlineHeading2;
+
+        internal bool CloseHeading => Format.CloseHeading;
+
+        internal HeadingStyle HeadingStyle => Format.HeadingStyle;
+
         internal static MarkdownWriterSettings From(MarkdownFormat format)
         {
             if (format == null

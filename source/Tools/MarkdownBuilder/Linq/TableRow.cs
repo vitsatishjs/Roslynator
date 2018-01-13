@@ -27,11 +27,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override bool AllowStringConcatenation => false;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendTableRow(this);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteTableRow(this);

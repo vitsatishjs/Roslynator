@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
@@ -23,7 +25,7 @@ namespace Pihrtsoft.Markdown
             _buffer = new char[BufferSize];
         }
 
-        protected override int Length { get; set; }
+        protected internal override int Length { get; set; }
 
         protected override void WriteCore(string value)
         {
@@ -59,6 +61,41 @@ namespace Pihrtsoft.Markdown
             Length++;
         }
 
+        protected override void WriteCore(int value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(uint value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(long value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(ulong value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(float value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(double value)
+        {
+            _writer.Write(value);
+        }
+
+        protected override void WriteCore(decimal value)
+        {
+            _writer.Write(value);
+        }
+
         public override void Close()
         {
             try
@@ -79,6 +116,11 @@ namespace Pihrtsoft.Markdown
                     _writer = null;
                 }
             }
+        }
+
+        protected override List<TableColumnInfo> MeasureTable(IEnumerable<MElement> rows)
+        {
+            return TableMeasurer.Measure(rows, Settings, _writer.FormatProvider);
         }
     }
 }

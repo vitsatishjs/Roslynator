@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("Alignment = {Alignment} Width = {Width} IsWhiteSpace = {IsWhiteSpace}")]
-    internal struct TableColumnInfo : IEquatable<TableColumnInfo>
+    public struct TableColumnInfo : IEquatable<TableColumnInfo>
     {
         public TableColumnInfo(Alignment alignment, int width, bool isWhiteSpace)
         {
@@ -21,7 +21,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         public int Width { get; }
 
-        public TableColumnInfo UpdateWidthIfGreater(int newWidth)
+        internal TableColumnInfo UpdateWidthIfGreater(int newWidth)
         {
             if (newWidth > Width)
             {
@@ -33,26 +33,14 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public static TableColumnInfo Create(MElement element)
+        internal static TableColumnInfo Create(MElement element)
         {
             Alignment alignment = (element as TableColumn)?.Alignment ?? Alignment.Left;
 
             return new TableColumnInfo(alignment, 0, true);
         }
 
-        public static TableColumnInfo Create(MElement element, MarkdownBuilder mb, int index = 0)
-        {
-            Alignment alignment = (element as TableColumn)?.Alignment ?? Alignment.Left;
-
-            int length = mb.Length - index;
-
-            return new TableColumnInfo(
-                alignment,
-                length,
-                TextUtility.IsWhiteSpace(mb.StringBuilder, index, length));
-        }
-
-        public static TableColumnInfo Create(MElement element, MarkdownStringWriter writer, int index = 0)
+        internal static TableColumnInfo Create(MElement element, MarkdownStringWriter writer, int index = 0)
         {
             Alignment alignment = (element as TableColumn)?.Alignment ?? Alignment.Left;
 

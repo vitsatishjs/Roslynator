@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class OrderedList : List
+    public class OrderedList : MList
     {
         public OrderedList()
         {
@@ -24,18 +24,6 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public override MarkdownKind Kind => MarkdownKind.OrderedList;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (content is string s)
-            {
-                return builder.AppendOrderedItem(1, s).AppendLine();
-            }
-            else
-            {
-                return builder.AppendOrderedItems(Elements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

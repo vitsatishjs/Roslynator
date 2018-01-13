@@ -34,11 +34,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.TableColumn;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.Append(TextOrElements());
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.Write(TextOrElements());

@@ -14,11 +14,6 @@ namespace Pihrtsoft.Markdown.Linq
         {
         }
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendImage(Text, Url, Title);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteImage(Text, Url, Title);

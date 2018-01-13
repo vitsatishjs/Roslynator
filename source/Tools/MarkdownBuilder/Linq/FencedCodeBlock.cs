@@ -31,11 +31,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         private string InfoDebuggerDisplay => (!string.IsNullOrEmpty(Info)) ? " " + Info : "";
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendFencedCodeBlock(Text, Info);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteFencedCodeBlock(Text, Info);

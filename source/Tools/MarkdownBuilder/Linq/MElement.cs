@@ -44,8 +44,6 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public abstract MarkdownBuilder AppendTo(MarkdownBuilder builder);
-
         public abstract MarkdownWriter WriteTo(MarkdownWriter writer);
 
         internal abstract MElement Clone();

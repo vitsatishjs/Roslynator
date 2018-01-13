@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TaskList : List
+    public class TaskList : MList
     {
         public TaskList()
         {
@@ -24,18 +24,6 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public override MarkdownKind Kind => MarkdownKind.TaskList;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (content is string s)
-            {
-                return builder.AppendTaskItem(s).AppendLine();
-            }
-            else
-            {
-                return builder.AppendTaskItems(Elements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

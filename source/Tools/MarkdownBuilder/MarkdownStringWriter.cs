@@ -1,24 +1,28 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
+using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
     internal class MarkdownStringWriter : MarkdownWriter
     {
         private bool _isOpen;
+        private readonly IFormatProvider _formatProvider;
 
-        public MarkdownStringWriter(StringBuilder sb = null, MarkdownWriterSettings settings = null)
+        public MarkdownStringWriter(IFormatProvider formatProvider, StringBuilder stringBuilder = null, MarkdownWriterSettings settings = null)
             : base(settings)
         {
-            StringBuilder = sb ?? new StringBuilder();
+            _formatProvider = formatProvider ?? throw new ArgumentNullException(nameof(formatProvider));
+            StringBuilder = stringBuilder ?? new StringBuilder();
             _isOpen = true;
         }
 
         public StringBuilder StringBuilder { get; }
 
-        protected override int Length
+        protected internal override int Length
         {
             get { return StringBuilder.Length; }
             set { StringBuilder.Length = value; }
@@ -53,19 +57,53 @@ namespace Pihrtsoft.Markdown
 
         public override void Close()
         {
-            Dispose(true);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
             _isOpen = false;
-            base.Dispose(disposing);
         }
 
-        public void Clear()
+        internal override void Reset()
         {
             StringBuilder.Clear();
-            ResetState();
+            base.Reset();
+        }
+
+        protected override void WriteCore(int value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(uint value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(long value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(ulong value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(float value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(double value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override void WriteCore(decimal value)
+        {
+            StringBuilder.Append(value.ToString(_formatProvider));
+        }
+
+        protected override List<TableColumnInfo> MeasureTable(IEnumerable<MElement> rows)
+        {
+            throw new InvalidOperationException();
         }
     }
 }

@@ -13,7 +13,8 @@ namespace Pihrtsoft.Markdown.Linq
         {
         }
 
-        public MDocument(params object[] content) : base(content)
+        public MDocument(params object[] content)
+            : base(content)
         {
         }
 
@@ -23,11 +24,6 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public override MarkdownKind Kind => MarkdownKind.Document;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.Append(TextOrElements());
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

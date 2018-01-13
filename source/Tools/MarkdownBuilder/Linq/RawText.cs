@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
+    //TODO: MRaw
     [DebuggerDisplay("{Kind} {Value,nq}")]
     public class RawText : MElement
     {
@@ -30,11 +31,6 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public override MarkdownKind Kind => MarkdownKind.RawText;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.Append(Value, escape: false);
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

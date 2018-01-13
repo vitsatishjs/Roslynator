@@ -2,23 +2,23 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public abstract class List : MContainer
+    public abstract class MList : MContainer
     {
-        protected List()
+        protected MList()
         {
         }
 
-        protected List(object content)
+        protected MList(object content)
             : base(content)
         {
         }
 
-        protected List(params object[] content)
+        protected MList(params object[] content)
             : base(content)
         {
         }
 
-        protected List(List other)
+        protected MList(MList other)
             : base(other)
         {
         }
