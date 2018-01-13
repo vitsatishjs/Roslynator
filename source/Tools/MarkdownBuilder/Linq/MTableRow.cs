@@ -2,23 +2,23 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TableRow : MContainer
+    public class MTableRow : MContainer
     {
-        public TableRow()
+        public MTableRow()
         {
         }
 
-        public TableRow(object content)
+        public MTableRow(object content)
             : base(content)
         {
         }
 
-        public TableRow(params object[] content)
+        public MTableRow(params object[] content)
             : base(content)
         {
         }
 
-        public TableRow(TableRow other)
+        public MTableRow(MTableRow other)
             : base(other)
         {
         }
@@ -34,7 +34,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new TableRow(this);
+            return new MTableRow(this);
         }
 
         internal override void ValidateElement(MElement element)

@@ -406,7 +406,7 @@ namespace Pihrtsoft.Markdown
 
             foreach (MElement element in content)
             {
-                if (element is BulletItem item)
+                if (element is MBulletItem item)
                 {
                     WriteBulletItem(item.TextOrElements());
                 }
@@ -429,7 +429,7 @@ namespace Pihrtsoft.Markdown
             {
                 MElement element = content[i];
 
-                if (element is BulletItem item)
+                if (element is MBulletItem item)
                 {
                     WriteOrderedItem(i + 1, item.TextOrElements());
                 }
@@ -451,7 +451,7 @@ namespace Pihrtsoft.Markdown
             int number = 1;
             foreach (MElement element in content)
             {
-                if (element is BulletItem item)
+                if (element is MBulletItem item)
                 {
                     WriteOrderedItem(number, item.TextOrElements());
                 }
@@ -479,7 +479,7 @@ namespace Pihrtsoft.Markdown
 
             foreach (MElement element in content)
             {
-                if (element is BulletItem item)
+                if (element is MBulletItem item)
                 {
                     WriteTaskItem(item.TextOrElements());
                 }
@@ -711,7 +711,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteTable(IEnumerable<MElement> rows)
         {
-            List<TableColumnInfo> columns = MeasureTable(rows);
+            List<TableColumnInfo> columns = AnalyzeTable(rows);
 
             if (columns == null)
                 return this;
@@ -733,7 +733,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        protected abstract List<TableColumnInfo> MeasureTable(IEnumerable<MElement> rows);
+        protected abstract List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows);
 
         internal void WriteTableHeader(MElement content, IList<TableColumnInfo> columns)
         {

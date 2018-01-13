@@ -2,37 +2,37 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class BlockQuote : MBlockContainer
+    public class MItalic : MInlineContainer
     {
-        public BlockQuote()
+        public MItalic()
         {
         }
 
-        public BlockQuote(object content)
+        public MItalic(object content)
             : base(content)
         {
         }
 
-        public BlockQuote(params object[] content)
+        public MItalic(params object[] content)
             : base(content)
         {
         }
 
-        public BlockQuote(BlockQuote other)
+        public MItalic(MItalic other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.BlockQuote;
+        public override MarkdownKind Kind => MarkdownKind.Italic;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteBlockQuote(TextOrElements());
+            return writer.WriteItalic(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new BlockQuote(this);
+            return new MItalic(this);
         }
     }
 }

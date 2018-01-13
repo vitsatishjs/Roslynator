@@ -101,7 +101,7 @@ namespace Pihrtsoft.Markdown
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override List<TableColumnInfo> MeasureTable(IEnumerable<MElement> rows)
+        protected override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
             throw new InvalidOperationException();
         }

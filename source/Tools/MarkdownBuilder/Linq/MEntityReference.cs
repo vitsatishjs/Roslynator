@@ -6,16 +6,16 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Name}")]
-    public class EntityReference : MElement
+    public class MEntityReference : MElement
     {
         private string _name;
 
-        public EntityReference(string name)
+        public MEntityReference(string name)
             : this(name, isTrustedName: false)
         {
         }
 
-        private EntityReference(string name, bool isTrustedName)
+        private MEntityReference(string name, bool isTrustedName)
         {
             if (isTrustedName)
             {
@@ -27,7 +27,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public EntityReference(EntityReference other)
+        public MEntityReference(MEntityReference other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -54,26 +54,26 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new EntityReference(this);
+            return new MEntityReference(this);
         }
 
-        private static EntityReference CreateTrusted(string name)
+        private static MEntityReference CreateTrusted(string name)
         {
-            return new EntityReference(name, isTrustedName: true);
+            return new MEntityReference(name, isTrustedName: true);
         }
 
-        public static EntityReference NonBreakingSpace() => CreateTrusted("nbsp");
+        public static MEntityReference NonBreakingSpace() => CreateTrusted("nbsp");
 
-        public static EntityReference LessThan() => CreateTrusted("lt");
+        public static MEntityReference LessThan() => CreateTrusted("lt");
 
-        public static EntityReference GreaterThan() => CreateTrusted("gt");
+        public static MEntityReference GreaterThan() => CreateTrusted("gt");
 
-        public static EntityReference Ampersand() => CreateTrusted("amp");
+        public static MEntityReference Ampersand() => CreateTrusted("amp");
 
-        public static EntityReference DoubleQuotationMark() => CreateTrusted("quot");
+        public static MEntityReference DoubleQuotationMark() => CreateTrusted("quot");
 
-        public static EntityReference RegisteredTrademark() => CreateTrusted("reg");
+        public static MEntityReference RegisteredTrademark() => CreateTrusted("reg");
 
-        public static EntityReference Copyright() => CreateTrusted("copy");
+        public static MEntityReference Copyright() => CreateTrusted("copy");
     }
 }

@@ -2,44 +2,44 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class BulletList : MList
+    public class MOrderedList : MList
     {
-        public BulletList()
+        public MOrderedList()
         {
         }
 
-        public BulletList(object content)
+        public MOrderedList(object content)
             : base(content)
         {
         }
 
-        public BulletList(params object[] content)
+        public MOrderedList(params object[] content)
             : base(content)
         {
         }
 
-        public BulletList(BulletList other)
+        public MOrderedList(MOrderedList other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.List;
+        public override MarkdownKind Kind => MarkdownKind.OrderedList;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             if (content is string s)
             {
-                return writer.WriteBulletItem(s).WriteLine();
+                return writer.WriteOrderedItem(1, s).WriteLine();
             }
             else
             {
-                return writer.WriteBulletItems(Elements());
+                return writer.WriteOrderedItems(Elements());
             }
         }
 
         internal override MElement Clone()
         {
-            return new BulletList(this);
+            return new MOrderedList(this);
         }
     }
 }

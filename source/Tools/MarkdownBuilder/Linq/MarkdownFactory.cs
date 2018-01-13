@@ -28,74 +28,74 @@ namespace Pihrtsoft.Markdown.Linq
             return new MDocument(other);
         }
 
-        public static RawText RawText(string text)
+        public static MRaw RawText(string text)
         {
-            return new RawText(text);
+            return new MRaw(text);
         }
 
-        public static RawText RawText(RawText other)
+        public static MRaw RawText(MRaw other)
         {
-            return new RawText(other);
+            return new MRaw(other);
         }
 
-        public static Bold Bold()
+        public static MBold Bold()
         {
-            return new Bold();
+            return new MBold();
         }
 
-        public static Bold Bold(object content)
+        public static MBold Bold(object content)
         {
-            return new Bold(content);
+            return new MBold(content);
         }
 
-        public static Bold Bold(params object[] content)
+        public static MBold Bold(params object[] content)
         {
-            return new Bold(content);
+            return new MBold(content);
         }
 
-        public static Bold Bold(Bold other)
+        public static MBold Bold(MBold other)
         {
-            return new Bold(other);
+            return new MBold(other);
         }
 
-        public static Italic Italic()
+        public static MItalic Italic()
         {
-            return new Italic();
+            return new MItalic();
         }
 
-        public static Italic Italic(object content)
+        public static MItalic Italic(object content)
         {
-            return new Italic(content);
+            return new MItalic(content);
         }
 
-        public static Italic Italic(params object[] content)
+        public static MItalic Italic(params object[] content)
         {
-            return new Italic(content);
+            return new MItalic(content);
         }
 
-        public static Italic Italic(Italic other)
+        public static MItalic Italic(MItalic other)
         {
-            return new Italic(other);
+            return new MItalic(other);
         }
 
-        public static Strikethrough Strikethrough()
+        public static MStrikethrough Strikethrough()
         {
-            return new Strikethrough();
+            return new MStrikethrough();
         }
 
-        public static Strikethrough Strikethrough(object content)
+        public static MStrikethrough Strikethrough(object content)
         {
-            return new Strikethrough(content);
+            return new MStrikethrough(content);
         }
 
-        public static Strikethrough Strikethrough(params object[] content)
+        public static MStrikethrough Strikethrough(params object[] content)
         {
-            return new Strikethrough(content);
+            return new MStrikethrough(content);
         }
 
-        public static Strikethrough Strikethrough(Strikethrough other)
+        public static MStrikethrough Strikethrough(MStrikethrough other)
         {
-            return new Strikethrough(other);
+            return new MStrikethrough(other);
         }
 
         public static MInlineContainer BoldItalic(object content)
@@ -108,14 +108,14 @@ namespace Pihrtsoft.Markdown.Linq
             return Bold(Italic(content));
         }
 
-        public static InlineCode InlineCode(string text)
+        public static MInlineCode InlineCode(string text)
         {
-            return new InlineCode(text);
+            return new MInlineCode(text);
         }
 
-        public static InlineCode InlineCode(InlineCode other)
+        public static MInlineCode InlineCode(MInlineCode other)
         {
-            return new InlineCode(other);
+            return new MInlineCode(other);
         }
 
         public static MInlineContainer Inline()
@@ -167,259 +167,259 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public static Heading Heading(int level)
+        public static MHeading Heading(int level)
         {
-            return new Heading(level);
+            return new MHeading(level);
         }
 
-        public static Heading Heading(int level, object content)
+        public static MHeading Heading(int level, object content)
         {
-            return new Heading(level, content);
+            return new MHeading(level, content);
         }
 
-        public static Heading Heading(int level, params object[] content)
+        public static MHeading Heading(int level, params object[] content)
         {
-            return new Heading(level, content);
+            return new MHeading(level, content);
         }
 
-        public static Heading Heading(Heading other)
+        public static MHeading Heading(MHeading other)
         {
-            return new Heading(other);
+            return new MHeading(other);
         }
 
-        public static Heading Heading1()
+        public static MHeading Heading1()
         {
             return Heading(1);
         }
 
-        public static Heading Heading1(object content)
+        public static MHeading Heading1(object content)
         {
             return Heading(1, content);
         }
 
-        public static Heading Heading1(params object[] content)
+        public static MHeading Heading1(params object[] content)
         {
             return Heading(1, content);
         }
 
-        public static Heading Heading2()
+        public static MHeading Heading2()
         {
             return Heading(2);
         }
 
-        public static Heading Heading2(object content)
+        public static MHeading Heading2(object content)
         {
             return Heading(2, content);
         }
 
-        public static Heading Heading2(params object[] content)
+        public static MHeading Heading2(params object[] content)
         {
             return Heading(2, content);
         }
 
-        public static Heading Heading3()
+        public static MHeading Heading3()
         {
             return Heading(3);
         }
 
-        public static Heading Heading3(object content)
+        public static MHeading Heading3(object content)
         {
             return Heading(3, content);
         }
 
-        public static Heading Heading3(params object[] content)
+        public static MHeading Heading3(params object[] content)
         {
             return Heading(3, content);
         }
 
-        public static Heading Heading4()
+        public static MHeading Heading4()
         {
             return Heading(4);
         }
 
-        public static Heading Heading4(object content)
+        public static MHeading Heading4(object content)
         {
             return Heading(4, content);
         }
 
-        public static Heading Heading4(params object[] content)
+        public static MHeading Heading4(params object[] content)
         {
             return Heading(4, content);
         }
 
-        public static Heading Heading5()
+        public static MHeading Heading5()
         {
             return Heading(5);
         }
 
-        public static Heading Heading5(object content)
+        public static MHeading Heading5(object content)
         {
             return Heading(5, content);
         }
 
-        public static Heading Heading5(params object[] content)
+        public static MHeading Heading5(params object[] content)
         {
             return Heading(5, content);
         }
 
-        public static Heading Heading6()
+        public static MHeading Heading6()
         {
             return Heading(6);
         }
 
-        public static Heading Heading6(object content)
+        public static MHeading Heading6(object content)
         {
             return Heading(6, content);
         }
 
-        public static Heading Heading6(params object[] content)
+        public static MHeading Heading6(params object[] content)
         {
             return Heading(6, content);
         }
 
-        public static BulletItem BulletItem()
+        public static MBulletItem BulletItem()
         {
-            return new BulletItem();
+            return new MBulletItem();
         }
 
-        public static BulletItem BulletItem(object content)
+        public static MBulletItem BulletItem(object content)
         {
-            return new BulletItem(content);
+            return new MBulletItem(content);
         }
 
-        public static BulletItem BulletItem(params object[] content)
+        public static MBulletItem BulletItem(params object[] content)
         {
-            return new BulletItem(content);
+            return new MBulletItem(content);
         }
 
-        public static BulletItem BulletItem(BulletItem other)
+        public static MBulletItem BulletItem(MBulletItem other)
         {
-            return new BulletItem(other);
+            return new MBulletItem(other);
         }
 
-        public static OrderedItem OrderedItem(int number)
+        public static MOrderedItem OrderedItem(int number)
         {
-            return new OrderedItem(number);
+            return new MOrderedItem(number);
         }
 
-        public static OrderedItem OrderedItem(int number, object content)
+        public static MOrderedItem OrderedItem(int number, object content)
         {
-            return new OrderedItem(number, content);
+            return new MOrderedItem(number, content);
         }
 
-        public static OrderedItem OrderedItem(int number, params object[] content)
+        public static MOrderedItem OrderedItem(int number, params object[] content)
         {
-            return new OrderedItem(number, content);
+            return new MOrderedItem(number, content);
         }
 
-        public static OrderedItem OrderedItem(OrderedItem other)
+        public static MOrderedItem OrderedItem(MOrderedItem other)
         {
-            return new OrderedItem(other);
+            return new MOrderedItem(other);
         }
 
-        public static TaskItem TaskItem(bool isCompleted)
+        public static MTaskItem TaskItem(bool isCompleted)
         {
-            return new TaskItem(isCompleted);
+            return new MTaskItem(isCompleted);
         }
 
-        public static TaskItem TaskItem(bool isCompleted, object content)
+        public static MTaskItem TaskItem(bool isCompleted, object content)
         {
-            return new TaskItem(isCompleted, content);
+            return new MTaskItem(isCompleted, content);
         }
 
-        public static TaskItem TaskItem(bool isCompleted, params object[] content)
+        public static MTaskItem TaskItem(bool isCompleted, params object[] content)
         {
-            return new TaskItem(isCompleted, content);
+            return new MTaskItem(isCompleted, content);
         }
 
-        public static TaskItem TaskItem(TaskItem other)
+        public static MTaskItem TaskItem(MTaskItem other)
         {
-            return new TaskItem(other);
+            return new MTaskItem(other);
         }
 
-        public static TaskItem CompletedTaskItem()
+        public static MTaskItem CompletedTaskItem()
         {
             return TaskItem(isCompleted: true);
         }
 
-        public static TaskItem CompletedTaskItem(object content)
+        public static MTaskItem CompletedTaskItem(object content)
         {
             return TaskItem(isCompleted: true, content: content);
         }
 
-        public static TaskItem CompletedTaskItem(params object[] content)
+        public static MTaskItem CompletedTaskItem(params object[] content)
         {
             return TaskItem(isCompleted: true, content: content);
         }
 
-        public static BulletList List()
+        public static MBulletList List()
         {
-            return new BulletList();
+            return new MBulletList();
         }
 
-        public static BulletList List(object content)
+        public static MBulletList List(object content)
         {
-            return new BulletList(content);
+            return new MBulletList(content);
         }
 
-        public static BulletList List(params object[] content)
+        public static MBulletList List(params object[] content)
         {
-            return new BulletList(content);
+            return new MBulletList(content);
         }
 
-        public static BulletList List(BulletList other)
+        public static MBulletList List(MBulletList other)
         {
-            return new BulletList(other);
+            return new MBulletList(other);
         }
 
-        public static OrderedList OrderedList(int number)
+        public static MOrderedList OrderedList(int number)
         {
-            return new OrderedList(number);
+            return new MOrderedList(number);
         }
 
-        public static OrderedList OrderedList(int number, object content)
+        public static MOrderedList OrderedList(int number, object content)
         {
-            return new OrderedList(number, content);
+            return new MOrderedList(number, content);
         }
 
-        public static OrderedList OrderedList(int number, params object[] content)
+        public static MOrderedList OrderedList(int number, params object[] content)
         {
-            return new OrderedList(number, content);
+            return new MOrderedList(number, content);
         }
 
-        public static OrderedList OrderedList(OrderedList other)
+        public static MOrderedList OrderedList(MOrderedList other)
         {
-            return new OrderedList(other);
+            return new MOrderedList(other);
         }
 
-        public static TaskList TaskList(bool isCompleted)
+        public static MTaskList TaskList(bool isCompleted)
         {
-            return new TaskList(isCompleted);
+            return new MTaskList(isCompleted);
         }
 
-        public static TaskList TaskList(bool isCompleted, object content)
+        public static MTaskList TaskList(bool isCompleted, object content)
         {
-            return new TaskList(isCompleted, content);
+            return new MTaskList(isCompleted, content);
         }
 
-        public static TaskList TaskList(bool isCompleted, params object[] content)
+        public static MTaskList TaskList(bool isCompleted, params object[] content)
         {
-            return new TaskList(isCompleted, content);
+            return new MTaskList(isCompleted, content);
         }
 
-        public static TaskList TaskList(TaskList other)
+        public static MTaskList TaskList(MTaskList other)
         {
-            return new TaskList(other);
+            return new MTaskList(other);
         }
 
-        public static Image Image(string text, string url, string title = null)
+        public static MImage Image(string text, string url, string title = null)
         {
-            return new Image(text, url, title);
+            return new MImage(text, url, title);
         }
 
-        public static Link Link(string text, string url, string title = null)
+        public static MLink Link(string text, string url, string title = null)
         {
-            return new Link(text, url, title);
+            return new MLink(text, url, title);
         }
 
         public static MElement LinkOrText(string text, string url = null, string title = null)
@@ -427,112 +427,112 @@ namespace Pihrtsoft.Markdown.Linq
             if (string.IsNullOrEmpty(url))
                 return new MText(text);
 
-            return new Link(text, url, title);
+            return new MLink(text, url, title);
         }
 
-        public static FencedCodeBlock FencedCodeBlock(string value, string info = null)
+        public static MFencedCodeBlock FencedCodeBlock(string value, string info = null)
         {
-            return new FencedCodeBlock(value, info);
+            return new MFencedCodeBlock(value, info);
         }
 
-        public static IndentedCodeBlock IndentedCodeBlock(string value)
+        public static MIndentedCodeBlock IndentedCodeBlock(string value)
         {
-            return new IndentedCodeBlock(value);
+            return new MIndentedCodeBlock(value);
         }
 
-        public static BlockQuote BlockQuote()
+        public static MBlockQuote BlockQuote()
         {
-            return new BlockQuote();
+            return new MBlockQuote();
         }
 
-        public static BlockQuote BlockQuote(object content)
+        public static MBlockQuote BlockQuote(object content)
         {
-            return new BlockQuote(content);
+            return new MBlockQuote(content);
         }
 
-        public static BlockQuote BlockQuote(params object[] content)
+        public static MBlockQuote BlockQuote(params object[] content)
         {
-            return new BlockQuote(content);
+            return new MBlockQuote(content);
         }
 
-        public static BlockQuote BlockQuote(BlockQuote other)
+        public static MBlockQuote BlockQuote(MBlockQuote other)
         {
-            return new BlockQuote(other);
+            return new MBlockQuote(other);
         }
 
-        public static HorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
+        public static MHorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
         {
-            return new HorizontalRule(style, count, space);
+            return new MHorizontalRule(style, count, space);
         }
 
-        public static CharReference CharReference(int number)
+        public static MCharReference CharReference(int number)
         {
-            return new CharReference(number);
+            return new MCharReference(number);
         }
 
-        public static EntityReference EntityReference(string name)
+        public static MEntityReference EntityReference(string name)
         {
-            return new EntityReference(name);
+            return new MEntityReference(name);
         }
 
-        public static Table Table()
+        public static MTable Table()
         {
-            return new Table();
+            return new MTable();
         }
 
-        public static Table Table(object content)
+        public static MTable Table(object content)
         {
-            return new Table(content);
+            return new MTable(content);
         }
 
-        public static Table Table(params object[] content)
+        public static MTable Table(params object[] content)
         {
-            return new Table(content);
+            return new MTable(content);
         }
 
-        public static Table Table(Table other)
+        public static MTable Table(MTable other)
         {
-            return new Table(other);
+            return new MTable(other);
         }
 
-        public static TableColumn TableColumn(Alignment alignment)
+        public static MTableColumn TableColumn(Alignment alignment)
         {
-            return new TableColumn(alignment);
+            return new MTableColumn(alignment);
         }
 
-        public static TableColumn TableColumn(Alignment alignment, object content)
+        public static MTableColumn TableColumn(Alignment alignment, object content)
         {
-            return new TableColumn(alignment, content);
+            return new MTableColumn(alignment, content);
         }
 
-        public static TableColumn TableColumn(Alignment alignment, params object[] content)
+        public static MTableColumn TableColumn(Alignment alignment, params object[] content)
         {
-            return new TableColumn(alignment, content);
+            return new MTableColumn(alignment, content);
         }
 
-        public static TableColumn TableColumn(TableColumn other)
+        public static MTableColumn TableColumn(MTableColumn other)
         {
-            return new TableColumn(other);
+            return new MTableColumn(other);
         }
 
-        public static TableRow TableRow()
+        public static MTableRow TableRow()
         {
-            return new TableRow();
+            return new MTableRow();
         }
 
-        public static TableRow TableRow(object content)
+        public static MTableRow TableRow(object content)
         {
-            return new TableRow(content);
+            return new MTableRow(content);
         }
 
-        public static TableRow TableRow(params object[] content)
+        public static MTableRow TableRow(params object[] content)
         {
-            return new TableRow(content);
+            return new MTableRow(content);
         }
 
-        public static TableRow TableRow(TableRow other)
+        public static MTableRow TableRow(MTableRow other)
         {
-            return new TableRow(other);
+            return new MTableRow(other);
         }
 
         internal static string StrikethroughDelimiter => "~~";

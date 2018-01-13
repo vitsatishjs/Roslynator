@@ -5,28 +5,28 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Level} {GetString(),nq}")]
-    public class Heading : MContainer
+    public class MHeading : MContainer
     {
         private int _level;
 
-        public Heading(int level)
+        public MHeading(int level)
         {
             Level = level;
         }
 
-        public Heading(int level, object content)
+        public MHeading(int level, object content)
             : base(content)
         {
             Level = level;
         }
 
-        public Heading(int level, params object[] content)
+        public MHeading(int level, params object[] content)
             : base(content)
         {
             Level = level;
         }
 
-        public Heading(Heading other)
+        public MHeading(MHeading other)
             : base(other)
         {
             Level = other.Level;
@@ -51,7 +51,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Heading(this);
+            return new MHeading(this);
         }
     }
 }

@@ -2,37 +2,44 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Italic : MInlineContainer
+    public class MTaskList : MList
     {
-        public Italic()
+        public MTaskList()
         {
         }
 
-        public Italic(object content)
+        public MTaskList(object content)
             : base(content)
         {
         }
 
-        public Italic(params object[] content)
+        public MTaskList(params object[] content)
             : base(content)
         {
         }
 
-        public Italic(Italic other)
+        public MTaskList(MTaskList other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Italic;
+        public override MarkdownKind Kind => MarkdownKind.TaskList;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteItalic(TextOrElements());
+            if (content is string s)
+            {
+                return writer.WriteTaskItem(s).WriteLine();
+            }
+            else
+            {
+                return writer.WriteTaskItems(Elements());
+            }
         }
 
         internal override MElement Clone()
         {
-            return new Italic(this);
+            return new MTaskList(this);
         }
     }
 }

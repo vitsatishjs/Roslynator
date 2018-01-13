@@ -6,18 +6,18 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
-    public class Link : MElement
+    public class MLink : MElement
     {
         private string _url;
 
-        public Link(string text, string url, string title = null)
+        public MLink(string text, string url, string title = null)
         {
             Text = text;
             Url = url;
             Title = title;
         }
 
-        public Link(Link other)
+        public MLink(MLink other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -54,7 +54,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Link(this);
+            return new MLink(this);
         }
     }
 }

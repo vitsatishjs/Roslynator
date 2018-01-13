@@ -5,26 +5,26 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Alignment} {GetString(),nq}")]
-    public class TableColumn : MContainer
+    public class MTableColumn : MContainer
     {
-        public TableColumn(Alignment alignment)
+        public MTableColumn(Alignment alignment)
         {
             Alignment = alignment;
         }
 
-        public TableColumn(Alignment alignment, object content)
+        public MTableColumn(Alignment alignment, object content)
             : base(content)
         {
             Alignment = alignment;
         }
 
-        public TableColumn(Alignment alignment, params object[] content)
+        public MTableColumn(Alignment alignment, params object[] content)
             : base(content)
         {
             Alignment = alignment;
         }
 
-        public TableColumn(TableColumn other)
+        public MTableColumn(MTableColumn other)
             : base(other)
         {
             Alignment = other.Alignment;
@@ -41,7 +41,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new TableColumn(this);
+            return new MTableColumn(this);
         }
     }
 }

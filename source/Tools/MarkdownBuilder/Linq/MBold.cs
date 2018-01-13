@@ -2,26 +2,37 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Image : Link
+    public class MBold : MInlineContainer
     {
-        internal Image(string text, string url, string title = null)
-            : base(text, url, title)
+        public MBold()
         {
         }
 
-        public Image(Image other)
+        public MBold(object content)
+            : base(content)
+        {
+        }
+
+        public MBold(params object[] content)
+            : base(content)
+        {
+        }
+
+        public MBold(MBold other)
             : base(other)
         {
         }
 
+        public override MarkdownKind Kind => MarkdownKind.Bold;
+
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteImage(Text, Url, Title);
+            return writer.WriteBold(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new Image(this);
+            return new MBold(this);
         }
     }
 }

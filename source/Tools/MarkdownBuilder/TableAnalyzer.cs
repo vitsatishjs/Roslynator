@@ -6,9 +6,9 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    internal static class TableMeasurer
+    internal static class TableAnalyzer
     {
-        public static List<TableColumnInfo> Measure(IEnumerable<MElement> rows, MarkdownWriterSettings settings, IFormatProvider formatProvider)
+        public static List<TableColumnInfo> Analyze(IEnumerable<MElement> rows, MarkdownWriterSettings settings, IFormatProvider formatProvider)
         {
             using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
@@ -16,11 +16,11 @@ namespace Pihrtsoft.Markdown
                     return null;
 
                 using (var writer = new MarkdownStringWriter(formatProvider, settings: settings))
-                    return Measure(en, settings, writer);
+                    return Analyze(en, settings, writer);
             }
         }
 
-        private static List<TableColumnInfo> Measure(IEnumerator<MElement> en, MarkdownWriterSettings settings, MarkdownStringWriter writer)
+        private static List<TableColumnInfo> Analyze(IEnumerator<MElement> en, MarkdownWriterSettings settings, MarkdownStringWriter writer)
         {
             MElement header = null;
 

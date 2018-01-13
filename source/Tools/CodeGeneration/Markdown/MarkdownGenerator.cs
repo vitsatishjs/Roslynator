@@ -88,7 +88,7 @@ namespace Roslynator.CodeGeneration.Markdown
             }
         }
 
-        private static IEnumerable<MElement> GetSamples(IEnumerable<SampleDescriptor> samples, Heading beforeHeader, Heading afterHeader)
+        private static IEnumerable<MElement> GetSamples(IEnumerable<SampleDescriptor> samples, MHeading beforeHeader, MHeading afterHeader)
         {
             bool isFirst = true;
 
@@ -235,7 +235,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
             return document.ToString();
 
-            IEnumerable<TableRow> GetRows()
+            IEnumerable<MTableRow> GetRows()
             {
                 foreach (var grouping in codeFixes
                     .SelectMany(codeFix => codeFix.FixableDiagnosticIds.Select(diagnosticId => new { DiagnosticId = diagnosticId, CodeFixDescriptor = codeFix }))
@@ -262,7 +262,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
             return document.ToString();
 
-            IEnumerable<TableRow> GetRows()
+            IEnumerable<MTableRow> GetRows()
             {
                 foreach (IGrouping<string, AnalyzerDescriptor> grouping in analyzers
                     .GroupBy(f => MarkdownEscaper.Escape(f.Category))
@@ -280,7 +280,7 @@ namespace Roslynator.CodeGeneration.Markdown
             }
         }
 
-        private static Image RefactoringImage(RefactoringDescriptor refactoring, string fileName)
+        private static MImage RefactoringImage(RefactoringDescriptor refactoring, string fileName)
         {
             return Image(refactoring.Title, $"../../images/refactorings/{fileName}.png");
         }

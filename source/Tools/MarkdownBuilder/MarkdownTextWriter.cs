@@ -118,9 +118,9 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        protected override List<TableColumnInfo> MeasureTable(IEnumerable<MElement> rows)
+        protected override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
-            return TableMeasurer.Measure(rows, Settings, _writer.FormatProvider);
+            return TableAnalyzer.Analyze(rows, Settings, _writer.FormatProvider);
         }
     }
 }

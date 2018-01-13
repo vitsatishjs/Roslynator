@@ -2,37 +2,26 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Bold : MInlineContainer
+    public class MImage : MLink
     {
-        public Bold()
+        internal MImage(string text, string url, string title = null)
+            : base(text, url, title)
         {
         }
 
-        public Bold(object content)
-            : base(content)
-        {
-        }
-
-        public Bold(params object[] content)
-            : base(content)
-        {
-        }
-
-        public Bold(Bold other)
+        public MImage(MImage other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Bold;
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteBold(TextOrElements());
+            return writer.WriteImage(Text, Url, Title);
         }
 
         internal override MElement Clone()
         {
-            return new Bold(this);
+            return new MImage(this);
         }
     }
 }

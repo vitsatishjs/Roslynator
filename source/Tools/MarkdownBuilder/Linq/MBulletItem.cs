@@ -2,44 +2,37 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TaskList : MList
+    public class MBulletItem : MBlockContainer
     {
-        public TaskList()
+        public MBulletItem()
         {
         }
 
-        public TaskList(object content)
+        public MBulletItem(object content)
             : base(content)
         {
         }
 
-        public TaskList(params object[] content)
+        public MBulletItem(params object[] content)
             : base(content)
         {
         }
 
-        public TaskList(TaskList other)
+        public MBulletItem(MBulletItem other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.TaskList;
+        public override MarkdownKind Kind => MarkdownKind.BulletItem;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            if (content is string s)
-            {
-                return writer.WriteTaskItem(s).WriteLine();
-            }
-            else
-            {
-                return writer.WriteTaskItems(Elements());
-            }
+            return writer.WriteBulletItem(TextOrElements());
         }
 
         internal override MElement Clone()
         {
-            return new TaskList(this);
+            return new MBulletItem(this);
         }
     }
 }
