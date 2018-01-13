@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -230,7 +229,7 @@ namespace Roslynator.CSharp.Refactorings.InlineMethod
                 {
                     if (parameterSymbol.HasExplicitDefaultValue)
                     {
-                        var parameterInfo = new ParameterInfo(parameterSymbol, parameterSymbol.GetDefaultValueSyntax());
+                        var parameterInfo = new ParameterInfo(parameterSymbol, null);
 
                         (parameterInfos ?? (parameterInfos = new List<ParameterInfo>())).Add(parameterInfo);
                     }
