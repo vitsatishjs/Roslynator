@@ -29,9 +29,9 @@ namespace Pihrtsoft.Markdown.Linq
         {
             switch (element.Kind)
             {
-                case MarkdownKind.ListItem:
-                case MarkdownKind.OrderedListItem:
-                case MarkdownKind.TaskListItem:
+                case MarkdownKind.BulletItem:
+                case MarkdownKind.OrderedItem:
+                case MarkdownKind.TaskItem:
                     return;
             }
 

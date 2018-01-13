@@ -37,10 +37,10 @@ namespace Pihrtsoft.Markdown
         Document = 24,
         BlockQuote = 25,
         List = 26,
-        ListItem = 27,
+        BulletItem = 27,
         OrderedList = 28,
-        OrderedListItem = 29,
+        OrderedItem = 29,
         TaskList = 30,
-        TaskListItem = 31,
+        TaskItem = 31,
     }
 }

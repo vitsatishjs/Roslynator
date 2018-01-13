@@ -29,11 +29,11 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                return builder.AppendOrderedListItem(1, s).AppendLine();
+                return builder.AppendOrderedItem(1, s).AppendLine();
             }
             else
             {
-                return builder.AppendOrderedListItems(Elements());
+                return builder.AppendOrderedItems(Elements());
             }
         }
 
@@ -41,11 +41,11 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                return writer.WriteOrderedListItem(1, s).WriteLine();
+                return writer.WriteOrderedItem(1, s).WriteLine();
             }
             else
             {
-                return writer.WriteOrderedListItems(Elements());
+                return writer.WriteOrderedItems(Elements());
             }
         }
 

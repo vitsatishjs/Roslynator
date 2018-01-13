@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownBuilder", "Tools\Ma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownBuilder.Tests", "Tools\MarkdownBuilder.Tests\MarkdownBuilder.Tests.csproj", "{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workspaces", "Workspaces\Workspaces.csproj", "{56DA29A3-C179-471C-9941-42426EEB84D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,14 @@ Global
 		{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7030BCF-F61A-4FFD-A22F-B4E439E41B71}.ReleaseTools|Any CPU.ActiveCfg = Release|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.DebugRoslynator|Any CPU.ActiveCfg = Debug|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.DebugRoslynator|Any CPU.Build.0 = Debug|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.ReleaseTools|Any CPU.ActiveCfg = Release|Any CPU
+		{56DA29A3-C179-471C-9941-42426EEB84D0}.ReleaseTools|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

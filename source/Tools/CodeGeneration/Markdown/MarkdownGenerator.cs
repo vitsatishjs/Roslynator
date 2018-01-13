@@ -21,11 +21,11 @@ namespace Roslynator.CodeGeneration.Markdown
                 Heading3("List of Analyzers"),
                 analyzers
                     .OrderBy(f => f.Id, comparer)
-                    .Select(analyzer => ListItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"))),
+                    .Select(analyzer => BulletItem(analyzer.Id, " - ", Link(analyzer.Title.TrimEnd('.'), $"docs/analyzers/{analyzer.Id}.md"))),
                 Heading3("List of Refactorings"),
                 refactorings
                     .OrderBy(f => f.Title, comparer)
-                    .Select(refactoring => ListItem(Link(refactoring.Title.TrimEnd('.'), $"docs/refactorings/{refactoring.Id}.md"))));
+                    .Select(refactoring => BulletItem(Link(refactoring.Title.TrimEnd('.'), $"docs/refactorings/{refactoring.Id}.md"))));
 
             return File.ReadAllText(@"..\text\ReadMe.txt", Encoding.UTF8)
                 + Environment.NewLine
@@ -45,10 +45,10 @@ namespace Roslynator.CodeGeneration.Markdown
                 foreach (RefactoringDescriptor refactoring in refactorings.OrderBy(f => f.Title, comparer))
                 {
                     yield return Heading4($"{refactoring.Title} ({refactoring.Id})");
-                    yield return ListItem(Bold("Syntax"), ": ", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
+                    yield return BulletItem(Bold("Syntax"), ": ", string.Join(", ", refactoring.Syntaxes.Select(f => f.Name)));
 
                     if (!string.IsNullOrEmpty(refactoring.Span))
-                        yield return ListItem(Bold("Span"), ": ", refactoring.Span);
+                        yield return BulletItem(Bold("Span"), ": ", refactoring.Span);
 
                     foreach (object item in GetRefactoringSamples(refactoring))
                         yield return item;
@@ -154,7 +154,7 @@ namespace Roslynator.CodeGeneration.Markdown
                 Heading3("#pragma"),
                 FencedCodeBlock($"#pragma warning disable {analyzer.Id} // {analyzer.Title}\r\n#pragma warning restore {analyzer.Id} // {analyzer.Title}", LanguageIdentifiers.CSharp),
                 Heading3("Ruleset"),
-                ListItem(Link("How to configure rule set", "../HowToConfigureAnalyzers.md")));
+                BulletItem(Link("How to configure rule set", "../HowToConfigureAnalyzers.md")));
 
             return document.ToString(format);
 

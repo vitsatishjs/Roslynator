@@ -5,26 +5,26 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {GetString(),nq}")]
-    public class TaskListItem : ListItem
+    public class TaskItem : MBlockContainer
     {
-        public TaskListItem(bool isCompleted)
+        public TaskItem(bool isCompleted)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskListItem(bool isCompleted, object content)
+        public TaskItem(bool isCompleted, object content)
             : base(content)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskListItem(bool isCompleted, params object[] content)
+        public TaskItem(bool isCompleted, params object[] content)
             : base(content)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskListItem(TaskListItem other)
+        public TaskItem(TaskItem other)
             : base(other)
         {
             IsCompleted = other.IsCompleted;
@@ -32,17 +32,17 @@ namespace Pihrtsoft.Markdown.Linq
 
         public bool IsCompleted { get; set; }
 
-        public override MarkdownKind Kind => MarkdownKind.TaskListItem;
+        public override MarkdownKind Kind => MarkdownKind.TaskItem;
 
         public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
         {
             if (IsCompleted)
             {
-                return builder.AppendCompletedTaskListItem(TextOrElements());
+                return builder.AppendCompletedTaskItem(TextOrElements());
             }
             else
             {
-                return builder.AppendTaskListItem(TextOrElements());
+                return builder.AppendTaskItem(TextOrElements());
             }
         }
 
@@ -50,17 +50,17 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (IsCompleted)
             {
-                return writer.WriteCompletedTaskListItem(TextOrElements());
+                return writer.WriteCompletedTaskItem(TextOrElements());
             }
             else
             {
-                return writer.WriteTaskListItem(TextOrElements());
+                return writer.WriteTaskItem(TextOrElements());
             }
         }
 
         internal override MElement Clone()
         {
-            return new TaskListItem(this);
+            return new TaskItem(this);
         }
     }
 }

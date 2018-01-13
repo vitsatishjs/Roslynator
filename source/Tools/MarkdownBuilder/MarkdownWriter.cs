@@ -44,11 +44,11 @@ namespace Pihrtsoft.Markdown
 
         private ListStyle ListStyle => Format.ListStyle;
 
-        private string ListItemStart => ListItemStart(ListStyle);
+        private string BulletItemStart => BulletItemStart(ListStyle);
 
         private OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
 
-        private string OrderedListItemStart => OrderedListItemStart(OrderedListStyle);
+        private string OrderedItemStart => OrderedItemStart(OrderedListStyle);
 
         private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
 
@@ -332,46 +332,46 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteListItem(object content)
+        public MarkdownWriter WriteBulletItem(object content)
         {
-            return WriteItemCore(state: State.ListItem, prefix1: null, prefix2: ListItemStart, content: content);
+            return WriteItemCore(state: State.BulletItem, prefix1: null, prefix2: BulletItemStart, content: content);
         }
 
-        public MarkdownWriter WriteListItem(params object[] content)
+        public MarkdownWriter WriteBulletItem(params object[] content)
         {
-            return WriteListItem((object)content);
+            return WriteBulletItem((object)content);
         }
 
-        public MarkdownWriter WriteOrderedListItem(int number, object content)
+        public MarkdownWriter WriteOrderedItem(int number, object content)
         {
             Error.ThrowOnInvalidItemNumber(number);
 
-            return WriteItemCore(state: State.OrderedListItem, prefix1: number.ToString(), prefix2: OrderedListItemStart, content: content);
+            return WriteItemCore(state: State.OrderedItem, prefix1: number.ToString(), prefix2: OrderedItemStart, content: content);
         }
 
-        public MarkdownWriter WriteOrderedListItem(int number, params object[] content)
+        public MarkdownWriter WriteOrderedItem(int number, params object[] content)
         {
-            return WriteOrderedListItem(number, (object)content);
+            return WriteOrderedItem(number, (object)content);
         }
 
-        public MarkdownWriter WriteTaskListItem(object content)
+        public MarkdownWriter WriteTaskItem(object content)
         {
-            return WriteItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(), content: content);
+            return WriteItemCore(state: State.TaskItem, prefix1: null, prefix2: TaskItemStart(), content: content);
         }
 
-        public MarkdownWriter WriteTaskListItem(params object[] content)
+        public MarkdownWriter WriteTaskItem(params object[] content)
         {
-            return WriteTaskListItem((object)content);
+            return WriteTaskItem((object)content);
         }
 
-        public MarkdownWriter WriteCompletedTaskListItem(object content)
+        public MarkdownWriter WriteCompletedTaskItem(object content)
         {
-            return WriteItemCore(state: State.TaskListItem, prefix1: null, prefix2: TaskListItemStart(isCompleted: true), content: content);
+            return WriteItemCore(state: State.TaskItem, prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
         }
 
-        public MarkdownWriter WriteCompletedTaskListItem(params object[] content)
+        public MarkdownWriter WriteCompletedTaskItem(params object[] content)
         {
-            return WriteCompletedTaskListItem((object)content);
+            return WriteCompletedTaskItem((object)content);
         }
 
         private MarkdownWriter WriteItemCore(State state, string prefix1, string prefix2, object content)
@@ -386,25 +386,25 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteListItems(params MElement[] content)
+        public MarkdownWriter WriteBulletItems(params MElement[] content)
         {
-            return WriteListItems((IEnumerable<MElement>)content);
+            return WriteBulletItems((IEnumerable<MElement>)content);
         }
 
-        public MarkdownWriter WriteListItems(IEnumerable<MElement> content)
+        public MarkdownWriter WriteBulletItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    WriteListItem(item.TextOrElements());
+                    WriteBulletItem(item.TextOrElements());
                 }
                 else
                 {
-                    WriteListItem(element);
+                    WriteBulletItem(element);
                 }
             }
 
@@ -412,7 +412,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteOrderedListItems(params MElement[] content)
+        public MarkdownWriter WriteOrderedItems(params MElement[] content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -421,13 +421,13 @@ namespace Pihrtsoft.Markdown
             {
                 MElement element = content[i];
 
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    WriteOrderedListItem(i + 1, item.TextOrElements());
+                    WriteOrderedItem(i + 1, item.TextOrElements());
                 }
                 else
                 {
-                    WriteOrderedListItem(i + 1, element);
+                    WriteOrderedItem(i + 1, element);
                 }
             }
 
@@ -435,7 +435,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteOrderedListItems(IEnumerable<MElement> content)
+        public MarkdownWriter WriteOrderedItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
@@ -443,13 +443,13 @@ namespace Pihrtsoft.Markdown
             int number = 1;
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    WriteOrderedListItem(number, item.TextOrElements());
+                    WriteOrderedItem(number, item.TextOrElements());
                 }
                 else
                 {
-                    WriteOrderedListItem(number, element);
+                    WriteOrderedItem(number, element);
                 }
 
                 number++;
@@ -459,25 +459,25 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteTaskListItems(params MElement[] content)
+        public MarkdownWriter WriteTaskItems(params MElement[] content)
         {
-            return WriteTaskListItems((IEnumerable<MElement>)content);
+            return WriteTaskItems((IEnumerable<MElement>)content);
         }
 
-        public MarkdownWriter WriteTaskListItems(IEnumerable<MElement> content)
+        public MarkdownWriter WriteTaskItems(IEnumerable<MElement> content)
         {
             if (content == null)
                 throw new ArgumentNullException(nameof(content));
 
             foreach (MElement element in content)
             {
-                if (element is BulletListItem item)
+                if (element is BulletItem item)
                 {
-                    WriteTaskListItem(item.TextOrElements());
+                    WriteTaskItem(item.TextOrElements());
                 }
                 else
                 {
-                    WriteTaskListItem(element);
+                    WriteTaskItem(element);
                 }
             }
 
@@ -1424,7 +1424,7 @@ namespace Pihrtsoft.Markdown
             for (int i = 1; i <= QuoteLevel; i++)
                 WriteCore(BlockQuoteStart);
 
-            if (HasState(State.ListItem | State.OrderedListItem | State.TaskListItem))
+            if (HasState(State.BulletItem | State.OrderedItem | State.TaskItem))
                 WriteCore("  ");
 
             if (HasState(State.IndentedCodeBlock))
