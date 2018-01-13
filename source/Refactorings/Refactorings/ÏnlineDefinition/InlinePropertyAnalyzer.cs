@@ -17,7 +17,7 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
 
         protected override bool CheckNode(IdentifierNameSyntax node, TextSpan span)
         {
-            SyntaxNode parent =  node.Parent;
+            SyntaxNode parent = node.Parent;
 
             SyntaxKind kind = parent.Kind();
 

@@ -25,7 +25,7 @@ namespace Roslynator.CSharp.Refactorings
                 await AddUsingDirectiveRefactoring.ComputeRefactoringsAsync(context, identifierName).ConfigureAwait(false);
             }
 
-            if (context.IsRefactoringEnabled(RefactoringIdentifiers.InlineMethod))
+            if (context.IsRefactoringEnabled(RefactoringIdentifiers.InlineProperty))
                 await InlinePropertyRefactoring.ComputeRefactoringsAsync(context, identifierName).ConfigureAwait(false);
         }
 

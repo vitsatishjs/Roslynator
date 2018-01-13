@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -206,7 +207,7 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
         {
             var replacementMap = new Dictionary<SyntaxNode, object>();
 
-            foreach (SyntaxNode descendant in node.DescendantNodes(node.Span))
+            foreach (SyntaxNode descendant in node.DescendantNodesAndSelf(node.Span))
             {
                 SyntaxKind kind = descendant.Kind();
 
@@ -224,7 +225,15 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
                             {
                                 if (parameterInfo.ParameterSymbol.OriginalDefinition.Equals(symbol))
                                 {
-                                    replacementMap.Add(identifierName, parameterInfo.Expression);
+                                    ExpressionSyntax expression = parameterInfo.Expression;
+
+                                    if (expression == null
+                                        && parameterInfo.ParameterSymbol.HasExplicitDefaultValue)
+                                    {
+                                        expression = parameterInfo.ParameterSymbol.GetDefaultValueMinimalSyntax(InvocationSemanticModel, Node.SpanStart);
+                                    }
+
+                                    replacementMap.Add(identifierName, expression);
                                     break;
                                 }
                             }
@@ -264,12 +273,19 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
                         SyntaxKind.VariableDeclarator,
                         SyntaxKind.SingleVariableDesignation,
                         SyntaxKind.Parameter,
-                        SyntaxKind.TypeParameter))
+                        SyntaxKind.TypeParameter,
+                        SyntaxKind.ForEachStatement,
+                        SyntaxKind.ForEachVariableStatement))
                     {
                         ISymbol symbol = DeclarationSemanticModel.GetDeclaredSymbol(descendant, CancellationToken);
 
-                        if (symbolMap.TryGetValue(symbol, out string name))
+                        Debug.Assert(symbol != null || (descendant as ForEachVariableStatementSyntax)?.Variable?.Kind() == SyntaxKind.TupleExpression, kind.ToString());
+
+                        if (symbol != null
+                            && symbolMap.TryGetValue(symbol, out string name))
+                        {
                             replacementMap.Add(descendant, name);
+                        }
                     }
                 }
             }
@@ -287,7 +303,7 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
             if (!declarationSymbols.Any())
                 return null;
 
-            declarationSymbols = declarationSymbols.RemoveAll( f => f.IsKind(SymbolKind.NamedType, SymbolKind.Field));
+            declarationSymbols = declarationSymbols.RemoveAll(f => f.IsKind(SymbolKind.NamedType, SymbolKind.Field));
 
             if (!declarationSymbols.Any())
                 return null;

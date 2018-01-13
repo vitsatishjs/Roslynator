@@ -142,7 +142,7 @@ namespace Roslynator.CSharp.Refactorings.InlineDefinition
                 {
                     if (parameterSymbol.HasExplicitDefaultValue)
                     {
-                        var parameterInfo = new ParameterInfo(parameterSymbol, parameterSymbol.GetDefaultValueSyntax());
+                        var parameterInfo = new ParameterInfo(parameterSymbol, null);
 
                         (parameterInfos ?? (parameterInfos = new List<ParameterInfo>())).Add(parameterInfo);
                     }
