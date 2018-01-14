@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.FindSymbols;
 using Roslynator.CSharp.Comparers;
 using Roslynator.CSharp.Syntax;
 
@@ -154,6 +155,48 @@ namespace Roslynator.CSharp.Refactorings
             SyntaxNode newNode = node.WithAccessibility(newAccessibility, ModifierComparer.Instance);
 
             return document.ReplaceNodeAsync(node, newNode, cancellationToken);
+        }
+
+        public static async Task<Solution> RefactorAsync(
+            Solution solution,
+            ISymbol symbol,
+            Accessibility newAccessibility,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            IEnumerable<ISymbol> symbols = await SymbolFinder.FindOverridesAsync(symbol, solution, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            ImmutableArray<MemberDeclarationSyntax> memberDeclarations = GetMemberDeclarations(symbol)
+                .Concat(symbols.SelectMany(GetMemberDeclarations))
+                .ToImmutableArray();
+
+            return await RefactorAsync(solution, memberDeclarations, newAccessibility, cancellationToken).ConfigureAwait(false);
+
+            IEnumerable<MemberDeclarationSyntax> GetMemberDeclarations(ISymbol symbol2)
+            {
+                foreach (SyntaxReference syntaxReference in symbol2.DeclaringSyntaxReferences)
+                {
+                    switch (syntaxReference.GetSyntax(cancellationToken))
+                    {
+                        case MemberDeclarationSyntax memberDeclaration:
+                            {
+                                yield return memberDeclaration;
+                                break;
+                            }
+                        case VariableDeclaratorSyntax variableDeclarator:
+                            {
+                                if (variableDeclarator.Parent.Parent is MemberDeclarationSyntax memberDeclaration2)
+                                    yield return memberDeclaration2;
+
+                                break;
+                            }
+                        default:
+                            {
+                                Debug.Fail(syntaxReference.GetSyntax(cancellationToken).Kind().ToString());
+                                break;
+                            }
+                    }
+                }
+            }
         }
 
         public static Task<Solution> RefactorAsync(
