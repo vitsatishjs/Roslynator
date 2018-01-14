@@ -9,7 +9,7 @@ using System.Text;
 using Pihrtsoft.Markdown;
 using Pihrtsoft.Markdown.Linq;
 using Roslynator.Metadata;
-using static Pihrtsoft.Markdown.Linq.MarkdownFactory;
+using static Pihrtsoft.Markdown.Linq.MFactory;
 
 namespace Roslynator.CodeGeneration.Markdown
 {

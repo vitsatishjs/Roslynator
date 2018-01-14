@@ -28,21 +28,21 @@ namespace Pihrtsoft.Markdown
             set { StringBuilder.Length = value; }
         }
 
-        protected override void WriteCore(string value)
+        protected override void WriteString(string value)
         {
             ThrowIfClosed();
 
             StringBuilder.Append(value);
         }
 
-        protected override void WriteCore(string value, int startIndex, int count)
+        protected override void WriteString(string value, int startIndex, int count)
         {
             ThrowIfClosed();
 
             StringBuilder.Append(value, startIndex, count);
         }
 
-        protected override void WriteCore(char value)
+        protected override void WriteValue(char value)
         {
             ThrowIfClosed();
 
@@ -66,37 +66,37 @@ namespace Pihrtsoft.Markdown
             base.Reset();
         }
 
-        protected override void WriteCore(int value)
+        protected override void WriteValue(int value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(uint value)
+        protected override void WriteValue(uint value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(long value)
+        protected override void WriteValue(long value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(ulong value)
+        protected override void WriteValue(ulong value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(float value)
+        protected override void WriteValue(float value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(double value)
+        protected override void WriteValue(double value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteCore(decimal value)
+        protected override void WriteValue(decimal value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }

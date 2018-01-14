@@ -9,7 +9,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using Pihrtsoft.Markdown.Linq;
-using static Pihrtsoft.Markdown.Linq.MarkdownFactory;
+using static Pihrtsoft.Markdown.Linq.MFactory;
 using static Pihrtsoft.Markdown.TextUtility;
 
 namespace Pihrtsoft.Markdown
@@ -342,7 +342,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteBulletItem(object content)
         {
-            return WriteItemCore(state: WriteState.BulletItem, prefix1: null, prefix2: BulletItemStart, content: content);
+            return WriteItem(state: WriteState.BulletItem, prefix1: null, prefix2: BulletItemStart, content: content);
         }
 
         public MarkdownWriter WriteBulletItem(params object[] content)
@@ -354,7 +354,7 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidItemNumber(number);
 
-            return WriteItemCore(state: WriteState.OrderedItem, prefix1: number.ToString(), prefix2: OrderedItemStart, content: content);
+            return WriteItem(state: WriteState.OrderedItem, prefix1: number.ToString(), prefix2: OrderedItemStart, content: content);
         }
 
         public MarkdownWriter WriteOrderedItem(int number, params object[] content)
@@ -364,7 +364,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteTaskItem(object content)
         {
-            return WriteItemCore(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(), content: content);
+            return WriteItem(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(), content: content);
         }
 
         public MarkdownWriter WriteTaskItem(params object[] content)
@@ -374,7 +374,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteCompletedTaskItem(object content)
         {
-            return WriteItemCore(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
+            return WriteItem(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
         }
 
         public MarkdownWriter WriteCompletedTaskItem(params object[] content)
@@ -382,7 +382,7 @@ namespace Pihrtsoft.Markdown
             return WriteCompletedTaskItem((object)content);
         }
 
-        private MarkdownWriter WriteItemCore(WriteState state, string prefix1, string prefix2, object content)
+        private MarkdownWriter WriteItem(WriteState state, string prefix1, string prefix2, object content)
         {
             WriteLineIfNecessary();
             WriteSyntax(prefix1);
@@ -1129,13 +1129,13 @@ namespace Pihrtsoft.Markdown
                     }
 
                     BeforeWrite();
-                    WriteCore(value, lastIndex, value.Length - lastIndex);
+                    WriteString(value, lastIndex, value.Length - lastIndex);
                     return this;
                 }
             }
 
             BeforeWrite();
-            WriteCore(value);
+            WriteString(value);
             return this;
 
             void WriteLine(int startIndex, int index)
@@ -1151,7 +1151,7 @@ namespace Pihrtsoft.Markdown
                 }
 
                 BeforeWrite();
-                WriteCore(value, startIndex, index - startIndex);
+                WriteString(value, startIndex, index - startIndex);
 
                 if (NewLineHandling == NewLineHandling.Replace)
                 {
@@ -1166,9 +1166,9 @@ namespace Pihrtsoft.Markdown
             void WriteEscapedChar(int startIndex, int index, char ch)
             {
                 BeforeWrite();
-                WriteCore(value, startIndex, index - startIndex);
-                WriteCore(escapingChar);
-                WriteCore(ch);
+                WriteString(value, startIndex, index - startIndex);
+                WriteValue(escapingChar);
+                WriteValue(ch);
             }
         }
 
@@ -1237,7 +1237,7 @@ namespace Pihrtsoft.Markdown
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
             BeforeWrite();
-            WriteCore(value);
+            WriteValue(value);
             return this;
         }
 
@@ -1248,7 +1248,7 @@ namespace Pihrtsoft.Markdown
             BeforeWrite();
 
             for (int i = 0; i < repeatCount; i++)
-                WriteCore(value);
+                WriteValue(value);
 
             return this;
         }
@@ -1256,26 +1256,26 @@ namespace Pihrtsoft.Markdown
         private MarkdownWriter WriteSyntax(string value)
         {
             BeforeWrite();
-            WriteCore(value);
+            WriteString(value);
             return this;
         }
 
         public MarkdownWriter WriteRaw(string value)
         {
-            Write(value, f => false);
+            Write(value, _ => false);
             return this;
         }
 
         public MarkdownWriter WriteRaw(int value)
         {
             BeforeWrite();
-            WriteCore(value);
+            WriteValue(value);
             return this;
         }
 
-        public MarkdownWriter WriteLine()
+        public virtual MarkdownWriter WriteLine()
         {
-            WriteLineCore();
+            WriteString(NewLineChars);
             AfterWriteLine();
             return this;
         }
@@ -1311,13 +1311,13 @@ namespace Pihrtsoft.Markdown
         private void WriteIndentation()
         {
             for (int i = 1; i <= QuoteLevel; i++)
-                WriteCore(BlockQuoteStart);
+                WriteString(BlockQuoteStart);
 
             if (HasState(WriteState.BulletItem | WriteState.OrderedItem | WriteState.TaskItem))
-                WriteCore("  ");
+                WriteString("  ");
 
             if (HasState(WriteState.IndentedCodeBlock))
-                WriteCore("    ");
+                WriteString("    ");
         }
 
         internal MarkdownWriter WriteSpace()
@@ -1325,29 +1325,24 @@ namespace Pihrtsoft.Markdown
             return WriteSyntax(" ");
         }
 
-        protected abstract void WriteCore(string value);
+        protected abstract void WriteString(string value);
 
-        protected abstract void WriteCore(string value, int startIndex, int count);
+        protected abstract void WriteString(string value, int startIndex, int count);
 
-        protected abstract void WriteCore(char value);
+        protected abstract void WriteValue(char value);
 
-        protected abstract void WriteCore(int value);
+        protected abstract void WriteValue(int value);
 
-        protected abstract void WriteCore(uint value);
+        protected abstract void WriteValue(uint value);
 
-        protected abstract void WriteCore(long value);
+        protected abstract void WriteValue(long value);
 
-        protected abstract void WriteCore(ulong value);
+        protected abstract void WriteValue(ulong value);
 
-        protected abstract void WriteCore(float value);
+        protected abstract void WriteValue(float value);
 
-        protected abstract void WriteCore(double value);
+        protected abstract void WriteValue(double value);
 
-        protected abstract void WriteCore(decimal value);
-
-        protected virtual void WriteLineCore()
-        {
-            WriteCore(NewLineChars);
-        }
+        protected abstract void WriteValue(decimal value);
     }
 }

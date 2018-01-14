@@ -27,7 +27,7 @@ namespace Pihrtsoft.Markdown
 
         protected internal override int Length { get; set; }
 
-        protected override void WriteCore(string value)
+        protected override void WriteString(string value)
         {
             _writer.Write(value);
 
@@ -36,7 +36,7 @@ namespace Pihrtsoft.Markdown
         }
 
         // https://github.com/dotnet/corefx/issues/1571
-        protected override void WriteCore(string value, int startIndex, int count)
+        protected override void WriteString(string value, int startIndex, int count)
         {
             if (value == null)
                 return;
@@ -55,43 +55,43 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        protected override void WriteCore(char value)
+        protected override void WriteValue(char value)
         {
             _writer.Write(value);
             Length++;
         }
 
-        protected override void WriteCore(int value)
+        protected override void WriteValue(int value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(uint value)
+        protected override void WriteValue(uint value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(long value)
+        protected override void WriteValue(long value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(ulong value)
+        protected override void WriteValue(ulong value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(float value)
+        protected override void WriteValue(float value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(double value)
+        protected override void WriteValue(double value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteCore(decimal value)
+        protected override void WriteValue(decimal value)
         {
             _writer.Write(value);
         }
