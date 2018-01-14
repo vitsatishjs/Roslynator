@@ -23,7 +23,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.List;
+        public override MarkdownKind Kind => MarkdownKind.BulletList;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

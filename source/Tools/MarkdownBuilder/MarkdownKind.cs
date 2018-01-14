@@ -7,7 +7,7 @@ namespace Pihrtsoft.Markdown
         None = 0,
 
         Text = 1,
-        RawText = 2,
+        Raw = 2,
         Link = 3,
         LinkReference = 4,
         Image = 5,
@@ -36,7 +36,7 @@ namespace Pihrtsoft.Markdown
 
         Document = 24,
         BlockQuote = 25,
-        List = 26,
+        BulletList = 26,
         BulletItem = 27,
         OrderedList = 28,
         OrderedItem = 29,
