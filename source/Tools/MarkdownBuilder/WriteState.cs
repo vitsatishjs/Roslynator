@@ -7,7 +7,7 @@ using System;
 namespace Pihrtsoft.Markdown
 {
     [Flags]
-    internal enum State
+    internal enum WriteState
     {
         None = 0,
         Text = 1,

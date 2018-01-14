@@ -5,26 +5,26 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {GetString(),nq}")]
-    public class TaskItem : MBlockContainer
+    public class MTaskItem : MBlockContainer
     {
-        public TaskItem(bool isCompleted)
+        public MTaskItem(bool isCompleted)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskItem(bool isCompleted, object content)
+        public MTaskItem(bool isCompleted, object content)
             : base(content)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskItem(bool isCompleted, params object[] content)
+        public MTaskItem(bool isCompleted, params object[] content)
             : base(content)
         {
             IsCompleted = isCompleted;
         }
 
-        public TaskItem(TaskItem other)
+        public MTaskItem(MTaskItem other)
             : base(other)
         {
             IsCompleted = other.IsCompleted;
@@ -33,18 +33,6 @@ namespace Pihrtsoft.Markdown.Linq
         public bool IsCompleted { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.TaskItem;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (IsCompleted)
-            {
-                return builder.AppendCompletedTaskItem(TextOrElements());
-            }
-            else
-            {
-                return builder.AppendTaskItem(TextOrElements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -60,7 +48,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new TaskItem(this);
+            return new MTaskItem(this);
         }
     }
 }

@@ -6,16 +6,16 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Value,nq}")]
-    public class Comment : MElement
+    public class MRaw : MElement
     {
         private string _value;
 
-        public Comment(string value)
+        public MRaw(string value)
         {
             Value = value;
         }
 
-        public Comment(Comment other)
+        public MRaw(MRaw other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -29,21 +29,16 @@ namespace Pihrtsoft.Markdown.Linq
             set { _value = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Comment;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendComment(Value);
-        }
+        public override MarkdownKind Kind => MarkdownKind.RawText;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteComment(Value);
+            return writer.Write(Value, escape: false);
         }
 
         internal override MElement Clone()
         {
-            return new Comment(this);
+            return new MRaw(this);
         }
     }
 }

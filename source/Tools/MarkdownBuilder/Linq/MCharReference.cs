@@ -7,14 +7,14 @@ using System.Globalization;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
-    public class CharReference : MElement
+    public class MCharReference : MElement
     {
-        public CharReference(int number)
+        public MCharReference(int number)
         {
             Number = number;
         }
 
-        public CharReference(CharReference other)
+        public MCharReference(MCharReference other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -28,11 +28,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.CharReference;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendCharReference(Number);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteCharReference(Number);
@@ -40,7 +35,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new CharReference(this);
+            return new MCharReference(this);
         }
 
         internal string NumberAsString(CharReferenceFormat format)

@@ -65,6 +65,7 @@
 | RR0061 | [Inline alias expression](../../docs/refactorings/RR0061.md) | &#x2713; |
 | RR0181 | [Inline constant](../../docs/refactorings/RR0181.md) | &#x2713; |
 | RR0062 | [Inline method](../../docs/refactorings/RR0062.md) | &#x2713; |
+| RR0198 | [Inline property](../../docs/refactorings/RR0198.md) | &#x2713; |
 | RR0180 | [Inline using static](../../docs/refactorings/RR0180.md) | &#x2713; |
 | RR0063 | [Insert string interpolation](../../docs/refactorings/RR0063.md) | &#x2713; |
 | RR0064 | [Introduce and initialize field](../../docs/refactorings/RR0064.md) | &#x2713; |

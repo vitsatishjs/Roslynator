@@ -2,33 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Bold : MInlineContainer
+    public class MBold : MInlineContainer
     {
-        public Bold()
+        public MBold()
         {
         }
 
-        public Bold(object content)
+        public MBold(object content)
             : base(content)
         {
         }
 
-        public Bold(params object[] content)
+        public MBold(params object[] content)
             : base(content)
         {
         }
 
-        public Bold(Bold other)
+        public MBold(MBold other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.Bold;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendBold(TextOrElements());
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -37,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Bold(this);
+            return new MBold(this);
         }
     }
 }

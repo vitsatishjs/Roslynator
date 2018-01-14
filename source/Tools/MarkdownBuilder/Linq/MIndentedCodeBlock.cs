@@ -5,40 +5,34 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Value,nq}")]
-    public class MText : MElement
+    [DebuggerDisplay("{Kind} {Text,nq}")]
+    public class MIndentedCodeBlock : MElement
     {
-        private string _value;
-
-        public MText(string value)
+        public MIndentedCodeBlock(string text)
         {
-            Value = value;
+            Text = text;
         }
 
-        public MText(MText other)
+        public MIndentedCodeBlock(MIndentedCodeBlock other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Value = other.Value;
+            Text = other.Text;
         }
 
-        public string Value
-        {
-            get { return _value; }
-            set { _value = value ?? throw new ArgumentNullException(nameof(value)); }
-        }
+        public string Text { get; set; }
 
-        public override MarkdownKind Kind => MarkdownKind.Text;
+        public override MarkdownKind Kind => MarkdownKind.IndentedCodeBlock;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.Write(Value);
+            return writer.WriteIndentedCodeBlock(Text);
         }
 
         internal override MElement Clone()
         {
-            return new MText(this);
+            return new MIndentedCodeBlock(this);
         }
     }
 }

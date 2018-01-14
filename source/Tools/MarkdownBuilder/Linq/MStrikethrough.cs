@@ -2,33 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Strikethrough : MInlineContainer
+    public class MStrikethrough : MInlineContainer
     {
-        public Strikethrough()
+        public MStrikethrough()
         {
         }
 
-        public Strikethrough(object content)
+        public MStrikethrough(object content)
             : base(content)
         {
         }
 
-        public Strikethrough(params object[] content)
+        public MStrikethrough(params object[] content)
             : base(content)
         {
         }
 
-        public Strikethrough(Strikethrough other)
+        public MStrikethrough(MStrikethrough other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.Strikethrough;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendStrikethrough(TextOrElements());
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -37,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Strikethrough(this);
+            return new MStrikethrough(this);
         }
     }
 }

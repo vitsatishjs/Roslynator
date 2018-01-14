@@ -6,14 +6,14 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Text, nq}")]
-    public class InlineCode : MElement
+    public class MInlineCode : MElement
     {
-        public InlineCode(string text)
+        public MInlineCode(string text)
         {
             Text = text;
         }
 
-        public InlineCode(InlineCode other)
+        public MInlineCode(MInlineCode other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -25,11 +25,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.InlineCode;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendInlineCode(Text);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteInlineCode(Text);
@@ -37,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new InlineCode(this);
+            return new MInlineCode(this);
         }
     }
 }

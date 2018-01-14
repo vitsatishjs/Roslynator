@@ -515,10 +515,10 @@ namespace Pihrtsoft.Markdown.Tests
 
         [Theory]
         [InlineData("*", null)]
-        [InlineData("*", ListStyle.Asterisk)]
-        [InlineData("-", ListStyle.Minus)]
-        [InlineData("+", ListStyle.Plus)]
-        public void MarkdownBuilder_AppendListItem(string syntax, ListStyle? style)
+        [InlineData("*", BulletListStyle.Asterisk)]
+        [InlineData("-", BulletListStyle.Minus)]
+        [InlineData("+", BulletListStyle.Plus)]
+        public void MarkdownBuilder_AppendListItem(string syntax, BulletListStyle? style)
         {
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";
@@ -531,10 +531,10 @@ namespace Pihrtsoft.Markdown.Tests
 
         [Theory]
         [InlineData("*", null)]
-        [InlineData("*", ListStyle.Asterisk)]
-        [InlineData("-", ListStyle.Minus)]
-        [InlineData("+", ListStyle.Plus)]
-        public void MarkdownBuilder_Append_ListItem(string syntax, ListStyle? style)
+        [InlineData("*", BulletListStyle.Asterisk)]
+        [InlineData("-", BulletListStyle.Minus)]
+        [InlineData("+", BulletListStyle.Plus)]
+        public void MarkdownBuilder_Append_ListItem(string syntax, BulletListStyle? style)
         {
             MarkdownBuilder mb = CreateBuilderWithListItemStyle(style);
             const string text = "ListItemText";

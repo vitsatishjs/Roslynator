@@ -2,40 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class TaskList : List
+    public class MTaskList : MList
     {
-        public TaskList()
+        public MTaskList()
         {
         }
 
-        public TaskList(object content)
+        public MTaskList(object content)
             : base(content)
         {
         }
 
-        public TaskList(params object[] content)
+        public MTaskList(params object[] content)
             : base(content)
         {
         }
 
-        public TaskList(TaskList other)
+        public MTaskList(MTaskList other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.TaskList;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (content is string s)
-            {
-                return builder.AppendTaskItem(s).AppendLine();
-            }
-            else
-            {
-                return builder.AppendTaskItems(Elements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -51,7 +39,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new TaskList(this);
+            return new MTaskList(this);
         }
     }
 }

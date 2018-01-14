@@ -142,7 +142,6 @@
     <Compile Include="Html\HtmlGenerator.cs" />
     <Compile Include="Markdown\MarkdownGenerator.cs" />
     <Compile Include="Generator.cs" />
-    <Compile Include="Markdown\MarkdownBuilderExtensions.cs" />
     <Compile Include="Xml\XmlGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

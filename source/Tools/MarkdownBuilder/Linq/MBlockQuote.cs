@@ -2,33 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class BlockQuote : MBlockContainer
+    public class MBlockQuote : MBlockContainer
     {
-        public BlockQuote()
+        public MBlockQuote()
         {
         }
 
-        public BlockQuote(object content)
+        public MBlockQuote(object content)
             : base(content)
         {
         }
 
-        public BlockQuote(params object[] content)
+        public MBlockQuote(params object[] content)
             : base(content)
         {
         }
 
-        public BlockQuote(BlockQuote other)
+        public MBlockQuote(MBlockQuote other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.BlockQuote;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendBlockQuote(TextOrElements());
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -37,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new BlockQuote(this);
+            return new MBlockQuote(this);
         }
     }
 }

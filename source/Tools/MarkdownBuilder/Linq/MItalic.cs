@@ -2,33 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Italic : MInlineContainer
+    public class MItalic : MInlineContainer
     {
-        public Italic()
+        public MItalic()
         {
         }
 
-        public Italic(object content)
+        public MItalic(object content)
             : base(content)
         {
         }
 
-        public Italic(params object[] content)
+        public MItalic(params object[] content)
             : base(content)
         {
         }
 
-        public Italic(Italic other)
+        public MItalic(MItalic other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.Italic;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendItalic(TextOrElements());
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -37,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Italic(this);
+            return new MItalic(this);
         }
     }
 }

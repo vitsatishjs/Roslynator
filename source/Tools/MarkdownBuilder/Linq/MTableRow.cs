@@ -2,42 +2,39 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Table : MContainer
+    public class MTableRow : MContainer
     {
-        internal Table()
+        public MTableRow()
         {
         }
 
-        internal Table(object content)
+        public MTableRow(object content)
             : base(content)
         {
         }
 
-        internal Table(params object[] content)
+        public MTableRow(params object[] content)
             : base(content)
         {
         }
 
-        internal Table(MContainer other)
+        public MTableRow(MTableRow other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Table;
+        public override MarkdownKind Kind => MarkdownKind.TableRow;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendTable(Elements());
-        }
+        internal override bool AllowStringConcatenation => false;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteTable(Elements());
+            return writer.WriteTableRow(this);
         }
 
         internal override MElement Clone()
         {
-            return new Table(this);
+            return new MTableRow(this);
         }
 
         internal override void ValidateElement(MElement element)
@@ -45,7 +42,6 @@ namespace Pihrtsoft.Markdown.Linq
             switch (element.Kind)
             {
                 case MarkdownKind.TableColumn:
-                case MarkdownKind.TableRow:
                     return;
             }
 

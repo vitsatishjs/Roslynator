@@ -2,36 +2,45 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public abstract class List : MContainer
+    public class MTable : MContainer
     {
-        protected List()
+        internal MTable()
         {
         }
 
-        protected List(object content)
+        internal MTable(object content)
             : base(content)
         {
         }
 
-        protected List(params object[] content)
+        internal MTable(params object[] content)
             : base(content)
         {
         }
 
-        protected List(List other)
+        internal MTable(MContainer other)
             : base(other)
         {
         }
 
-        internal override bool AllowStringConcatenation => false;
+        public override MarkdownKind Kind => MarkdownKind.Table;
+
+        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        {
+            return writer.WriteTable(Elements());
+        }
+
+        internal override MElement Clone()
+        {
+            return new MTable(this);
+        }
 
         internal override void ValidateElement(MElement element)
         {
             switch (element.Kind)
             {
-                case MarkdownKind.BulletItem:
-                case MarkdownKind.OrderedItem:
-                case MarkdownKind.TaskItem:
+                case MarkdownKind.TableColumn:
+                case MarkdownKind.TableRow:
                     return;
             }
 

@@ -6,28 +6,28 @@ using System.Diagnostics;
 namespace Pihrtsoft.Markdown.Linq
 {
     [DebuggerDisplay("{Kind} {Number} {GetString(),nq}")]
-    public class OrderedItem : MBlockContainer
+    public class MOrderedItem : MBlockContainer
     {
         private int _number;
 
-        public OrderedItem(int number)
+        public MOrderedItem(int number)
         {
             Number = number;
         }
 
-        public OrderedItem(int number, object content)
+        public MOrderedItem(int number, object content)
             : base(content)
         {
             Number = number;
         }
 
-        public OrderedItem(int number, params object[] content)
+        public MOrderedItem(int number, params object[] content)
             : base(content)
         {
             Number = number;
         }
 
-        public OrderedItem(OrderedItem other)
+        public MOrderedItem(MOrderedItem other)
             : base(other)
         {
             if (other == null)
@@ -48,11 +48,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedItem;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendOrderedItem(Number, TextOrElements());
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteOrderedItem(Number, TextOrElements());
@@ -60,7 +55,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new OrderedItem(this);
+            return new MOrderedItem(this);
         }
     }
 }

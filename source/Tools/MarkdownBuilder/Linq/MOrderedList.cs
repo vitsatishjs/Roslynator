@@ -2,40 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class OrderedList : List
+    public class MOrderedList : MList
     {
-        public OrderedList()
+        public MOrderedList()
         {
         }
 
-        public OrderedList(object content)
+        public MOrderedList(object content)
             : base(content)
         {
         }
 
-        public OrderedList(params object[] content)
+        public MOrderedList(params object[] content)
             : base(content)
         {
         }
 
-        public OrderedList(OrderedList other)
+        public MOrderedList(MOrderedList other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.OrderedList;
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            if (content is string s)
-            {
-                return builder.AppendOrderedItem(1, s).AppendLine();
-            }
-            else
-            {
-                return builder.AppendOrderedItems(Elements());
-            }
-        }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
@@ -51,7 +39,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new OrderedList(this);
+            return new MOrderedList(this);
         }
     }
 }

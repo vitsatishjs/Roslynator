@@ -2,21 +2,16 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class Image : Link
+    public class MImage : MLink
     {
-        internal Image(string text, string url, string title = null)
+        internal MImage(string text, string url, string title = null)
             : base(text, url, title)
         {
         }
 
-        public Image(Image other)
+        public MImage(MImage other)
             : base(other)
         {
-        }
-
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendImage(Text, Url, Title);
         }
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
@@ -26,7 +21,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new Image(this);
+            return new MImage(this);
         }
     }
 }

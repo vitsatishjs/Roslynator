@@ -4,23 +4,23 @@ using System;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class HorizontalRule : MElement
+    public class MHorizontalRule : MElement
     {
         private int _count;
 
-        internal HorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
+        internal MHorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
         {
             Style = style;
             Count = count;
             Space = space ?? "";
         }
 
-        public HorizontalRule(HorizontalRuleFormat format)
+        public MHorizontalRule(HorizontalRuleFormat format)
             : this(format.Style, format.Count, format.Space)
         {
         }
 
-        public HorizontalRule(HorizontalRule other)
+        public MHorizontalRule(MHorizontalRule other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -46,11 +46,6 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
 
-        public override MarkdownBuilder AppendTo(MarkdownBuilder builder)
-        {
-            return builder.AppendHorizontalRule(Style, Count, Space);
-        }
-
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
             return writer.WriteHorizontalRule(Style, Count, Space);
@@ -58,7 +53,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override MElement Clone()
         {
-            return new HorizontalRule(this);
+            return new MHorizontalRule(this);
         }
     }
 }

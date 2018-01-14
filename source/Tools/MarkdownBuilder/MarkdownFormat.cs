@@ -10,7 +10,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownFormat(
             EmphasisStyle boldStyle = EmphasisStyle.Asterisk,
             EmphasisStyle italicStyle = EmphasisStyle.Asterisk,
-            ListStyle listStyle = ListStyle.Asterisk,
+            BulletListStyle bulletListStyle = BulletListStyle.Asterisk,
             OrderedListStyle orderedListStyle = OrderedListStyle.Dot,
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
@@ -22,7 +22,7 @@ namespace Pihrtsoft.Markdown
         {
             BoldStyle = boldStyle;
             ItalicStyle = italicStyle;
-            ListStyle = listStyle;
+            BulletListStyle = bulletListStyle;
             OrderedListStyle = orderedListStyle;
             HeadingStyle = headingStyle;
             HeadingOptions = headingOptions;
@@ -38,7 +38,7 @@ namespace Pihrtsoft.Markdown
         internal static MarkdownFormat Debugging { get; } = new MarkdownFormat(
             Default.BoldStyle,
             Default.ItalicStyle,
-            Default.ListStyle,
+            Default.BulletListStyle,
             Default.OrderedListStyle,
             Default.HeadingStyle,
             HeadingOptions.None,
@@ -52,7 +52,7 @@ namespace Pihrtsoft.Markdown
 
         public EmphasisStyle ItalicStyle { get; }
 
-        public ListStyle ListStyle { get; }
+        public BulletListStyle BulletListStyle { get; }
 
         public OrderedListStyle OrderedListStyle { get; }
 
@@ -100,7 +100,7 @@ namespace Pihrtsoft.Markdown
             return other != null
                 && BoldStyle == other.BoldStyle
                 && ItalicStyle == other.ItalicStyle
-                && ListStyle == other.ListStyle
+                && BulletListStyle == other.BulletListStyle
                 && OrderedListStyle == other.OrderedListStyle
                 && HeadingStyle == other.HeadingStyle
                 && HeadingOptions == other.HeadingOptions
@@ -116,7 +116,7 @@ namespace Pihrtsoft.Markdown
             int hashCode = Hash.OffsetBasis;
             hashCode = Hash.Combine((int)BoldStyle, hashCode);
             hashCode = Hash.Combine((int)ItalicStyle, hashCode);
-            hashCode = Hash.Combine((int)ListStyle, hashCode);
+            hashCode = Hash.Combine((int)BulletListStyle, hashCode);
             hashCode = Hash.Combine((int)OrderedListStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingStyle, hashCode);
             hashCode = Hash.Combine((int)HeadingOptions, hashCode);
@@ -143,7 +143,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 boldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -159,7 +159,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 italicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -170,12 +170,12 @@ namespace Pihrtsoft.Markdown
                 HorizontalRuleFormat);
         }
 
-        public MarkdownFormat WithListStyle(ListStyle listStyle)
+        public MarkdownFormat WithBulletListStyle(BulletListStyle bulletListStyle)
         {
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                listStyle,
+                bulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -191,7 +191,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 orderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -207,7 +207,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -223,7 +223,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 headingStyle,
                 HeadingOptions,
@@ -239,7 +239,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 headingOptions,
@@ -255,7 +255,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -271,7 +271,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -287,7 +287,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
@@ -303,7 +303,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownFormat(
                 BoldStyle,
                 ItalicStyle,
-                ListStyle,
+                BulletListStyle,
                 OrderedListStyle,
                 HeadingStyle,
                 HeadingOptions,
