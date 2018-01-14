@@ -20,19 +20,19 @@ namespace Roslynator.CSharp.Refactorings
             {
                 if (selection.Items[i].EqualsValue?.Value != null)
                 {
-                    if (count  == 1)
-                        break;
-
                     count++;
+
+                    if (count  == 2)
+                        break;
                 }
             }
 
             if (count == 0)
                 return;
 
-            context.RegisterRefactoring((count == 1)
-                ? "Remove enum value"
-                : "Remove enum values", cancellationToken => RefactorAsync(context.Document, enumDeclaration, selection, cancellationToken));
+            context.RegisterRefactoring(
+                (count == 1) ? "Remove enum value" : "Remove enum values",
+                cancellationToken => RefactorAsync(context.Document, enumDeclaration, selection, cancellationToken));
         }
 
         private static Task<Document> RefactorAsync(
@@ -41,10 +41,18 @@ namespace Roslynator.CSharp.Refactorings
             SeparatedSyntaxListSelection<EnumMemberDeclarationSyntax> selection,
             CancellationToken cancellationToken)
         {
-            SeparatedSyntaxList<EnumMemberDeclarationSyntax> newMembers = enumDeclaration.Members;
+            SeparatedSyntaxList<EnumMemberDeclarationSyntax> members = enumDeclaration.Members;
+            SeparatedSyntaxList<EnumMemberDeclarationSyntax> newMembers = members;
 
-            for (int i = selection.EndIndex; i < selection.EndIndex; i++)
-                newMembers = newMembers.ReplaceAt(i, newMembers[i].WithEqualsValue(null).WithFormatterAnnotation());
+            for (int i = selection.StartIndex; i <= selection.EndIndex; i++)
+            {
+                EnumMemberDeclarationSyntax newMember = members[i]
+                    .WithEqualsValue(null)
+                    .WithTrailingTrivia(members[i].GetTrailingTrivia())
+                    .WithFormatterAnnotation();
+
+                newMembers = newMembers.ReplaceAt(i, newMember);
+            }
 
             EnumDeclarationSyntax newEnumDeclaration = enumDeclaration.WithMembers(newMembers);
 
