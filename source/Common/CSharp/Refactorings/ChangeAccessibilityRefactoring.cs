@@ -28,14 +28,14 @@ namespace Roslynator.CSharp.Refactorings
             return $"Change accessibility to '{accessibility.GetName()}'";
         }
 
-        public static AccessibilityFlags GetAccessibilityFlags(MemberDeclarationSelection selectedMembers)
+        public static AccessibilityFlags GetAllowedAccessibilityFlags(MemberDeclarationSelection selectedMembers, bool allowOverride = false)
         {
             if (selectedMembers.Count < 2)
                 return AccessibilityFlags.None;
 
             var allFlags = AccessibilityFlags.None;
 
-            AccessibilityFlags fixableFlags = AccessibilityFlags.Public
+            AccessibilityFlags allowedFlags = AccessibilityFlags.Public
                 | AccessibilityFlags.Internal
                 | AccessibilityFlags.Protected
                 | AccessibilityFlags.Private;
@@ -73,9 +73,9 @@ namespace Roslynator.CSharp.Refactorings
                 foreach (Accessibility accessibility2 in Accessibilities)
                 {
                     if (accessibility != accessibility2
-                        && !CSharpUtility.IsAllowedAccessibility(member, accessibility2))
+                        && !CSharpUtility.IsAllowedAccessibility(member, accessibility2, allowOverride: allowOverride))
                     {
-                        fixableFlags &= ~accessibility2.GetAccessibilityFlag();
+                        allowedFlags &= ~accessibility2.GetAccessibilityFlag();
                     }
                 }
             }
@@ -87,12 +87,58 @@ namespace Roslynator.CSharp.Refactorings
                 case AccessibilityFlags.Internal:
                 case AccessibilityFlags.Public:
                     {
-                        fixableFlags &= ~allFlags;
+                        allowedFlags &= ~allFlags;
                         break;
                     }
             }
 
-            return fixableFlags;
+            return allowedFlags;
+        }
+
+        public static ISymbol GetBaseSymbolOrDefault(SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
+        {
+            ISymbol symbol = GetDeclaredSymbol();
+
+            if (symbol != null)
+            {
+                if (!symbol.IsOverride)
+                    return symbol;
+
+                symbol = symbol.BaseOverriddenSymbol();
+
+                if (symbol != null)
+                {
+                    SyntaxNode syntax = symbol.GetSyntaxOrDefault(cancellationToken);
+
+                    if (syntax != null)
+                    {
+                        if (syntax is MemberDeclarationSyntax
+                            || syntax.Kind() == SyntaxKind.VariableDeclarator)
+                        {
+                            return symbol;
+                        }
+                    }
+                }
+            }
+
+            return null;
+
+            ISymbol GetDeclaredSymbol()
+            {
+                if (node is EventFieldDeclarationSyntax eventFieldDeclaration)
+                {
+                    VariableDeclaratorSyntax declarator = eventFieldDeclaration.Declaration?.Variables.SingleOrDefault(shouldThrow: false);
+
+                    if (declarator != null)
+                        return semanticModel.GetDeclaredSymbol(declarator, cancellationToken);
+
+                    return null;
+                }
+                else
+                {
+                    return semanticModel.GetDeclaredSymbol(node, cancellationToken);
+                }
+            }
         }
 
         public static Task<Document> RefactorAsync(
@@ -116,7 +162,7 @@ namespace Roslynator.CSharp.Refactorings
             return document.ReplaceNodeAsync(containingMember, newNode, cancellationToken);
         }
 
-        public static Task<Solution> RefactorAsync(
+        public static async Task<Solution> RefactorAsync(
             Solution solution,
             MemberDeclarationSelection selectedMembers,
             Accessibility newAccessibility,
@@ -127,12 +173,31 @@ namespace Roslynator.CSharp.Refactorings
 
             foreach (MemberDeclarationSyntax member in selectedMembers)
             {
-                if (member.GetModifiers().Contains(SyntaxKind.PartialKeyword))
+                SyntaxTokenList modifiers = member.GetModifiers();
+
+                if (modifiers.Contains(SyntaxKind.PartialKeyword))
                 {
                     ISymbol symbol = semanticModel.GetDeclaredSymbol(member, cancellationToken);
 
                     foreach (SyntaxReference reference in symbol.DeclaringSyntaxReferences)
                         members.Add((MemberDeclarationSyntax)reference.GetSyntax(cancellationToken));
+                }
+                else if (modifiers.ContainsAny(SyntaxKind.AbstractKeyword, SyntaxKind.VirtualKeyword, SyntaxKind.OverrideKeyword))
+                {
+                    ISymbol symbol = GetBaseSymbolOrDefault(member, semanticModel, cancellationToken);
+
+                    if (symbol != null)
+                    {
+                        foreach (MemberDeclarationSyntax member2 in GetMemberDeclarations(symbol, cancellationToken))
+                            members.Add(member2);
+
+                        foreach (MemberDeclarationSyntax member2 in await FindOverridingMemberDeclarationsAsync(symbol, solution, cancellationToken).ConfigureAwait(false))
+                            members.Add(member2);
+                    }
+                    else
+                    {
+                        members.Add(member);
+                    }
                 }
                 else
                 {
@@ -140,10 +205,10 @@ namespace Roslynator.CSharp.Refactorings
                 }
             }
 
-            return solution.ReplaceNodesAsync(
+            return await solution.ReplaceNodesAsync(
                 members,
-                (node, rewrittenNode) => node.WithAccessibility(newAccessibility),
-                cancellationToken);
+                (node, _) => node.WithAccessibility(newAccessibility),
+                cancellationToken).ConfigureAwait(false);
         }
 
         public static Task<Document> RefactorAsync(
@@ -165,36 +230,48 @@ namespace Roslynator.CSharp.Refactorings
         {
             IEnumerable<ISymbol> symbols = await SymbolFinder.FindOverridesAsync(symbol, solution, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            ImmutableArray<MemberDeclarationSyntax> memberDeclarations = GetMemberDeclarations(symbol)
-                .Concat(symbols.SelectMany(GetMemberDeclarations))
+            ImmutableArray<MemberDeclarationSyntax> memberDeclarations = GetMemberDeclarations(symbol, cancellationToken)
+                .Concat(await FindOverridingMemberDeclarationsAsync(symbol, solution, cancellationToken).ConfigureAwait(false))
                 .ToImmutableArray();
 
             return await RefactorAsync(solution, memberDeclarations, newAccessibility, cancellationToken).ConfigureAwait(false);
+        }
 
-            IEnumerable<MemberDeclarationSyntax> GetMemberDeclarations(ISymbol symbol2)
+        private static async Task<IEnumerable<MemberDeclarationSyntax>> FindOverridingMemberDeclarationsAsync(
+            ISymbol symbol,
+            Solution solution,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            IEnumerable<ISymbol> symbols = await SymbolFinder.FindOverridesAsync(symbol, solution, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return symbols.SelectMany(f => GetMemberDeclarations(f, cancellationToken));
+        }
+
+        private static IEnumerable<MemberDeclarationSyntax> GetMemberDeclarations(
+            ISymbol symbol,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            foreach (SyntaxReference syntaxReference in symbol.DeclaringSyntaxReferences)
             {
-                foreach (SyntaxReference syntaxReference in symbol2.DeclaringSyntaxReferences)
+                switch (syntaxReference.GetSyntax(cancellationToken))
                 {
-                    switch (syntaxReference.GetSyntax(cancellationToken))
-                    {
-                        case MemberDeclarationSyntax memberDeclaration:
-                            {
-                                yield return memberDeclaration;
-                                break;
-                            }
-                        case VariableDeclaratorSyntax variableDeclarator:
-                            {
-                                if (variableDeclarator.Parent.Parent is MemberDeclarationSyntax memberDeclaration2)
-                                    yield return memberDeclaration2;
+                    case MemberDeclarationSyntax memberDeclaration:
+                        {
+                            yield return memberDeclaration;
+                            break;
+                        }
+                    case VariableDeclaratorSyntax variableDeclarator:
+                        {
+                            if (variableDeclarator.Parent.Parent is MemberDeclarationSyntax memberDeclaration2)
+                                yield return memberDeclaration2;
 
-                                break;
-                            }
-                        default:
-                            {
-                                Debug.Fail(syntaxReference.GetSyntax(cancellationToken).Kind().ToString());
-                                break;
-                            }
-                    }
+                            break;
+                        }
+                    default:
+                        {
+                            Debug.Fail(syntaxReference.GetSyntax(cancellationToken).Kind().ToString());
+                            break;
+                        }
                 }
             }
         }
@@ -207,7 +284,7 @@ namespace Roslynator.CSharp.Refactorings
         {
             return solution.ReplaceNodesAsync(
                 memberDeclarations,
-                (node, rewrittenNode) => WithAccessibility(node, newAccessibility),
+                (node, _) => WithAccessibility(node, newAccessibility),
                 cancellationToken);
         }
 
