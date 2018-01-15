@@ -60,7 +60,7 @@ namespace Roslynator.CSharp.Refactorings
 
                 SemanticModel semanticModel = await context.GetSemanticModelAsync().ConfigureAwait(false);
 
-                ISymbol symbol = GetSymbol(semanticModel, context.CancellationToken);
+                ISymbol symbol = GetBaseSymbolOrDefault(semanticModel, context.CancellationToken);
 
                 if (symbol != null)
                 {
@@ -79,53 +79,12 @@ namespace Roslynator.CSharp.Refactorings
                 }
             }
 
-            ISymbol GetSymbol(SemanticModel semanticModel, CancellationToken cancellationToken)
+            ISymbol GetBaseSymbolOrDefault(SemanticModel semanticModel, CancellationToken cancellationToken)
             {
                 if (modifiersInfo.HasAbstractOrVirtualOrOverride)
-                {
-                    ISymbol symbol = GetDeclaredSymbol();
-
-                    if (symbol != null)
-                    {
-                        if (!symbol.IsOverride)
-                            return symbol;
-
-                        symbol = symbol.BaseOverriddenSymbol();
-
-                        if (symbol != null)
-                        {
-                            SyntaxNode syntax = symbol.GetSyntaxOrDefault(cancellationToken);
-
-                            if (syntax != null)
-                            {
-                                if (syntax is MemberDeclarationSyntax
-                                    || syntax.Kind() == SyntaxKind.VariableDeclarator)
-                                {
-                                    return symbol;
-                                }
-                            }
-                        }
-                    }
-                }
+                    return ChangeAccessibilityRefactoring.GetBaseSymbolOrDefault(node, semanticModel, cancellationToken);
 
                 return null;
-
-                ISymbol GetDeclaredSymbol()
-                {
-                    if (node is EventFieldDeclarationSyntax eventFieldDeclaration)
-                    {
-                        VariableDeclaratorSyntax declarator = eventFieldDeclaration.Declaration?.Variables.SingleOrDefault(shouldThrow: false);
-
-                        if (declarator != null)
-                            return semanticModel.GetDeclaredSymbol(declarator, cancellationToken);
-
-                        return null;
-                    }
-                    else
-                    {
-                        return semanticModel.GetDeclaredSymbol(node, cancellationToken);
-                    }
-                }
             }
         }
     }
