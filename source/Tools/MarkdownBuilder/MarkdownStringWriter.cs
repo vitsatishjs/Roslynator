@@ -49,23 +49,6 @@ namespace Pihrtsoft.Markdown
             StringBuilder.Append(value);
         }
 
-        private void ThrowIfClosed()
-        {
-            if (!_isOpen)
-                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
-        }
-
-        public override void Close()
-        {
-            _isOpen = false;
-        }
-
-        internal override void Reset()
-        {
-            StringBuilder.Clear();
-            base.Reset();
-        }
-
         protected override void WriteValue(int value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
@@ -104,6 +87,23 @@ namespace Pihrtsoft.Markdown
         protected override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
             throw new InvalidOperationException();
+        }
+
+        private void ThrowIfClosed()
+        {
+            if (!_isOpen)
+                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
+        }
+
+        public override void Close()
+        {
+            _isOpen = false;
+        }
+
+        internal override void Reset()
+        {
+            StringBuilder.Clear();
+            base.Reset();
         }
     }
 }
