@@ -9,66 +9,70 @@ namespace Roslynator.CSharp.Syntax
 {
     internal struct ModifiersInfo
     {
+        private readonly ModifierFlags _flags;
+
         private static ModifiersInfo Default { get; } = new ModifiersInfo();
 
         private ModifiersInfo(SyntaxNode node, SyntaxTokenList modifiers)
         {
             Node = node;
             Modifiers = modifiers;
-            ModifierFlags = GetModifierFlags(modifiers);
+            _flags = GetModifierFlags(modifiers);
         }
 
         public SyntaxNode Node { get; }
 
         public SyntaxTokenList Modifiers { get; }
 
-        internal ModifierFlags ModifierFlags { get; }
+        internal bool Any(ModifierFlags flags) => _flags.Any(flags);
 
-        public bool HasNew => ModifierFlags.ContainsAny(ModifierFlags.New);
+        internal bool All(ModifierFlags flags) => _flags.All(flags);
 
-        public bool HasPublic => ModifierFlags.ContainsAny(ModifierFlags.Public);
+        public bool HasNew => Any(ModifierFlags.New);
 
-        public bool HasPrivate => ModifierFlags.ContainsAny(ModifierFlags.Private);
+        public bool HasPublic => Any(ModifierFlags.Public);
 
-        public bool HasProtected => ModifierFlags.ContainsAny(ModifierFlags.Protected);
+        public bool HasPrivate => Any(ModifierFlags.Private);
 
-        public bool HasInternal => ModifierFlags.ContainsAny(ModifierFlags.Internal);
+        public bool HasProtected => Any(ModifierFlags.Protected);
 
-        public bool HasConst => ModifierFlags.ContainsAny(ModifierFlags.Const);
+        public bool HasInternal => Any(ModifierFlags.Internal);
 
-        public bool HasStatic => ModifierFlags.ContainsAny(ModifierFlags.Static);
+        public bool HasConst => Any(ModifierFlags.Const);
 
-        public bool HasVirtual => ModifierFlags.ContainsAny(ModifierFlags.Virtual);
+        public bool HasStatic => Any(ModifierFlags.Static);
 
-        public bool HasSealed => ModifierFlags.ContainsAny(ModifierFlags.Sealed);
+        public bool HasVirtual => Any(ModifierFlags.Virtual);
 
-        public bool HasOverride => ModifierFlags.ContainsAny(ModifierFlags.Override);
+        public bool HasSealed => Any(ModifierFlags.Sealed);
 
-        public bool HasAbstract => ModifierFlags.ContainsAny(ModifierFlags.Abstract);
+        public bool HasOverride => Any(ModifierFlags.Override);
 
-        public bool HasReadOnly => ModifierFlags.ContainsAny(ModifierFlags.ReadOnly);
+        public bool HasAbstract => Any(ModifierFlags.Abstract);
 
-        public bool HasExtern => ModifierFlags.ContainsAny(ModifierFlags.Extern);
+        public bool HasReadOnly => Any(ModifierFlags.ReadOnly);
 
-        public bool HasUnsafe => ModifierFlags.ContainsAny(ModifierFlags.Unsafe);
+        public bool HasExtern => Any(ModifierFlags.Extern);
 
-        public bool HasVolatile => ModifierFlags.ContainsAny(ModifierFlags.Volatile);
+        public bool HasUnsafe => Any(ModifierFlags.Unsafe);
 
-        public bool HasAsync => ModifierFlags.ContainsAny(ModifierFlags.Async);
+        public bool HasVolatile => Any(ModifierFlags.Volatile);
 
-        public bool HasPartial => ModifierFlags.ContainsAny(ModifierFlags.Partial);
+        public bool HasAsync => Any(ModifierFlags.Async);
 
-        public bool HasRef => ModifierFlags.ContainsAny(ModifierFlags.Ref);
+        public bool HasPartial => Any(ModifierFlags.Partial);
 
-        public bool HasOut => ModifierFlags.ContainsAny(ModifierFlags.Out);
+        public bool HasRef => Any(ModifierFlags.Ref);
 
-        public bool HasIn => ModifierFlags.ContainsAny(ModifierFlags.In);
+        public bool HasOut => Any(ModifierFlags.Out);
 
-        public bool HasParams => ModifierFlags.ContainsAny(ModifierFlags.Params);
+        public bool HasIn => Any(ModifierFlags.In);
+
+        public bool HasParams => Any(ModifierFlags.Params);
 
         public bool HasAbstractOrVirtualOrOverride
         {
-            get { return ModifierFlags.ContainsAny(ModifierFlags.AbstractVirtualOverride); }
+            get { return Any(ModifierFlags.AbstractVirtualOverride); }
         }
 
         public Accessibility Accessibility

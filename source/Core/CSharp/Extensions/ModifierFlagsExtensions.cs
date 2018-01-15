@@ -4,12 +4,12 @@ namespace Roslynator.CSharp
 {
     internal static class ModifierFlagsExtensions
     {
-        public static bool ContainsAny(this ModifierFlags flags, ModifierFlags value)
+        public static bool Any(this ModifierFlags flags, ModifierFlags value)
         {
             return (flags & value) != 0;
         }
 
-        public static bool ContainsAll(this ModifierFlags flags, ModifierFlags value)
+        public static bool All(this ModifierFlags flags, ModifierFlags value)
         {
             return (flags & value) != value;
         }
