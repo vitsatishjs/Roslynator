@@ -5,8 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    //TODO: MFactory
-    public static class MarkdownFactory
+    public static class MFactory
     {
         public static MDocument Document()
         {

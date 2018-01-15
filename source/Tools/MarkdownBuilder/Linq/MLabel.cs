@@ -2,28 +2,28 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MImage : MLink
+    public class MLabel : MLink
     {
-        internal MImage(string text, string url, string title = null)
+        internal MLabel(string text, string url, string title = null)
             : base(text, url, title)
         {
         }
 
-        public MImage(MImage other)
+        public MLabel(MLabel other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.Image;
+        public override MarkdownKind Kind => MarkdownKind.Label;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteImage(Text, Url, Title);
+            return writer.WriteLabel(Text, Url, Title);
         }
 
         internal override MElement Clone()
         {
-            return new MImage(this);
+            return new MLabel(this);
         }
     }
 }

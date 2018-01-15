@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown.Linq
             set { _value = value ?? throw new ArgumentNullException(nameof(value)); }
         }
 
-        public override MarkdownKind Kind => MarkdownKind.RawText;
+        public override MarkdownKind Kind => MarkdownKind.Raw;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {

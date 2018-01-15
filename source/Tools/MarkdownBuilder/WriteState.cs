@@ -6,6 +6,7 @@ using System;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: State
     [Flags]
     internal enum WriteState
     {

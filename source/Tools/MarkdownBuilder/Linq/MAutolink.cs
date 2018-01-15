@@ -5,29 +5,23 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
-    public class MLink : MElement
+    [DebuggerDisplay("{Url,nq}")]
+    public class MAutolink : MElement
     {
         private string _url;
 
-        public MLink(string text, string url, string title = null)
+        public MAutolink(string url)
         {
-            Text = text;
             Url = url;
-            Title = title;
         }
 
-        public MLink(MLink other)
+        public MAutolink(MAutolink other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Text = other.Text;
             _url = other.Url;
-            Title = other.Title;
         }
-
-        public string Text { get; set; }
 
         public string Url
         {
@@ -43,18 +37,16 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public string Title { get; set; }
-
-        public override MarkdownKind Kind => MarkdownKind.Link;
+        public override MarkdownKind Kind => MarkdownKind.Autolink;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteLink(Text, Url, Title);
+            return writer.WriteAutolink(Url);
         }
 
         internal override MElement Clone()
         {
-            return new MLink(this);
+            return new MAutolink(this);
         }
     }
 }

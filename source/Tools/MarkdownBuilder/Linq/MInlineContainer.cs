@@ -40,7 +40,7 @@ namespace Pihrtsoft.Markdown.Linq
             switch (element.Kind)
             {
                 case MarkdownKind.Text:
-                case MarkdownKind.RawText:
+                case MarkdownKind.Raw:
                 case MarkdownKind.Link:
                 case MarkdownKind.LinkReference:
                 case MarkdownKind.Image:
