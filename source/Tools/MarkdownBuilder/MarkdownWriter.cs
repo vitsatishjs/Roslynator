@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Xml;
 using Pihrtsoft.Markdown.Linq;
 using static Pihrtsoft.Markdown.Linq.MFactory;
 using static Pihrtsoft.Markdown.TextUtility;
@@ -16,11 +15,14 @@ namespace Pihrtsoft.Markdown
 {
     public abstract class MarkdownWriter : IDisposable
     {
-        private const WriteState InitialState = WriteState.StartOfDocument | WriteState.StartOfLine;
-
         private bool _disposed;
+        private bool _startOfDocument = true;
+        private bool _startOfLine = true;
+        private bool _emptyLine;
+        private bool _pendingEmptyLine;
 
-        private WriteState _state = InitialState;
+        private bool _indentedCodeBlock;
+        private int _listItemLevel;
 
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
         {
@@ -37,50 +39,6 @@ namespace Pihrtsoft.Markdown
         public int QuoteLevel { get; private set; }
 
         protected internal abstract int Length { get; set; }
-
-        private string NewLineChars => Settings.NewLineChars;
-
-        private NewLineHandling NewLineHandling => Settings.NewLineHandling;
-
-        private string BoldDelimiter => BoldDelimiter(Format.BoldStyle);
-
-        private string ItalicDelimiter => ItalicDelimiter(Format.ItalicStyle);
-
-        private BulletListStyle BulletListStyle => Format.BulletListStyle;
-
-        private string BulletItemStart => BulletItemStart(BulletListStyle);
-
-        private OrderedListStyle OrderedListStyle => Format.OrderedListStyle;
-
-        private string OrderedItemStart => OrderedItemStart(OrderedListStyle);
-
-        private bool AddEmptyLineBeforeHeading => Format.EmptyLineBeforeHeading;
-
-        private bool AddEmptyLineAfterHeading => Format.EmptyLineAfterHeading;
-
-        private bool AddEmptyLineBeforeCodeBlock => Format.EmptyLineBeforeCodeBlock;
-
-        private bool AddEmptyLineAfterCodeBlock => Format.EmptyLineAfterCodeBlock;
-
-        private bool FormatTableHeader => Settings.FormatTableHeader;
-
-        private bool FormatTableContent => Settings.FormatTableContent;
-
-        private bool TableOuterDelimiter => Format.TableOuterDelimiter;
-
-        private bool TablePadding => Format.TablePadding;
-
-        private bool UnderlineHeading1 => Format.UnderlineHeading1;
-
-        private bool UnderlineHeading2 => Format.UnderlineHeading2;
-
-        private bool CloseHeading => Format.CloseHeading;
-
-        private HeadingStyle HeadingStyle => Format.HeadingStyle;
-
-        private CodeFenceStyle CodeFenceStyle => Format.CodeFenceStyle;
-
-        private CharReferenceFormat CharReferenceFormat => Format.CharReferenceFormat;
 
         public static MarkdownWriter Create(StringBuilder output, MarkdownWriterSettings settings = null)
         {
@@ -120,97 +78,53 @@ namespace Pihrtsoft.Markdown
             Dispose();
         }
 
-        private void AddState(WriteState state)
-        {
-            Debug.Assert((_state & state) == 0, $"State {_state & state} is already set.");
-
-            _state |= state;
-        }
-
-        private bool TryAddState(WriteState state)
-        {
-            if ((_state & state) != 0)
-            {
-                AddState(state);
-                return true;
-            }
-
-            return false;
-        }
-
-        private void AddStateIf(bool condition, WriteState state)
-        {
-            if (condition)
-                AddState(state);
-        }
-
-        private void RemoveState(WriteState state)
-        {
-            _state &= ~state;
-        }
-
-        private bool HasState(WriteState state)
-        {
-            return (_state & state) != 0;
-        }
-
         internal virtual void Reset()
         {
-            _state = InitialState;
+            _startOfDocument = true;
+            _startOfLine = true;
         }
 
         public MarkdownWriter WriteBold(object content)
         {
-            return WriteDelimiter(WriteState.Bold, BoldDelimiter, content);
+            return WriteDelimiter(BoldDelimiter(Format.BoldStyle), content);
         }
 
         public MarkdownWriter WriteBold(params object[] content)
         {
-            return WriteDelimiter(WriteState.Bold, BoldDelimiter, content);
+            return WriteDelimiter(BoldDelimiter(Format.BoldStyle), content);
         }
 
         public MarkdownWriter WriteItalic(object content)
         {
-            return WriteDelimiter(WriteState.Italic, ItalicDelimiter, content);
+            return WriteDelimiter(ItalicDelimiter(Format.ItalicStyle), content);
         }
 
         public MarkdownWriter WriteItalic(params object[] content)
         {
-            return WriteDelimiter(WriteState.Italic, ItalicDelimiter, content);
+            return WriteDelimiter(ItalicDelimiter(Format.ItalicStyle), content);
         }
 
         public MarkdownWriter WriteStrikethrough(object content)
         {
-            return WriteDelimiter(WriteState.Strikethrough, StrikethroughDelimiter, content);
+            return WriteDelimiter(StrikethroughDelimiter, content);
         }
 
         public MarkdownWriter WriteStrikethrough(params object[] content)
         {
-            return WriteDelimiter(WriteState.Strikethrough, StrikethroughDelimiter, content);
+            return WriteDelimiter(StrikethroughDelimiter, content);
         }
 
-        private MarkdownWriter WriteDelimiter(WriteState state, string delimiter, object value)
+        private MarkdownWriter WriteDelimiter(string delimiter, object value)
         {
-            bool isSet = TryAddState(state);
-
-            if (isSet)
-            {
-                Write(value);
-            }
-            else
-            {
-                WriteSyntax(delimiter);
-                Write(value);
-                WriteSyntax(delimiter);
-                RemoveState(state);
-            }
+            WriteSyntax(delimiter);
+            Write(value);
+            WriteSyntax(delimiter);
 
             return this;
         }
 
         public MarkdownWriter WriteInlineCode(string value)
         {
-            AddState(WriteState.Code);
             WriteSyntax(CodeDelimiter);
 
             if (!string.IsNullOrEmpty(value))
@@ -225,7 +139,6 @@ namespace Pihrtsoft.Markdown
             }
 
             WriteSyntax(CodeDelimiter);
-            RemoveState(WriteState.Code);
             return this;
         }
 
@@ -303,17 +216,15 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidHeadingLevel(level);
 
-            bool underline = (level == 1 && UnderlineHeading1)
-                || (level == 2 && UnderlineHeading2);
+            bool underline = (level == 1 && Format.UnderlineHeading1)
+                || (level == 2 && Format.UnderlineHeading2);
 
             WriteLineIfNecessary();
-            WriteEmptyLineIf(AddEmptyLineBeforeHeading);
-
-            AddState(WriteState.Heading);
+            WriteEmptyLineIf(Format.EmptyLineBeforeHeading);
 
             if (!underline)
             {
-                WriteRaw(HeadingStartChar(HeadingStyle), level);
+                WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
                 WriteSpace();
             }
 
@@ -321,10 +232,10 @@ namespace Pihrtsoft.Markdown
 
             if (length > 0
                 && !underline
-                && CloseHeading)
+                && Format.CloseHeading)
             {
                 WriteSpace();
-                WriteRaw(HeadingStartChar(HeadingStyle), level);
+                WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
             }
 
             WriteLineIfNecessary();
@@ -335,14 +246,15 @@ namespace Pihrtsoft.Markdown
                 WriteLine();
             }
 
-            RemoveState(WriteState.Heading);
-            AddStateIf(AddEmptyLineAfterHeading, WriteState.PendingEmptyLine);
+            if (Format.EmptyLineAfterHeading)
+                _pendingEmptyLine = true;
+
             return this;
         }
 
         public MarkdownWriter WriteBulletItem(object content)
         {
-            return WriteItem(state: WriteState.BulletItem, prefix1: null, prefix2: BulletItemStart, content: content);
+            return WriteItem(prefix1: null, prefix2: BulletItemStart(Format.BulletListStyle), content: content);
         }
 
         public MarkdownWriter WriteBulletItem(params object[] content)
@@ -354,7 +266,7 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidItemNumber(number);
 
-            return WriteItem(state: WriteState.OrderedItem, prefix1: number.ToString(), prefix2: OrderedItemStart, content: content);
+            return WriteItem(prefix1: number.ToString(), prefix2: OrderedItemStart(Format.OrderedListStyle), content: content);
         }
 
         public MarkdownWriter WriteOrderedItem(int number, params object[] content)
@@ -364,7 +276,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteTaskItem(object content)
         {
-            return WriteItem(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(), content: content);
+            return WriteItem(prefix1: null, prefix2: TaskItemStart(), content: content);
         }
 
         public MarkdownWriter WriteTaskItem(params object[] content)
@@ -374,7 +286,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteCompletedTaskItem(object content)
         {
-            return WriteItem(state: WriteState.TaskItem, prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
+            return WriteItem(prefix1: null, prefix2: TaskItemStart(isCompleted: true), content: content);
         }
 
         public MarkdownWriter WriteCompletedTaskItem(params object[] content)
@@ -382,15 +294,18 @@ namespace Pihrtsoft.Markdown
             return WriteCompletedTaskItem((object)content);
         }
 
-        private MarkdownWriter WriteItem(WriteState state, string prefix1, string prefix2, object content)
+        private MarkdownWriter WriteItem(string prefix1, string prefix2, object content)
         {
             WriteLineIfNecessary();
             WriteSyntax(prefix1);
             WriteSyntax(prefix2);
-            AddState(state);
+
+            _listItemLevel++;
+
             Write(content);
             WriteLineIfNecessary();
-            RemoveState(state);
+
+            _listItemLevel--;
             return this;
         }
 
@@ -500,10 +415,8 @@ namespace Pihrtsoft.Markdown
 
             Error.ThrowOnInvalidUrl(url);
 
-            AddState(WriteState.Image);
             WriteSyntax("!");
             WriteLinkCore(text, url, title);
-            RemoveState(WriteState.Image);
             return this;
         }
 
@@ -514,9 +427,7 @@ namespace Pihrtsoft.Markdown
 
             Error.ThrowOnInvalidUrl(url);
 
-            AddState(WriteState.Link);
             WriteLinkCore(text, url, title);
-            RemoveState(WriteState.Link);
             return this;
         }
 
@@ -539,26 +450,20 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidUrl(url);
 
-            AddState(WriteState.Autolink);
             WriteAngleBrackets(url);
-            RemoveState(WriteState.Autolink);
             return this;
         }
 
         public MarkdownWriter WriteImageReference(string text, string label)
         {
             WriteSyntax("!");
-            AddState(WriteState.ImageReference);
             WriteLinkReferenceCore(text, label);
-            RemoveState(WriteState.ImageReference);
             return this;
         }
 
         public MarkdownWriter WriteLinkReference(string text, string label = null)
         {
-            AddState(WriteState.LinkReference);
             WriteLinkReferenceCore(text, label);
-            RemoveState(WriteState.LinkReference);
             return this;
         }
 
@@ -574,13 +479,11 @@ namespace Pihrtsoft.Markdown
             Error.ThrowOnInvalidUrl(url);
 
             WriteLineIfNecessary();
-            AddState(WriteState.Label);
             WriteSquareBrackets(label);
             WriteSyntax(": ");
             WriteAngleBrackets(url);
             WriteLinkTitle(title);
             WriteLineIfNecessary();
-            RemoveState(WriteState.Label);
             return this;
         }
 
@@ -613,21 +516,22 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteIndentedCodeBlock(string text)
         {
             WriteLineIfNecessary();
-            WriteEmptyLineIf(AddEmptyLineBeforeCodeBlock);
-            AddState(WriteState.IndentedCodeBlock);
+            WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
+            _indentedCodeBlock = true;
             WriteRaw(text);
             WriteLineIfNecessary();
-            RemoveState(WriteState.IndentedCodeBlock);
-            AddStateIf(AddEmptyLineAfterCodeBlock, WriteState.PendingEmptyLine);
+            _indentedCodeBlock = false;
+
+            if (Format.EmptyLineAfterCodeBlock)
+                _pendingEmptyLine = true;
+
             return this;
         }
 
         public MarkdownWriter WriteFencedCodeBlock(string text, string info = null)
         {
             WriteLineIfNecessary();
-            WriteEmptyLineIf(AddEmptyLineBeforeCodeBlock);
-
-            AddState(WriteState.FencedCodeBlock);
+            WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
 
             WriteCodeFence();
             WriteSyntax(info);
@@ -639,31 +543,30 @@ namespace Pihrtsoft.Markdown
             WriteCodeFence();
             WriteLine();
 
-            RemoveState(WriteState.FencedCodeBlock);
-            AddStateIf(AddEmptyLineAfterCodeBlock, WriteState.PendingEmptyLine);
+            if (Format.EmptyLineAfterCodeBlock)
+                _pendingEmptyLine = true;
+
             return this;
         }
 
         private MarkdownWriter WriteCodeFence()
         {
-            switch (CodeFenceStyle)
+            switch (Format.CodeFenceStyle)
             {
                 case CodeFenceStyle.Backtick:
                     return WriteSyntax("```");
                 case CodeFenceStyle.Tilde:
                     return WriteSyntax("~~~");
                 default:
-                    throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CodeFenceStyle));
+                    throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CodeFenceStyle));
             }
         }
 
         public MarkdownWriter WriteBlockQuote(object content)
         {
             QuoteLevel++;
-            AddState(WriteState.BlockQuote);
             Write(content);
             WriteLineIfNecessary();
-            RemoveState(WriteState.BlockQuote);
             QuoteLevel--;
             return this;
         }
@@ -678,8 +581,6 @@ namespace Pihrtsoft.Markdown
             Error.ThrowOnInvalidHorizontalRuleCount(count);
 
             WriteLineIfNecessary();
-
-            AddState(WriteState.HorizontalRule);
 
             char ch = HorizontalRuleChar(style);
 
@@ -700,7 +601,6 @@ namespace Pihrtsoft.Markdown
             }
 
             WriteLine();
-            RemoveState(WriteState.HorizontalRule);
             return this;
         }
 
@@ -716,8 +616,6 @@ namespace Pihrtsoft.Markdown
             if (columns == null)
                 return this;
 
-            AddState(WriteState.Table);
-
             using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
                 if (en.MoveNext())
@@ -729,7 +627,6 @@ namespace Pihrtsoft.Markdown
                 }
             }
 
-            RemoveState(WriteState.Table);
             return this;
         }
 
@@ -788,11 +685,11 @@ namespace Pihrtsoft.Markdown
 
                 WriteTableCellStart(isFirst, isLast, columns[i].IsWhiteSpace);
 
-                if (TablePadding)
+                if (Format.TablePadding)
                 {
                     WriteSpace();
                 }
-                else if (FormatTableHeader
+                else if (Settings.FormatTableHeader
                     && alignment == Alignment.Center)
                 {
                     WriteSpace();
@@ -800,13 +697,13 @@ namespace Pihrtsoft.Markdown
 
                 int width = WriteGetLength(cellContent);
 
-                if (FormatTableHeader)
+                if (Settings.FormatTableHeader)
                 {
                     int minimalWidth = Math.Max(width, 3);
 
                     WritePadRight(width, columns[i].Width, minimalWidth);
 
-                    if (!TablePadding
+                    if (!Format.TablePadding
                         && alignment != Alignment.Left)
                     {
                         WriteSpace();
@@ -840,7 +737,7 @@ namespace Pihrtsoft.Markdown
 
                 WriteSyntax("---");
 
-                if (FormatTableHeader)
+                if (Settings.FormatTableHeader)
                     WritePadRight(3, columns[i].Width, 3, '-');
 
                 if (column.Alignment != Alignment.Left)
@@ -854,7 +751,7 @@ namespace Pihrtsoft.Markdown
 
                 if (isLast)
                 {
-                    if (TableOuterDelimiter
+                    if (Format.TableOuterDelimiter
                         || columns[i].IsWhiteSpace)
                     {
                         WriteSyntax(TableDelimiter);
@@ -916,7 +813,7 @@ namespace Pihrtsoft.Markdown
 
                 int length = WriteGetLength(cell);
 
-                if (FormatTableContent)
+                if (Settings.FormatTableContent)
                     WritePadRight(length, columns[i].Width);
 
                 WriteTableCellEnd(isLast);
@@ -929,7 +826,7 @@ namespace Pihrtsoft.Markdown
             {
                 WriteLineIfNecessary();
 
-                if (TableOuterDelimiter
+                if (Format.TableOuterDelimiter
                     || isLast
                     || isWhiteSpace)
                 {
@@ -946,7 +843,7 @@ namespace Pihrtsoft.Markdown
         {
             if (isLast)
             {
-                if (TableOuterDelimiter)
+                if (Format.TableOuterDelimiter)
                 {
                     WriteTablePadding();
                     WriteSyntax(TableDelimiter);
@@ -964,7 +861,7 @@ namespace Pihrtsoft.Markdown
 
         private void WriteTablePadding()
         {
-            if (TablePadding)
+            if (Format.TablePadding)
                 WriteSpace();
         }
 
@@ -980,18 +877,18 @@ namespace Pihrtsoft.Markdown
         {
             WriteSyntax("&#");
 
-            if (CharReferenceFormat == CharReferenceFormat.Hexadecimal)
+            if (Format.CharReferenceFormat == CharReferenceFormat.Hexadecimal)
             {
                 WriteSyntax("x");
                 WriteRaw(number.ToString("x", CultureInfo.InvariantCulture));
             }
-            else if (CharReferenceFormat == CharReferenceFormat.Decimal)
+            else if (Format.CharReferenceFormat == CharReferenceFormat.Decimal)
             {
                 WriteRaw(number.ToString(CultureInfo.InvariantCulture));
             }
             else
             {
-                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CharReferenceFormat));
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CharReferenceFormat));
             }
 
             WriteSyntax(";");
@@ -1008,11 +905,9 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteComment(string value)
         {
-            AddState(WriteState.Comment);
             WriteSyntax("<!-- ");
             WriteRaw(value);
             WriteSyntax(" -->");
-            RemoveState(WriteState.Comment);
             return this;
         }
 
@@ -1140,7 +1035,7 @@ namespace Pihrtsoft.Markdown
 
             void WriteLine(int startIndex, int index)
             {
-                if (NewLineHandling == NewLineHandling.Replace)
+                if (Settings.NewLineHandling == NewLineHandling.Replace)
                 {
                     index--;
                     if (index > 0
@@ -1153,7 +1048,7 @@ namespace Pihrtsoft.Markdown
                 BeforeWrite();
                 WriteString(value, startIndex, index - startIndex);
 
-                if (NewLineHandling == NewLineHandling.Replace)
+                if (Settings.NewLineHandling == NewLineHandling.Replace)
                 {
                     this.WriteLine();
                 }
@@ -1216,7 +1111,7 @@ namespace Pihrtsoft.Markdown
 
         private void WriteLineIfNecessary()
         {
-            if (!HasState(WriteState.StartOfLine))
+            if (!_startOfLine)
                 WriteLine();
         }
 
@@ -1228,8 +1123,11 @@ namespace Pihrtsoft.Markdown
 
         private void WriteEmptyLine()
         {
-            if (!HasState(WriteState.StartOfDocument | WriteState.EmptyLine))
+            if (!_startOfDocument
+                && !_emptyLine)
+            {
                 WriteLine();
+            }
         }
 
         private MarkdownWriter WriteRaw(char value)
@@ -1275,48 +1173,50 @@ namespace Pihrtsoft.Markdown
 
         public virtual MarkdownWriter WriteLine()
         {
-            WriteString(NewLineChars);
+            WriteString(Settings.NewLineChars);
             AfterWriteLine();
             return this;
         }
 
         private void AfterWriteLine()
         {
-            RemoveState(WriteState.PendingEmptyLine);
+            _pendingEmptyLine = false;
 
-            if (HasState(WriteState.StartOfLine))
+            if (_startOfLine)
             {
-                AddState(WriteState.EmptyLine);
+                _emptyLine = true;
             }
             else
             {
-                AddState(WriteState.StartOfLine);
+                _startOfLine = true;
             }
         }
 
         private void BeforeWrite()
         {
-            if (HasState(WriteState.PendingEmptyLine))
+            if (_pendingEmptyLine)
             {
                 WriteIndentation();
                 WriteLine();
             }
-            else if (HasState(WriteState.StartOfLine))
+            else if (_startOfLine)
             {
                 WriteIndentation();
-                RemoveState(WriteState.StartOfDocument | WriteState.StartOfLine | WriteState.EmptyLine);
+                _startOfDocument = false;
+                _startOfLine = false;
+                _emptyLine = false;
             }
         }
 
         private void WriteIndentation()
         {
-            for (int i = 1; i <= QuoteLevel; i++)
+            for (int i = 0; i < QuoteLevel; i++)
                 WriteString(BlockQuoteStart);
 
-            if (HasState(WriteState.BulletItem | WriteState.OrderedItem | WriteState.TaskItem))
+            for (int i = 0; i < _listItemLevel; i++)
                 WriteString("  ");
 
-            if (HasState(WriteState.IndentedCodeBlock))
+            if (_indentedCodeBlock)
                 WriteString("    ");
         }
 

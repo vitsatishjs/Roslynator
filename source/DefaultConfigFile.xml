@@ -197,6 +197,7 @@
       <Refactoring Id="RR0196" IsEnabled="true" /> <!-- MergeIfWithParentIf -->
       <Refactoring Id="RR0197" IsEnabled="true" /> <!-- InitializeFieldFromConstructor -->
       <Refactoring Id="RR0198" IsEnabled="true" /> <!-- InlineProperty -->
+      <Refactoring Id="RR0199" IsEnabled="true" /> <!-- RemoveEnumMemberValue -->
     </Refactorings>
     <CodeFixes>
       <CodeFix Id="RCF0001" IsEnabled="true" /> <!-- RemoveUnusedVariable (fixes CS0168, CS0219) -->

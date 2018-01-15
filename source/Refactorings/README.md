@@ -107,6 +107,7 @@
 | RR0099 | [Remove condition from last else clause](../../docs/refactorings/RR0099.md) | &#x2713; |
 | RR0100 | [Remove directive and related directives](../../docs/refactorings/RR0100.md) | &#x2713; |
 | RR0101 | [Remove empty lines](../../docs/refactorings/RR0101.md) | &#x2713; |
+| RR0199 | [Remove enum member value(s)](../../docs/refactorings/RR0199.md) | &#x2713; |
 | RR0102 | [Remove interpolation](../../docs/refactorings/RR0102.md) | &#x2713; |
 | RR0103 | [Remove member](../../docs/refactorings/RR0103.md) | &#x2713; |
 | RR0104 | [Remove member declarations above/below](../../docs/refactorings/RR0104.md) | &#x2713; |
