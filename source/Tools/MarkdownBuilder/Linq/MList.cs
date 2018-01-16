@@ -24,18 +24,5 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         internal override bool AllowStringConcatenation => false;
-
-        internal override void ValidateElement(MElement element)
-        {
-            switch (element.Kind)
-            {
-                case MarkdownKind.BulletItem:
-                case MarkdownKind.OrderedItem:
-                case MarkdownKind.TaskItem:
-                    return;
-            }
-
-            base.ValidateElement(element);
-        }
     }
 }

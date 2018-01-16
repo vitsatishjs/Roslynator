@@ -86,6 +86,19 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        internal void WriteContentTo(MarkdownWriter writer)
+        {
+            if (content is string s)
+            {
+                writer.Write(s);
+            }
+            else
+            {
+                foreach (MElement element in Elements())
+                    element.WriteTo(writer);
+            }
+        }
+
         public IEnumerable<MElement> Elements()
         {
             MElement e = LastElement;

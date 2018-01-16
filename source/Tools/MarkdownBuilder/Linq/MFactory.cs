@@ -423,10 +423,10 @@ namespace Pihrtsoft.Markdown.Linq
 
         public static MElement LinkOrText(string text, string url = null, string title = null)
         {
-            if (string.IsNullOrEmpty(url))
-                return new MText(text);
+            if (!string.IsNullOrEmpty(url))
+                return new MLink(text, url, title);
 
-            return new MLink(text, url, title);
+            return new MText(text);
         }
 
         public static MFencedCodeBlock FencedCodeBlock(string value, string info = null)

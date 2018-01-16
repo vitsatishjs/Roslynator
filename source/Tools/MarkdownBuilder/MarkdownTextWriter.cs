@@ -118,7 +118,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        protected override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
+        protected internal override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
             return TableAnalyzer.Analyze(rows, Settings, _writer.FormatProvider);
         }
