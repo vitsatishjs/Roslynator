@@ -84,7 +84,7 @@ namespace Pihrtsoft.Markdown
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected internal override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
+        protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
             throw new InvalidOperationException();
         }

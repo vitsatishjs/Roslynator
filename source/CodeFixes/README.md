@@ -69,8 +69,8 @@
 | RCF0024 | Remove property or field initializer | [CS0573](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0573) | &#x2713; |
 | RCF0028 | Remove redundant assignment | [CS1717](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1717) | &#x2713; |
 | RCF0027 | Remove 'ref' modifier | [CS0192](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0192), [CS1615](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1615), CS1988, [CS1623](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1623) | &#x2713; |
-| RCF0057 | Remove return expression | [CS0127](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0127), CS1997 |  |
-| RCF0052 | Remove 'return' keyword | [CS0127](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0127), CS1997 |  |
+| RCF0057 | Remove return expression | [CS0127](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0127), CS1997 | \- |
+| RCF0052 | Remove 'return' keyword | [CS0127](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0127), CS1997 | \- |
 | RCF0088 | Remove semicolon | [CS1597](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1597) | &#x2713; |
 | RCF0060 | Remove 'this' modifier | [CS1100](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1100), [CS1105](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1105), [CS1106](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1106) | &#x2713; |
 | RCF0061 | Remove type parameter | [CS0693](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0693) | &#x2713; |

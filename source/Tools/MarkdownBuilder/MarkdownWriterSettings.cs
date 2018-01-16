@@ -51,9 +51,13 @@ namespace Pihrtsoft.Markdown
 
         internal TableOptions TableOptions => Format.TableOptions;
 
-        internal bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
+        internal bool FormatTableHeader => Format.FormatTableHeader;
 
-        internal bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
+        internal bool FormatTableContent => Format.FormatTableContent;
+
+        internal bool AddEmptyLineBeforeTable => Format.EmptyLineBeforeTable;
+
+        internal bool AddEmptyLineAfterTable => Format.EmptyLineAfterTable;
 
         internal bool TableOuterDelimiter => Format.TableOuterDelimiter;
 

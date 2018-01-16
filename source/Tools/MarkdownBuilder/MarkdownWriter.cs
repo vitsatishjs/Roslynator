@@ -25,6 +25,11 @@ namespace Pihrtsoft.Markdown
         private int _headingPosition = -1;
         private int _headingLevel = -1;
 
+        private IReadOnlyList<TableColumnInfo> _tableColumns;
+        private int _tableRowIndex = -1;
+        private int _tableColumnIndex = -1;
+        private int _tableCellPosition = -1;
+
         private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
 
         private static readonly int[,] _states = new int[32, 32] {
@@ -68,7 +73,7 @@ namespace Pihrtsoft.Markdown
             Settings = settings ?? MarkdownWriterSettings.Default;
         }
 
-        public virtual MarkdownWriterSettings Settings { get; internal set; }
+        public virtual MarkdownWriterSettings Settings { get; }
 
         public MarkdownFormat Format
         {
@@ -85,6 +90,12 @@ namespace Pihrtsoft.Markdown
         internal int ListLevel { get; private set; }
 
         protected internal abstract int Length { get; set; }
+
+        private TableColumnInfo CurrentColumn => _tableColumns[_tableColumnIndex];
+
+        private bool IsLastColumn => _tableColumnIndex == _tableColumns.Count - 1;
+
+        private bool IsFirstColumn => _tableColumnIndex == 0;
 
         public static MarkdownWriter Create(StringBuilder output, MarkdownWriterSettings settings = null)
         {
@@ -159,10 +170,10 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteBold(string content)
+        public MarkdownWriter WriteBold(string text)
         {
             WriteBoldStart();
-            Write(content);
+            Write(text);
             WriteBoldEnd();
             return this;
         }
@@ -181,10 +192,10 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteItalic(string content)
+        public MarkdownWriter WriteItalic(string text)
         {
             WriteItalicStart();
-            Write(content);
+            Write(text);
             WriteItalicEnd();
             return this;
         }
@@ -203,27 +214,27 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteStrikethrough(string content)
+        public MarkdownWriter WriteStrikethrough(string text)
         {
             WriteStrikethroughStart();
-            Write(content);
+            Write(text);
             WriteStrikethroughEnd();
             return this;
         }
 
-        public MarkdownWriter WriteInlineCode(string value)
+        public MarkdownWriter WriteInlineCode(string text)
         {
             Check(MarkdownKind.InlineCode);
             WriteSyntax(CodeDelimiter);
 
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(text))
             {
-                if (value[0] == CodeDelimiterChar)
+                if (text[0] == CodeDelimiterChar)
                     WriteSpace();
 
-                Write(value, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
+                Write(text, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
 
-                if (value[value.Length - 1] == CodeDelimiterChar)
+                if (text[text.Length - 1] == CodeDelimiterChar)
                     WriteSpace();
             }
 
@@ -280,34 +291,34 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteHeading1(string content)
+        public MarkdownWriter WriteHeading1(string text)
         {
-            return WriteHeading(1, content);
+            return WriteHeading(1, text);
         }
 
-        public MarkdownWriter WriteHeading2(string content)
+        public MarkdownWriter WriteHeading2(string text)
         {
-            return WriteHeading(2, content);
+            return WriteHeading(2, text);
         }
 
-        public MarkdownWriter WriteHeading3(string content)
+        public MarkdownWriter WriteHeading3(string text)
         {
-            return WriteHeading(3, content);
+            return WriteHeading(3, text);
         }
 
-        public MarkdownWriter WriteHeading4(string content)
+        public MarkdownWriter WriteHeading4(string text)
         {
-            return WriteHeading(4, content);
+            return WriteHeading(4, text);
         }
 
-        public MarkdownWriter WriteHeading5(string content)
+        public MarkdownWriter WriteHeading5(string text)
         {
-            return WriteHeading(5, content);
+            return WriteHeading(5, text);
         }
 
-        public MarkdownWriter WriteHeading6(string content)
+        public MarkdownWriter WriteHeading6(string text)
         {
-            return WriteHeading(6, content);
+            return WriteHeading(6, text);
         }
 
         public MarkdownWriter WriteHeading(int level, string content)
@@ -335,10 +346,10 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteBulletItem(string content)
+        public MarkdownWriter WriteBulletItem(string text)
         {
             WriteBulletItemStart();
-            Write(content);
+            Write(text);
             WriteBulletItemEnd();
             return this;
         }
@@ -362,12 +373,12 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteOrderedItem(int number, string content)
+        public MarkdownWriter WriteOrderedItem(int number, string text)
         {
             Error.ThrowOnInvalidItemNumber(number);
 
             WriteOrderedItemStart(number);
-            Write(content);
+            Write(text);
             WriteOrderedItemEnd();
             return this;
         }
@@ -394,18 +405,18 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteTaskItem(string content)
+        public MarkdownWriter WriteTaskItem(string text)
         {
             WriteTaskItemStart();
-            Write(content);
+            Write(text);
             WriteTaskItemEnd();
             return this;
         }
 
-        public MarkdownWriter WriteCompletedTaskItem(string content)
+        public MarkdownWriter WriteCompletedTaskItem(string text)
         {
             WriteCompletedTaskItemStart();
-            Write(content);
+            Write(text);
             WriteTaskItemEnd();
             return this;
         }
@@ -516,17 +527,17 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void WriteSquareBrackets(string value)
+        private void WriteSquareBrackets(string text)
         {
             WriteSyntax("[");
-            Write(value, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkText);
+            Write(text, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkText);
             WriteSyntax("]");
         }
 
-        private void WriteAngleBrackets(string value)
+        private void WriteAngleBrackets(string text)
         {
             WriteSyntax("<");
-            Write(value, shouldBeEscaped: ch => ch == '<' || ch == '>');
+            Write(text, shouldBeEscaped: ch => ch == '<' || ch == '>');
             WriteSyntax(">");
         }
 
@@ -591,10 +602,10 @@ namespace Pihrtsoft.Markdown
             Pop(MarkdownKind.BlockQuote);
         }
 
-        public MarkdownWriter WriteBlockQuote(string content)
+        public MarkdownWriter WriteBlockQuote(string text)
         {
             QuoteLevel++;
-            Write(content);
+            Write(text);
             WriteLineIfNecessary();
             QuoteLevel--;
             return this;
@@ -630,266 +641,213 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        internal MarkdownWriter WriteTable(IEnumerable<MElement> rows)
+        public MarkdownWriter WriteTableStart(IReadOnlyList<TableColumnInfo> columns)
         {
-            List<TableColumnInfo> columns = AnalyzeTable(rows);
-
-            if (columns == null)
-                return this;
-
-            using (IEnumerator<MElement> en = rows.GetEnumerator())
-            {
-                if (en.MoveNext())
-                {
-                    WriteTableHeader(en.Current, columns);
-
-                    while (en.MoveNext())
-                        WriteTableRow(en.Current, columns);
-                }
-            }
-
+            PushCheck(MarkdownKind.Table);
+            WriteLineIfNecessary();
+            PendingLineIf(Format.EmptyLineBeforeTable);
+            _tableColumns = columns;
             return this;
         }
 
-        protected internal abstract List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows);
-
-        internal void WriteTableHeader(MElement content, IList<TableColumnInfo> columns)
+        public MarkdownWriter WriteTableEnd()
         {
-            if (content == null)
-                throw new ArgumentNullException(nameof(content));
+            _tableRowIndex = -1;
+            _tableColumns = null;
+            PendingLineIf(Format.EmptyLineAfterTable);
+            Pop(MarkdownKind.Table);
+            return this;
+        }
 
-            bool isFirst = true;
-            bool isLast = false;
+        protected internal abstract IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows);
 
-            int i = 0;
+        internal MarkdownWriter WriteTableRow(MElement content)
+        {
+            WriteTableRowStart();
 
             if (content is MContainer container)
             {
-                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+                foreach (MElement element in container.Elements())
+                    WriteCell(element);
+            }
+            else
+            {
+                WriteCell(content);
+            }
+
+            WriteTableRowEnd();
+            return this;
+        }
+
+        public void WriteTableRowStart()
+        {
+            PushCheck(MarkdownKind.TableRow);
+            _tableRowIndex++;
+        }
+
+        public void WriteTableRowEnd()
+        {
+            if (Format.TableOuterDelimiter
+                || (_tableRowIndex == 0 && CurrentColumn.IsWhiteSpace))
+            {
+                WriteTableColumnSeparator();
+            }
+
+            WriteLine();
+            _tableColumnIndex = -1;
+
+            if (_tableRowIndex == 0)
+                WriteTableHeaderSeparator();
+
+            Pop(MarkdownKind.TableRow);
+        }
+
+        internal void WriteCell(MElement cell)
+        {
+            WriteTableCellStart();
+            Write(cell);
+            WriteTableCellEnd();
+        }
+
+        public void WriteTableCellStart()
+        {
+            PushCheck(MarkdownKind.TableColumn);
+            _tableColumnIndex++;
+
+            if (IsFirstColumn)
+            {
+                if (Format.TableOuterDelimiter
+                    || IsLastColumn
+                    || CurrentColumn.IsWhiteSpace)
                 {
-                    if (en.MoveNext())
-                    {
-                        MElement curr = en.Current;
-
-                        isLast = !en.MoveNext();
-
-                        WriteCell(curr);
-
-                        if (!isLast)
-                        {
-                            isFirst = false;
-
-                            do
-                            {
-                                curr = en.Current;
-                                isLast = !en.MoveNext();
-                                i++;
-                                WriteCell(curr);
-                            }
-                            while (!isLast);
-                        }
-                    }
+                    WriteTableColumnSeparator();
                 }
             }
             else
             {
-                isLast = true;
-                WriteCell(content);
+                WriteTableColumnSeparator();
             }
 
-            WriteLine();
-            WriteTableHeaderSeparator(columns);
-
-            void WriteCell(MElement cellContent)
+            if (_tableRowIndex == 0)
             {
-                Alignment alignment = columns[i].Alignment;
-
-                WriteTableCellStart(isFirst, isLast, columns[i].IsWhiteSpace);
-
-                if (Format.TablePadding)
+                if (Settings.TablePadding)
                 {
                     WriteSpace();
                 }
                 else if (Settings.FormatTableHeader
-                    && alignment == Alignment.Center)
+                     && CurrentColumn.Alignment == Alignment.Center)
                 {
                     WriteSpace();
                 }
-
-                int width = WriteGetLength(cellContent);
-
-                if (Settings.FormatTableHeader)
-                {
-                    int minimalWidth = Math.Max(width, 3);
-
-                    WritePadRight(width, columns[i].Width, minimalWidth);
-
-                    if (!Format.TablePadding
-                        && alignment != Alignment.Left)
-                    {
-                        WriteSpace();
-                    }
-                }
-
-                WriteTableCellEnd(isLast, columns[i].IsWhiteSpace);
             }
+            else if (Settings.TablePadding)
+            {
+                WriteSpace();
+            }
+
+            _tableCellPosition = Length;
         }
 
-        private void WriteTableHeaderSeparator(IList<TableColumnInfo> columns)
+        public void WriteTableCellEnd()
         {
-            int count = columns.Count;
+            if (!IsLastColumn
+                || Settings.TableOuterDelimiter)
+            {
+                if (_tableRowIndex == 0)
+                {
+                    if (Settings.FormatTableHeader)
+                        WritePadRight(Length - _tableCellPosition);
+                }
+                else if (Settings.FormatTableContent)
+                {
+                    WritePadRight(Length - _tableCellPosition);
+                }
+            }
+
+            if (_tableRowIndex == 0)
+            {
+                if (Settings.TablePadding)
+                {
+                    if (!CurrentColumn.IsWhiteSpace)
+                        WriteSpace();
+                }
+                else if (Settings.FormatTableHeader
+                     && CurrentColumn.Alignment != Alignment.Left)
+                {
+                    WriteSpace();
+                }
+            }
+            else if (Settings.TablePadding)
+            {
+                if (Length - _tableCellPosition > 0)
+                    WriteSpace();
+            }
+
+            _tableCellPosition = -1;
+            Pop(MarkdownKind.TableColumn);
+        }
+
+        public void WriteTableHeaderSeparator()
+        {
+            WriteLineIfNecessary();
+
+            WriteTableRowStart();
+
+            int count = _tableColumns.Count;
 
             for (int i = 0; i < count; i++)
             {
-                TableColumnInfo column = columns[i];
+                _tableColumnIndex = i;
 
-                bool isLast = i == count - 1;
-
-                WriteTableCellStart(i == 0, isLast, column.IsWhiteSpace);
-
-                if (column.Alignment == Alignment.Center)
+                if (IsFirstColumn)
                 {
-                    WriteSyntax(":");
+                    if (Format.TableOuterDelimiter
+                        || IsLastColumn
+                        || CurrentColumn.IsWhiteSpace)
+                    {
+                        WriteTableColumnSeparator();
+                    }
                 }
                 else
                 {
-                    WriteTablePadding();
+                    WriteTableColumnSeparator();
+                }
+
+                if (CurrentColumn.Alignment == Alignment.Center)
+                {
+                    WriteSyntax(":");
+                }
+                else if (Format.TablePadding)
+                {
+                    WriteSpace();
                 }
 
                 WriteSyntax("---");
 
                 if (Settings.FormatTableHeader)
-                    WritePadRight(3, columns[i].Width, 3, '-');
+                    WritePadRight(3, '-');
 
-                if (column.Alignment != Alignment.Left)
+                if (CurrentColumn.Alignment != Alignment.Left)
                 {
                     WriteSyntax(":");
                 }
-                else
+                else if (Format.TablePadding)
                 {
-                    WriteTablePadding();
-                }
-
-                if (isLast)
-                {
-                    if (Format.TableOuterDelimiter
-                        || columns[i].IsWhiteSpace)
-                    {
-                        WriteSyntax(TableDelimiter);
-                    }
+                    WriteSpace();
                 }
             }
 
-            WriteLine();
+            WriteTableRowEnd();
         }
 
-        //TODO: columns = null
-        internal MarkdownWriter WriteTableRow(MElement content, List<TableColumnInfo> columns = null)
+        private MarkdownWriter WriteTableColumnSeparator()
         {
-            bool isFirst = true;
-            bool isLast = false;
-
-            int i = 0;
-
-            if (content is MContainer container)
-            {
-                using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
-                {
-                    if (en.MoveNext())
-                    {
-                        MElement curr = en.Current;
-
-                        isLast = !en.MoveNext();
-
-                        WriteCell(curr);
-
-                        if (!isLast)
-                        {
-                            isFirst = false;
-
-                            do
-                            {
-                                curr = en.Current;
-                                isLast = !en.MoveNext();
-                                i++;
-                                WriteCell(curr);
-                            }
-                            while (!isLast);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                isLast = true;
-                WriteCell(content);
-            }
-
-            WriteLine();
-            return this;
-
-            void WriteCell(MElement cell)
-            {
-                WriteTableCellStart(isFirst, isLast);
-                WriteTablePadding();
-
-                int length = WriteGetLength(cell);
-
-                if (Settings.FormatTableContent)
-                    WritePadRight(length, columns[i].Width);
-
-                WriteTableCellEnd(isLast);
-            }
+            return WriteSyntax(TableDelimiter);
         }
 
-        private void WriteTableCellStart(bool isFirst, bool isLast, bool isWhiteSpace = false)
+        private void WritePadRight(int width, char paddingChar = ' ')
         {
-            if (isFirst)
-            {
-                WriteLineIfNecessary();
-
-                if (Format.TableOuterDelimiter
-                    || isLast
-                    || isWhiteSpace)
-                {
-                    WriteSyntax(TableDelimiter);
-                }
-            }
-            else
-            {
-                WriteSyntax(TableDelimiter);
-            }
-        }
-
-        private void WriteTableCellEnd(bool isLast, bool isWhiteSpace = false)
-        {
-            if (isLast)
-            {
-                if (Format.TableOuterDelimiter)
-                {
-                    WriteTablePadding();
-                    WriteSyntax(TableDelimiter);
-                }
-                else if (isWhiteSpace)
-                {
-                    WriteSyntax(TableDelimiter);
-                }
-            }
-            else
-            {
-                WriteTablePadding();
-            }
-        }
-
-        private void WriteTablePadding()
-        {
-            if (Format.TablePadding)
-                WriteSpace();
-        }
-
-        private void WritePadRight(int width, int? proposedWidth, int minimalWidth = 0, char paddingChar = ' ')
-        {
-            int totalWidth = Math.Max(proposedWidth ?? width, minimalWidth);
+            int totalWidth = Math.Max(CurrentColumn.Width, Math.Max(width, 3));
 
             for (int j = width; j < totalWidth; j++)
                 WriteRaw(paddingChar);
@@ -927,37 +885,14 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteComment(string value)
+        public MarkdownWriter WriteComment(string text)
         {
             PushCheck(MarkdownKind.Comment);
             WriteSyntax("<!-- ");
-            WriteRaw(value);
+            WriteRaw(text);
             WriteSyntax(" -->");
             Pop(MarkdownKind.Comment);
             return this;
-        }
-
-        private int WriteGetLength(object content)
-        {
-            int length = Length;
-            Write(content);
-            return Length - length;
-        }
-
-        public MarkdownWriter Write(char value)
-        {
-            return Write(value, escape: true);
-        }
-
-        public MarkdownWriter Write(char value, bool escape)
-        {
-            if (escape
-                && MarkdownEscaper.ShouldBeEscaped(value))
-            {
-                return WriteRaw('\\');
-            }
-
-            return WriteRaw(value);
         }
 
         public MarkdownWriter Write(string value)

@@ -14,7 +14,7 @@ namespace Pihrtsoft.Markdown
             OrderedListStyle orderedListStyle = OrderedListStyle.Dot,
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
-            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding,
+            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding | TableOptions.EmptyLineBeforeAndAfter,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             CharReferenceFormat charReferenceFormat = CharReferenceFormat.Hexadecimal,
@@ -79,6 +79,14 @@ namespace Pihrtsoft.Markdown
         internal bool TablePadding => (TableOptions & TableOptions.Padding) != 0;
 
         internal bool TableOuterDelimiter => (TableOptions & TableOptions.OuterDelimiter) != 0;
+
+        internal bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
+
+        internal bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
+
+        internal bool EmptyLineBeforeTable => (TableOptions & TableOptions.EmptyLineBefore) != 0;
+
+        internal bool EmptyLineAfterTable => (TableOptions & TableOptions.EmptyLineAfter) != 0;
 
         internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
 

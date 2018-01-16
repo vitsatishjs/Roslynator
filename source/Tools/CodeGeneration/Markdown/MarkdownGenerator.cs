@@ -184,7 +184,7 @@ namespace Roslynator.CodeGeneration.Markdown
                             f.Id,
                             Link(f.Title.TrimEnd('.'), $"../../docs/analyzers/{f.Id}.md"),
                             f.Category,
-                            CheckboxOrEmpty(f.IsEnabledByDefault));
+                            CheckboxOrHyphen(f.IsEnabledByDefault));
                     })));
 
             return document.ToString();
@@ -201,7 +201,7 @@ namespace Roslynator.CodeGeneration.Markdown
                         return TableRow(
                         f.Id,
                         Link(f.Title.TrimEnd('.'), $"../../docs/refactorings/{f.Id}.md"),
-                        CheckboxOrEmpty(f.IsEnabledByDefault));
+                        CheckboxOrHyphen(f.IsEnabledByDefault));
                     })));
 
             return document.ToString();
@@ -219,7 +219,7 @@ namespace Roslynator.CodeGeneration.Markdown
                             f.Id,
                             f.Title.TrimEnd('.'),
                             Join(new MText(", "), f.FixableDiagnosticIds.Join(diagnostics, x => x, y => y.Id, (x, y) => LinkOrText(x, y.HelpUrl))),
-                            CheckboxOrEmpty(f.IsEnabledByDefault));
+                            CheckboxOrHyphen(f.IsEnabledByDefault));
                     })));
 
             return document.ToString();
@@ -274,7 +274,7 @@ namespace Roslynator.CodeGeneration.Markdown
                             grouping.Key,
                             Link(analyzer.Title.TrimEnd('.'), $"../../docs/analyzers/{analyzer.Id}.md"),
                             analyzer.Id,
-                            CheckboxOrEmpty(analyzer.IsEnabledByDefault));
+                            CheckboxOrHyphen(analyzer.IsEnabledByDefault));
                     }
                 }
             }
@@ -283,18 +283,6 @@ namespace Roslynator.CodeGeneration.Markdown
         private static MImage RefactoringImage(RefactoringDescriptor refactoring, string fileName)
         {
             return Image(refactoring.Title, $"../../images/refactorings/{fileName}.png");
-        }
-
-        private static MElement CheckboxOrEmpty(bool value)
-        {
-            if (value)
-            {
-                return CharReference(0x2713);
-            }
-            else
-            {
-                return new MText("");
-            }
         }
 
         private static MElement CheckboxOrHyphen(bool value)

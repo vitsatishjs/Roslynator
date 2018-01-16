@@ -12,6 +12,9 @@ namespace Pihrtsoft.Markdown
         FormatContent = 2,
         FormatHeaderAndContent = FormatHeader | FormatContent,
         Padding = 4,
-        OuterDelimiter = 8
+        OuterDelimiter = 8,
+        EmptyLineBefore = 16,
+        EmptyLineAfter = 32,
+        EmptyLineBeforeAndAfter = EmptyLineBefore | EmptyLineAfter
     }
 }
