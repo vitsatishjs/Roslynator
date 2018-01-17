@@ -35,7 +35,7 @@ namespace Pihrtsoft.Markdown
             StringBuilder.Append(value);
         }
 
-        protected override void WriteString(string value, int startIndex, int count)
+        public override void WriteString(string value, int startIndex, int count)
         {
             ThrowIfClosed();
 
@@ -49,37 +49,27 @@ namespace Pihrtsoft.Markdown
             StringBuilder.Append(value);
         }
 
-        protected override void WriteValue(int value)
+        public override void WriteValue(int value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteValue(uint value)
+        public override void WriteValue(long value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteValue(long value)
+        public override void WriteValue(float value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteValue(ulong value)
+        public override void WriteValue(double value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
 
-        protected override void WriteValue(float value)
-        {
-            StringBuilder.Append(value.ToString(_formatProvider));
-        }
-
-        protected override void WriteValue(double value)
-        {
-            StringBuilder.Append(value.ToString(_formatProvider));
-        }
-
-        protected override void WriteValue(decimal value)
+        public override void WriteValue(decimal value)
         {
             StringBuilder.Append(value.ToString(_formatProvider));
         }
@@ -89,10 +79,8 @@ namespace Pihrtsoft.Markdown
             throw new InvalidOperationException();
         }
 
-        private void ThrowIfClosed()
+        public override void Flush()
         {
-            if (!_isOpen)
-                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
         }
 
         public override void Close()
@@ -104,6 +92,12 @@ namespace Pihrtsoft.Markdown
         {
             StringBuilder.Clear();
             base.Reset();
+        }
+
+        private void ThrowIfClosed()
+        {
+            if (!_isOpen)
+                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
         }
     }
 }

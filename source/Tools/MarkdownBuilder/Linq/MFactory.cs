@@ -464,9 +464,9 @@ namespace Pihrtsoft.Markdown.Linq
             return new MHorizontalRule(style, count, space);
         }
 
-        public static MCharReference CharReference(int number)
+        public static MCharReference CharReference(char value)
         {
-            return new MCharReference(number);
+            return new MCharReference(value);
         }
 
         public static MEntityReference EntityReference(string name)

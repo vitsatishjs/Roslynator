@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,10 +9,14 @@ namespace Pihrtsoft.Markdown
 {
     internal class MarkdownTextWriter : MarkdownWriter
     {
-        private const int BufferSize = 1024;
+        private const int BufferSize = 1024 * 6;
+        private const int BufferOverflow = 32;
 
         private TextWriter _writer;
-        private readonly char[] _buffer;
+        private readonly char[] _bufChars;
+        //private int _bufPos;
+        protected int _bufLen = BufferSize;
+        private bool _skipWrite;
 
         public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings)
             : base(settings)
@@ -22,10 +25,16 @@ namespace Pihrtsoft.Markdown
 
             _writer = writer;
 
-            _buffer = new char[BufferSize];
+            _bufChars = new char[_bufLen + BufferOverflow];
         }
 
         protected internal override int Length { get; set; }
+
+        protected override void WriteValue(char value)
+        {
+            _writer.Write(value);
+            Length++;
+        }
 
         protected override void WriteString(string value)
         {
@@ -35,85 +44,95 @@ namespace Pihrtsoft.Markdown
                 Length += value.Length;
         }
 
-        // https://github.com/dotnet/corefx/issues/1571
-        protected override void WriteString(string value, int startIndex, int count)
+        public override void WriteString(string value, int startIndex, int count)
         {
             if (value == null)
                 return;
 
-            while (count > 0)
+            _writer.Write(value.ToCharArray(), startIndex, count);
+            Length += count;
+        }
+
+        public override void WriteValue(int value)
+        {
+            _writer.Write(value);
+        }
+
+        public override void WriteValue(long value)
+        {
+            _writer.Write(value);
+        }
+
+        public override void WriteValue(float value)
+        {
+            _writer.Write(value);
+        }
+
+        public override void WriteValue(double value)
+        {
+            _writer.Write(value);
+        }
+
+        public override void WriteValue(decimal value)
+        {
+            _writer.Write(value);
+        }
+
+        public override void Flush()
+        {
+            FlushBuffer();
+
+            _writer?.Flush();
+        }
+
+        protected virtual void FlushBuffer()
+        {
+            try
             {
-                int charCount = Math.Min(BufferSize, count);
-
-                for (int i = 0; i < charCount; i++)
-                    _buffer[i] = value[i + startIndex];
-
-                _writer.Write(_buffer, 0, charCount);
-                Length += charCount;
-                count -= charCount;
-                startIndex += charCount;
+                if (!_skipWrite)
+                {
+                    //_writer.Write(_bufChars, 0, _bufPos);
+                }
             }
-        }
-
-        protected override void WriteValue(char value)
-        {
-            _writer.Write(value);
-            Length++;
-        }
-
-        protected override void WriteValue(int value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(uint value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(long value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(ulong value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(float value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(double value)
-        {
-            _writer.Write(value);
-        }
-
-        protected override void WriteValue(decimal value)
-        {
-            _writer.Write(value);
+            catch
+            {
+                _skipWrite = true;
+                throw;
+            }
+            finally
+            {
+                //_bufPos = 0;
+            }
         }
 
         public override void Close()
         {
             try
             {
-                _writer.Flush();
+                FlushBuffer();
             }
             finally
             {
-                try
+                _skipWrite = true;
+
+                if (_writer != null)
                 {
-                    if (Settings.CloseOutput)
+                    try
                     {
-                        _writer.Dispose();
+                        _writer.Flush();
                     }
-                }
-                finally
-                {
-                    _writer = null;
+                    finally
+                    {
+                        try
+                        {
+                            if (Settings.CloseOutput)
+                                _writer.Dispose();
+                        }
+                        finally
+                        {
+                            _writer = null;
+                        }
+                    }
                 }
             }
         }

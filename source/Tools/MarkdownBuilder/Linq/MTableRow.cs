@@ -2,6 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
+    //TODO: DebuggerDisplay error
     public class MTableRow : MContainer
     {
         public MTableRow()

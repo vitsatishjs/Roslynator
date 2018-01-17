@@ -15,10 +15,11 @@ using static Pihrtsoft.Markdown.TextUtility;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: WriteStart, WriteEnd
     public abstract class MarkdownWriter : IDisposable
     {
         private bool _disposed;
-        private bool _startOfLine = true;
+        private bool _startOfLine;
         private bool _emptyLine;
         private bool _pendingEmptyLine;
 
@@ -32,45 +33,10 @@ namespace Pihrtsoft.Markdown
 
         private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
 
-        private static readonly int[,] _states = new int[32, 32] {
-        //                       None                       Text                       Raw                        Link                       LinkReference              Image                      ImageReference             Autolink                   InlineCode                 CharReference              EntityReference            Comment                    FencedCodeBlock            IndentedCodeBlock          HorizontalRule             Label                      InlineContainer            Bold                       Italic                     Strikethrough              Heading                    Table                      TableRow                   TableColumn                Document                   BlockQuote                 BulletList                 BulletItem                 OrderedList                OrderedItem                TaskList                   TaskItem
-        /* None              */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Text              */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Raw               */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Link              */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* LinkReference     */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Image             */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* ImageReference    */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Autolink          */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* InlineCode        */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* CharReference     */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* EntityReference   */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Comment           */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* FencedCodeBlock   */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* IndentedCodeBlock */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* HorizontalRule    */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Label             */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* InlineContainer   */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Bold              */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Italic            */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Strikethrough     */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Heading           */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Table             */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* TableRow          */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* TableColumn       */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* Document          */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* BlockQuote        */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* BulletList        */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* BulletItem        */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* OrderedList       */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* OrderedItem       */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* TaskList          */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 },
-        /* TaskItem          */ {0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0, /*                   */ 0 }
-        };
-
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
         {
             Settings = settings ?? MarkdownWriterSettings.Default;
+            _startOfLine = true;
         }
 
         public virtual MarkdownWriterSettings Settings { get; }
@@ -149,23 +115,32 @@ namespace Pihrtsoft.Markdown
 
         private void Pop(MarkdownKind kind)
         {
+            //TODO: 
+            if (kind == MarkdownKind.None)
+            {
+            }
+
             _containers.Pop();
         }
 
         internal void Check(MarkdownKind kind)
         {
+            //TODO: 
+            if (kind == MarkdownKind.None)
+            {
+            }
         }
 
         public MarkdownWriter WriteBoldStart()
         {
             PushCheck(MarkdownKind.Bold);
-            WriteSyntax(BoldDelimiter(Format.BoldStyle));
+            WriteRaw(BoldDelimiter(Format.BoldStyle));
             return this;
         }
 
         public MarkdownWriter WriteBoldEnd()
         {
-            WriteSyntax(BoldDelimiter(Format.BoldStyle));
+            WriteRaw(BoldDelimiter(Format.BoldStyle));
             Pop(MarkdownKind.Bold);
             return this;
         }
@@ -181,13 +156,13 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteItalicStart()
         {
             PushCheck(MarkdownKind.Italic);
-            WriteSyntax(ItalicDelimiter(Format.ItalicStyle));
+            WriteRaw(ItalicDelimiter(Format.ItalicStyle));
             return this;
         }
 
         public MarkdownWriter WriteItalicEnd()
         {
-            WriteSyntax(ItalicDelimiter(Format.ItalicStyle));
+            WriteRaw(ItalicDelimiter(Format.ItalicStyle));
             Pop(MarkdownKind.Italic);
             return this;
         }
@@ -203,13 +178,13 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteStrikethroughStart()
         {
             PushCheck(MarkdownKind.Strikethrough);
-            WriteSyntax(StrikethroughDelimiter);
+            WriteRaw(StrikethroughDelimiter);
             return this;
         }
 
         public MarkdownWriter WriteStrikethroughEnd()
         {
-            WriteSyntax(StrikethroughDelimiter);
+            WriteRaw(StrikethroughDelimiter);
             Pop(MarkdownKind.Strikethrough);
             return this;
         }
@@ -225,20 +200,20 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteInlineCode(string text)
         {
             Check(MarkdownKind.InlineCode);
-            WriteSyntax(CodeDelimiter);
+            WriteRaw(CodeDelimiter);
 
             if (!string.IsNullOrEmpty(text))
             {
                 if (text[0] == CodeDelimiterChar)
-                    WriteSpace();
+                    WriteRaw(" ");
 
                 Write(text, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
 
                 if (text[text.Length - 1] == CodeDelimiterChar)
-                    WriteSpace();
+                    WriteRaw(" ");
             }
 
-            WriteSyntax(CodeDelimiter);
+            WriteRaw(CodeDelimiter);
             return this;
         }
 
@@ -257,7 +232,7 @@ namespace Pihrtsoft.Markdown
             if (!underline)
             {
                 WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
-                WriteSpace();
+                WriteRaw(" ");
             }
 
             return this;
@@ -274,7 +249,7 @@ namespace Pihrtsoft.Markdown
             if (!underline
                 && Format.CloseHeading)
             {
-                WriteSpace();
+                WriteRaw(" ");
                 WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
             }
 
@@ -333,7 +308,7 @@ namespace Pihrtsoft.Markdown
         {
             PushCheck(MarkdownKind.BulletItem);
             WriteLineIfNecessary();
-            WriteSyntax(BulletItemStart(Format.BulletListStyle));
+            WriteRaw(BulletItemStart(Format.BulletListStyle));
             ListLevel++;
             return this;
         }
@@ -360,7 +335,7 @@ namespace Pihrtsoft.Markdown
             PushCheck(MarkdownKind.OrderedItem);
             WriteLineIfNecessary();
             WriteValue(number);
-            WriteSyntax(OrderedItemStart(Format.OrderedListStyle));
+            WriteRaw(OrderedItemStart(Format.OrderedListStyle));
             ListLevel++;
             return this;
         }
@@ -387,7 +362,7 @@ namespace Pihrtsoft.Markdown
         {
             PushCheck(MarkdownKind.TaskItem);
             WriteLineIfNecessary();
-            WriteSyntax(TaskItemStart(isCompleted: isCompleted));
+            WriteRaw(TaskItemStart(isCompleted: isCompleted));
             ListLevel++;
             return this;
         }
@@ -429,7 +404,7 @@ namespace Pihrtsoft.Markdown
             Error.ThrowOnInvalidUrl(url);
 
             Check(MarkdownKind.Image);
-            WriteSyntax("!");
+            WriteRaw("!");
             WriteLinkCore(text, url, title);
             return this;
         }
@@ -463,10 +438,10 @@ namespace Pihrtsoft.Markdown
         private MarkdownWriter WriteLinkCore(string text, string url, string title)
         {
             WriteSquareBrackets(text);
-            WriteSyntax("(");
+            WriteRaw("(");
             Write(url, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkUrl);
             WriteLinkTitle(title);
-            WriteSyntax(")");
+            WriteRaw(")");
             return this;
         }
 
@@ -482,7 +457,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteImageReference(string text, string label)
         {
             Check(MarkdownKind.ImageReference);
-            WriteSyntax("!");
+            WriteRaw("!");
             WriteLinkReferenceCore(text, label);
             return this;
         }
@@ -508,7 +483,7 @@ namespace Pihrtsoft.Markdown
             Check(MarkdownKind.Label);
             WriteLineIfNecessary();
             WriteSquareBrackets(label);
-            WriteSyntax(": ");
+            WriteRaw(": ");
             WriteAngleBrackets(url);
             WriteLinkTitle(title);
             WriteLineIfNecessary();
@@ -519,26 +494,26 @@ namespace Pihrtsoft.Markdown
         {
             if (!string.IsNullOrEmpty(title))
             {
-                WriteSpace();
+                WriteRaw(" ");
 
-                WriteSyntax("\"");
+                WriteRaw("\"");
                 Write(title, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkTitle);
-                WriteSyntax("\"");
+                WriteRaw("\"");
             }
         }
 
         private void WriteSquareBrackets(string text)
         {
-            WriteSyntax("[");
+            WriteRaw("[");
             Write(text, shouldBeEscaped: MarkdownEscaper.ShouldBeEscapedInLinkText);
-            WriteSyntax("]");
+            WriteRaw("]");
         }
 
         private void WriteAngleBrackets(string text)
         {
-            WriteSyntax("<");
+            WriteRaw("<");
             Write(text, shouldBeEscaped: ch => ch == '<' || ch == '>');
-            WriteSyntax(">");
+            WriteRaw(">");
         }
 
         public MarkdownWriter WriteIndentedCodeBlock(string text)
@@ -561,7 +536,7 @@ namespace Pihrtsoft.Markdown
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
 
             WriteCodeFence();
-            WriteSyntax(info);
+            WriteRaw(info);
             WriteLine();
 
             WriteRaw(text);
@@ -579,9 +554,9 @@ namespace Pihrtsoft.Markdown
                 switch (Format.CodeFenceStyle)
                 {
                     case CodeFenceStyle.Backtick:
-                        return WriteSyntax("```");
+                        return WriteRaw("```");
                     case CodeFenceStyle.Tilde:
-                        return WriteSyntax("~~~");
+                        return WriteRaw("~~~");
                     default:
                         throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CodeFenceStyle));
                 }
@@ -730,19 +705,19 @@ namespace Pihrtsoft.Markdown
 
             if (_tableRowIndex == 0)
             {
-                if (Settings.TablePadding)
+                if (Format.TablePadding)
                 {
-                    WriteSpace();
+                    WriteRaw(" ");
                 }
-                else if (Settings.FormatTableHeader
+                else if (Format.FormatTableHeader
                      && CurrentColumn.Alignment == Alignment.Center)
                 {
-                    WriteSpace();
+                    WriteRaw(" ");
                 }
             }
-            else if (Settings.TablePadding)
+            else if (Format.TablePadding)
             {
-                WriteSpace();
+                WriteRaw(" ");
             }
 
             _tableCellPosition = Length;
@@ -751,14 +726,14 @@ namespace Pihrtsoft.Markdown
         public void WriteTableCellEnd()
         {
             if (!IsLastColumn
-                || Settings.TableOuterDelimiter)
+                || Format.TableOuterDelimiter)
             {
                 if (_tableRowIndex == 0)
                 {
-                    if (Settings.FormatTableHeader)
+                    if (Format.FormatTableHeader)
                         WritePadRight(Length - _tableCellPosition);
                 }
-                else if (Settings.FormatTableContent)
+                else if (Format.FormatTableContent)
                 {
                     WritePadRight(Length - _tableCellPosition);
                 }
@@ -766,21 +741,21 @@ namespace Pihrtsoft.Markdown
 
             if (_tableRowIndex == 0)
             {
-                if (Settings.TablePadding)
+                if (Format.TablePadding)
                 {
                     if (!CurrentColumn.IsWhiteSpace)
-                        WriteSpace();
+                        WriteRaw(" ");
                 }
-                else if (Settings.FormatTableHeader
+                else if (Format.FormatTableHeader
                      && CurrentColumn.Alignment != Alignment.Left)
                 {
-                    WriteSpace();
+                    WriteRaw(" ");
                 }
             }
-            else if (Settings.TablePadding)
+            else if (Format.TablePadding)
             {
                 if (Length - _tableCellPosition > 0)
-                    WriteSpace();
+                    WriteRaw(" ");
             }
 
             _tableCellPosition = -1;
@@ -815,25 +790,25 @@ namespace Pihrtsoft.Markdown
 
                 if (CurrentColumn.Alignment == Alignment.Center)
                 {
-                    WriteSyntax(":");
+                    WriteRaw(":");
                 }
                 else if (Format.TablePadding)
                 {
-                    WriteSpace();
+                    WriteRaw(" ");
                 }
 
-                WriteSyntax("---");
+                WriteRaw("---");
 
-                if (Settings.FormatTableHeader)
+                if (Format.FormatTableHeader)
                     WritePadRight(3, '-');
 
                 if (CurrentColumn.Alignment != Alignment.Left)
                 {
-                    WriteSyntax(":");
+                    WriteRaw(":");
                 }
                 else if (Format.TablePadding)
                 {
-                    WriteSpace();
+                    WriteRaw(" ");
                 }
             }
 
@@ -842,25 +817,24 @@ namespace Pihrtsoft.Markdown
 
         private MarkdownWriter WriteTableColumnSeparator()
         {
-            return WriteSyntax(TableDelimiter);
+            return WriteRaw(TableDelimiter);
         }
 
         private void WritePadRight(int width, char paddingChar = ' ')
         {
             int totalWidth = Math.Max(CurrentColumn.Width, Math.Max(width, 3));
 
-            for (int j = width; j < totalWidth; j++)
-                WriteRaw(paddingChar);
+            WriteRaw(paddingChar, totalWidth - width);
         }
 
         public MarkdownWriter WriteCharReference(int number)
         {
             Check(MarkdownKind.CharReference);
-            WriteSyntax("&#");
+            WriteRaw("&#");
 
             if (Format.CharReferenceFormat == CharReferenceFormat.Hexadecimal)
             {
-                WriteSyntax("x");
+                WriteRaw("x");
                 WriteRaw(number.ToString("x", CultureInfo.InvariantCulture));
             }
             else if (Format.CharReferenceFormat == CharReferenceFormat.Decimal)
@@ -872,27 +846,57 @@ namespace Pihrtsoft.Markdown
                 throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CharReferenceFormat));
             }
 
-            WriteSyntax(";");
+            WriteRaw(";");
             return this;
         }
 
         public MarkdownWriter WriteEntityReference(string name)
         {
             Check(MarkdownKind.EntityReference);
-            WriteSyntax("&");
-            WriteSyntax(name);
-            WriteSyntax(";");
+            WriteRaw("&");
+            WriteRaw(name);
+            WriteRaw(";");
             return this;
         }
 
         public MarkdownWriter WriteComment(string text)
         {
             PushCheck(MarkdownKind.Comment);
-            WriteSyntax("<!-- ");
+            WriteRaw("<!-- ");
             WriteRaw(text);
-            WriteSyntax(" -->");
+            WriteRaw(" -->");
             Pop(MarkdownKind.Comment);
             return this;
+        }
+
+        internal MarkdownWriter Write(object value)
+        {
+            if (value == null)
+                return this;
+
+            if (value is MElement element)
+                return element.WriteTo(this);
+
+            if (value is string s)
+                return Write(s);
+
+            if (value is object[] arr)
+            {
+                foreach (object item in arr)
+                    Write(item);
+
+                return this;
+            }
+
+            if (value is IEnumerable enumerable)
+            {
+                foreach (object item in enumerable)
+                    Write(item);
+
+                return this;
+            }
+
+            return Write(value.ToString());
         }
 
         public MarkdownWriter Write(string value)
@@ -905,7 +909,7 @@ namespace Pihrtsoft.Markdown
             if (value == null)
                 return this;
 
-            BeforeWrite();
+            OnBeforeWrite();
 
             int length = value.Length;
 
@@ -972,13 +976,13 @@ namespace Pihrtsoft.Markdown
                         }
                     }
 
-                    BeforeWrite();
+                    OnBeforeWrite();
                     WriteString(value, lastIndex, value.Length - lastIndex);
                     return this;
                 }
             }
 
-            BeforeWrite();
+            OnBeforeWrite();
             WriteString(value);
             return this;
 
@@ -994,7 +998,7 @@ namespace Pihrtsoft.Markdown
                     }
                 }
 
-                BeforeWrite();
+                OnBeforeWrite();
                 WriteString(value, startIndex, index - startIndex);
 
                 if (Settings.NewLineHandling == NewLineHandling.Replace)
@@ -1003,47 +1007,17 @@ namespace Pihrtsoft.Markdown
                 }
                 else
                 {
-                    AfterWriteLine();
+                    OnAfterWriteLine();
                 }
             }
 
             void WriteEscapedChar(int startIndex, int index, char ch)
             {
-                BeforeWrite();
+                OnBeforeWrite();
                 WriteString(value, startIndex, index - startIndex);
                 WriteValue(escapingChar);
                 WriteValue(ch);
             }
-        }
-
-        internal MarkdownWriter Write(object value)
-        {
-            if (value == null)
-                return this;
-
-            if (value is MElement element)
-                return element.WriteTo(this);
-
-            if (value is string s)
-                return Write(s);
-
-            if (value is object[] arr)
-            {
-                foreach (object item in arr)
-                    Write(item);
-
-                return this;
-            }
-
-            if (value is IEnumerable enumerable)
-            {
-                foreach (object item in enumerable)
-                    Write(item);
-
-                return this;
-            }
-
-            return Write(value.ToString());
         }
 
         public MarkdownWriter WriteLine(string value)
@@ -1084,7 +1058,7 @@ namespace Pihrtsoft.Markdown
         {
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
-            BeforeWrite();
+            OnBeforeWrite();
             WriteValue(value);
             return this;
         }
@@ -1093,20 +1067,11 @@ namespace Pihrtsoft.Markdown
         {
             Debug.Assert(!IsCarriageReturnOrLinefeed(value), value.ToString());
 
-            BeforeWrite();
+            OnBeforeWrite();
 
             for (int i = 0; i < repeatCount; i++)
                 WriteValue(value);
 
-            return this;
-        }
-
-        private MarkdownWriter WriteSyntax(string value)
-        {
-            BeforeWrite();
-            WriteString(value);
-            _emptyLine = false;
-            _startOfLine = false;
             return this;
         }
 
@@ -1116,21 +1081,14 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteRaw(int value)
-        {
-            BeforeWrite();
-            WriteValue(value);
-            return this;
-        }
-
         public virtual MarkdownWriter WriteLine()
         {
             WriteString(Settings.NewLineChars);
-            AfterWriteLine();
+            OnAfterWriteLine();
             return this;
         }
 
-        private void AfterWriteLine()
+        private void OnAfterWriteLine()
         {
             _pendingEmptyLine = false;
 
@@ -1144,7 +1102,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private void BeforeWrite()
+        private void OnBeforeWrite()
         {
             if (_pendingEmptyLine)
             {
@@ -1174,29 +1132,50 @@ namespace Pihrtsoft.Markdown
                 WriteString("    ");
         }
 
-        internal MarkdownWriter WriteSpace()
-        {
-            return WriteSyntax(" ");
-        }
+        public abstract void Flush();
 
         protected abstract void WriteString(string value);
 
-        protected abstract void WriteString(string value, int startIndex, int count);
+        public abstract void WriteString(string value, int startIndex, int count);
 
         protected abstract void WriteValue(char value);
 
-        protected abstract void WriteValue(int value);
+        protected virtual void WriteValue(string value)
+        {
+            if (value == null)
+                return;
 
-        protected abstract void WriteValue(uint value);
+            WriteString(value);
+        }
 
-        protected abstract void WriteValue(long value);
+        public virtual void WriteValue(bool value)
+        {
+            WriteString((value) ? "true" : "false");
+        }
 
-        protected abstract void WriteValue(ulong value);
+        public virtual void WriteValue(int value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
 
-        protected abstract void WriteValue(float value);
+        public virtual void WriteValue(long value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
 
-        protected abstract void WriteValue(double value);
+        public virtual void WriteValue(float value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
 
-        protected abstract void WriteValue(decimal value);
+        public virtual void WriteValue(double value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        public virtual void WriteValue(decimal value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
     }
 }
