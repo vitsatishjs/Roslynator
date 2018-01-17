@@ -913,80 +913,44 @@ namespace Pihrtsoft.Markdown
 
             int length = value.Length;
 
-            bool f = false;
+            int lastIndex = 0;
 
-            for (int i = 0; i < length; i++)
+            int i = 0;
+            while (i < length)
             {
                 char ch = value[i];
 
                 if (ch == 10)
                 {
-                    WriteLine(0, i);
-                    f = true;
+                    WriteLine(i);
+                    lastIndex = ++i;
                 }
                 else if (ch == 13
                     && (i == length - 1 || value[i + 1] != 10))
                 {
-                    WriteLine(0, i);
-                    f = true;
+                    WriteLine(i);
+                    lastIndex = ++i;
                 }
                 else if (shouldBeEscaped(ch))
                 {
-                    WriteEscapedChar(0, i, ch);
-                    f = true;
-                }
-
-                if (f)
-                {
-                    f = false;
-
-                    i++;
-                    int lastIndex = i;
-
-                    while (i < value.Length)
-                    {
-                        ch = value[i];
-
-                        if (ch == 10)
-                        {
-                            WriteLine(lastIndex, i);
-                            f = true;
-                        }
-                        else if (ch == 13
-                            && (i == length - 1 || value[i + 1] != 10))
-                        {
-                            WriteLine(0, i);
-                            f = true;
-                        }
-                        else if (shouldBeEscaped(ch))
-                        {
-                            WriteEscapedChar(lastIndex, i, ch);
-                            f = true;
-                        }
-
-                        if (f)
-                        {
-                            f = false;
-                            i++;
-                            lastIndex = i;
-                        }
-                        else
-                        {
-                            i++;
-                        }
-                    }
-
                     OnBeforeWrite();
-                    WriteString(value, lastIndex, value.Length - lastIndex);
-                    return this;
+                    WriteString(value, lastIndex, i - lastIndex);
+                    WriteValue(escapingChar);
+                    WriteValue(ch);
+                    lastIndex = ++i;
+                }
+                else
+                {
+                    i++;
+
                 }
             }
 
             OnBeforeWrite();
-            WriteString(value);
+            WriteString(value, lastIndex, value.Length - lastIndex);
             return this;
 
-            void WriteLine(int startIndex, int index)
+            void WriteLine(int index)
             {
                 if (Settings.NewLineHandling == NewLineHandling.Replace)
                 {
@@ -999,7 +963,7 @@ namespace Pihrtsoft.Markdown
                 }
 
                 OnBeforeWrite();
-                WriteString(value, startIndex, index - startIndex);
+                WriteString(value, lastIndex, index - lastIndex);
 
                 if (Settings.NewLineHandling == NewLineHandling.Replace)
                 {
@@ -1009,14 +973,6 @@ namespace Pihrtsoft.Markdown
                 {
                     OnAfterWriteLine();
                 }
-            }
-
-            void WriteEscapedChar(int startIndex, int index, char ch)
-            {
-                OnBeforeWrite();
-                WriteString(value, startIndex, index - startIndex);
-                WriteValue(escapingChar);
-                WriteValue(ch);
             }
         }
 
