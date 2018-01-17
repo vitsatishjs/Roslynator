@@ -52,7 +52,7 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(style, format.HorizontalRuleFormat.Style);
             Assert.Equal(count, format.HorizontalRuleFormat.Count);
-            Assert.Equal(space, format.HorizontalRuleFormat.Space);
+            Assert.Equal(space, format.HorizontalRuleFormat.Separator);
         }
 
         [Theory]

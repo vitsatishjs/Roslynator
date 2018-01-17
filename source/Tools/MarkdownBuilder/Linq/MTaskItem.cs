@@ -36,9 +36,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            writer.WriteTaskItemStart(IsCompleted);
+            writer.WriteStartTaskItem(IsCompleted);
             WriteContentTo(writer);
-            writer.WriteTaskItemEnd();
+            writer.WriteEndTaskItem();
             return writer;
         }
 

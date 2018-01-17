@@ -8,15 +8,15 @@ namespace Pihrtsoft.Markdown.Linq
     {
         private int _count;
 
-        internal MHorizontalRule(HorizontalRuleStyle style, int count = 3, string space = " ")
+        internal MHorizontalRule(char value, int count = 3, string separator = " ")
         {
-            Style = style;
+            Value = value;
             Count = count;
-            Space = space ?? "";
+            Separator = separator ?? "";
         }
 
         public MHorizontalRule(HorizontalRuleFormat format)
-            : this(format.Style, format.Count, format.Space)
+            : this(format.Value, format.Count, format.Separator)
         {
         }
 
@@ -25,12 +25,12 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Style = other.Style;
+            Value = other.Value;
             Count = other.Count;
-            Space = other.Space;
+            Separator = other.Separator;
         }
 
-        public HorizontalRuleStyle Style { get; set; }
+        public char Value { get; set; }
 
         public int Count
         {
@@ -42,13 +42,13 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public string Space { get; set; }
+        public string Separator { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteHorizontalRule(Style, Count, Space);
+            return writer.WriteHorizontalRule(Value, Count, Separator);
         }
 
         internal override MElement Clone()

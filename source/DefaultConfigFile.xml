@@ -295,6 +295,7 @@
       <CodeFix Id="RCF0095" IsEnabled="true" /> <!-- ReplaceStructWithClass (fixes CS0527) -->
       <CodeFix Id="RCF0096" IsEnabled="true" /> <!-- ReplaceYieldReturnWithForEach (fixes CS0029) -->
       <CodeFix Id="RCF0097" IsEnabled="true" /> <!-- ReplaceComparisonWithAssignment (fixes CS0201) -->
+      <CodeFix Id="RCF0098" IsEnabled="true" /> <!-- AddModifierAbstract (fixes CS0501) -->
     </CodeFixes>
   </Settings>
 </Roslynator>

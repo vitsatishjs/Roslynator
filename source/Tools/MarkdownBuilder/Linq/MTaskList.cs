@@ -35,7 +35,7 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 foreach (MElement element in Elements())
                 {
-                    writer.WriteTaskItemStart();
+                    writer.WriteStartTaskItem();
 
                     if (element is MTaskItem item)
                     {
@@ -46,7 +46,7 @@ namespace Pihrtsoft.Markdown.Linq
                         writer.Write(element);
                     }
 
-                    writer.WriteTaskItemEnd();
+                    writer.WriteEndTaskItem();
                 }
             }
 

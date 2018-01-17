@@ -35,7 +35,7 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 foreach (MElement element in Elements())
                 {
-                    writer.WriteBulletItemStart();
+                    writer.WriteStartBulletItem();
 
                     if (element is MBulletItem item)
                     {
@@ -46,7 +46,7 @@ namespace Pihrtsoft.Markdown.Linq
                         writer.Write(element);
                     }
 
-                    writer.WriteBulletItemEnd();
+                    writer.WriteEndBulletItem();
                 }
             }
 

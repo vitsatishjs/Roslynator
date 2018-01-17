@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Pihrtsoft.Markdown.Linq
 {
@@ -35,20 +34,21 @@ namespace Pihrtsoft.Markdown.Linq
             if (columns == null)
                 return writer;
 
-            writer.WriteTableStart(columns);
+            writer.WriteStartTable(columns);
 
             using (IEnumerator<MElement> en = Elements().GetEnumerator())
             {
                 if (en.MoveNext())
                 {
                     writer.WriteTableRow(en.Current);
+                    writer.WriteTableHeaderSeparator();
 
                     while (en.MoveNext())
                         writer.WriteTableRow(en.Current);
                 }
             }
 
-            writer.WriteTableEnd();
+            writer.WriteEndTable();
 
             return writer;
         }

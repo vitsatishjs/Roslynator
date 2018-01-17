@@ -36,7 +36,7 @@ namespace Pihrtsoft.Markdown.Linq
                 int number = 1;
                 foreach (MElement element in Elements())
                 {
-                    writer.WriteOrderedItemStart(number);
+                    writer.WriteStartOrderedItem(number);
 
                     if (element is MOrderedItem item)
                     {
@@ -47,7 +47,7 @@ namespace Pihrtsoft.Markdown.Linq
                         writer.Write(element);
                     }
 
-                    writer.WriteOrderedItemEnd();
+                    writer.WriteEndOrderedItem();
                     number++;
                 }
             }

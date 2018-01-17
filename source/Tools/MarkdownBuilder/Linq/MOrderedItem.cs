@@ -50,9 +50,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            writer.WriteOrderedItemStart(Number);
+            writer.WriteStartOrderedItem(Number);
             WriteContentTo(writer);
-            writer.WriteOrderedItemEnd();
+            writer.WriteEndOrderedItem();
             return writer;
         }
 

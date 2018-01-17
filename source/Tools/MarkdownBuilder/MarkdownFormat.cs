@@ -31,6 +31,62 @@ namespace Pihrtsoft.Markdown
             CodeBlockOptions = codeBlockOptions;
             CharReferenceFormat = charReferenceFormat;
             HorizontalRuleFormat = horizontalRuleFormat ?? HorizontalRuleFormat.Default;
+
+            if (BulletListStyle == BulletListStyle.Asterisk)
+            {
+                BulletItemStart = "* ";
+            }
+            else if (BulletListStyle == BulletListStyle.Plus)
+            {
+                BulletItemStart = "+ ";
+            }
+            else if (BulletListStyle == BulletListStyle.Minus)
+            {
+                BulletItemStart = "- ";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(BulletListStyle));
+            }
+
+            if (BoldStyle == EmphasisStyle.Asterisk)
+            {
+                BoldDelimiter = "**";
+            }
+            else if (BoldStyle == EmphasisStyle.Underscore)
+            {
+                BoldDelimiter = "__";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(BoldStyle));
+            }
+
+            if (ItalicStyle == EmphasisStyle.Asterisk)
+            {
+                ItalicDelimiter = "*";
+            }
+            else if (ItalicStyle == EmphasisStyle.Underscore)
+            {
+                ItalicDelimiter = "_";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(ItalicStyle));
+            }
+
+            if (OrderedListStyle == OrderedListStyle.Dot)
+            {
+                OrderedItemStart = ". ";
+            }
+            else if (OrderedListStyle == OrderedListStyle.Parenthesis)
+            {
+                OrderedItemStart = ") ";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(OrderedListStyle));
+            }
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
@@ -320,6 +376,19 @@ namespace Pihrtsoft.Markdown
                 CodeBlockOptions,
                 charReferenceFormat,
                 HorizontalRuleFormat);
+        }
+
+        internal string BoldDelimiter { get; }
+
+        internal string ItalicDelimiter { get; }
+
+        internal string BulletItemStart { get; }
+
+        internal string OrderedItemStart { get; }
+
+        internal char HeadingChar
+        {
+            get { return '#'; }
         }
     }
 }

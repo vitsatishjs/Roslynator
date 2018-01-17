@@ -10,6 +10,7 @@
 | RCF0023 | Add comparison with boolean literal | [CS0019](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0019), [CS0266](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0266) | &#x2713; |
 | RCF0016 | Add documentation comment | [CS1591](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs1591) | &#x2713; |
 | RCF0086 | Add missing type | [CS1031](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1031) | &#x2713; |
+| RCF0098 | Add modifier 'abstract' | [CS0501](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0501) | &#x2713; |
 | RCF0007 | Add 'new' modifier | [CS0114](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0114) | &#x2713; |
 | RCF0004 | Add 'out' modifier to argument | [CS1620](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1620) | &#x2713; |
 | RCF0006 | Add 'override' modifier | [CS0114](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0114) | &#x2713; |

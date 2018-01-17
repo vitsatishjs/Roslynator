@@ -27,9 +27,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            writer.WriteBoldStart();
+            writer.WriteStartBold();
             WriteContentTo(writer);
-            writer.WriteBoldEnd();
+            writer.WriteEndBold();
             return writer;
         }
 

@@ -8,14 +8,12 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
-using static Pihrtsoft.Markdown.Linq.MFactory;
 using static Pihrtsoft.Markdown.TextUtility;
 
 #pragma warning disable CA1814
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: WriteStart, WriteEnd
     public abstract class MarkdownWriter : IDisposable
     {
         private bool _disposed;
@@ -131,93 +129,93 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public MarkdownWriter WriteBoldStart()
+        public MarkdownWriter WriteStartBold()
         {
             PushCheck(MarkdownKind.Bold);
-            WriteRaw(BoldDelimiter(Format.BoldStyle));
+            WriteRaw(Format.BoldDelimiter);
             return this;
         }
 
-        public MarkdownWriter WriteBoldEnd()
+        public MarkdownWriter WriteEndBold()
         {
-            WriteRaw(BoldDelimiter(Format.BoldStyle));
+            WriteRaw(Format.BoldDelimiter);
             Pop(MarkdownKind.Bold);
             return this;
         }
 
         public MarkdownWriter WriteBold(string text)
         {
-            WriteBoldStart();
+            WriteStartBold();
             Write(text);
-            WriteBoldEnd();
+            WriteEndBold();
             return this;
         }
 
-        public MarkdownWriter WriteItalicStart()
+        public MarkdownWriter WriteStartItalic()
         {
             PushCheck(MarkdownKind.Italic);
-            WriteRaw(ItalicDelimiter(Format.ItalicStyle));
+            WriteRaw(Format.ItalicDelimiter);
             return this;
         }
 
-        public MarkdownWriter WriteItalicEnd()
+        public MarkdownWriter WriteEndItalic()
         {
-            WriteRaw(ItalicDelimiter(Format.ItalicStyle));
+            WriteRaw(Format.ItalicDelimiter);
             Pop(MarkdownKind.Italic);
             return this;
         }
 
         public MarkdownWriter WriteItalic(string text)
         {
-            WriteItalicStart();
+            WriteStartItalic();
             Write(text);
-            WriteItalicEnd();
+            WriteEndItalic();
             return this;
         }
 
-        public MarkdownWriter WriteStrikethroughStart()
+        public MarkdownWriter WriteStartStrikethrough()
         {
             PushCheck(MarkdownKind.Strikethrough);
-            WriteRaw(StrikethroughDelimiter);
+            WriteRaw("~~");
             return this;
         }
 
-        public MarkdownWriter WriteStrikethroughEnd()
+        public MarkdownWriter WriteEndStrikethrough()
         {
-            WriteRaw(StrikethroughDelimiter);
+            WriteRaw("~~");
             Pop(MarkdownKind.Strikethrough);
             return this;
         }
 
         public MarkdownWriter WriteStrikethrough(string text)
         {
-            WriteStrikethroughStart();
+            WriteStartStrikethrough();
             Write(text);
-            WriteStrikethroughEnd();
+            WriteEndStrikethrough();
             return this;
         }
 
         public MarkdownWriter WriteInlineCode(string text)
         {
             Check(MarkdownKind.InlineCode);
-            WriteRaw(CodeDelimiter);
+            WriteRaw("`");
 
             if (!string.IsNullOrEmpty(text))
             {
-                if (text[0] == CodeDelimiterChar)
+                if (text[0] == '`')
                     WriteRaw(" ");
 
-                Write(text, ch => ch == CodeDelimiterChar, CodeDelimiterChar);
+                Write(text, ch => ch == '`', '`');
 
-                if (text[text.Length - 1] == CodeDelimiterChar)
+                if (text[text.Length - 1] == '`')
                     WriteRaw(" ");
             }
 
-            WriteRaw(CodeDelimiter);
+            WriteRaw("`");
             return this;
         }
 
-        public MarkdownWriter WriteHeadingStart(int level)
+        public MarkdownWriter WriteStartHeading(int level)
         {
             Error.ThrowOnInvalidHeadingLevel(level);
 
@@ -231,14 +229,14 @@ namespace Pihrtsoft.Markdown
 
             if (!underline)
             {
-                WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
+                WriteRaw(Format.HeadingChar, level);
                 WriteRaw(" ");
             }
 
             return this;
         }
 
-        public MarkdownWriter WriteHeadingEnd()
+        public MarkdownWriter WriteEndHeading()
         {
             int level = _headingLevel;
             _headingLevel = -1;
@@ -250,7 +248,7 @@ namespace Pihrtsoft.Markdown
                 && Format.CloseHeading)
             {
                 WriteRaw(" ");
-                WriteRaw(HeadingStartChar(Format.HeadingStyle), level);
+                WriteRaw(Format.HeadingChar, level);
             }
 
             WriteLineIfNecessary();
@@ -298,22 +296,22 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteHeading(int level, string content)
         {
-            WriteHeadingStart(level);
+            WriteStartHeading(level);
             Write(content);
-            WriteHeadingEnd();
+            WriteEndHeading();
             return this;
         }
 
-        public MarkdownWriter WriteBulletItemStart()
+        public MarkdownWriter WriteStartBulletItem()
         {
             PushCheck(MarkdownKind.BulletItem);
             WriteLineIfNecessary();
-            WriteRaw(BulletItemStart(Format.BulletListStyle));
+            WriteRaw(Format.BulletItemStart);
             ListLevel++;
             return this;
         }
 
-        public MarkdownWriter WriteBulletItemEnd()
+        public MarkdownWriter WriteEndBulletItem()
         {
             Pop(MarkdownKind.BulletItem);
             WriteLineIfNecessary();
@@ -323,24 +321,24 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteBulletItem(string text)
         {
-            WriteBulletItemStart();
+            WriteStartBulletItem();
             Write(text);
-            WriteBulletItemEnd();
+            WriteEndBulletItem();
             return this;
         }
 
-        public MarkdownWriter WriteOrderedItemStart(int number)
+        public MarkdownWriter WriteStartOrderedItem(int number)
         {
             Error.ThrowOnInvalidItemNumber(number);
             PushCheck(MarkdownKind.OrderedItem);
             WriteLineIfNecessary();
             WriteValue(number);
-            WriteRaw(OrderedItemStart(Format.OrderedListStyle));
+            WriteRaw(Format.OrderedItemStart);
             ListLevel++;
             return this;
         }
 
-        public MarkdownWriter WriteOrderedItemEnd()
+        public MarkdownWriter WriteEndOrderedItem()
         {
             Pop(MarkdownKind.OrderedItem);
             WriteLineIfNecessary();
@@ -352,27 +350,36 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidItemNumber(number);
 
-            WriteOrderedItemStart(number);
+            WriteStartOrderedItem(number);
             Write(text);
-            WriteOrderedItemEnd();
+            WriteEndOrderedItem();
             return this;
         }
 
-        public MarkdownWriter WriteTaskItemStart(bool isCompleted = false)
+        public MarkdownWriter WriteStartTaskItem(bool isCompleted = false)
         {
             PushCheck(MarkdownKind.TaskItem);
             WriteLineIfNecessary();
-            WriteRaw(TaskItemStart(isCompleted: isCompleted));
+
+            if (isCompleted)
+            {
+                WriteRaw("- [x] ");
+            }
+            else
+            {
+                WriteRaw("- [ ] ");
+            }
+
             ListLevel++;
             return this;
         }
 
-        public MarkdownWriter WriteCompletedTaskItemStart()
+        public MarkdownWriter WriteStartCompletedTaskItem()
         {
-            return WriteTaskItemStart(isCompleted: true);
+            return WriteStartTaskItem(isCompleted: true);
         }
 
-        public MarkdownWriter WriteTaskItemEnd()
+        public MarkdownWriter WriteEndTaskItem()
         {
             Pop(MarkdownKind.TaskItem);
             WriteLineIfNecessary();
@@ -382,17 +389,17 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteTaskItem(string text)
         {
-            WriteTaskItemStart();
+            WriteStartTaskItem();
             Write(text);
-            WriteTaskItemEnd();
+            WriteEndTaskItem();
             return this;
         }
 
         public MarkdownWriter WriteCompletedTaskItem(string text)
         {
-            WriteCompletedTaskItemStart();
+            WriteStartCompletedTaskItem();
             Write(text);
-            WriteTaskItemEnd();
+            WriteEndTaskItem();
             return this;
         }
 
@@ -563,14 +570,14 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public void WriteBlockQuoteStart()
+        public void WriteStartBlockQuote()
         {
             PushCheck(MarkdownKind.BlockQuote);
             WriteLineIfNecessary();
             QuoteLevel++;
         }
 
-        public void WriteBlockQuoteEnd()
+        public void WriteEndBlockQuote()
         {
             WriteLineIfNecessary();
             QuoteLevel--;
@@ -586,15 +593,16 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteHorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
+        public MarkdownWriter WriteHorizontalRule()
         {
-            Error.ThrowOnInvalidHorizontalRuleCount(count);
+            return WriteHorizontalRule(Format.HorizontalRuleFormat.Value, Format.HorizontalRuleFormat.Count, Format.HorizontalRuleFormat.Separator);
+        }
 
+        public MarkdownWriter WriteHorizontalRule(char value, int count = 3, string separator = " ")
+        {
             Check(MarkdownKind.HorizontalRule);
 
             WriteLineIfNecessary();
-
-            char ch = HorizontalRuleChar(style);
 
             bool isFirst = true;
 
@@ -606,17 +614,17 @@ namespace Pihrtsoft.Markdown
                 }
                 else
                 {
-                    WriteRaw(space);
+                    WriteRaw(separator);
                 }
 
-                WriteRaw(ch);
+                WriteRaw(value);
             }
 
             WriteLine();
             return this;
         }
 
-        public MarkdownWriter WriteTableStart(IReadOnlyList<TableColumnInfo> columns)
+        public MarkdownWriter WriteStartTable(IReadOnlyList<TableColumnInfo> columns)
         {
             PushCheck(MarkdownKind.Table);
             WriteLineIfNecessary();
@@ -625,7 +633,7 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteTableEnd()
+        public MarkdownWriter WriteEndTable()
         {
             _tableRowIndex = -1;
             _tableColumns = null;
@@ -638,7 +646,7 @@ namespace Pihrtsoft.Markdown
 
         internal MarkdownWriter WriteTableRow(MElement content)
         {
-            WriteTableRowStart();
+            WriteStartTableRow();
 
             if (content is MContainer container)
             {
@@ -650,17 +658,18 @@ namespace Pihrtsoft.Markdown
                 WriteCell(content);
             }
 
-            WriteTableRowEnd();
+            WriteEndTableRow();
             return this;
         }
 
-        public void WriteTableRowStart()
+        public void WriteStartTableRow()
         {
             PushCheck(MarkdownKind.TableRow);
             _tableRowIndex++;
+            _tableColumnIndex = -1;
         }
 
-        public void WriteTableRowEnd()
+        public void WriteEndTableRow()
         {
             if (Format.TableOuterDelimiter
                 || (_tableRowIndex == 0 && CurrentColumn.IsWhiteSpace))
@@ -671,20 +680,17 @@ namespace Pihrtsoft.Markdown
             WriteLine();
             _tableColumnIndex = -1;
 
-            if (_tableRowIndex == 0)
-                WriteTableHeaderSeparator();
-
             Pop(MarkdownKind.TableRow);
         }
 
         internal void WriteCell(MElement cell)
         {
-            WriteTableCellStart();
+            WriteStartTableCell();
             Write(cell);
-            WriteTableCellEnd();
+            WriteEndTableCell();
         }
 
-        public void WriteTableCellStart()
+        public void WriteStartTableCell()
         {
             PushCheck(MarkdownKind.TableColumn);
             _tableColumnIndex++;
@@ -723,10 +729,10 @@ namespace Pihrtsoft.Markdown
             _tableCellPosition = Length;
         }
 
-        public void WriteTableCellEnd()
+        public void WriteEndTableCell()
         {
-            if (!IsLastColumn
-                || Format.TableOuterDelimiter)
+            if (Format.TableOuterDelimiter
+                || !IsLastColumn)
             {
                 if (_tableRowIndex == 0)
                 {
@@ -766,7 +772,7 @@ namespace Pihrtsoft.Markdown
         {
             WriteLineIfNecessary();
 
-            WriteTableRowStart();
+            WriteStartTableRow();
 
             int count = _tableColumns.Count;
 
@@ -812,12 +818,12 @@ namespace Pihrtsoft.Markdown
                 }
             }
 
-            WriteTableRowEnd();
+            WriteEndTableRow();
         }
 
         private MarkdownWriter WriteTableColumnSeparator()
         {
-            return WriteRaw(TableDelimiter);
+            return WriteRaw("|");
         }
 
         private void WritePadRight(int width, char paddingChar = ' ')
@@ -942,7 +948,6 @@ namespace Pihrtsoft.Markdown
                 else
                 {
                     i++;
-
                 }
             }
 
@@ -1079,7 +1084,7 @@ namespace Pihrtsoft.Markdown
                 return;
 
             for (int i = 0; i < QuoteLevel; i++)
-                WriteString(BlockQuoteStart);
+                WriteString("> ");
 
             for (int i = 0; i < ListLevel; i++)
                 WriteString("  ");
