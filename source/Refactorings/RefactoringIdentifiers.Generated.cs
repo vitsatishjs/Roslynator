@@ -71,6 +71,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string InlineAliasExpression = Prefix + "0061";
         public const string InlineConstant = Prefix + "0181";
         public const string InlineMethod = Prefix + "0062";
+        public const string InlineProperty = Prefix + "0198";
         public const string InlineUsingStatic = Prefix + "0180";
         public const string InsertStringInterpolation = Prefix + "0063";
         public const string IntroduceAndInitializeField = Prefix + "0064";
@@ -112,6 +113,7 @@ namespace Roslynator.CSharp.Refactorings
         public const string RemoveConditionFromLastElse = Prefix + "0099";
         public const string RemoveDirectiveAndRelatedDirectives = Prefix + "0100";
         public const string RemoveEmptyLines = Prefix + "0101";
+        public const string RemoveEnumMemberValue = Prefix + "0199";
         public const string RemoveInterpolation = Prefix + "0102";
         public const string RemoveMember = Prefix + "0103";
         public const string RemoveMemberDeclarations = Prefix + "0104";
