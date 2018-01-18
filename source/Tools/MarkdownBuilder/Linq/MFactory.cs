@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown.Linq
@@ -423,10 +422,10 @@ namespace Pihrtsoft.Markdown.Linq
 
         public static MElement LinkOrText(string text, string url = null, string title = null)
         {
-            if (string.IsNullOrEmpty(url))
-                return new MText(text);
+            if (!string.IsNullOrEmpty(url))
+                return new MLink(text, url, title);
 
-            return new MLink(text, url, title);
+            return new MText(text);
         }
 
         public static MFencedCodeBlock FencedCodeBlock(string value, string info = null)
@@ -459,14 +458,14 @@ namespace Pihrtsoft.Markdown.Linq
             return new MBlockQuote(other);
         }
 
-        public static MHorizontalRule HorizontalRule(HorizontalRuleStyle style = HorizontalRuleStyle.Hyphen, int count = 3, string space = " ")
+        public static MHorizontalRule HorizontalRule(string value = "-", int count = 3, string separator = " ")
         {
-            return new MHorizontalRule(style, count, space);
+            return new MHorizontalRule(value, count, separator);
         }
 
-        public static MCharReference CharReference(int number)
+        public static MCharReference CharReference(char value)
         {
-            return new MCharReference(number);
+            return new MCharReference(value);
         }
 
         public static MEntityReference EntityReference(string name)
@@ -532,103 +531,6 @@ namespace Pihrtsoft.Markdown.Linq
         public static MTableRow TableRow(MTableRow other)
         {
             return new MTableRow(other);
-        }
-
-        internal static string StrikethroughDelimiter => "~~";
-
-        internal static string CodeDelimiter => "`";
-
-        internal static char CodeDelimiterChar => '`';
-
-        internal static string TableDelimiter => "|";
-
-        internal static string BlockQuoteStart => "> ";
-
-        internal static string BoldDelimiter(EmphasisStyle style)
-        {
-            if (style == EmphasisStyle.Asterisk)
-                return "**";
-
-            if (style == EmphasisStyle.Underscore)
-                return "__";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
-
-        internal static string ItalicDelimiter(EmphasisStyle style)
-        {
-            if (style == EmphasisStyle.Asterisk)
-                return "*";
-
-            if (style == EmphasisStyle.Underscore)
-                return "_";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
-
-        internal static char HeadingStartChar(HeadingStyle style)
-        {
-            switch (style)
-            {
-                case HeadingStyle.NumberSign:
-                    return '#';
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
-        }
-
-        internal static string BulletItemStart(BulletListStyle style)
-        {
-            if (style == BulletListStyle.Asterisk)
-                return "* ";
-
-            if (style == BulletListStyle.Plus)
-                return "+ ";
-
-            if (style == BulletListStyle.Minus)
-                return "- ";
-
-            throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-        }
-
-        internal static string OrderedItemStart(OrderedListStyle style)
-        {
-            switch (style)
-            {
-                case OrderedListStyle.Dot:
-                    return ". ";
-                case OrderedListStyle.Parenthesis:
-                    return ") ";
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
-        }
-
-        internal static string TaskItemStart(bool isCompleted = false)
-        {
-            if (isCompleted)
-            {
-                return "- [x] ";
-            }
-            else
-            {
-                return "- [ ] ";
-            }
-        }
-
-        internal static char HorizontalRuleChar(HorizontalRuleStyle style)
-        {
-            switch (style)
-            {
-                case HorizontalRuleStyle.Hyphen:
-                    return '-';
-                case HorizontalRuleStyle.Asterisk:
-                    return '*';
-                case HorizontalRuleStyle.Underscore:
-                    return '_';
-                default:
-                    throw new ArgumentException(ErrorMessages.UnknownEnumValue(style), nameof(style));
-            }
         }
     }
 }

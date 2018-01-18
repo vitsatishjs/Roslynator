@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
+
 namespace Pihrtsoft.Markdown.Linq
 {
     public class MTable : MContainer
@@ -27,7 +29,28 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteTable(Elements());
+            IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(Elements());
+
+            if (columns == null)
+                return writer;
+
+            writer.WriteStartTable(columns);
+
+            using (IEnumerator<MElement> en = Elements().GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    writer.WriteTableRow(en.Current);
+                    writer.WriteTableHeaderSeparator();
+
+                    while (en.MoveNext())
+                        writer.WriteTableRow(en.Current);
+                }
+            }
+
+            writer.WriteEndTable();
+
+            return writer;
         }
 
         internal override MElement Clone()

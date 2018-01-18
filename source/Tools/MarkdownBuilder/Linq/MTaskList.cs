@@ -29,12 +29,37 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                return writer.WriteTaskItem(s).WriteLine();
+                writer.WriteTaskItem(s);
             }
             else
             {
-                return writer.WriteTaskItems(Elements());
+                foreach (MElement element in Elements())
+                {
+                    writer.WriteStartTaskItem();
+
+                    if (element is MTaskItem item)
+                    {
+                        item.WriteContentTo(writer);
+                    }
+                    else
+                    {
+                        writer.Write(element);
+                    }
+
+                    writer.WriteEndTaskItem();
+                }
             }
+
+            writer.WriteLine();
+            return writer;
+        }
+
+        internal override void ValidateElement(MElement element)
+        {
+            if (element.Kind == MarkdownKind.TaskItem)
+                return;
+
+            base.ValidateElement(element);
         }
 
         internal override MElement Clone()

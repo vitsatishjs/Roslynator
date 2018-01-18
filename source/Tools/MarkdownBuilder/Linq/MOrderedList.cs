@@ -29,12 +29,39 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                return writer.WriteOrderedItem(1, s).WriteLine();
+                return writer.WriteOrderedItem(1, s);
             }
             else
             {
-                return writer.WriteOrderedItems(Elements());
+                int number = 1;
+                foreach (MElement element in Elements())
+                {
+                    writer.WriteStartOrderedItem(number);
+
+                    if (element is MOrderedItem item)
+                    {
+                        item.WriteContentTo(writer);
+                    }
+                    else
+                    {
+                        writer.Write(element);
+                    }
+
+                    writer.WriteEndOrderedItem();
+                    number++;
+                }
             }
+
+            writer.WriteLine();
+            return writer;
+        }
+
+        internal override void ValidateElement(MElement element)
+        {
+            if (element.Kind == MarkdownKind.OrderedItem)
+                return;
+
+            base.ValidateElement(element);
         }
 
         internal override MElement Clone()

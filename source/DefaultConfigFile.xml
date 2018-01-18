@@ -197,6 +197,7 @@
       <Refactoring Id="RR0196" IsEnabled="true" /> <!-- MergeIfWithParentIf -->
       <Refactoring Id="RR0197" IsEnabled="true" /> <!-- InitializeFieldFromConstructor -->
       <Refactoring Id="RR0198" IsEnabled="true" /> <!-- InlineProperty -->
+      <Refactoring Id="RR0199" IsEnabled="true" /> <!-- RemoveEnumMemberValue -->
     </Refactorings>
     <CodeFixes>
       <CodeFix Id="RCF0001" IsEnabled="true" /> <!-- RemoveUnusedVariable (fixes CS0168, CS0219) -->
@@ -294,6 +295,7 @@
       <CodeFix Id="RCF0095" IsEnabled="true" /> <!-- ReplaceStructWithClass (fixes CS0527) -->
       <CodeFix Id="RCF0096" IsEnabled="true" /> <!-- ReplaceYieldReturnWithForEach (fixes CS0029) -->
       <CodeFix Id="RCF0097" IsEnabled="true" /> <!-- ReplaceComparisonWithAssignment (fixes CS0201) -->
+      <CodeFix Id="RCF0098" IsEnabled="true" /> <!-- AddModifierAbstract (fixes CS0501) -->
     </CodeFixes>
   </Settings>
 </Roslynator>

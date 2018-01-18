@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -10,10 +9,14 @@ namespace Pihrtsoft.Markdown
 {
     internal class MarkdownTextWriter : MarkdownWriter
     {
-        private const int BufferSize = 1024;
+        private const int BufferSize = 1024 * 6;
+        private const int BufferOverflow = 32;
 
         private TextWriter _writer;
-        private readonly char[] _buffer;
+        private readonly char[] _bufChars;
+        private int _bufPos;
+        protected int _bufLen = BufferSize;
+        private bool _skipWrite;
 
         public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings)
             : base(settings)
@@ -22,105 +25,226 @@ namespace Pihrtsoft.Markdown
 
             _writer = writer;
 
-            _buffer = new char[BufferSize];
+            _bufChars = new char[_bufLen + BufferOverflow];
         }
 
         protected internal override int Length { get; set; }
 
-        protected override void WriteString(string value)
+        public override unsafe MarkdownWriter WriteString(string value)
         {
-            _writer.Write(value);
+            if (string.IsNullOrEmpty(value))
+                return this;
 
-            if (value != null)
-                Length += value.Length;
+            RawText(value);
+            return this;
         }
 
-        // https://github.com/dotnet/corefx/issues/1571
-        protected override void WriteString(string value, int startIndex, int count)
+        protected unsafe void RawText(string s)
         {
-            if (value == null)
-                return;
-
-            while (count > 0)
+            fixed (char* pSrcBegin = s)
             {
-                int charCount = Math.Min(BufferSize, count);
-
-                for (int i = 0; i < charCount; i++)
-                    _buffer[i] = value[i + startIndex];
-
-                _writer.Write(_buffer, 0, charCount);
-                Length += charCount;
-                count -= charCount;
-                startIndex += charCount;
+                RawText(pSrcBegin, pSrcBegin + s.Length);
             }
         }
 
-        protected override void WriteValue(char value)
+        protected unsafe void RawText(char* pSrcBegin, char* pSrcEnd)
         {
-            _writer.Write(value);
-            Length++;
+            fixed (char* pDstBegin = _bufChars)
+            {
+                char* pDst = pDstBegin + _bufPos;
+                char* pSrc = pSrcBegin;
+
+                int ch = 0;
+                while (true)
+                {
+                    char* pDstEnd = pDst + (pSrcEnd - pSrc);
+
+                    if (pDstEnd > pDstBegin + _bufLen)
+                        pDstEnd = pDstBegin + _bufLen;
+
+                    while (pDst < pDstEnd
+                        && !_shouldBeEscaped((char)(ch = *pSrc))) //TODO: \r\n
+                    {
+                        pSrc++;
+                        *pDst = (char)ch;
+                        pDst++;
+                        Length++;
+                    }
+
+                    if (pSrc >= pSrcEnd)
+                        break;
+
+                    if (pDst >= pDstEnd)
+                    {
+                        _bufPos = (int)(pDst - pDstBegin);
+                        FlushBuffer();
+                        pDst = pDstBegin;
+                        continue;
+                    }
+
+                    switch (ch)
+                    {
+                        case (char)10:
+                            {
+                                if (Settings.NewLineHandling == NewLineHandling.Replace)
+                                {
+                                    pDst = WriteNewLine(pDst);
+                                }
+                                else
+                                {
+                                    *pDst = (char)ch;
+                                    pDst++;
+                                    Length++;
+                                }
+
+                                break;
+                            }
+                        case (char)13:
+                            {
+                                switch (Settings.NewLineHandling)
+                                {
+                                    case NewLineHandling.Replace:
+                                        {
+                                            //TODO: overflow?
+                                            if (pSrc[1] == '\n')
+                                                pSrc++;
+
+                                            pDst = WriteNewLine(pDst);
+                                            break;
+                                        }
+                                    case NewLineHandling.None:
+                                        {
+                                            *pDst = (char)ch;
+                                            pDst++;
+                                            Length++;
+                                            break;
+                                        }
+                                }
+
+                                break;
+                            }
+                        default:
+                            {
+                                *pDst = (_state == State.InlineCodeText) ? '`' : '\\';
+                                pDst++;
+                                Length++;
+                                *pDst = (char)ch;
+                                pDst++;
+                                Length++;
+                                break;
+                            }
+                    }
+
+                    pSrc++;
+                }
+
+                _bufPos = (int)(pDst - pDstBegin);
+            }
         }
 
-        protected override void WriteValue(int value)
+        protected unsafe char* WriteNewLine(char* pDst)
+        {
+            fixed (char* pDstBegin = _bufChars)
+            {
+                _bufPos = (int)(pDst - pDstBegin);
+                RawText(Settings.NewLineChars);
+                OnAfterWriteLine();
+                return pDstBegin + _bufPos;
+            }
+        }
+
+        public override MarkdownWriter WriteLine()
+        {
+            RawText(Settings.NewLineChars);
+            OnAfterWriteLine();
+            return this;
+        }
+
+        public override void WriteValue(int value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteValue(uint value)
+        public override void WriteValue(long value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteValue(long value)
+        public override void WriteValue(float value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteValue(ulong value)
+        public override void WriteValue(double value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteValue(float value)
+        public override void WriteValue(decimal value)
         {
             _writer.Write(value);
         }
 
-        protected override void WriteValue(double value)
+        public override void Flush()
         {
-            _writer.Write(value);
+            FlushBuffer();
+
+            _writer?.Flush();
         }
 
-        protected override void WriteValue(decimal value)
+        protected virtual void FlushBuffer()
         {
-            _writer.Write(value);
+            try
+            {
+                if (!_skipWrite)
+                    _writer.Write(_bufChars, 0, _bufPos);
+            }
+            catch
+            {
+                _skipWrite = true;
+                throw;
+            }
+            finally
+            {
+                _bufPos = 0;
+            }
         }
 
         public override void Close()
         {
             try
             {
-                _writer.Flush();
+                FlushBuffer();
             }
             finally
             {
-                try
+                _skipWrite = true;
+
+                if (_writer != null)
                 {
-                    if (Settings.CloseOutput)
+                    try
                     {
-                        _writer.Dispose();
+                        _writer.Flush();
                     }
-                }
-                finally
-                {
-                    _writer = null;
+                    finally
+                    {
+                        try
+                        {
+                            if (Settings.CloseOutput)
+                                _writer.Dispose();
+                        }
+                        finally
+                        {
+                            _writer = null;
+                        }
+                    }
                 }
             }
         }
 
-        protected override List<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
+        protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
-            return TableAnalyzer.Analyze(rows, Settings, _writer.FormatProvider);
+            return TableAnalyzer.Analyze(rows, Settings, _writer.FormatProvider)?.AsReadOnly();
         }
     }
 }

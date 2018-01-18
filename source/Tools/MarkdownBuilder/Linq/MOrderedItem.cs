@@ -50,7 +50,10 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteOrderedItem(Number, TextOrElements());
+            writer.WriteStartOrderedItem(Number);
+            WriteContentTo(writer);
+            writer.WriteEndOrderedItem();
+            return writer;
         }
 
         internal override MElement Clone()

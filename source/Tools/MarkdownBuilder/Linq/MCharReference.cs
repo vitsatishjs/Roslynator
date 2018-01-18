@@ -6,12 +6,12 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Number} {NumberAsHexadecimalString}")]
+    [DebuggerDisplay("{Kind} {Value} {ValueAsHexadecimalString}")]
     public class MCharReference : MElement
     {
-        public MCharReference(int number)
+        public MCharReference(char value)
         {
-            Number = number;
+            Value = value;
         }
 
         public MCharReference(MCharReference other)
@@ -19,18 +19,18 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Number = other.Number;
+            Value = other.Value;
         }
 
-        public int Number { get; }
+        public char Value { get; }
 
-        internal string NumberAsHexadecimalString => Number.ToString("x", CultureInfo.InvariantCulture);
+        internal string ValueAsHexadecimalString => NumberAsString(CharReferenceFormat.Hexadecimal);
 
         public override MarkdownKind Kind => MarkdownKind.CharReference;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteCharReference(Number);
+            return writer.WriteCharReference(Value);
         }
 
         internal override MElement Clone()
@@ -43,9 +43,9 @@ namespace Pihrtsoft.Markdown.Linq
             switch (format)
             {
                 case CharReferenceFormat.Hexadecimal:
-                    return Number.ToString("x", CultureInfo.InvariantCulture);
+                    return ((int)Value).ToString("x", CultureInfo.InvariantCulture);
                 case CharReferenceFormat.Decimal:
-                    return Number.ToString(CultureInfo.InvariantCulture);
+                    return ((int)Value).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentException(ErrorMessages.UnknownEnumValue(format), nameof(format));
             }

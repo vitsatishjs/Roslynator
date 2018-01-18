@@ -5,23 +5,23 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("Style = {Style} Count = {Count} Space = {Space}")]
+    [DebuggerDisplay("Value = {Value,nq} Count = {Count} Separator = {Space}")]
     public struct HorizontalRuleFormat : IEquatable<HorizontalRuleFormat>
     {
-        public HorizontalRuleFormat(HorizontalRuleStyle style, int count, string space)
+        public HorizontalRuleFormat(string value, int count, string separator)
         {
-            Style = style;
+            Value = value;
             Count = count;
-            Space = space;
+            Separator = separator;
         }
 
-        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat(HorizontalRuleStyle.Hyphen, 3, " ");
+        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat("-", 3, " ");
 
-        public HorizontalRuleStyle Style { get; }
+        public string Value { get; }
 
         public int Count { get; }
 
-        public string Space { get; }
+        public string Separator { get; }
 
         public override bool Equals(object obj)
         {
@@ -31,14 +31,14 @@ namespace Pihrtsoft.Markdown
 
         public bool Equals(HorizontalRuleFormat other)
         {
-            return Style == other.Style
+            return Value == other.Value
                    && Count == other.Count
-                   && Space == other.Space;
+                   && Separator == other.Separator;
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine((int)Style, Hash.Combine(Count, Hash.Create(Space)));
+            return Hash.Combine(Value, Hash.Combine(Count, Hash.Create(Separator)));
         }
 
         public static bool operator ==(HorizontalRuleFormat format1, HorizontalRuleFormat format2)

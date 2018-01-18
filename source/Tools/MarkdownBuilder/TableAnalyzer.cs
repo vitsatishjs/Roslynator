@@ -40,8 +40,7 @@ namespace Pihrtsoft.Markdown
 
             if (settings.FormatTableContent)
             {
-                writer.Reset();
-                int index = 0;
+                int index = writer.Length;
 
                 while (en.MoveNext())
                 {

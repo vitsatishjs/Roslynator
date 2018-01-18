@@ -2,10 +2,15 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum HorizontalRuleStyle
+    public enum State
     {
-        Hyphen = 0,
-        Asterisk = 1,
-        Underscore = 2
+        None,
+        RawText,
+        InlineCodeText,
+        LinkText,
+        LinkUrl,
+        LinkTitle,
+        AngleBrackets,
+        Comment
     }
 }

@@ -36,14 +36,10 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            if (IsCompleted)
-            {
-                return writer.WriteCompletedTaskItem(TextOrElements());
-            }
-            else
-            {
-                return writer.WriteTaskItem(TextOrElements());
-            }
+            writer.WriteStartTaskItem(IsCompleted);
+            WriteContentTo(writer);
+            writer.WriteEndTaskItem();
+            return writer;
         }
 
         internal override MElement Clone()

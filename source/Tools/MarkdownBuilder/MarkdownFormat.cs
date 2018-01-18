@@ -14,7 +14,7 @@ namespace Pihrtsoft.Markdown
             OrderedListStyle orderedListStyle = OrderedListStyle.Dot,
             HeadingStyle headingStyle = HeadingStyle.NumberSign,
             HeadingOptions headingOptions = HeadingOptions.EmptyLineBeforeAndAfter,
-            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding,
+            TableOptions tableOptions = TableOptions.FormatHeader | TableOptions.OuterDelimiter | TableOptions.Padding | TableOptions.EmptyLineBeforeAndAfter,
             CodeFenceStyle codeFenceStyle = CodeFenceStyle.Backtick,
             CodeBlockOptions codeBlockOptions = CodeBlockOptions.EmptyLineBeforeAndAfter,
             CharReferenceFormat charReferenceFormat = CharReferenceFormat.Hexadecimal,
@@ -31,6 +31,71 @@ namespace Pihrtsoft.Markdown
             CodeBlockOptions = codeBlockOptions;
             CharReferenceFormat = charReferenceFormat;
             HorizontalRuleFormat = horizontalRuleFormat ?? HorizontalRuleFormat.Default;
+
+            if (BulletListStyle == BulletListStyle.Asterisk)
+            {
+                BulletItemStart = "* ";
+            }
+            else if (BulletListStyle == BulletListStyle.Plus)
+            {
+                BulletItemStart = "+ ";
+            }
+            else if (BulletListStyle == BulletListStyle.Minus)
+            {
+                BulletItemStart = "- ";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(BulletListStyle));
+            }
+
+            if (BoldStyle == EmphasisStyle.Asterisk)
+            {
+                BoldDelimiter = "**";
+            }
+            else if (BoldStyle == EmphasisStyle.Underscore)
+            {
+                BoldDelimiter = "__";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(BoldStyle));
+            }
+
+            if (ItalicStyle == EmphasisStyle.Asterisk)
+            {
+                ItalicDelimiter = "*";
+            }
+            else if (ItalicStyle == EmphasisStyle.Underscore)
+            {
+                ItalicDelimiter = "_";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(ItalicStyle));
+            }
+
+            if (OrderedListStyle == OrderedListStyle.Dot)
+            {
+                OrderedItemStart = ". ";
+            }
+            else if (OrderedListStyle == OrderedListStyle.Parenthesis)
+            {
+                OrderedItemStart = ") ";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(OrderedListStyle));
+            }
+
+            if (HeadingStyle == HeadingStyle.NumberSign)
+            {
+                HeadingStart = "#";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(HeadingStyle));
+            }
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
@@ -79,6 +144,14 @@ namespace Pihrtsoft.Markdown
         internal bool TablePadding => (TableOptions & TableOptions.Padding) != 0;
 
         internal bool TableOuterDelimiter => (TableOptions & TableOptions.OuterDelimiter) != 0;
+
+        internal bool FormatTableHeader => (TableOptions & TableOptions.FormatHeader) != 0;
+
+        internal bool FormatTableContent => (TableOptions & TableOptions.FormatContent) != 0;
+
+        internal bool EmptyLineBeforeTable => (TableOptions & TableOptions.EmptyLineBefore) != 0;
+
+        internal bool EmptyLineAfterTable => (TableOptions & TableOptions.EmptyLineAfter) != 0;
 
         internal bool UnderlineHeading => (HeadingOptions & HeadingOptions.Underline) != 0;
 
@@ -313,5 +386,15 @@ namespace Pihrtsoft.Markdown
                 charReferenceFormat,
                 HorizontalRuleFormat);
         }
+
+        internal string BoldDelimiter { get; }
+
+        internal string ItalicDelimiter { get; }
+
+        internal string BulletItemStart { get; }
+
+        internal string OrderedItemStart { get; }
+
+        internal string HeadingStart { get; }
     }
 }

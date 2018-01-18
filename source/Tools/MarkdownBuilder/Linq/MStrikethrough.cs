@@ -27,7 +27,10 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteStrikethrough(TextOrElements());
+            writer.WriteStartStrikethrough();
+            WriteContentTo(writer);
+            writer.WriteEndStrikethrough();
+            return writer;
         }
 
         internal override MElement Clone()
