@@ -15,7 +15,7 @@ namespace Pihrtsoft.Markdown
                 if (!en.MoveNext())
                     return null;
 
-                using (var writer = new MarkdownStringWriter(formatProvider, settings: settings))
+                using (var writer = new MarkdownStringWriter(formatProvider: formatProvider, settings: settings))
                     return Analyze(en, settings, writer);
             }
         }

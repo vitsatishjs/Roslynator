@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
 
@@ -9,23 +11,27 @@ namespace Pihrtsoft.Markdown
 {
     internal class MarkdownStringWriter : MarkdownWriter
     {
-        private bool _isOpen;
+        private readonly StringBuilder _sb;
         private readonly IFormatProvider _formatProvider;
+        private bool _isOpen;
 
-        public MarkdownStringWriter(IFormatProvider formatProvider, StringBuilder stringBuilder = null, MarkdownWriterSettings settings = null)
+        public MarkdownStringWriter(StringBuilder sb = null, IFormatProvider formatProvider = null, MarkdownWriterSettings settings = null)
             : base(settings)
         {
-            _formatProvider = formatProvider ?? throw new ArgumentNullException(nameof(formatProvider));
-            StringBuilder = stringBuilder ?? new StringBuilder();
+            _sb = sb ?? new StringBuilder();
+            _formatProvider = formatProvider ?? CultureInfo.InvariantCulture;
             _isOpen = true;
         }
 
-        public StringBuilder StringBuilder { get; }
+        public virtual StringBuilder GetStringBuilder()
+        {
+            return _sb;
+        }
 
         protected internal override int Length
         {
-            get { return StringBuilder.Length; }
-            set { StringBuilder.Length = value; }
+            get { return _sb.Length; }
+            set { _sb.Length = value; }
         }
 
         public override MarkdownWriter WriteString(string value)
@@ -111,28 +117,28 @@ namespace Pihrtsoft.Markdown
         {
             ThrowIfClosed();
             OnBeforeWrite();
-            StringBuilder.Append(value, startIndex, count);
+            _sb.Append(value, startIndex, count);
         }
 
         private void WriteChar(char ch)
         {
             ThrowIfClosed();
             OnBeforeWrite();
-            StringBuilder.Append(ch);
+            _sb.Append(ch);
         }
 
         public override MarkdownWriter WriteRaw(string value)
         {
             ThrowIfClosed();
             OnBeforeWrite();
-            StringBuilder.Append(value);
+            _sb.Append(value);
             return this;
         }
 
         public override MarkdownWriter WriteLine()
         {
             ThrowIfClosed();
-            StringBuilder.Append(Settings.NewLineChars);
+            _sb.Append(Settings.NewLineChars);
             OnAfterWriteLine();
             return this;
         }
@@ -140,36 +146,36 @@ namespace Pihrtsoft.Markdown
         public override void WriteValue(int value)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(_formatProvider));
         }
 
         public override void WriteValue(long value)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(_formatProvider));
         }
 
         public override void WriteValue(float value)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(_formatProvider));
         }
 
         public override void WriteValue(double value)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(_formatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(_formatProvider));
         }
 
         protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
-            throw new InvalidOperationException();
+            return TableAnalyzer.Analyze(rows, Settings, _formatProvider)?.AsReadOnly();
         }
 
         public override void Flush()

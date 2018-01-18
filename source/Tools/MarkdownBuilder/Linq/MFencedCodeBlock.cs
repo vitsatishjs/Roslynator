@@ -8,6 +8,8 @@ namespace Pihrtsoft.Markdown.Linq
     [DebuggerDisplay("{Kind}{InfoDebuggerDisplay,nq} {Text,nq}")]
     public class MFencedCodeBlock : MElement
     {
+        private string _info;
+
         public MFencedCodeBlock(string text, string info = null)
         {
             Text = text;
@@ -20,12 +22,21 @@ namespace Pihrtsoft.Markdown.Linq
                 throw new ArgumentNullException(nameof(other));
 
             Text = other.Text;
-            Info = other.Info;
+            _info = other.Info;
         }
 
         public string Text { get; set; }
 
-        public string Info { get; set; }
+        public string Info
+        {
+            get { return _info; }
+            set
+            {
+                Error.ThrowOnInvalidFencedCodeBlockInfo(value);
+
+                _info = value;
+            }
+        }
 
         public override MarkdownKind Kind => MarkdownKind.FencedCodeBlock;
 

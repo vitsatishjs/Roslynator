@@ -45,12 +45,9 @@ namespace Pihrtsoft.Markdown
         {
             Alignment alignment = (element as MTableColumn)?.Alignment ?? Alignment.Left;
 
-            int length = writer.StringBuilder.Length - index;
+            int length = writer.Length - index;
 
-            return new TableColumnInfo(
-                alignment,
-                length,
-                TextUtility.IsWhiteSpace(writer.StringBuilder, index, length));
+            return new TableColumnInfo(alignment, length, writer.GetStringBuilder().IsWhiteSpace(index, length));
         }
 
         public override bool Equals(object obj)

@@ -41,26 +41,26 @@ namespace Pihrtsoft.Markdown
 
         private unsafe void WriteStringUnsafe(string value)
         {
-            fixed (char* pSrcBegin = value)
+            fixed (char* pSrcStart = value)
             {
-                WriteStringUnsafe(pSrcBegin, pSrcBegin + value.Length);
+                WriteStringUnsafe(pSrcStart, pSrcStart + value.Length);
             }
         }
 
-        private unsafe void WriteStringUnsafe(char* pSrcBegin, char* pSrcEnd)
+        private unsafe void WriteStringUnsafe(char* pSrcStart, char* pSrcEnd)
         {
-            fixed (char* pDstBegin = _bufChars)
+            fixed (char* pDstStart = _bufChars)
             {
-                char* pDst = pDstBegin + _bufPos;
-                char* pSrc = pSrcBegin;
+                char* pDst = pDstStart + _bufPos;
+                char* pSrc = pSrcStart;
 
                 int ch = 0;
                 while (true)
                 {
                     char* pDstEnd = pDst + (pSrcEnd - pSrc);
 
-                    if (pDstEnd > pDstBegin + _bufLen)
-                        pDstEnd = pDstBegin + _bufLen;
+                    if (pDstEnd > pDstStart + _bufLen)
+                        pDstEnd = pDstStart + _bufLen;
 
                     while (pDst < pDstEnd
                         && !ShouldBeEscaped((char)(ch = *pSrc))) //TODO: \r\n
@@ -76,9 +76,9 @@ namespace Pihrtsoft.Markdown
 
                     if (pDst >= pDstEnd)
                     {
-                        _bufPos = (int)(pDst - pDstBegin);
+                        _bufPos = (int)(pDst - pDstStart);
                         FlushBuffer();
-                        pDst = pDstBegin;
+                        pDst = pDstStart;
                         continue;
                     }
 
@@ -162,7 +162,7 @@ namespace Pihrtsoft.Markdown
                     pSrc++;
                 }
 
-                _bufPos = (int)(pDst - pDstBegin);
+                _bufPos = (int)(pDst - pDstStart);
             }
         }
 
@@ -178,25 +178,25 @@ namespace Pihrtsoft.Markdown
 
         private unsafe void WriteRawUnsafe(string s)
         {
-            fixed (char* pSrcBegin = s)
+            fixed (char* pSrcStart = s)
             {
-                WriteRawUnsafe(pSrcBegin, pSrcBegin + s.Length);
+                WriteRawUnsafe(pSrcStart, pSrcStart + s.Length);
             }
         }
 
-        private unsafe void WriteRawUnsafe(char* pSrcBegin, char* pSrcEnd)
+        private unsafe void WriteRawUnsafe(char* pSrcStart, char* pSrcEnd)
         {
-            fixed (char* pDstBegin = _bufChars)
+            fixed (char* pDstStart = _bufChars)
             {
-                char* pDst = pDstBegin + _bufPos;
-                char* pSrc = pSrcBegin;
+                char* pDst = pDstStart + _bufPos;
+                char* pSrc = pSrcStart;
 
                 while (true)
                 {
                     char* pDstEnd = pDst + (pSrcEnd - pSrc);
 
-                    if (pDstEnd > pDstBegin + _bufLen)
-                        pDstEnd = pDstBegin + _bufLen;
+                    if (pDstEnd > pDstStart + _bufLen)
+                        pDstEnd = pDstStart + _bufLen;
 
                     while (pDst < pDstEnd)
                     {
@@ -211,24 +211,24 @@ namespace Pihrtsoft.Markdown
 
                     if (pDst >= pDstEnd)
                     {
-                        _bufPos = (int)(pDst - pDstBegin);
+                        _bufPos = (int)(pDst - pDstStart);
                         FlushBuffer();
-                        pDst = pDstBegin;
+                        pDst = pDstStart;
                         continue;
                     }
                 }
 
-                _bufPos = (int)(pDst - pDstBegin);
+                _bufPos = (int)(pDst - pDstStart);
             }
         }
 
         private unsafe char* WriteNewLine(char* pDst)
         {
-            fixed (char* pDstBegin = _bufChars)
+            fixed (char* pDstStart = _bufChars)
             {
-                _bufPos = (int)(pDst - pDstBegin);
+                _bufPos = (int)(pDst - pDstStart);
                 WriteRawUnsafe(Settings.NewLineChars);
-                return pDstBegin + _bufPos;
+                return pDstStart + _bufPos;
             }
         }
 

@@ -69,7 +69,7 @@ namespace Pihrtsoft.Markdown
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            return new MarkdownStringWriter(CultureInfo.InvariantCulture, output, settings);
+            return new MarkdownStringWriter(output, CultureInfo.InvariantCulture, settings);
         }
 
         public static MarkdownWriter Create(TextWriter output, MarkdownWriterSettings settings = null)
@@ -587,7 +587,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteFencedCodeBlock(string text, string info = null)
         {
-            //TODO: info contains newline
+            Error.ThrowOnInvalidFencedCodeBlockInfo(info);
 
             Check(MarkdownKind.FencedCodeBlock);
             WriteLineIfNecessary();

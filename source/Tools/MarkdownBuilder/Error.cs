@@ -12,6 +12,18 @@ namespace Pihrtsoft.Markdown
             throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
         }
 
+        public static void ThrowOnInvalidFencedCodeBlockInfo(string info)
+        {
+            if (string.IsNullOrEmpty(info))
+                return;
+
+            for (int i = 0; i < info.Length; i++)
+            {
+                if (TextUtility.IsCarriageReturnOrLinefeed(info[i]))
+                    throw new ArgumentException(info, nameof(info));
+            }
+        }
+
         public static void ThrowOnInvalidHorizontalRuleCount(int count)
         {
             if (count < 3)
