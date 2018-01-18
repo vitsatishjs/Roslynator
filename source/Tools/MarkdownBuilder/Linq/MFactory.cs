@@ -458,7 +458,7 @@ namespace Pihrtsoft.Markdown.Linq
             return new MBlockQuote(other);
         }
 
-        public static MHorizontalRule HorizontalRule(char value = '-', int count = 3, string separator = " ")
+        public static MHorizontalRule HorizontalRule(string value = "-", int count = 3, string separator = " ")
         {
             return new MHorizontalRule(value, count, separator);
         }

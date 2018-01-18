@@ -8,7 +8,7 @@ namespace Pihrtsoft.Markdown.Linq
     {
         private int _count;
 
-        internal MHorizontalRule(char value, int count = 3, string separator = " ")
+        internal MHorizontalRule(string value, int count = 3, string separator = " ")
         {
             Value = value;
             Count = count;
@@ -30,7 +30,7 @@ namespace Pihrtsoft.Markdown.Linq
             Separator = other.Separator;
         }
 
-        public char Value { get; set; }
+        public string Value { get; set; }
 
         public int Count
         {

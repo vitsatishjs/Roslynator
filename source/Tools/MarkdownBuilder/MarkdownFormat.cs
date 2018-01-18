@@ -87,6 +87,15 @@ namespace Pihrtsoft.Markdown
             {
                 throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(OrderedListStyle));
             }
+
+            if (HeadingStyle == HeadingStyle.NumberSign)
+            {
+                HeadingStart = "#";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(HeadingStyle));
+            }
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
@@ -386,9 +395,6 @@ namespace Pihrtsoft.Markdown
 
         internal string OrderedItemStart { get; }
 
-        internal char HeadingChar
-        {
-            get { return '#'; }
-        }
+        internal string HeadingStart { get; }
     }
 }

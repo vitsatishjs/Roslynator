@@ -90,7 +90,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
             if (content is string s)
             {
-                writer.Write(s);
+                writer.WriteString(s);
             }
             else
             {

@@ -8,16 +8,16 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("Value = {Value,nq} Count = {Count} Separator = {Space}")]
     public struct HorizontalRuleFormat : IEquatable<HorizontalRuleFormat>
     {
-        public HorizontalRuleFormat(char value, int count, string separator)
+        public HorizontalRuleFormat(string value, int count, string separator)
         {
             Value = value;
             Count = count;
             Separator = separator;
         }
 
-        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat('-', 3, " ");
+        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat("-", 3, " ");
 
-        public char Value { get; }
+        public string Value { get; }
 
         public int Count { get; }
 
@@ -38,7 +38,7 @@ namespace Pihrtsoft.Markdown
 
         public override int GetHashCode()
         {
-            return Hash.Combine((int)Value, Hash.Combine(Count, Hash.Create(Separator)));
+            return Hash.Combine(Value, Hash.Combine(Count, Hash.Create(Separator)));
         }
 
         public static bool operator ==(HorizontalRuleFormat format1, HorizontalRuleFormat format2)

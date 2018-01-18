@@ -14,7 +14,7 @@ namespace Pihrtsoft.Markdown
 
         private TextWriter _writer;
         private readonly char[] _bufChars;
-        //private int _bufPos;
+        private int _bufPos;
         protected int _bufLen = BufferSize;
         private bool _skipWrite;
 
@@ -30,27 +30,134 @@ namespace Pihrtsoft.Markdown
 
         protected internal override int Length { get; set; }
 
-        protected override void WriteValue(char value)
+        public override unsafe MarkdownWriter WriteString(string value)
         {
-            _writer.Write(value);
-            Length++;
+            if (string.IsNullOrEmpty(value))
+                return this;
+
+            RawText(value);
+            return this;
         }
 
-        protected override void WriteString(string value)
+        protected unsafe void RawText(string s)
         {
-            _writer.Write(value);
-
-            if (value != null)
-                Length += value.Length;
+            fixed (char* pSrcBegin = s)
+            {
+                RawText(pSrcBegin, pSrcBegin + s.Length);
+            }
         }
 
-        public override void WriteString(string value, int startIndex, int count)
+        protected unsafe void RawText(char* pSrcBegin, char* pSrcEnd)
         {
-            if (value == null)
-                return;
+            fixed (char* pDstBegin = _bufChars)
+            {
+                char* pDst = pDstBegin + _bufPos;
+                char* pSrc = pSrcBegin;
 
-            _writer.Write(value.ToCharArray(), startIndex, count);
-            Length += count;
+                int ch = 0;
+                while (true)
+                {
+                    char* pDstEnd = pDst + (pSrcEnd - pSrc);
+
+                    if (pDstEnd > pDstBegin + _bufLen)
+                        pDstEnd = pDstBegin + _bufLen;
+
+                    while (pDst < pDstEnd
+                        && !_shouldBeEscaped((char)(ch = *pSrc))) //TODO: \r\n
+                    {
+                        pSrc++;
+                        *pDst = (char)ch;
+                        pDst++;
+                        Length++;
+                    }
+
+                    if (pSrc >= pSrcEnd)
+                        break;
+
+                    if (pDst >= pDstEnd)
+                    {
+                        _bufPos = (int)(pDst - pDstBegin);
+                        FlushBuffer();
+                        pDst = pDstBegin;
+                        continue;
+                    }
+
+                    switch (ch)
+                    {
+                        case (char)10:
+                            {
+                                if (Settings.NewLineHandling == NewLineHandling.Replace)
+                                {
+                                    pDst = WriteNewLine(pDst);
+                                }
+                                else
+                                {
+                                    *pDst = (char)ch;
+                                    pDst++;
+                                    Length++;
+                                }
+
+                                break;
+                            }
+                        case (char)13:
+                            {
+                                switch (Settings.NewLineHandling)
+                                {
+                                    case NewLineHandling.Replace:
+                                        {
+                                            //TODO: overflow?
+                                            if (pSrc[1] == '\n')
+                                                pSrc++;
+
+                                            pDst = WriteNewLine(pDst);
+                                            break;
+                                        }
+                                    case NewLineHandling.None:
+                                        {
+                                            *pDst = (char)ch;
+                                            pDst++;
+                                            Length++;
+                                            break;
+                                        }
+                                }
+
+                                break;
+                            }
+                        default:
+                            {
+                                *pDst = (_state == State.InlineCodeText) ? '`' : '\\';
+                                pDst++;
+                                Length++;
+                                *pDst = (char)ch;
+                                pDst++;
+                                Length++;
+                                break;
+                            }
+                    }
+
+                    pSrc++;
+                }
+
+                _bufPos = (int)(pDst - pDstBegin);
+            }
+        }
+
+        protected unsafe char* WriteNewLine(char* pDst)
+        {
+            fixed (char* pDstBegin = _bufChars)
+            {
+                _bufPos = (int)(pDst - pDstBegin);
+                RawText(Settings.NewLineChars);
+                OnAfterWriteLine();
+                return pDstBegin + _bufPos;
+            }
+        }
+
+        public override MarkdownWriter WriteLine()
+        {
+            RawText(Settings.NewLineChars);
+            OnAfterWriteLine();
+            return this;
         }
 
         public override void WriteValue(int value)
@@ -90,9 +197,7 @@ namespace Pihrtsoft.Markdown
             try
             {
                 if (!_skipWrite)
-                {
-                    //_writer.Write(_bufChars, 0, _bufPos);
-                }
+                    _writer.Write(_bufChars, 0, _bufPos);
             }
             catch
             {
@@ -101,7 +206,7 @@ namespace Pihrtsoft.Markdown
             }
             finally
             {
-                //_bufPos = 0;
+                _bufPos = 0;
             }
         }
 
