@@ -59,12 +59,12 @@ namespace Pihrtsoft.Markdown
 
                     if (Settings.NewLineHandling == NewLineHandling.Replace)
                     {
-                        WriteString(value, prev, i - 1 - prev);
+                        WriteString(value, prev, i - prev);
                         WriteLine();
                     }
                     else if (Settings.NewLineHandling == NewLineHandling.None)
                     {
-                        WriteString(value, prev, i - prev);
+                        WriteString(value, prev, i + 1 - prev);
                         OnAfterWriteLine();
                     }
 
@@ -72,24 +72,39 @@ namespace Pihrtsoft.Markdown
                 }
                 else if (ch == 13)
                 {
-                    if (i == length - 1
-                        || value[i + 1] != 10)
-                    {
-                        OnBeforeWrite();
+                    OnBeforeWrite();
 
+                    if (i < length - 1
+                        && value[i + 1] == 10)
+                    {
                         if (Settings.NewLineHandling == NewLineHandling.Replace)
                         {
-                            WriteString(value, prev, i - 1 - prev);
+                            WriteString(value, prev, i - prev);
                             WriteLine();
                         }
                         else if (Settings.NewLineHandling == NewLineHandling.None)
                         {
-                            WriteString(value, prev, i - prev);
+                            WriteString(value, prev, i + 2 - prev);
                             OnAfterWriteLine();
                         }
 
-                        prev = ++i;
+                        i++;
                     }
+                    else
+                    {
+                        if (Settings.NewLineHandling == NewLineHandling.Replace)
+                        {
+                            WriteString(value, prev, i - prev);
+                            WriteLine();
+                        }
+                        else if (Settings.NewLineHandling == NewLineHandling.None)
+                        {
+                            WriteString(value, prev, i + 1 - prev);
+                            OnAfterWriteLine();
+                        }
+                    }
+
+                    prev = ++i;
                 }
                 else if (_shouldBeEscaped(ch))
                 {
@@ -119,6 +134,14 @@ namespace Pihrtsoft.Markdown
         {
             ThrowIfClosed();
             StringBuilder.Append(value, startIndex, count);
+        }
+
+        public override MarkdownWriter WriteLine()
+        {
+            ThrowIfClosed();
+            StringBuilder.Append(Settings.NewLineChars);
+            OnAfterWriteLine();
+            return this;
         }
 
         public override void WriteValue(int value)
