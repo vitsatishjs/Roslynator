@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
 
@@ -36,14 +35,6 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(value))
                 return this;
 
-            RawText(value);
-            return this;
-        }
-
-        protected void RawText(string value)
-        {
-            Debug.Assert(value != null);
-
             int length = value.Length;
 
             int prev = 0;
@@ -55,14 +46,12 @@ namespace Pihrtsoft.Markdown
 
                 if (ch == 10)
                 {
-                    OnBeforeWrite();
-
-                    if (Settings.NewLineHandling == NewLineHandling.Replace)
+                    if (NewLineHandling == NewLineHandling.Replace)
                     {
                         WriteString(value, prev, i - prev);
                         WriteLine();
                     }
-                    else if (Settings.NewLineHandling == NewLineHandling.None)
+                    else if (NewLineHandling == NewLineHandling.None)
                     {
                         WriteString(value, prev, i + 1 - prev);
                         OnAfterWriteLine();
@@ -72,17 +61,15 @@ namespace Pihrtsoft.Markdown
                 }
                 else if (ch == 13)
                 {
-                    OnBeforeWrite();
-
                     if (i < length - 1
                         && value[i + 1] == 10)
                     {
-                        if (Settings.NewLineHandling == NewLineHandling.Replace)
+                        if (NewLineHandling == NewLineHandling.Replace)
                         {
                             WriteString(value, prev, i - prev);
                             WriteLine();
                         }
-                        else if (Settings.NewLineHandling == NewLineHandling.None)
+                        else if (NewLineHandling == NewLineHandling.None)
                         {
                             WriteString(value, prev, i + 2 - prev);
                             OnAfterWriteLine();
@@ -90,27 +77,23 @@ namespace Pihrtsoft.Markdown
 
                         i++;
                     }
-                    else
+                    else if (NewLineHandling == NewLineHandling.Replace)
                     {
-                        if (Settings.NewLineHandling == NewLineHandling.Replace)
-                        {
-                            WriteString(value, prev, i - prev);
-                            WriteLine();
-                        }
-                        else if (Settings.NewLineHandling == NewLineHandling.None)
-                        {
-                            WriteString(value, prev, i + 1 - prev);
-                            OnAfterWriteLine();
-                        }
+                        WriteString(value, prev, i - prev);
+                        WriteLine();
+                    }
+                    else if (NewLineHandling == NewLineHandling.None)
+                    {
+                        WriteString(value, prev, i + 1 - prev);
+                        OnAfterWriteLine();
                     }
 
                     prev = ++i;
                 }
-                else if (_shouldBeEscaped(ch))
+                else if (ShouldBeEscaped(ch))
                 {
-                    OnBeforeWrite();
                     WriteString(value, prev, i - prev);
-                    WriteChar((_state == State.InlineCodeText) ? '`' : '\\');
+                    WriteChar(EscapingChar);
                     WriteChar(ch);
                     prev = ++i;
                 }
@@ -120,20 +103,30 @@ namespace Pihrtsoft.Markdown
                 }
             }
 
-            OnBeforeWrite();
             WriteString(value, prev, value.Length - prev);
-        }
-
-        private void WriteChar(char ch)
-        {
-            ThrowIfClosed();
-            StringBuilder.Append(ch);
+            return this;
         }
 
         private void WriteString(string value, int startIndex, int count)
         {
             ThrowIfClosed();
+            OnBeforeWrite();
             StringBuilder.Append(value, startIndex, count);
+        }
+
+        private void WriteChar(char ch)
+        {
+            ThrowIfClosed();
+            OnBeforeWrite();
+            StringBuilder.Append(ch);
+        }
+
+        public override MarkdownWriter WriteRaw(string value)
+        {
+            ThrowIfClosed();
+            OnBeforeWrite();
+            StringBuilder.Append(value);
+            return this;
         }
 
         public override MarkdownWriter WriteLine()
@@ -191,7 +184,7 @@ namespace Pihrtsoft.Markdown
         private void ThrowIfClosed()
         {
             if (!_isOpen)
-                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
+                throw new ObjectDisposedException(null, "Cannot write to a closed writer.");
         }
     }
 }

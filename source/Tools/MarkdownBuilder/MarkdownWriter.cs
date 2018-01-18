@@ -15,7 +15,8 @@ namespace Pihrtsoft.Markdown
     public abstract class MarkdownWriter : IDisposable
     {
         private bool _disposed;
-        private bool _startOfLine;
+
+        protected bool _startOfLine;
         private bool _emptyLine;
         private bool _pendingEmptyLine;
 
@@ -27,10 +28,8 @@ namespace Pihrtsoft.Markdown
         private int _tableColumnIndex = -1;
         private int _tableCellPosition = -1;
 
-        protected State _state;
+        private State _state;
         private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
-
-        protected Func<char, bool> _shouldBeEscaped = MarkdownEscaper.ShouldBeEscaped;
 
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
         {
@@ -40,10 +39,9 @@ namespace Pihrtsoft.Markdown
 
         public virtual MarkdownWriterSettings Settings { get; }
 
-        public MarkdownFormat Format
-        {
-            get { return Settings.Format; }
-        }
+        public MarkdownFormat Format => Settings.Format;
+
+        internal NewLineHandling NewLineHandling => Settings.NewLineHandling;
 
         private MarkdownKind CurrentKind
         {
@@ -56,6 +54,10 @@ namespace Pihrtsoft.Markdown
 
         protected internal abstract int Length { get; set; }
 
+        protected Func<char, bool> ShouldBeEscaped { get; set; } = MarkdownEscaper.ShouldBeEscaped;
+
+        protected char EscapingChar => (_state == State.InlineCode) ? '`' : '\\';
+
         private TableColumnInfo CurrentColumn => _tableColumns[_tableColumnIndex];
 
         private bool IsLastColumn => _tableColumnIndex == _tableColumns.Count - 1;
@@ -67,7 +69,7 @@ namespace Pihrtsoft.Markdown
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            return new MarkdownTextWriter(new StringWriter(output, CultureInfo.InvariantCulture), settings);
+            return new MarkdownStringWriter(CultureInfo.InvariantCulture, output, settings);
         }
 
         public static MarkdownWriter Create(TextWriter output, MarkdownWriterSettings settings = null)
@@ -100,28 +102,19 @@ namespace Pihrtsoft.Markdown
             Dispose();
         }
 
-        private void PushCheck(MarkdownKind kind)
+        private void CheckPush(MarkdownKind kind)
         {
             Check(kind);
             _containers.Push(kind);
         }
 
-        private void Pop(MarkdownKind kind)
+        private void Pop()
         {
-            //TODO: 
-            if (kind == MarkdownKind.None)
-            {
-            }
-
             _containers.Pop();
         }
 
         internal void Check(MarkdownKind kind)
         {
-            //TODO: 
-            if (kind == MarkdownKind.None)
-            {
-            }
         }
 
         private void ChangeState(State state)
@@ -132,38 +125,37 @@ namespace Pihrtsoft.Markdown
             {
                 case State.None:
                     {
-                        _shouldBeEscaped = MarkdownEscaper.ShouldBeEscaped;
+                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscaped;
                         break;
                     }
-                case State.Comment:
-                case State.RawText:
+                case State.Raw:
                     {
-                        _shouldBeEscaped = _ => false;
+                        ShouldBeEscaped = _ => false;
                         break;
                     }
-                case State.InlineCodeText:
+                case State.InlineCode:
                     {
-                        _shouldBeEscaped = f => f == '`';
+                        ShouldBeEscaped = f => f == '`';
                         break;
                     }
                 case State.LinkText:
                     {
-                        _shouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkText;
+                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkText;
                         break;
                     }
                 case State.LinkUrl:
                     {
-                        _shouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkUrl;
+                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkUrl;
                         break;
                     }
                 case State.LinkTitle:
                     {
-                        _shouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkTitle;
+                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkTitle;
                         break;
                     }
                 case State.AngleBrackets:
                     {
-                        _shouldBeEscaped = ch => ch == '<' || ch == '>';
+                        ShouldBeEscaped = ch => ch == '<' || ch == '>';
                         break;
                     }
                 default:
@@ -175,7 +167,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteStartBold()
         {
-            PushCheck(MarkdownKind.Bold);
+            CheckPush(MarkdownKind.Bold);
             WriteRaw(Format.BoldDelimiter);
             return this;
         }
@@ -183,7 +175,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndBold()
         {
             WriteRaw(Format.BoldDelimiter);
-            Pop(MarkdownKind.Bold);
+            Pop();
             return this;
         }
 
@@ -197,7 +189,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteStartItalic()
         {
-            PushCheck(MarkdownKind.Italic);
+            CheckPush(MarkdownKind.Italic);
             WriteRaw(Format.ItalicDelimiter);
             return this;
         }
@@ -205,7 +197,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndItalic()
         {
             WriteRaw(Format.ItalicDelimiter);
-            Pop(MarkdownKind.Italic);
+            Pop();
             return this;
         }
 
@@ -219,7 +211,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteStartStrikethrough()
         {
-            PushCheck(MarkdownKind.Strikethrough);
+            CheckPush(MarkdownKind.Strikethrough);
             WriteRaw("~~");
             return this;
         }
@@ -227,7 +219,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndStrikethrough()
         {
             WriteRaw("~~");
-            Pop(MarkdownKind.Strikethrough);
+            Pop();
             return this;
         }
 
@@ -243,7 +235,7 @@ namespace Pihrtsoft.Markdown
         {
             Check(MarkdownKind.InlineCode);
             WriteRaw("`");
-            ChangeState(State.InlineCodeText);
+            ChangeState(State.InlineCode);
 
             if (!string.IsNullOrEmpty(text))
             {
@@ -265,7 +257,7 @@ namespace Pihrtsoft.Markdown
         {
             Error.ThrowOnInvalidHeadingLevel(level);
 
-            PushCheck(MarkdownKind.Heading);
+            CheckPush(MarkdownKind.Heading);
 
             bool underline = (level == 1 && Format.UnderlineHeading1)
                 || (level == 2 && Format.UnderlineHeading2);
@@ -307,7 +299,7 @@ namespace Pihrtsoft.Markdown
             }
 
             PendingLineIf(Format.EmptyLineAfterHeading);
-            Pop(MarkdownKind.Heading);
+            Pop();
             return this;
         }
 
@@ -341,17 +333,17 @@ namespace Pihrtsoft.Markdown
             return WriteHeading(6, text);
         }
 
-        public MarkdownWriter WriteHeading(int level, string content)
+        public MarkdownWriter WriteHeading(int level, string text)
         {
             WriteStartHeading(level);
-            WriteString(content);
+            WriteString(text);
             WriteEndHeading();
             return this;
         }
 
         public MarkdownWriter WriteStartBulletItem()
         {
-            PushCheck(MarkdownKind.BulletItem);
+            CheckPush(MarkdownKind.BulletItem);
             WriteLineIfNecessary();
             WriteRaw(Format.BulletItemStart);
             ListLevel++;
@@ -360,7 +352,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteEndBulletItem()
         {
-            Pop(MarkdownKind.BulletItem);
+            Pop();
             WriteLineIfNecessary();
             ListLevel--;
             return this;
@@ -377,7 +369,7 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteStartOrderedItem(int number)
         {
             Error.ThrowOnInvalidItemNumber(number);
-            PushCheck(MarkdownKind.OrderedItem);
+            CheckPush(MarkdownKind.OrderedItem);
             WriteLineIfNecessary();
             WriteValue(number);
             WriteRaw(Format.OrderedItemStart);
@@ -387,7 +379,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteEndOrderedItem()
         {
-            Pop(MarkdownKind.OrderedItem);
+            Pop();
             WriteLineIfNecessary();
             ListLevel--;
             return this;
@@ -405,7 +397,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteStartTaskItem(bool isCompleted = false)
         {
-            PushCheck(MarkdownKind.TaskItem);
+            CheckPush(MarkdownKind.TaskItem);
             WriteLineIfNecessary();
 
             if (isCompleted)
@@ -428,7 +420,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteEndTaskItem()
         {
-            Pop(MarkdownKind.TaskItem);
+            Pop();
             WriteLineIfNecessary();
             ListLevel--;
             return this;
@@ -580,12 +572,14 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteIndentedCodeBlock(string text)
         {
-            PushCheck(MarkdownKind.IndentedCodeBlock);
+            CheckPush(MarkdownKind.IndentedCodeBlock);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
+            ChangeState(State.Raw);
             WriteRaw(text);
+            ChangeState(State.None);
             WriteLineIfNecessary();
-            Pop(MarkdownKind.IndentedCodeBlock);
+            Pop();
             PendingLineIf(Format.EmptyLineAfterCodeBlock);
 
             return this;
@@ -593,41 +587,32 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteFencedCodeBlock(string text, string info = null)
         {
+            //TODO: info contains newline
+
             Check(MarkdownKind.FencedCodeBlock);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
 
-            WriteCodeFence();
+            WriteRaw(Format.CodeFence);
             WriteRaw(info);
             WriteLine();
 
+            ChangeState(State.Raw);
             WriteRaw(text);
+            ChangeState(State.None);
+
             WriteLineIfNecessary();
 
-            WriteCodeFence();
+            WriteRaw(Format.CodeFence);
             WriteLine();
 
             PendingLineIf(Format.EmptyLineAfterCodeBlock);
-
             return this;
-
-            MarkdownWriter WriteCodeFence()
-            {
-                switch (Format.CodeFenceStyle)
-                {
-                    case CodeFenceStyle.Backtick:
-                        return WriteRaw("```");
-                    case CodeFenceStyle.Tilde:
-                        return WriteRaw("~~~");
-                    default:
-                        throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CodeFenceStyle));
-                }
-            }
         }
 
         public void WriteStartBlockQuote()
         {
-            PushCheck(MarkdownKind.BlockQuote);
+            CheckPush(MarkdownKind.BlockQuote);
             WriteLineIfNecessary();
             QuoteLevel++;
         }
@@ -636,7 +621,7 @@ namespace Pihrtsoft.Markdown
         {
             WriteLineIfNecessary();
             QuoteLevel--;
-            Pop(MarkdownKind.BlockQuote);
+            Pop();
         }
 
         public MarkdownWriter WriteBlockQuote(string text)
@@ -681,7 +666,7 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteStartTable(IReadOnlyList<TableColumnInfo> columns)
         {
-            PushCheck(MarkdownKind.Table);
+            CheckPush(MarkdownKind.Table);
             WriteLineIfNecessary();
             PendingLineIf(Format.EmptyLineBeforeTable);
             _tableColumns = columns;
@@ -693,7 +678,7 @@ namespace Pihrtsoft.Markdown
             _tableRowIndex = -1;
             _tableColumns = null;
             PendingLineIf(Format.EmptyLineAfterTable);
-            Pop(MarkdownKind.Table);
+            Pop();
             return this;
         }
 
@@ -719,7 +704,7 @@ namespace Pihrtsoft.Markdown
 
         public void WriteStartTableRow()
         {
-            PushCheck(MarkdownKind.TableRow);
+            CheckPush(MarkdownKind.TableRow);
             _tableRowIndex++;
             _tableColumnIndex = -1;
         }
@@ -735,7 +720,7 @@ namespace Pihrtsoft.Markdown
             WriteLine();
             _tableColumnIndex = -1;
 
-            Pop(MarkdownKind.TableRow);
+            Pop();
         }
 
         internal void WriteCell(MElement cell)
@@ -747,7 +732,7 @@ namespace Pihrtsoft.Markdown
 
         public void WriteStartTableCell()
         {
-            PushCheck(MarkdownKind.TableColumn);
+            CheckPush(MarkdownKind.TableColumn);
             _tableColumnIndex++;
 
             if (IsFirstColumn)
@@ -820,7 +805,7 @@ namespace Pihrtsoft.Markdown
             }
 
             _tableCellPosition = -1;
-            Pop(MarkdownKind.TableColumn);
+            Pop();
         }
 
         public void WriteTableHeaderSeparator()
@@ -924,9 +909,7 @@ namespace Pihrtsoft.Markdown
         {
             Check(MarkdownKind.Comment);
             WriteRaw("<!-- ");
-            ChangeState(State.Comment);
             WriteRaw(text);
-            ChangeState(State.None);
             WriteRaw(" -->");
             return this;
         }
@@ -961,61 +944,67 @@ namespace Pihrtsoft.Markdown
             return WriteString(value.ToString());
         }
 
-        internal void WriteLineIfNecessary()
-        {
-            if (!_startOfLine)
-                WriteLine();
-        }
+        public abstract void Flush();
 
-        private void PendingLineIf(bool condition)
-        {
-            if (condition)
-                _pendingEmptyLine = true;
-        }
+        public abstract MarkdownWriter WriteString(string value);
 
-        private void WriteEmptyLineIf(bool condition)
-        {
-            if (condition)
-                WriteEmptyLine();
-        }
-
-        private void WriteEmptyLine()
-        {
-            if (Length > 0
-                && !_emptyLine)
-            {
-                WriteLine();
-            }
-        }
+        public abstract MarkdownWriter WriteRaw(string value);
 
         private MarkdownWriter WriteRaw(string value, int repeatCount)
         {
-            OnBeforeWrite();
-
-            ChangeState(State.RawText);
-
             for (int i = 0; i < repeatCount; i++)
-                WriteString(value);
+                WriteRaw(value);
 
-            ChangeState(State.None);
-            return this;
-        }
-
-        public MarkdownWriter WriteRaw(string value)
-        {
-            OnBeforeWrite();
-
-            ChangeState(State.RawText);
-            WriteString(value);
-            ChangeState(State.None);
             return this;
         }
 
         public virtual MarkdownWriter WriteLine()
         {
-            WriteString(Settings.NewLineChars);
+            WriteRaw(Settings.NewLineChars);
             OnAfterWriteLine();
             return this;
+        }
+
+        public virtual void WriteValue(bool value)
+        {
+            WriteString((value) ? "true" : "false");
+        }
+
+        public virtual void WriteValue(int value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        public virtual void WriteValue(long value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        public virtual void WriteValue(float value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        public virtual void WriteValue(double value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        public virtual void WriteValue(decimal value)
+        {
+            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+        }
+
+        protected void WriteIndentation()
+        {
+            for (int i = 0; i < QuoteLevel; i++)
+                WriteRaw("> ");
+
+            for (int i = 0; i < ListLevel; i++)
+                WriteRaw("  ");
+
+            if (CurrentKind == MarkdownKind.IndentedCodeBlock)
+                WriteRaw("    ");
         }
 
         protected void OnAfterWriteLine()
@@ -1048,53 +1037,42 @@ namespace Pihrtsoft.Markdown
             _emptyLine = false;
         }
 
-        private void WriteIndentation()
+        internal void WriteLineIfNecessary()
         {
-            if (_state == State.Comment)
-                return;
-
-            for (int i = 0; i < QuoteLevel; i++)
-                WriteString("> ");
-
-            for (int i = 0; i < ListLevel; i++)
-                WriteString("  ");
-
-            if (CurrentKind == MarkdownKind.IndentedCodeBlock)
-                WriteString("    ");
+            if (!_startOfLine)
+                WriteLine();
         }
 
-        public abstract void Flush();
-
-        public abstract MarkdownWriter WriteString(string value);
-
-        public virtual void WriteValue(bool value)
+        private void PendingLineIf(bool condition)
         {
-            WriteString((value) ? "true" : "false");
+            if (condition)
+                _pendingEmptyLine = true;
         }
 
-        public virtual void WriteValue(int value)
+        private void WriteEmptyLineIf(bool condition)
         {
-            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+            if (condition)
+                WriteEmptyLine();
         }
 
-        public virtual void WriteValue(long value)
+        private void WriteEmptyLine()
         {
-            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+            if (Length > 0
+                && !_emptyLine)
+            {
+                WriteLine();
+            }
         }
 
-        public virtual void WriteValue(float value)
+        protected enum State
         {
-            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
-        }
-
-        public virtual void WriteValue(double value)
-        {
-            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
-        }
-
-        public virtual void WriteValue(decimal value)
-        {
-            WriteString(value.ToString(null, CultureInfo.InvariantCulture));
+            None,
+            Raw,
+            InlineCode,
+            LinkText,
+            LinkUrl,
+            LinkTitle,
+            AngleBrackets
         }
     }
 }

@@ -96,6 +96,19 @@ namespace Pihrtsoft.Markdown
             {
                 throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(HeadingStyle));
             }
+
+            if (CodeFenceStyle == CodeFenceStyle.Backtick)
+            {
+                CodeFence = "```";
+            }
+            else if (CodeFenceStyle == CodeFenceStyle.Tilde)
+            {
+                CodeFence = "~~~";
+            }
+            else
+            {
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(CodeFenceStyle));
+            }
         }
 
         public static MarkdownFormat Default { get; } = new MarkdownFormat();
@@ -396,5 +409,7 @@ namespace Pihrtsoft.Markdown
         internal string OrderedItemStart { get; }
 
         internal string HeadingStart { get; }
+
+        internal string CodeFence { get; }
     }
 }
