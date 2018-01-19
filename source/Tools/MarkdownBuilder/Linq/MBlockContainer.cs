@@ -31,7 +31,7 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.TableRow:
                 case MarkdownKind.Document:
                     {
-                        Error.ThrowInvalidContent(this, element);
+                        Error.InvalidContent(this, element);
                         break;
                     }
             }

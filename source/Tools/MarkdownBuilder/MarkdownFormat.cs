@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: NumberingBase
     public class MarkdownFormat : IEquatable<MarkdownFormat>
     {
         public MarkdownFormat(
@@ -128,11 +129,19 @@ namespace Pihrtsoft.Markdown
 
         public EmphasisStyle BoldStyle { get; }
 
+        internal string BoldDelimiter { get; }
+
         public EmphasisStyle ItalicStyle { get; }
+
+        internal string ItalicDelimiter { get; }
 
         public BulletListStyle BulletListStyle { get; }
 
+        internal string BulletItemStart { get; }
+
         public OrderedListStyle OrderedListStyle { get; }
+
+        internal string OrderedItemStart { get; }
 
         public HorizontalRuleFormat HorizontalRuleFormat { get; }
 
@@ -144,6 +153,8 @@ namespace Pihrtsoft.Markdown
 
         public HeadingStyle HeadingStyle { get; }
 
+        internal string HeadingStart { get; }
+
         public HeadingOptions HeadingOptions { get; }
 
         internal bool EmptyLineBeforeHeading => (HeadingOptions & HeadingOptions.EmptyLineBefore) != 0;
@@ -151,6 +162,8 @@ namespace Pihrtsoft.Markdown
         internal bool EmptyLineAfterHeading => (HeadingOptions & HeadingOptions.EmptyLineAfter) != 0;
 
         public CodeFenceStyle CodeFenceStyle { get; }
+
+        internal string CodeFence { get; }
 
         public CodeBlockOptions CodeBlockOptions { get; }
 
@@ -405,17 +418,5 @@ namespace Pihrtsoft.Markdown
                 charReferenceFormat,
                 HorizontalRuleFormat);
         }
-
-        internal string BoldDelimiter { get; }
-
-        internal string ItalicDelimiter { get; }
-
-        internal string BulletItemStart { get; }
-
-        internal string OrderedItemStart { get; }
-
-        internal string HeadingStart { get; }
-
-        internal string CodeFence { get; }
     }
 }

@@ -353,7 +353,7 @@ namespace Pihrtsoft.Markdown.Linq
                     return;
             }
 
-            Error.ThrowInvalidContent(this, element);
+            Error.InvalidContent(this, element);
         }
 
         internal virtual void ValidateString(string s)

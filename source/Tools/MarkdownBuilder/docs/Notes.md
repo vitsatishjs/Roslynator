@@ -1,4 +1,2 @@
-﻿TextOrElements
- (string text, IEnumerable<MElement> elements)
- struct TextOrElements
- void nebo MarkdownWriter
+﻿void nebo MarkdownWriter
+patří Before.. After... do MarkdownFormat

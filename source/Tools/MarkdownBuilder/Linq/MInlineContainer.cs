@@ -57,7 +57,7 @@ namespace Pihrtsoft.Markdown.Linq
                     return;
             }
 
-            Error.ThrowInvalidContent(this, element);
+            Error.InvalidContent(this, element);
         }
     }
 }

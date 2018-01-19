@@ -8,12 +8,12 @@ namespace Pihrtsoft.Markdown
     public enum HeadingOptions
     {
         None = 0,
-        EmptyLineBefore = 1,
-        EmptyLineAfter = 2,
-        EmptyLineBeforeAndAfter = EmptyLineBefore | EmptyLineAfter,
-        UnderlineH1 = 4,
-        UnderlineH2 = 8,
+        UnderlineH1 = 1,
+        UnderlineH2 = 2,
         Underline = UnderlineH1 | UnderlineH2,
-        Close = 16
+        Close = 4,
+        EmptyLineBefore = 8,
+        EmptyLineAfter = 16,
+        EmptyLineBeforeAndAfter = EmptyLineBefore | EmptyLineAfter,
     }
 }

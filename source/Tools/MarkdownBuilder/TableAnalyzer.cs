@@ -20,7 +20,10 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private static List<TableColumnInfo> Analyze(IEnumerator<MElement> en, MarkdownWriterSettings settings, MarkdownStringWriter writer)
+        private static List<TableColumnInfo> Analyze(
+            IEnumerator<MElement> en,
+            MarkdownWriterSettings settings,
+            MarkdownStringWriter writer)
         {
             MElement header = null;
 
@@ -38,7 +41,7 @@ namespace Pihrtsoft.Markdown
                 columns.Add(TableColumnInfo.Create(header, writer));
             }
 
-            if (settings.FormatTableContent)
+            if (settings.Format.FormatTableContent)
             {
                 int index = writer.Length;
 
@@ -74,7 +77,11 @@ namespace Pihrtsoft.Markdown
             return columns;
         }
 
-        private static void WriteHeaderCells(MContainer container, MarkdownWriterSettings settings, MarkdownStringWriter writer, List<TableColumnInfo> columns)
+        private static void WriteHeaderCells(
+            MContainer header,
+            MarkdownWriterSettings settings,
+            MarkdownStringWriter writer,
+            List<TableColumnInfo> columns)
         {
             int index = 0;
 
@@ -83,7 +90,7 @@ namespace Pihrtsoft.Markdown
 
             int i = 0;
 
-            using (IEnumerator<MElement> en = container.Elements().GetEnumerator())
+            using (IEnumerator<MElement> en = header.Elements().GetEnumerator())
             {
                 if (en.MoveNext())
                 {
@@ -114,7 +121,7 @@ namespace Pihrtsoft.Markdown
             {
                 if (isFirst
                     || isLast
-                    || settings.FormatTableHeader)
+                    || settings.Format.FormatTableHeader)
                 {
                     writer.Write(cellContent);
                 }

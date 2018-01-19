@@ -7,7 +7,7 @@ namespace Pihrtsoft.Markdown
 {
     internal static class StringBuilderCache
     {
-        private const int MaxSize = 260;
+        private const int MaxSize = 256;
         private const int DefaultCapacity = 16;
 
         [ThreadStatic]

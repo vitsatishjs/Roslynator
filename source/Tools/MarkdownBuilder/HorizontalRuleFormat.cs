@@ -17,6 +17,7 @@ namespace Pihrtsoft.Markdown
 
         public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat("-", 3, " ");
 
+        //TODO: rename
         public string Value { get; }
 
         public int Count { get; }

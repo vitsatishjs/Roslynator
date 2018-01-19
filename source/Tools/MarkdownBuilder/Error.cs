@@ -7,7 +7,7 @@ namespace Pihrtsoft.Markdown
 {
     internal static class Error
     {
-        public static void ThrowInvalidContent(MContainer container, MElement element)
+        public static void InvalidContent(MContainer container, MElement element)
         {
             throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
         }
@@ -20,7 +20,7 @@ namespace Pihrtsoft.Markdown
             for (int i = 0; i < info.Length; i++)
             {
                 if (TextUtility.IsCarriageReturnOrLinefeed(info[i]))
-                    throw new ArgumentException(info, nameof(info));
+                    throw new ArgumentException("Code block info cannot contain a new line character.", nameof(info));
             }
         }
 

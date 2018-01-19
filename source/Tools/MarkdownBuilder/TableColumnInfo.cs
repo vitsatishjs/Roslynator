@@ -6,7 +6,7 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("Alignment = {Alignment} Width = {Width} IsWhiteSpace = {IsWhiteSpace}")]
+    [DebuggerDisplay("{Alignment} {Width} IsWhiteSpace = {IsWhiteSpace}")]
     public struct TableColumnInfo : IEquatable<TableColumnInfo>
     {
         public TableColumnInfo(Alignment alignment, int width, bool isWhiteSpace)
@@ -32,13 +32,6 @@ namespace Pihrtsoft.Markdown
             {
                 return this;
             }
-        }
-
-        internal static TableColumnInfo Create(MElement element)
-        {
-            Alignment alignment = (element as MTableColumn)?.Alignment ?? Alignment.Left;
-
-            return new TableColumnInfo(alignment, 0, true);
         }
 
         internal static TableColumnInfo Create(MElement element, MarkdownStringWriter writer, int index = 0)

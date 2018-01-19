@@ -16,9 +16,9 @@ namespace Pihrtsoft.Markdown
 
             for (int i = 0; i < s.Length; i++)
             {
-                if (!(i >= 48 && i <= 57)
-                    && !(i >= 65 && i <= 90)
-                    && !(i >= 97 && i <= 122))
+                if (!(i >= 48 && i <= 57) // 0-9
+                    && !(i >= 65 && i <= 90) // A-Z
+                    && !(i >= 97 && i <= 122)) // a-z
                 {
                     return false;
                 }
