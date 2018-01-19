@@ -8,7 +8,7 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    internal class MarkdownStringWriter : MarkdownWriter
+    public class MarkdownStringWriter : MarkdownWriter
     {
         private readonly StringBuilder _sb;
         private readonly IFormatProvider _formatProvider;
@@ -20,7 +20,7 @@ namespace Pihrtsoft.Markdown
         }
 
         public MarkdownStringWriter(StringBuilder sb, MarkdownWriterSettings settings = null)
-            : this(sb, CultureInfo.InvariantCulture, settings)
+            : this(sb, CultureInfo.CurrentCulture, settings)
         {
         }
 
@@ -33,13 +33,18 @@ namespace Pihrtsoft.Markdown
             : base(settings)
         {
             _sb = sb ?? throw new ArgumentNullException(nameof(sb));
-            _formatProvider = formatProvider ?? throw new ArgumentNullException(nameof(formatProvider));
+            _formatProvider = formatProvider;
             _isOpen = true;
         }
 
         public virtual StringBuilder GetStringBuilder()
         {
             return _sb;
+        }
+
+        public virtual IFormatProvider FormatProvider
+        {
+            get { return _formatProvider ?? CultureInfo.CurrentCulture; }
         }
 
         protected internal override int Length
@@ -160,31 +165,31 @@ namespace Pihrtsoft.Markdown
         public override void WriteValue(int value)
         {
             ThrowIfClosed();
-            _sb.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(long value)
         {
             ThrowIfClosed();
-            _sb.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(float value)
         {
             ThrowIfClosed();
-            _sb.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(double value)
         {
             ThrowIfClosed();
-            _sb.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
             ThrowIfClosed();
-            _sb.Append(value.ToString(_formatProvider));
+            _sb.Append(value.ToString(FormatProvider));
         }
 
         public override string ToString()
@@ -194,7 +199,7 @@ namespace Pihrtsoft.Markdown
 
         protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
-            return TableAnalyzer.Analyze(rows, Settings, _formatProvider)?.AsReadOnly();
+            return TableAnalyzer.Analyze(rows, Settings, FormatProvider)?.AsReadOnly();
         }
 
         public override void Flush()

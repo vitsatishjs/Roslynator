@@ -19,7 +19,7 @@ namespace Pihrtsoft.Markdown
         private int _bufPos;
         private readonly int _bufLen = BufferSize;
 
-        public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings)
+        public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings = null)
             : base(settings)
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -29,13 +29,13 @@ namespace Pihrtsoft.Markdown
 
         protected internal override int Length { get; set; }
 
-        public override unsafe MarkdownWriter WriteString(string value)
+        public override unsafe MarkdownWriter WriteString(string text)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(text))
                 return this;
 
             OnBeforeWrite();
-            WriteStringUnsafe(value);
+            WriteStringUnsafe(text);
             return this;
         }
 
@@ -62,9 +62,17 @@ namespace Pihrtsoft.Markdown
                     if (pDstEnd > pDstStart + _bufLen)
                         pDstEnd = pDstStart + _bufLen;
 
-                    while (pDst < pDstEnd
-                        && !ShouldBeEscaped((char)(ch = *pSrc))) //TODO: \r\n
+                    while (pDst < pDstEnd)
                     {
+                        ch = *pSrc;
+
+                        if (ch == 10
+                            || ch == 13
+                            || ShouldBeEscaped((char)ch))
+                        {
+                            break;
+                        }
+
                         pSrc++;
                         *pDst = (char)ch;
                         pDst++;
@@ -107,7 +115,6 @@ namespace Pihrtsoft.Markdown
                                 if (pSrc < pSrcEnd)
                                 {
                                     WriteIndentation();
-                                    _startOfLine = true;
                                 }
 
                                 break;
@@ -140,10 +147,7 @@ namespace Pihrtsoft.Markdown
                                 OnAfterWriteLine();
 
                                 if (pSrc < pSrcEnd)
-                                {
                                     WriteIndentation();
-                                    _startOfLine = true;
-                                }
 
                                 break;
                             }
@@ -166,13 +170,13 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        public override MarkdownWriter WriteRaw(string value)
+        public override MarkdownWriter WriteRaw(string data)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(data))
                 return this;
 
             OnBeforeWrite();
-            WriteRawUnsafe(value);
+            WriteRawUnsafe(data);
             return this;
         }
 

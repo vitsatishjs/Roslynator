@@ -4,6 +4,22 @@ namespace Pihrtsoft.Markdown
 {
     internal static class TextUtility
     {
+        public static bool IsNullOrSpace(string s)
+        {
+            if (s == null)
+                return true;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] != ' ')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool IsCarriageReturnOrLinefeed(char ch)
         {
             return ch == '\n' || ch == '\r';

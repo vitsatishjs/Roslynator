@@ -16,7 +16,7 @@ namespace Pihrtsoft.Markdown
     {
         private bool _disposed;
 
-        protected bool _startOfLine;
+        private bool _startOfLine;
         private bool _emptyLine;
         private bool _pendingEmptyLine;
 
@@ -50,7 +50,7 @@ namespace Pihrtsoft.Markdown
 
         public int QuoteLevel { get; private set; }
 
-        internal int ListLevel { get; private set; }
+        public int ListLevel { get; private set; }
 
         protected internal abstract int Length { get; set; }
 
@@ -640,11 +640,15 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteHorizontalRule(HorizontalRuleFormat format)
         {
-            return WriteHorizontalRule(format.Value, format.Count, format.Separator);
+            return WriteHorizontalRule(format.Text, format.Count, format.Separator);
         }
 
-        public MarkdownWriter WriteHorizontalRule(string value, int count = 3, string separator = " ")
+        public MarkdownWriter WriteHorizontalRule(string text, int count = HorizontalRuleFormat.DefaultCount, string separator = HorizontalRuleFormat.DefaultSeparator)
         {
+            Error.ThrowOnInvalidHorizontalRuleText(text);
+            Error.ThrowOnInvalidHorizontalRuleCount(count);
+            Error.ThrowOnInvalidHorizontalRuleSeparator(separator);
+
             Check(MarkdownKind.HorizontalRule);
 
             WriteLineIfNecessary();
@@ -662,7 +666,7 @@ namespace Pihrtsoft.Markdown
                     WriteRaw(separator);
                 }
 
-                WriteRaw(value);
+                WriteRaw(text);
             }
 
             WriteLine();
@@ -953,14 +957,14 @@ namespace Pihrtsoft.Markdown
 
         public abstract void Flush();
 
-        public abstract MarkdownWriter WriteString(string value);
+        public abstract MarkdownWriter WriteString(string text);
 
-        public abstract MarkdownWriter WriteRaw(string value);
+        public abstract MarkdownWriter WriteRaw(string data);
 
-        private MarkdownWriter WriteRaw(string value, int repeatCount)
+        private MarkdownWriter WriteRaw(string data, int repeatCount)
         {
             for (int i = 0; i < repeatCount; i++)
-                WriteRaw(value);
+                WriteRaw(data);
 
             return this;
         }

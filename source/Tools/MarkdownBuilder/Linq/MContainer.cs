@@ -74,6 +74,9 @@ namespace Pihrtsoft.Markdown.Linq
 
                 if (content is string s)
                 {
+                    if (s.Length == 0)
+                        return null;
+
                     var t = new MText(s) { Parent = this };
                     t.next = t;
 
@@ -127,7 +130,6 @@ namespace Pihrtsoft.Markdown.Linq
             return GetDescendants(self: true);
         }
 
-        //TODO: odtud dolů
         internal IEnumerable<MElement> GetDescendants(bool self)
         {
             MElement e = this;
@@ -282,23 +284,23 @@ namespace Pihrtsoft.Markdown.Linq
             AppendElement(e);
         }
 
-        internal void AppendElement(MElement element)
+        internal void AppendElement(MElement e)
         {
-            element.Parent = this;
+            e.Parent = this;
 
             if (content == null
                 || content is string)
             {
-                element.next = element;
+                e.next = e;
             }
             else
             {
-                var e = (MElement)content;
-                element.next = e.next;
-                e.next = element;
+                var x = (MElement)content;
+                e.next = x.next;
+                x.next = e;
             }
 
-            content = element;
+            content = e;
         }
 
         internal void AddString(string s)
@@ -369,10 +371,10 @@ namespace Pihrtsoft.Markdown.Linq
 
             if (!string.IsNullOrEmpty(s))
             {
-                var text = new MText(s) { Parent = this };
+                var t = new MText(s) { Parent = this };
 
-                text.next = text;
-                content = text;
+                t.next = t;
+                content = t;
             }
         }
     }

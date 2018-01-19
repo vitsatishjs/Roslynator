@@ -144,7 +144,7 @@ namespace Pihrtsoft.Markdown
 
         public HorizontalRuleFormat HorizontalRuleFormat { get; }
 
-        internal string HorizontalRuleValue => HorizontalRuleFormat.Value;
+        internal string HorizontalRuleValue => HorizontalRuleFormat.Text;
 
         internal int HorizontalRuleCount => HorizontalRuleFormat.Count;
 

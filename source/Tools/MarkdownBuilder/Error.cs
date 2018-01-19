@@ -33,10 +33,22 @@ namespace Pihrtsoft.Markdown
             }
         }
 
+        public static void ThrowOnInvalidHorizontalRuleText(string text)
+        {
+            if (!HorizontalRuleFormat.IsValidText(text))
+                throw new ArgumentException("Horizontal rule text must be equal to '-', '_' or '*'.", nameof(text));
+        }
+
         public static void ThrowOnInvalidHorizontalRuleCount(int count)
         {
-            if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule cannot be less than 3.");
+            if (!HorizontalRuleFormat.IsValidCount(count))
+                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule must be greater than or equal to 3.");
+        }
+
+        public static void ThrowOnInvalidHorizontalRuleSeparator(string separator)
+        {
+            if (!HorizontalRuleFormat.IsValidSeparator(separator))
+                throw new ArgumentException("Horizontal rule separator must be empty or consists of space(s).", nameof(separator));
         }
 
         public static void ThrowOnInvalidHeadingLevel(int level)

@@ -448,14 +448,19 @@ namespace Pihrtsoft.Markdown.Linq
             return new MBlockQuote(other);
         }
 
-        public static MHorizontalRule HorizontalRule(string value = HorizontalRuleFormat.DefaultValue, int count = HorizontalRuleFormat.DefaultCount, string separator = HorizontalRuleFormat.DefaultSeparator)
+        public static MHorizontalRule HorizontalRule()
         {
-            return new MHorizontalRule(value, count, separator);
+            return HorizontalRule(HorizontalRuleFormat.Default);
         }
 
         public static MHorizontalRule HorizontalRule(HorizontalRuleFormat format)
         {
             return new MHorizontalRule(format);
+        }
+
+        public static MHorizontalRule HorizontalRule(string value, int count = HorizontalRuleFormat.DefaultCount, string separator = HorizontalRuleFormat.DefaultSeparator)
+        {
+            return new MHorizontalRule(value, count, separator);
         }
 
         public static MCharEntity CharEntity(char value)
