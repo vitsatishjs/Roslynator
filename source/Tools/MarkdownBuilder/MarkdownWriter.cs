@@ -635,7 +635,12 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteHorizontalRule()
         {
-            return WriteHorizontalRule(Format.HorizontalRuleValue, Format.HorizontalRuleCount, Format.HorizontalRuleSeparator);
+            return WriteHorizontalRule(Format.HorizontalRuleFormat);
+        }
+
+        public MarkdownWriter WriteHorizontalRule(HorizontalRuleFormat format)
+        {
+            return WriteHorizontalRule(format.Value, format.Count, format.Separator);
         }
 
         public MarkdownWriter WriteHorizontalRule(string value, int count = 3, string separator = " ")
@@ -808,7 +813,6 @@ namespace Pihrtsoft.Markdown
             Pop();
         }
 
-        //TODO: rename
         public void WriteTableHeaderSeparator()
         {
             WriteLineIfNecessary();
@@ -897,9 +901,9 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        public MarkdownWriter WriteEntityReference(string name)
+        public MarkdownWriter WriteEntityRef(string name)
         {
-            Check(MarkdownKind.EntityReference);
+            Check(MarkdownKind.EntityRef);
             WriteRaw("&");
             WriteRaw(name);
             WriteRaw(";");

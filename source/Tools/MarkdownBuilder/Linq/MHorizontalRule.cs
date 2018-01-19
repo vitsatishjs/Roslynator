@@ -7,9 +7,8 @@ namespace Pihrtsoft.Markdown.Linq
     public class MHorizontalRule : MElement
     {
         private int _count;
-        private string _separator;
 
-        internal MHorizontalRule(string value, int count = 3, string separator = " ")
+        public MHorizontalRule(string value, int count, string separator)
         {
             Value = value;
             Count = count;
@@ -28,10 +27,10 @@ namespace Pihrtsoft.Markdown.Linq
 
             Value = other.Value;
             _count = other.Count;
-            _separator = other.Separator;
+            Separator = other.Separator;
         }
 
-        //TODO: rename
+        //TODO: rename (Text)
         public string Value { get; set; }
 
         public int Count
@@ -44,11 +43,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public string Separator
-        {
-            get { return _separator; }
-            set { _separator = value ?? ""; } //TODO: ?
-        }
+        public string Separator { get; set; }
 
         public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
 

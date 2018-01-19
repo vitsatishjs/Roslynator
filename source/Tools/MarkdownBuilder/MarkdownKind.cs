@@ -14,8 +14,8 @@ namespace Pihrtsoft.Markdown
         ImageReference = 6,
         Autolink = 7,
         InlineCode = 8,
-        CharReference = 9, //TODO: CharRef
-        EntityReference = 10, //TODO: EntityRef
+        CharReference = 9,
+        EntityRef = 10,
         Comment = 11,
 
         FencedCodeBlock = 12,
@@ -23,8 +23,7 @@ namespace Pihrtsoft.Markdown
         HorizontalRule = 14,
         Label = 15,
 
-        //TODO: rename to Inline
-        InlineContainer = 16,
+        Inline = 16,
         Bold = 17,
         Italic = 18,
         Strikethrough = 19,

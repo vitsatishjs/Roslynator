@@ -6,21 +6,21 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MTable : MContainer
     {
-        internal MTable()
+        public MTable()
         {
         }
 
-        internal MTable(object content)
+        public MTable(object content)
             : base(content)
         {
         }
 
-        internal MTable(params object[] content)
+        public MTable(params object[] content)
             : base(content)
         {
         }
 
-        internal MTable(MContainer other)
+        public MTable(MContainer other)
             : base(other)
         {
         }

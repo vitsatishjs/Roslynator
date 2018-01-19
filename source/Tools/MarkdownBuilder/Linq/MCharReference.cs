@@ -6,10 +6,12 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    //TODO: MCharRef
+    //TODO: MCharRef, CharEntity
     [DebuggerDisplay("{Kind} {Value} {ValueAsHexadecimalString}")]
     public class MCharReference : MElement
     {
+        private char _value;
+
         public MCharReference(char value)
         {
             Value = value;
@@ -20,10 +22,19 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Value = other.Value;
+            _value = other.Value;
         }
 
-        public char Value { get; }
+        public char Value
+        {
+            get { return _value; }
+            set
+            {
+                Error.ThrowOnInvalidCharReference(value);
+
+                _value = value;
+            }
+        }
 
         internal string ValueAsHexadecimalString => NumberAsString(CharReferenceFormat.Hexadecimal);
 

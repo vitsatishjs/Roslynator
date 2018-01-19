@@ -4,7 +4,7 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MImage : MLink
     {
-        internal MImage(string text, string url, string title = null)
+        public MImage(string text, string url, string title = null)
             : base(text, url, title)
         {
         }

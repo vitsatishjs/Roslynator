@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MBold : MInlineContainer
+    public class MBold : MInline
     {
         public MBold()
         {

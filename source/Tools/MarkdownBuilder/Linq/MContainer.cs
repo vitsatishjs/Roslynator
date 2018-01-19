@@ -9,7 +9,6 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public abstract class MContainer : MElement
     {
-        //TODO: protected
         internal object content;
 
         protected MContainer()
@@ -51,7 +50,6 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        //TODO: protected
         internal virtual bool AllowStringConcatenation => true;
 
         public bool IsEmpty
@@ -76,14 +74,9 @@ namespace Pihrtsoft.Markdown.Linq
 
                 if (content is string s)
                 {
-                    //TODO: ?
-                    if (s.Length == 0)
-                        return null;
-
                     var t = new MText(s) { parent = this };
                     t.next = t;
 
-                    //TODO: 
                     Interlocked.CompareExchange<object>(ref content, t, s);
                 }
 
@@ -91,7 +84,6 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        //TODO: protected
         internal void WriteContentTo(MarkdownWriter writer)
         {
             if (content is string s)
@@ -269,10 +261,21 @@ namespace Pihrtsoft.Markdown.Linq
         {
             ValidateElement(e);
 
-            if (e.parent != null
-                || e == TopmostParentOrSelf())
+            if (e.parent != null)
             {
                 e = e.Clone();
+            }
+            else
+            {
+                var p = this;
+
+                while (p.parent != null)
+                    p = p.parent;
+
+                if (e == p)
+                {
+                    e = e.Clone();
+                }
             }
 
             ConvertTextToElement();
@@ -344,12 +347,12 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.Autolink:
                 case MarkdownKind.InlineCode:
                 case MarkdownKind.CharReference:
-                case MarkdownKind.EntityReference:
+                case MarkdownKind.EntityRef:
                 case MarkdownKind.Comment:
                 case MarkdownKind.Bold:
                 case MarkdownKind.Italic:
                 case MarkdownKind.Strikethrough:
-                case MarkdownKind.InlineContainer:
+                case MarkdownKind.Inline:
                     return;
             }
 

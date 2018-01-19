@@ -4,7 +4,7 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MLabel : MLink
     {
-        internal MLabel(string text, string url, string title = null)
+        public MLabel(string text, string url, string title = null)
             : base(text, url, title)
         {
         }

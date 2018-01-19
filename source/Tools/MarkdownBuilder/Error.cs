@@ -12,6 +12,15 @@ namespace Pihrtsoft.Markdown
             throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
         }
 
+        public static void ThrowOnInvalidCharReference(char value)
+        {
+            if (value >= 0xD800
+                && value <= 0xDFFF)
+            {
+                throw new ArgumentException("Character reference cannot be in the surrogate pair character range.", nameof(value));
+            }
+        }
+
         public static void ThrowOnInvalidFencedCodeBlockInfo(string info)
         {
             if (string.IsNullOrEmpty(info))

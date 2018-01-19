@@ -36,7 +36,6 @@ namespace Pihrtsoft.Markdown.Linq
             _number = other.Number;
         }
 
-        //TODO: Index
         public int Number
         {
             get { return _number; }

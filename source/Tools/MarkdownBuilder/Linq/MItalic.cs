@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MItalic : MInlineContainer
+    public class MItalic : MInline
     {
         public MItalic()
         {

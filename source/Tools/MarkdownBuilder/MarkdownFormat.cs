@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: NumberingBase
     public class MarkdownFormat : IEquatable<MarkdownFormat>
     {
         public MarkdownFormat(

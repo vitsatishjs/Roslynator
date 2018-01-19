@@ -32,7 +32,6 @@ namespace Pihrtsoft.Markdown.Linq
 
                 MElement e = ((MElement)parent.content).next;
 
-                //TODO: rename p
                 MElement p = null;
 
                 while (e != this)

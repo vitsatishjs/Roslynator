@@ -8,7 +8,6 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    //TODO: public
     internal class MarkdownStringWriter : MarkdownWriter
     {
         private readonly StringBuilder _sb;

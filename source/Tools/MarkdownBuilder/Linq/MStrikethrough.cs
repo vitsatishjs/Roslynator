@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MStrikethrough : MInlineContainer
+    public class MStrikethrough : MInline
     {
         public MStrikethrough()
         {

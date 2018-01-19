@@ -8,6 +8,10 @@ namespace Pihrtsoft.Markdown
     [DebuggerDisplay("Value = {Value,nq} Count = {Count} Separator = {Separator}")]
     public struct HorizontalRuleFormat : IEquatable<HorizontalRuleFormat>
     {
+        internal const string DefaultValue = "-";
+        internal const int DefaultCount = 3;
+        internal const string DefaultSeparator = " ";
+
         public HorizontalRuleFormat(string value, int count, string separator)
         {
             Value = value;
@@ -15,9 +19,9 @@ namespace Pihrtsoft.Markdown
             Separator = separator;
         }
 
-        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat("-", 3, " ");
+        public static HorizontalRuleFormat Default { get; } = new HorizontalRuleFormat(DefaultValue, DefaultCount, DefaultSeparator);
 
-        //TODO: rename
+        //TODO: rename (Text)
         public string Value { get; }
 
         public int Count { get; }

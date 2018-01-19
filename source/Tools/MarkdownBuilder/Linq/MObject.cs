@@ -7,30 +7,27 @@ namespace Pihrtsoft.Markdown.Linq
     [DebuggerDisplay("{Kind}")]
     public abstract class MObject
     {
-        //TODO: protected (internal) property
+        //TODO: auto-property
         internal MContainer parent;
 
         public abstract MarkdownKind Kind { get; }
 
         public MDocument Document
         {
-            get { return TopmostParentOrSelf() as MDocument; }
+            get
+            {
+                var x = this;
+
+                while (x.parent != null)
+                    x = x.parent;
+
+                return x as MDocument;
+            }
         }
 
         public MContainer Parent
         {
             get { return parent; }
-        }
-
-        //TODO: zrušit
-        internal MObject TopmostParentOrSelf()
-        {
-            var x = this;
-
-            while (x.parent != null)
-                x = x.parent;
-
-            return x;
         }
     }
 }
