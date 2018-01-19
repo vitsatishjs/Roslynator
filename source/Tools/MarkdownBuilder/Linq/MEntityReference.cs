@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
+    //TODO: MEntityRef
     [DebuggerDisplay("{Kind} {Name}")]
     public class MEntityReference : MElement
     {
@@ -32,7 +33,7 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Name = other.Name;
+            _name = other.Name;
         }
 
         public string Name
@@ -41,6 +42,7 @@ namespace Pihrtsoft.Markdown.Linq
             set
             {
                 Error.ThrowOnInvalidEntityName(value);
+
                 _name = value;
             }
         }
@@ -62,6 +64,7 @@ namespace Pihrtsoft.Markdown.Linq
             return new MEntityReference(name, isTrustedName: true);
         }
 
+        //TODO: move to MFactory
         public static MEntityReference NonBreakingSpace() => CreateTrusted("nbsp");
 
         public static MEntityReference LessThan() => CreateTrusted("lt");

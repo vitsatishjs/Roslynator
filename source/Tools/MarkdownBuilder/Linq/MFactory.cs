@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Pihrtsoft.Markdown.Linq
 {
+    //TODO: check
     public static class MFactory
     {
         public static MDocument Document()

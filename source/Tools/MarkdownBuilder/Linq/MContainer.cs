@@ -9,6 +9,7 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public abstract class MContainer : MElement
     {
+        //TODO: protected
         internal object content;
 
         protected MContainer()
@@ -37,6 +38,7 @@ namespace Pihrtsoft.Markdown.Linq
             else
             {
                 var e = (MElement)other.content;
+
                 if (e != null)
                 {
                     do
@@ -49,6 +51,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        //TODO: protected
         internal virtual bool AllowStringConcatenation => true;
 
         public bool IsEmpty
@@ -73,19 +76,22 @@ namespace Pihrtsoft.Markdown.Linq
 
                 if (content is string s)
                 {
+                    //TODO: ?
                     if (s.Length == 0)
                         return null;
 
-                    var text = new MText(s) { parent = this };
-                    text.next = text;
+                    var t = new MText(s) { parent = this };
+                    t.next = t;
 
-                    Interlocked.CompareExchange<object>(ref content, text, s);
+                    //TODO: 
+                    Interlocked.CompareExchange<object>(ref content, t, s);
                 }
 
                 return (MElement)content;
             }
         }
 
+        //TODO: protected
         internal void WriteContentTo(MarkdownWriter writer)
         {
             if (content is string s)
@@ -114,33 +120,22 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        internal object TextOrElements()
-        {
-            if (content is string)
-            {
-                return content;
-            }
-            else
-            {
-                return Elements();
-            }
-        }
-
         public IEnumerable<MContainer> AncestorsAndSelf()
         {
-            return GetAncestors(true);
+            return GetAncestors(self: true);
         }
 
         public IEnumerable<MElement> Descendants()
         {
-            return GetDescendants(false);
+            return GetDescendants(self: false);
         }
 
         public IEnumerable<MElement> DescendantsAndSelf()
         {
-            return GetDescendants(true);
+            return GetDescendants(self: true);
         }
 
+        //TODO: odtud dolů
         internal IEnumerable<MElement> GetDescendants(bool self)
         {
             MElement e = this;

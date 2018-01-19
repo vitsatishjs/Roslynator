@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Url,nq}")]
+    [DebuggerDisplay("{Kind} {Url,nq}")]
     public class MAutolink : MElement
     {
         private string _url;

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Level} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {Level} {ToStringDebuggerDisplay(),nq}")]
     public class MHeading : MContainer
     {
         private int _level;
@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown.Linq
         public MHeading(MHeading other)
             : base(other)
         {
-            Level = other.Level;
+            _level = other.Level;
         }
 
         public int Level
@@ -38,6 +38,7 @@ namespace Pihrtsoft.Markdown.Linq
             set
             {
                 Error.ThrowOnInvalidHeadingLevel(value);
+
                 _level = value;
             }
         }

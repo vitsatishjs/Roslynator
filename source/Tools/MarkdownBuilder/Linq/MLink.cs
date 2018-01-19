@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Text,nq} Url = {Url,nq} Title = {Title,nq}")]
+    [DebuggerDisplay("{Text,nq} {Url,nq}{TitleDebuggerDisplay,nq}")]
     public class MLink : MElement
     {
         private string _url;
@@ -44,6 +44,8 @@ namespace Pihrtsoft.Markdown.Linq
         }
 
         public string Title { get; set; }
+
+        private string TitleDebuggerDisplay => (!string.IsNullOrEmpty(Title)) ? " " + Title : "";
 
         public override MarkdownKind Kind => MarkdownKind.Link;
 

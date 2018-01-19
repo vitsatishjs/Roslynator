@@ -7,4 +7,5 @@
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1212:Remove redundant assignment.", Justification = "<Pending>", Scope = "member", Target = "~M:Pihrtsoft.Markdown.MarkdownFormat.GetHashCode~System.Int32")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>", Scope = "member", Target = "~P:Pihrtsoft.Markdown.Linq.MFencedCodeBlock.InfoDebuggerDisplay")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>", Scope = "member", Target = "~P:Pihrtsoft.Markdown.Linq.MLink.TitleDebuggerDisplay")]
 

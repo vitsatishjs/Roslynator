@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Number} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {Number} {ToStringDebuggerDisplay(),nq}")]
     public class MOrderedItem : MBlockContainer
     {
         private int _number;
@@ -33,9 +33,10 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Number = other.Number;
+            _number = other.Number;
         }
 
+        //TODO: Index
         public int Number
         {
             get { return _number; }

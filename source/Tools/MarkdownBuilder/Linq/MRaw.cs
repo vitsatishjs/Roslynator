@@ -20,7 +20,7 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Value = other.Value;
+            _value = other.Value;
         }
 
         public string Value

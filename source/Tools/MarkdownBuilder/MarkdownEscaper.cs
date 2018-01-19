@@ -14,13 +14,16 @@ namespace Pihrtsoft.Markdown
 
         internal static string Escape(string value, Func<char, bool> shouldBeEscaped, char escapingChar)
         {
+            if (string.IsNullOrEmpty(value))
+                return value;
+
             StringBuilder sb = null;
 
             for (int i = 0; i < value.Length; i++)
             {
                 if (shouldBeEscaped(value[i]))
                 {
-                    sb = new StringBuilder();
+                    sb = StringBuilderCache.GetInstance(value.Length);
                     sb.Append(value, 0, i);
                     sb.Append(escapingChar);
                     sb.Append(value[i]);
@@ -47,7 +50,7 @@ namespace Pihrtsoft.Markdown
 
                     sb.Append(value, lastIndex, value.Length - lastIndex);
 
-                    return sb.ToString();
+                    return StringBuilderCache.GetStringAndFree(sb);
                 }
             }
 

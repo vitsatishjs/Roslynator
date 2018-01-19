@@ -136,6 +136,12 @@ namespace Pihrtsoft.Markdown
 
         public HorizontalRuleFormat HorizontalRuleFormat { get; }
 
+        internal string HorizontalRuleValue => HorizontalRuleFormat.Value;
+
+        internal int HorizontalRuleCount => HorizontalRuleFormat.Count;
+
+        internal string HorizontalRuleSeparator => HorizontalRuleFormat.Separator;
+
         public HeadingStyle HeadingStyle { get; }
 
         public HeadingOptions HeadingOptions { get; }

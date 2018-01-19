@@ -2,24 +2,39 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
+    //TODO: public
     internal class MarkdownStringWriter : MarkdownWriter
     {
         private readonly StringBuilder _sb;
         private readonly IFormatProvider _formatProvider;
         private bool _isOpen;
 
-        public MarkdownStringWriter(StringBuilder sb = null, IFormatProvider formatProvider = null, MarkdownWriterSettings settings = null)
+        public MarkdownStringWriter(MarkdownWriterSettings settings = null)
+            : this(new StringBuilder(), settings)
+        {
+        }
+
+        public MarkdownStringWriter(StringBuilder sb, MarkdownWriterSettings settings = null)
+            : this(sb, CultureInfo.InvariantCulture, settings)
+        {
+        }
+
+        public MarkdownStringWriter(IFormatProvider formatProvider, MarkdownWriterSettings settings = null)
+            : this(new StringBuilder(), formatProvider, settings)
+        {
+        }
+
+        public MarkdownStringWriter(StringBuilder sb, IFormatProvider formatProvider, MarkdownWriterSettings settings = null)
             : base(settings)
         {
-            _sb = sb ?? new StringBuilder();
-            _formatProvider = formatProvider ?? CultureInfo.InvariantCulture;
+            _sb = sb ?? throw new ArgumentNullException(nameof(sb));
+            _formatProvider = formatProvider ?? throw new ArgumentNullException(nameof(formatProvider));
             _isOpen = true;
         }
 
@@ -171,6 +186,11 @@ namespace Pihrtsoft.Markdown
         {
             ThrowIfClosed();
             _sb.Append(value.ToString(_formatProvider));
+        }
+
+        public override string ToString()
+        {
+            return _sb.ToString();
         }
 
         protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)

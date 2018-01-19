@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {ToStringDebuggerDisplay(),nq}")]
     public class MTaskItem : MBlockContainer
     {
         public MTaskItem(bool isCompleted)

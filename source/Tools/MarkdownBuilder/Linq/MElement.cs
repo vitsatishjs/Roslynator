@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {ToStringDebuggerDisplay(),nq}")]
     public abstract class MElement : MObject
     {
         internal MElement next;
@@ -31,6 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
                 MElement e = ((MElement)parent.content).next;
 
+                //TODO: rename p
                 MElement p = null;
 
                 while (e != this)
@@ -60,18 +62,17 @@ namespace Pihrtsoft.Markdown.Linq
 
         public string ToString(MarkdownWriterSettings settings)
         {
-            using (var sw = new StringWriter())
-            {
-                using (MarkdownWriter mw = MarkdownWriter.Create(sw, settings))
-                {
-                    WriteTo(mw);
-                }
+            StringBuilder sb = StringBuilderCache.GetInstance();
 
-                return sw.ToString();
+            using (var writer = new MarkdownStringWriter(sb, settings))
+            {
+                WriteTo(writer);
+
+                return StringBuilderCache.GetStringAndFree(writer.GetStringBuilder());
             }
         }
 
-        internal string GetString()
+        internal string ToStringDebuggerDisplay()
         {
             return ToString(MarkdownWriterSettings.Debugging);
         }
@@ -84,9 +85,17 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
+        public void Save(MarkdownWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            WriteTo(writer);
+        }
+
         public IEnumerable<MContainer> Ancestors()
         {
-            return GetAncestors(false);
+            return GetAncestors(self: false);
         }
 
         internal IEnumerable<MContainer> GetAncestors(bool self)

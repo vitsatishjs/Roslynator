@@ -7,6 +7,7 @@ namespace Pihrtsoft.Markdown.Linq
     [DebuggerDisplay("{Kind}")]
     public abstract class MObject
     {
+        //TODO: protected (internal) property
         internal MContainer parent;
 
         public abstract MarkdownKind Kind { get; }
@@ -21,6 +22,7 @@ namespace Pihrtsoft.Markdown.Linq
             get { return parent; }
         }
 
+        //TODO: zrušit
         internal MObject TopmostParentOrSelf()
         {
             var x = this;

@@ -29,14 +29,16 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(Elements());
+            IEnumerable<MElement> rows = Elements();
+
+            IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(rows);
 
             if (columns == null)
                 return writer;
 
             writer.WriteStartTable(columns);
 
-            using (IEnumerator<MElement> en = Elements().GetEnumerator())
+            using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
                 if (en.MoveNext())
                 {
