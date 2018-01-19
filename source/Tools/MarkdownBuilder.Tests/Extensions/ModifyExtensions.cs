@@ -145,7 +145,7 @@ namespace Pihrtsoft.Markdown.Tests
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
-                x.CharReferenceFormat.Modify(),
+                x.CharEntityFormat.Modify(),
                 horizontalRuleFormat: x.HeadingStyle.Modify());
         }
 
@@ -280,14 +280,14 @@ namespace Pihrtsoft.Markdown.Tests
             return new CharReference(htmlEntity.Number.Modify(1, 0xFFFF));
         }
 
-        public static CharReferenceFormat Modify(this CharReferenceFormat format)
+        public static CharEntityFormat Modify(this CharEntityFormat format)
         {
             switch (format)
             {
-                case CharReferenceFormat.Hexadecimal:
-                    return CharReferenceFormat.Decimal;
-                case CharReferenceFormat.Decimal:
-                    return CharReferenceFormat.Hexadecimal;
+                case CharEntityFormat.Hexadecimal:
+                    return CharEntityFormat.Decimal;
+                case CharEntityFormat.Decimal:
+                    return CharEntityFormat.Hexadecimal;
                 default:
                     throw new ArgumentException(format.ToString(), nameof(format));
             }

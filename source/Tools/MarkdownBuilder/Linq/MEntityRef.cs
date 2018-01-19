@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
+    //TODO: MNamedEntity
     [DebuggerDisplay("{Kind} {Name}")]
     public class MEntityRef : MElement
     {

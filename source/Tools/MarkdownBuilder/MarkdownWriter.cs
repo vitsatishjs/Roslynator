@@ -878,23 +878,25 @@ namespace Pihrtsoft.Markdown
             WriteRaw(padding, totalWidth - width);
         }
 
-        public MarkdownWriter WriteCharReference(int number)
+        public MarkdownWriter WriteCharEntity(char value)
         {
-            Check(MarkdownKind.CharReference);
+            Error.ThrowOnInvalidCharEntity(value);
+
+            Check(MarkdownKind.CharEntity);
             WriteRaw("&#");
 
-            if (Format.CharReferenceFormat == CharReferenceFormat.Hexadecimal)
+            if (Format.CharEntityFormat == CharEntityFormat.Hexadecimal)
             {
                 WriteRaw("x");
-                WriteRaw(number.ToString("x", CultureInfo.InvariantCulture));
+                WriteRaw(((int)value).ToString("x", CultureInfo.InvariantCulture));
             }
-            else if (Format.CharReferenceFormat == CharReferenceFormat.Decimal)
+            else if (Format.CharEntityFormat == CharEntityFormat.Decimal)
             {
-                WriteRaw(number.ToString(CultureInfo.InvariantCulture));
+                WriteRaw(((int)value).ToString(CultureInfo.InvariantCulture));
             }
             else
             {
-                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CharReferenceFormat));
+                throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(Format.CharEntityFormat));
             }
 
             WriteRaw(";");

@@ -14,7 +14,7 @@ namespace Pihrtsoft.Markdown
         ImageReference = 6,
         Autolink = 7,
         InlineCode = 8,
-        CharReference = 9,
+        CharEntity = 9,
         EntityRef = 10,
         Comment = 11,
 

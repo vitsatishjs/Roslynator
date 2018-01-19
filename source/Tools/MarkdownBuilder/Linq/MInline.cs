@@ -48,7 +48,7 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.ImageReference:
                 case MarkdownKind.Autolink:
                 case MarkdownKind.InlineCode:
-                case MarkdownKind.CharReference:
+                case MarkdownKind.CharEntity:
                 case MarkdownKind.EntityRef:
                 case MarkdownKind.Comment:
                 case MarkdownKind.Bold:

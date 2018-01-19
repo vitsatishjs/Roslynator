@@ -17,7 +17,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
             get
             {
-                return (parent != null && parent.content != this)
+                return (Parent != null && Parent.content != this)
                     ? next
                     : null;
             }
@@ -27,10 +27,10 @@ namespace Pihrtsoft.Markdown.Linq
         {
             get
             {
-                if (parent == null)
+                if (Parent == null)
                     return null;
 
-                MElement e = ((MElement)parent.content).next;
+                MElement e = ((MElement)Parent.content).next;
 
                 MElement p = null;
 
@@ -99,13 +99,13 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal IEnumerable<MContainer> GetAncestors(bool self)
         {
-            var c = ((self) ? this : parent) as MContainer;
+            var c = ((self) ? this : Parent) as MContainer;
 
             while (c != null)
             {
                 yield return c;
 
-                c = c.parent;
+                c = c.Parent;
             }
         }
 
@@ -113,8 +113,8 @@ namespace Pihrtsoft.Markdown.Linq
         {
             var e = this;
 
-            while (e.parent != null
-                && e.parent.content != e)
+            while (e.Parent != null
+                && e.Parent.content != e)
             {
                 e = e.next;
 
@@ -124,9 +124,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public IEnumerable<MElement> ElementsBeforeSelf()
         {
-            if (parent != null)
+            if (Parent != null)
             {
-                var e = (MElement)parent.content;
+                var e = (MElement)Parent.content;
 
                 do
                 {
@@ -137,16 +137,16 @@ namespace Pihrtsoft.Markdown.Linq
 
                     yield return e;
 
-                } while (parent != null && parent == e.parent);
+                } while (Parent != null && Parent == e.Parent);
             }
         }
 
         public void Remove()
         {
-            if (parent == null)
+            if (Parent == null)
                 throw new InvalidOperationException("Element has no parent.");
 
-            parent.RemoveElement(this);
+            Parent.RemoveElement(this);
         }
     }
 }

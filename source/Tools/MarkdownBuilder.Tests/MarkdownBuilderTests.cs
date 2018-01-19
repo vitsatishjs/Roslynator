@@ -781,9 +781,9 @@ namespace Pihrtsoft.Markdown.Tests
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", CharReferenceFormat.Hexadecimal)]
-        [InlineData("&#", null, CharReferenceFormat.Decimal)]
-        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, CharReferenceFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharEntityFormat.Hexadecimal)]
+        [InlineData("&#", null, CharEntityFormat.Decimal)]
+        public void MarkdownBuilder_AppendHtmlEntity(string syntax, string format, CharEntityFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 
@@ -796,9 +796,9 @@ namespace Pihrtsoft.Markdown.Tests
 
         [Theory]
         [InlineData("&#x", "x", null)]
-        [InlineData("&#x", "x", CharReferenceFormat.Hexadecimal)]
-        [InlineData("&#", null, CharReferenceFormat.Decimal)]
-        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, CharReferenceFormat? htmlEntityFormat)
+        [InlineData("&#x", "x", CharEntityFormat.Hexadecimal)]
+        [InlineData("&#", null, CharEntityFormat.Decimal)]
+        public void MarkdownBuilder_Append_HtmlEntity(string syntax, string format, CharEntityFormat? htmlEntityFormat)
         {
             MarkdownBuilder mb = CreateBuilderWithHtmlEntityFormat(htmlEntityFormat);
 

@@ -74,7 +74,7 @@ namespace Pihrtsoft.Markdown.Linq
 
                 if (content is string s)
                 {
-                    var t = new MText(s) { parent = this };
+                    var t = new MText(s) { Parent = this };
                     t.next = t;
 
                     Interlocked.CompareExchange<object>(ref content, t, s);
@@ -108,7 +108,7 @@ namespace Pihrtsoft.Markdown.Linq
                     e = e.next;
                     yield return e;
 
-                } while (e.parent == this && e != content);
+                } while (e.Parent == this && e != content);
             }
         }
 
@@ -148,9 +148,9 @@ namespace Pihrtsoft.Markdown.Linq
                 else
                 {
                     while (e != this
-                        && e == e.parent.content)
+                        && e == e.Parent.content)
                     {
-                        e = e.parent;
+                        e = e.Parent;
                     }
 
                     if (e == this)
@@ -185,7 +185,7 @@ namespace Pihrtsoft.Markdown.Linq
                 p.next = e.next;
             }
 
-            e.parent = null;
+            e.Parent = null;
             e.next = null;
         }
 
@@ -206,7 +206,7 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 MElement n = e.next;
 
-                e.parent = null;
+                e.Parent = null;
                 e.next = null;
 
                 e = n;
@@ -261,7 +261,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
             ValidateElement(e);
 
-            if (e.parent != null)
+            if (e.Parent != null)
             {
                 e = e.Clone();
             }
@@ -269,8 +269,8 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 var p = this;
 
-                while (p.parent != null)
-                    p = p.parent;
+                while (p.Parent != null)
+                    p = p.Parent;
 
                 if (e == p)
                 {
@@ -284,7 +284,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal void AppendElement(MElement element)
         {
-            element.parent = this;
+            element.Parent = this;
 
             if (content == null
                 || content is string)
@@ -346,7 +346,7 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.ImageReference:
                 case MarkdownKind.Autolink:
                 case MarkdownKind.InlineCode:
-                case MarkdownKind.CharReference:
+                case MarkdownKind.CharEntity:
                 case MarkdownKind.EntityRef:
                 case MarkdownKind.Comment:
                 case MarkdownKind.Bold:
@@ -369,7 +369,7 @@ namespace Pihrtsoft.Markdown.Linq
 
             if (!string.IsNullOrEmpty(s))
             {
-                var text = new MText(s) { parent = this };
+                var text = new MText(s) { Parent = this };
 
                 text.next = text;
                 content = text;

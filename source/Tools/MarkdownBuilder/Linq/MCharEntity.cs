@@ -6,18 +6,17 @@ using System.Globalization;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    //TODO: MCharRef, CharEntity
     [DebuggerDisplay("{Kind} {Value} {ValueAsHexadecimalString}")]
-    public class MCharReference : MElement
+    public class MCharEntity : MElement
     {
         private char _value;
 
-        public MCharReference(char value)
+        public MCharEntity(char value)
         {
             Value = value;
         }
 
-        public MCharReference(MCharReference other)
+        public MCharEntity(MCharEntity other)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -30,33 +29,33 @@ namespace Pihrtsoft.Markdown.Linq
             get { return _value; }
             set
             {
-                Error.ThrowOnInvalidCharReference(value);
+                Error.ThrowOnInvalidCharEntity(value);
 
                 _value = value;
             }
         }
 
-        internal string ValueAsHexadecimalString => NumberAsString(CharReferenceFormat.Hexadecimal);
+        internal string ValueAsHexadecimalString => NumberAsString(CharEntityFormat.Hexadecimal);
 
-        public override MarkdownKind Kind => MarkdownKind.CharReference;
+        public override MarkdownKind Kind => MarkdownKind.CharEntity;
 
         public override MarkdownWriter WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteCharReference(Value);
+            return writer.WriteCharEntity(Value);
         }
 
         internal override MElement Clone()
         {
-            return new MCharReference(this);
+            return new MCharEntity(this);
         }
 
-        internal string NumberAsString(CharReferenceFormat format)
+        internal string NumberAsString(CharEntityFormat format)
         {
             switch (format)
             {
-                case CharReferenceFormat.Hexadecimal:
+                case CharEntityFormat.Hexadecimal:
                     return ((int)Value).ToString("x", CultureInfo.InvariantCulture);
-                case CharReferenceFormat.Decimal:
+                case CharEntityFormat.Decimal:
                     return ((int)Value).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentException(ErrorMessages.UnknownEnumValue(format), nameof(format));

@@ -263,9 +263,9 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(1, 0xFFFF);
         }
 
-        public static CharReferenceFormat HtmlEntityFormat()
+        public static CharEntityFormat HtmlEntityFormat()
         {
-            return (CharReferenceFormat)IntValue(0, 1);
+            return (CharEntityFormat)IntValue(0, 1);
         }
 
         public static MarkdownBuilder CreateBuilder(MarkdownFormat format = null)
@@ -273,7 +273,7 @@ namespace Pihrtsoft.Markdown.Tests
             return CreateBuilder(new StringBuilder(), format);
         }
 
-        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(CharReferenceFormat? format)
+        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(CharEntityFormat? format)
         {
             return CreateBuilder((format != null) ? new MarkdownFormat() : null);
         }

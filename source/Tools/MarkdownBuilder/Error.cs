@@ -12,7 +12,7 @@ namespace Pihrtsoft.Markdown
             throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
         }
 
-        public static void ThrowOnInvalidCharReference(char value)
+        public static void ThrowOnInvalidCharEntity(char value)
         {
             if (value >= 0xD800
                 && value <= 0xDFFF)

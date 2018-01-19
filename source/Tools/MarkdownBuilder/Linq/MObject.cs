@@ -7,9 +7,6 @@ namespace Pihrtsoft.Markdown.Linq
     [DebuggerDisplay("{Kind}")]
     public abstract class MObject
     {
-        //TODO: auto-property
-        internal MContainer parent;
-
         public abstract MarkdownKind Kind { get; }
 
         public MDocument Document
@@ -18,16 +15,13 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 var x = this;
 
-                while (x.parent != null)
-                    x = x.parent;
+                while (x.Parent != null)
+                    x = x.Parent;
 
                 return x as MDocument;
             }
         }
 
-        public MContainer Parent
-        {
-            get { return parent; }
-        }
+        public MContainer Parent { get; internal set; }
     }
 }
