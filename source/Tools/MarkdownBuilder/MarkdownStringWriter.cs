@@ -53,50 +53,57 @@ namespace Pihrtsoft.Markdown
             set { _sb.Length = value; }
         }
 
-        public override MarkdownWriter WriteString(string value)
+        public override MarkdownWriter WriteString(string text)
         {
             ThrowIfClosed();
 
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(text))
                 return this;
 
-            int length = value.Length;
+            OnBeforeWrite();
+
+            int length = text.Length;
 
             int prev = 0;
 
             int i = 0;
             while (i < length)
             {
-                char ch = value[i];
+                char ch = text[i];
 
                 if (ch == 10)
                 {
                     if (NewLineHandling == NewLineHandling.Replace)
                     {
-                        WriteString(value, prev, i - prev);
-                        WriteLine();
+                        WriteString(text, prev, i - prev);
+                        WriteNewLine();
                     }
                     else if (NewLineHandling == NewLineHandling.None)
                     {
-                        WriteString(value, prev, i + 1 - prev);
+                        WriteString(text, prev, i + 1 - prev);
                         OnAfterWriteLine();
                     }
 
-                    prev = ++i;
+                    i++;
+
+                    if (i < length)
+                        WriteIndentation();
+
+                    prev = i;
                 }
                 else if (ch == 13)
                 {
                     if (i < length - 1
-                        && value[i + 1] == 10)
+                        && text[i + 1] == 10)
                     {
                         if (NewLineHandling == NewLineHandling.Replace)
                         {
-                            WriteString(value, prev, i - prev);
-                            WriteLine();
+                            WriteString(text, prev, i - prev);
+                            WriteNewLine();
                         }
                         else if (NewLineHandling == NewLineHandling.None)
                         {
-                            WriteString(value, prev, i + 2 - prev);
+                            WriteString(text, prev, i + 2 - prev);
                             OnAfterWriteLine();
                         }
 
@@ -104,20 +111,25 @@ namespace Pihrtsoft.Markdown
                     }
                     else if (NewLineHandling == NewLineHandling.Replace)
                     {
-                        WriteString(value, prev, i - prev);
-                        WriteLine();
+                        WriteString(text, prev, i - prev);
+                        WriteNewLine();
                     }
                     else if (NewLineHandling == NewLineHandling.None)
                     {
-                        WriteString(value, prev, i + 1 - prev);
+                        WriteString(text, prev, i + 1 - prev);
                         OnAfterWriteLine();
                     }
 
-                    prev = ++i;
+                    i++;
+
+                    if (i < length)
+                        WriteIndentation();
+
+                    prev = i;
                 }
                 else if (ShouldBeEscaped(ch))
                 {
-                    WriteString(value, prev, i - prev);
+                    WriteString(text, prev, i - prev);
                     WriteChar(EscapingChar);
                     WriteChar(ch);
                     prev = ++i;
@@ -128,29 +140,33 @@ namespace Pihrtsoft.Markdown
                 }
             }
 
-            WriteString(value, prev, value.Length - prev);
+            WriteString(text, prev, text.Length - prev);
             return this;
         }
 
         private void WriteString(string value, int startIndex, int count)
         {
             ThrowIfClosed();
-            OnBeforeWrite();
             _sb.Append(value, startIndex, count);
         }
 
         private void WriteChar(char ch)
         {
             ThrowIfClosed();
-            OnBeforeWrite();
             _sb.Append(ch);
         }
 
-        public override MarkdownWriter WriteRaw(string value)
+        private void WriteNewLine()
+        {
+            ThrowIfClosed();
+            _sb.Append(Settings.NewLineChars);
+        }
+
+        public override MarkdownWriter WriteRaw(string data)
         {
             ThrowIfClosed();
             OnBeforeWrite();
-            _sb.Append(value);
+            _sb.Append(data);
             return this;
         }
 

@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown
         private const int BufferOverflow = 32;
 
         private TextWriter _writer;
-        private bool _skipWrite;
+        private bool _noWrite;
 
         private readonly char[] _bufChars;
         private int _bufPos;
@@ -29,7 +29,7 @@ namespace Pihrtsoft.Markdown
 
         protected internal override int Length { get; set; }
 
-        public override unsafe MarkdownWriter WriteString(string text)
+        public override MarkdownWriter WriteString(string text)
         {
             if (string.IsNullOrEmpty(text))
                 return this;
@@ -98,7 +98,7 @@ namespace Pihrtsoft.Markdown
                                 {
                                     case NewLineHandling.Replace:
                                         {
-                                            pDst = WriteNewLine(pDst);
+                                            pDst = WriteNewLineUnsafe(pDst);
                                             break;
                                         }
                                     case NewLineHandling.None:
@@ -113,9 +113,7 @@ namespace Pihrtsoft.Markdown
                                 OnAfterWriteLine();
 
                                 if (pSrc < pSrcEnd)
-                                {
                                     WriteIndentation();
-                                }
 
                                 break;
                             }
@@ -131,12 +129,11 @@ namespace Pihrtsoft.Markdown
                                                 pSrc++;
                                             }
 
-                                            pDst = WriteNewLine(pDst);
+                                            pDst = WriteNewLineUnsafe(pDst);
                                             break;
                                         }
                                     case NewLineHandling.None:
                                         {
-                                            OnBeforeWrite();
                                             *pDst = (char)ch;
                                             pDst++;
                                             Length++;
@@ -226,7 +223,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private unsafe char* WriteNewLine(char* pDst)
+        private unsafe char* WriteNewLineUnsafe(char* pDst)
         {
             fixed (char* pDstStart = _bufChars)
             {
@@ -279,12 +276,12 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                if (!_skipWrite)
+                if (!_noWrite)
                     _writer.Write(_bufChars, 0, _bufPos);
             }
             catch
             {
-                _skipWrite = true;
+                _noWrite = true;
                 throw;
             }
             finally
@@ -301,7 +298,7 @@ namespace Pihrtsoft.Markdown
             }
             finally
             {
-                _skipWrite = true;
+                _noWrite = true;
 
                 if (_writer != null)
                 {

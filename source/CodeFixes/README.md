@@ -98,3 +98,4 @@
 | RCF0031 | Use unchecked expression | [CS0221](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0221) | &#x2713; |
 | RCF0021 | Use yield return instead of return | [CS0029](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0029), [CS1622](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1622) | &#x2713; |
 | RCF0050 | Wrap in unsafe statement | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | &#x2713; |
+

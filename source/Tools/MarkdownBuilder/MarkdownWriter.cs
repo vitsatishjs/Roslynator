@@ -18,7 +18,6 @@ namespace Pihrtsoft.Markdown
 
         private bool _startOfLine;
         private bool _emptyLine;
-        private bool _pendingEmptyLine;
 
         private int _headingPosition = -1;
         private int _headingLevel = -1;
@@ -298,7 +297,7 @@ namespace Pihrtsoft.Markdown
                 WriteLine();
             }
 
-            PendingLineIf(Format.EmptyLineAfterHeading);
+            WriteEmptyLineIf(Format.EmptyLineAfterHeading);
             Pop();
             return this;
         }
@@ -353,8 +352,8 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndBulletItem()
         {
             Pop();
-            WriteLineIfNecessary();
             ListLevel--;
+            WriteLine();
             return this;
         }
 
@@ -380,8 +379,8 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndOrderedItem()
         {
             Pop();
-            WriteLineIfNecessary();
             ListLevel--;
+            WriteLineIfNecessary();
             return this;
         }
 
@@ -421,8 +420,8 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteEndTaskItem()
         {
             Pop();
-            WriteLineIfNecessary();
             ListLevel--;
+            WriteLineIfNecessary();
             return this;
         }
 
@@ -572,15 +571,16 @@ namespace Pihrtsoft.Markdown
 
         public MarkdownWriter WriteIndentedCodeBlock(string text)
         {
+            //TODO: není kontajner
             CheckPush(MarkdownKind.IndentedCodeBlock);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
             ChangeState(State.Raw);
-            WriteRaw(text);
+            WriteString(text);
             ChangeState(State.None);
             WriteLineIfNecessary();
             Pop();
-            PendingLineIf(Format.EmptyLineAfterCodeBlock);
+            WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
 
             return this;
         }
@@ -606,7 +606,7 @@ namespace Pihrtsoft.Markdown
             WriteRaw(Format.CodeFence);
             WriteLine();
 
-            PendingLineIf(Format.EmptyLineAfterCodeBlock);
+            WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
             return this;
         }
 
@@ -677,7 +677,7 @@ namespace Pihrtsoft.Markdown
         {
             CheckPush(MarkdownKind.Table);
             WriteLineIfNecessary();
-            PendingLineIf(Format.EmptyLineBeforeTable);
+            WriteEmptyLineIf(Format.EmptyLineBeforeTable);
             _tableColumns = columns;
             return this;
         }
@@ -686,7 +686,7 @@ namespace Pihrtsoft.Markdown
         {
             _tableRowIndex = -1;
             _tableColumns = null;
-            PendingLineIf(Format.EmptyLineAfterTable);
+            WriteEmptyLineIf(Format.EmptyLineAfterTable);
             Pop();
             return this;
         }
@@ -741,6 +741,7 @@ namespace Pihrtsoft.Markdown
 
         public void WriteStartTableCell()
         {
+            //TODO: TableCell
             CheckPush(MarkdownKind.TableColumn);
             _tableColumnIndex++;
 
@@ -1020,8 +1021,6 @@ namespace Pihrtsoft.Markdown
 
         protected void OnAfterWriteLine()
         {
-            _pendingEmptyLine = false;
-
             if (_startOfLine)
             {
                 _emptyLine = true;
@@ -1030,20 +1029,12 @@ namespace Pihrtsoft.Markdown
             {
                 _startOfLine = true;
             }
+
+            WriteIndentation();
         }
 
         protected void OnBeforeWrite()
         {
-            if (_pendingEmptyLine)
-            {
-                WriteIndentation();
-                WriteLine();
-            }
-            else if (_startOfLine)
-            {
-                WriteIndentation();
-            }
-
             _startOfLine = false;
             _emptyLine = false;
         }
@@ -1052,12 +1043,6 @@ namespace Pihrtsoft.Markdown
         {
             if (!_startOfLine)
                 WriteLine();
-        }
-
-        private void PendingLineIf(bool condition)
-        {
-            if (condition)
-                _pendingEmptyLine = true;
         }
 
         private void WriteEmptyLineIf(bool condition)

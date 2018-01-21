@@ -198,3 +198,4 @@
 | Usage | [Use string.Length instead of comparison with empty string](../../docs/analyzers/RCS1156.md) | RCS1156 | &#x2713; |
 | Usage | [Use StringComparison when comparing strings](../../docs/analyzers/RCS1155.md) | RCS1155 | &#x2713; |
 | Usage | [Value type object is never equal to null](../../docs/analyzers/RCS1166.md) | RCS1166 | &#x2713; |
+
