@@ -25,7 +25,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.BulletList;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             if (content is string s)
             {
@@ -48,11 +48,9 @@ namespace Pihrtsoft.Markdown.Linq
 
                     writer.WriteEndBulletItem();
                 }
+
+                writer.WriteLine();
             }
-
-            writer.WriteLine();
-
-            return writer;
         }
 
         internal override void ValidateElement(MElement element)

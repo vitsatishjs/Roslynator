@@ -48,12 +48,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedItem;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             writer.WriteStartOrderedItem(Number);
             WriteContentTo(writer);
             writer.WriteEndOrderedItem();
-            return writer;
         }
 
         internal override MElement Clone()

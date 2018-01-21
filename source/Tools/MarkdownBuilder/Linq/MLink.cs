@@ -49,9 +49,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Link;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteLink(Text, Url, Title);
+            writer.WriteLink(Text, Url, Title);
         }
 
         internal override MElement Clone()

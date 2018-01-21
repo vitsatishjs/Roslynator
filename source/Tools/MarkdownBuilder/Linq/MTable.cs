@@ -27,14 +27,14 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Table;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             IEnumerable<MElement> rows = Elements();
 
             IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(rows);
 
             if (columns == null)
-                return writer;
+                return;
 
             writer.WriteStartTable(columns);
 
@@ -51,8 +51,6 @@ namespace Pihrtsoft.Markdown.Linq
             }
 
             writer.WriteEndTable();
-
-            return writer;
         }
 
         internal override MElement Clone()

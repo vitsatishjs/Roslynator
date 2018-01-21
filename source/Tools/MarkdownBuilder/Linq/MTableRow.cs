@@ -27,9 +27,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         internal override bool AllowStringConcatenation => false;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteTableRow(this);
+            writer.WriteTableRow(this);
         }
 
         internal override MElement Clone()

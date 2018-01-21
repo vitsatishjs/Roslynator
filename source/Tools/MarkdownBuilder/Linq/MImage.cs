@@ -16,9 +16,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Image;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteImage(Text, Url, Title);
+            writer.WriteImage(Text, Url, Title);
         }
 
         internal override MElement Clone()

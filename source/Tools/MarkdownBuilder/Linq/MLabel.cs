@@ -16,9 +16,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Label;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteLabel(Text, Url, Title);
+            writer.WriteLabel(Text, Url, Title);
         }
 
         internal override MElement Clone()

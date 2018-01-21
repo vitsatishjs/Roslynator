@@ -42,9 +42,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         private string InfoDebuggerDisplay => (!string.IsNullOrEmpty(Info)) ? " " + Info : "";
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteFencedCodeBlock(Text, Info);
+            writer.WriteFencedCodeBlock(Text, Info);
         }
 
         internal override MElement Clone()

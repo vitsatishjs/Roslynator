@@ -48,9 +48,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.EntityRef;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteEntityRef(Name);
+            writer.WriteEntityRef(Name);
         }
 
         internal override MElement Clone()

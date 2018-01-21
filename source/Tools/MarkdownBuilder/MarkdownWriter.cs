@@ -926,23 +926,29 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
-        internal MarkdownWriter Write(object value)
+        internal void Write(object value)
         {
             if (value == null)
-                return this;
+                return;
 
             if (value is MElement element)
-                return element.WriteTo(this);
+            {
+                element.WriteTo(this);
+                return;
+            }
 
             if (value is string s)
-                return WriteString(s);
+            {
+                WriteString(s);
+                return;
+            }
 
             if (value is object[] arr)
             {
                 foreach (object item in arr)
                     Write(item);
 
-                return this;
+                return;
             }
 
             if (value is IEnumerable enumerable)
@@ -950,10 +956,10 @@ namespace Pihrtsoft.Markdown
                 foreach (object item in enumerable)
                     Write(item);
 
-                return this;
+                return;
             }
 
-            return WriteString(value.ToString());
+            WriteString(value.ToString());
         }
 
         public abstract void Flush();
@@ -1021,6 +1027,8 @@ namespace Pihrtsoft.Markdown
 
         protected void OnAfterWriteLine()
         {
+            WriteIndentation();
+
             if (_startOfLine)
             {
                 _emptyLine = true;
@@ -1029,8 +1037,6 @@ namespace Pihrtsoft.Markdown
             {
                 _startOfLine = true;
             }
-
-            WriteIndentation();
         }
 
         protected void OnBeforeWrite()

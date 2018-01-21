@@ -1,2 +1,1 @@
-﻿void nebo MarkdownWriter
-patří Before.. After... do MarkdownFormat
+﻿patří Before.. After... do MarkdownFormat

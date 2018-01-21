@@ -45,7 +45,7 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public abstract MarkdownWriter WriteTo(MarkdownWriter writer);
+        public abstract void WriteTo(MarkdownWriter writer);
 
         internal abstract MElement Clone();
 

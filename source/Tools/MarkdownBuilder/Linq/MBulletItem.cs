@@ -25,12 +25,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.BulletItem;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             writer.WriteStartBulletItem();
             WriteContentTo(writer);
             writer.WriteEndBulletItem();
-            return writer;
         }
 
         internal override MElement Clone()

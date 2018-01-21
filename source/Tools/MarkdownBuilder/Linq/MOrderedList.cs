@@ -27,11 +27,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedList;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             if (content is string s)
             {
-                return writer.WriteOrderedItem(NumberingBase, s);
+                writer.WriteOrderedItem(NumberingBase, s);
             }
             else
             {
@@ -53,10 +53,9 @@ namespace Pihrtsoft.Markdown.Linq
                     writer.WriteEndOrderedItem();
                     number++;
                 }
-            }
 
-            writer.WriteLine();
-            return writer;
+                writer.WriteLine();
+            }
         }
 
         internal override void ValidateElement(MElement element)

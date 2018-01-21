@@ -31,9 +31,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Raw;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteRaw(Value);
+            writer.WriteRaw(Value);
         }
 
         internal override MElement Clone()
