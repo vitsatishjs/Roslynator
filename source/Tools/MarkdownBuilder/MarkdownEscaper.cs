@@ -121,5 +121,28 @@ namespace Pihrtsoft.Markdown
                     return false;
             }
         }
+
+        internal static bool ShouldBeEscapedInAngleBrackets(char ch)
+        {
+            switch (ch)
+            {
+                case '<':
+                case '>':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal static bool ShouldBeEscapedInInlineCode(char ch)
+        {
+            switch (ch)
+            {
+                case '`':
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

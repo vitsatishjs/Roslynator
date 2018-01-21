@@ -16,6 +16,8 @@ namespace Pihrtsoft.Markdown
             IsWhiteSpace = isWhiteSpace;
         }
 
+        internal static TableColumnInfo Default { get; } = new TableColumnInfo(Alignment.Left, 0, isWhiteSpace: true);
+
         public Alignment Alignment { get; }
 
         public bool IsWhiteSpace { get; }

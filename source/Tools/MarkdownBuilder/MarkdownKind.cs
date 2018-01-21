@@ -32,7 +32,7 @@ namespace Pihrtsoft.Markdown
 
         Table = 21,
         TableRow = 22,
-        TableColumn = 23,
+        TableCell = 23,
 
         Document = 24,
         BlockQuote = 25,

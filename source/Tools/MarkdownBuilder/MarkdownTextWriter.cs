@@ -111,10 +111,6 @@ namespace Pihrtsoft.Markdown
                                 }
 
                                 OnAfterWriteLine();
-
-                                if (pSrc < pSrcEnd)
-                                    WriteIndentation();
-
                                 break;
                             }
                         case (char)13:
@@ -142,10 +138,6 @@ namespace Pihrtsoft.Markdown
                                 }
 
                                 OnAfterWriteLine();
-
-                                if (pSrc < pSrcEnd)
-                                    WriteIndentation();
-
                                 break;
                             }
                         default:

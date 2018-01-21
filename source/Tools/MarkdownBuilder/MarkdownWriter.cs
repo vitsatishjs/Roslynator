@@ -8,8 +8,6 @@ using System.IO;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
 
-#pragma warning disable CA1814
-
 namespace Pihrtsoft.Markdown
 {
     public abstract class MarkdownWriter : IDisposable
@@ -18,16 +16,17 @@ namespace Pihrtsoft.Markdown
 
         private bool _startOfLine;
         private bool _emptyLine;
+        private bool _indentedCodeBlock;
 
         private int _headingPosition = -1;
         private int _headingLevel = -1;
 
         private IReadOnlyList<TableColumnInfo> _tableColumns;
+        private int _tableColumnCount = -1;
         private int _tableRowIndex = -1;
         private int _tableColumnIndex = -1;
         private int _tableCellPosition = -1;
 
-        private State _state;
         private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
 
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
@@ -55,11 +54,13 @@ namespace Pihrtsoft.Markdown
 
         protected Func<char, bool> ShouldBeEscaped { get; set; } = MarkdownEscaper.ShouldBeEscaped;
 
-        protected char EscapingChar => (_state == State.InlineCode) ? '`' : '\\';
+        protected char EscapingChar { get; set; } = '\\';
 
-        private TableColumnInfo CurrentColumn => _tableColumns[_tableColumnIndex];
+        private TableColumnInfo CurrentColumn => _tableColumns?[_tableColumnIndex] ?? TableColumnInfo.Default;
 
-        private bool IsLastColumn => _tableColumnIndex == _tableColumns.Count - 1;
+        private int ColumnCount => _tableColumns?.Count ?? _tableColumnCount;
+
+        private bool IsLastColumn => _tableColumnIndex == ColumnCount - 1;
 
         private bool IsFirstColumn => _tableColumnIndex == 0;
 
@@ -114,54 +115,6 @@ namespace Pihrtsoft.Markdown
 
         internal void Check(MarkdownKind kind)
         {
-        }
-
-        private void ChangeState(State state)
-        {
-            _state = state;
-
-            switch (state)
-            {
-                case State.None:
-                    {
-                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscaped;
-                        break;
-                    }
-                case State.Raw:
-                    {
-                        ShouldBeEscaped = _ => false;
-                        break;
-                    }
-                case State.InlineCode:
-                    {
-                        ShouldBeEscaped = f => f == '`';
-                        break;
-                    }
-                case State.LinkText:
-                    {
-                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkText;
-                        break;
-                    }
-                case State.LinkUrl:
-                    {
-                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkUrl;
-                        break;
-                    }
-                case State.LinkTitle:
-                    {
-                        ShouldBeEscaped = MarkdownEscaper.ShouldBeEscapedInLinkTitle;
-                        break;
-                    }
-                case State.AngleBrackets:
-                    {
-                        ShouldBeEscaped = ch => ch == '<' || ch == '>';
-                        break;
-                    }
-                default:
-                    {
-                        throw new InvalidOperationException(ErrorMessages.UnknownEnumValue(_state));
-                    }
-            }
         }
 
         public MarkdownWriter WriteStartBold()
@@ -234,20 +187,18 @@ namespace Pihrtsoft.Markdown
         {
             Check(MarkdownKind.InlineCode);
             WriteRaw("`");
-            ChangeState(State.InlineCode);
 
             if (!string.IsNullOrEmpty(text))
             {
                 if (text[0] == '`')
                     WriteRaw(" ");
 
-                WriteString(text);
+                WriteString(text, MarkdownEscaper.ShouldBeEscapedInInlineCode, '`');
 
                 if (text[text.Length - 1] == '`')
                     WriteRaw(" ");
             }
 
-            ChangeState(State.None);
             WriteRaw("`");
             return this;
         }
@@ -484,9 +435,7 @@ namespace Pihrtsoft.Markdown
         {
             WriteSquareBrackets(text);
             WriteRaw("(");
-            ChangeState(State.LinkUrl);
-            WriteString(url);
-            ChangeState(State.None);
+            WriteString(url, MarkdownEscaper.ShouldBeEscapedInLinkUrl);
             WriteLinkTitle(title);
             WriteRaw(")");
             return this;
@@ -544,9 +493,7 @@ namespace Pihrtsoft.Markdown
                 WriteRaw(" ");
 
                 WriteRaw("\"");
-                ChangeState(State.LinkTitle);
-                WriteString(title);
-                ChangeState(State.None);
+                WriteString(title, MarkdownEscaper.ShouldBeEscapedInLinkTitle);
                 WriteRaw("\"");
             }
         }
@@ -554,32 +501,26 @@ namespace Pihrtsoft.Markdown
         private void WriteSquareBrackets(string text)
         {
             WriteRaw("[");
-            ChangeState(State.LinkText);
-            WriteString(text);
-            ChangeState(State.None);
+            WriteString(text, MarkdownEscaper.ShouldBeEscapedInLinkText);
             WriteRaw("]");
         }
 
         private void WriteAngleBrackets(string text)
         {
             WriteRaw("<");
-            ChangeState(State.AngleBrackets);
-            WriteString(text);
-            ChangeState(State.None);
+            WriteString(text, MarkdownEscaper.ShouldBeEscapedInAngleBrackets);
             WriteRaw(">");
         }
 
         public MarkdownWriter WriteIndentedCodeBlock(string text)
         {
-            //TODO: není kontajner
-            CheckPush(MarkdownKind.IndentedCodeBlock);
+            Check(MarkdownKind.IndentedCodeBlock);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
-            ChangeState(State.Raw);
-            WriteString(text);
-            ChangeState(State.None);
+            _indentedCodeBlock = true;
+            WriteString(text, _ => false);
+            _indentedCodeBlock = false;
             WriteLineIfNecessary();
-            Pop();
             WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
 
             return this;
@@ -592,14 +533,10 @@ namespace Pihrtsoft.Markdown
             Check(MarkdownKind.FencedCodeBlock);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
-
             WriteRaw(Format.CodeFence);
             WriteRaw(info);
             WriteLine();
-
-            ChangeState(State.Raw);
-            WriteRaw(text);
-            ChangeState(State.None);
+            WriteString(text, _ => false);
 
             WriteLineIfNecessary();
 
@@ -673,12 +610,26 @@ namespace Pihrtsoft.Markdown
             return this;
         }
 
+        public MarkdownWriter WriteStartTable(int columnCount)
+        {
+            return WriteStartTable(null, columnCount);
+        }
+
         public MarkdownWriter WriteStartTable(IReadOnlyList<TableColumnInfo> columns)
+        {
+            if (columns == null)
+                throw new ArgumentNullException(nameof(columns));
+
+            return WriteStartTable(columns, columns.Count);
+        }
+
+        private MarkdownWriter WriteStartTable(IReadOnlyList<TableColumnInfo> columns, int columnCount)
         {
             CheckPush(MarkdownKind.Table);
             WriteLineIfNecessary();
             WriteEmptyLineIf(Format.EmptyLineBeforeTable);
             _tableColumns = columns;
+            _tableColumnCount = columnCount;
             return this;
         }
 
@@ -686,6 +637,7 @@ namespace Pihrtsoft.Markdown
         {
             _tableRowIndex = -1;
             _tableColumns = null;
+            _tableColumnCount = -1;
             WriteEmptyLineIf(Format.EmptyLineAfterTable);
             Pop();
             return this;
@@ -741,8 +693,7 @@ namespace Pihrtsoft.Markdown
 
         public void WriteStartTableCell()
         {
-            //TODO: TableCell
-            CheckPush(MarkdownKind.TableColumn);
+            CheckPush(MarkdownKind.TableCell);
             _tableColumnIndex++;
 
             if (IsFirstColumn)
@@ -824,7 +775,7 @@ namespace Pihrtsoft.Markdown
 
             WriteStartTableRow();
 
-            int count = _tableColumns.Count;
+            int count = ColumnCount;
 
             for (int i = 0; i < count; i++)
             {
@@ -966,6 +917,15 @@ namespace Pihrtsoft.Markdown
 
         public abstract MarkdownWriter WriteString(string text);
 
+        private void WriteString(string text, Func<char, bool> shouldBeEscaped, char escapingChar = '\\')
+        {
+            ShouldBeEscaped = shouldBeEscaped;
+            EscapingChar = escapingChar;
+            WriteString(text);
+            EscapingChar = '\\';
+            ShouldBeEscaped = MarkdownEscaper.ShouldBeEscaped;
+        }
+
         public abstract MarkdownWriter WriteRaw(string data);
 
         private MarkdownWriter WriteRaw(string data, int repeatCount)
@@ -1021,7 +981,7 @@ namespace Pihrtsoft.Markdown
             for (int i = 0; i < ListLevel; i++)
                 WriteRaw("  ");
 
-            if (CurrentKind == MarkdownKind.IndentedCodeBlock)
+            if (_indentedCodeBlock)
                 WriteRaw("    ");
         }
 
@@ -1064,17 +1024,6 @@ namespace Pihrtsoft.Markdown
             {
                 WriteLine();
             }
-        }
-
-        protected enum State
-        {
-            None,
-            Raw,
-            InlineCode,
-            LinkText,
-            LinkUrl,
-            LinkTitle,
-            AngleBrackets
         }
     }
 }
