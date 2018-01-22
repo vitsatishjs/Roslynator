@@ -176,7 +176,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         public void MarkdownBuilder_AppendHeading1(HeadingOptions? options)
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
@@ -188,7 +188,7 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH1)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
         public void MarkdownBuilder_AppendHeading2(HeadingOptions? options)
         {
             MarkdownBuilder mb = CreateBuilderWithHeadingOptions(options);
@@ -200,8 +200,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH1)]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading3(HeadingOptions? options)
         {
@@ -214,8 +214,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH1)]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading4(HeadingOptions? options)
         {
@@ -228,8 +228,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH1)]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading5(HeadingOptions? options)
         {
@@ -242,8 +242,8 @@ namespace Pihrtsoft.Markdown.Tests
         [Theory]
         [InlineData(null)]
         [InlineData(HeadingOptions.None)]
-        [InlineData(HeadingOptions.UnderlineH1)]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading6(HeadingOptions? options)
         {
@@ -284,7 +284,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData(HeadingOptions.UnderlineH1)]
+        [InlineData(HeadingOptions.UnderlineHeading1)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading_UnderlineH1(HeadingOptions? options)
         {
@@ -294,7 +294,7 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Theory]
-        [InlineData(HeadingOptions.UnderlineH2)]
+        [InlineData(HeadingOptions.UnderlineHeading2)]
         [InlineData(HeadingOptions.Underline)]
         public void MarkdownBuilder_AppendHeading_UnderlineH2(HeadingOptions? options)
         {

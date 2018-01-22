@@ -34,7 +34,6 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(text))
                 return this;
 
-            OnBeforeWrite();
             WriteStringUnsafe(text);
             return this;
         }
@@ -94,6 +93,8 @@ namespace Pihrtsoft.Markdown
                     {
                         case (char)10:
                             {
+                                OnBeforeWriteLine();
+
                                 switch (NewLineHandling)
                                 {
                                     case NewLineHandling.Replace:
@@ -115,6 +116,8 @@ namespace Pihrtsoft.Markdown
                             }
                         case (char)13:
                             {
+                                OnBeforeWriteLine();
+
                                 switch (NewLineHandling)
                                 {
                                     case NewLineHandling.Replace:
@@ -164,7 +167,6 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(data))
                 return this;
 
-            OnBeforeWrite();
             WriteRawUnsafe(data);
             return this;
         }
@@ -227,6 +229,7 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownWriter WriteLine()
         {
+            OnBeforeWriteLine();
             WriteRawUnsafe(Settings.NewLineChars);
             OnAfterWriteLine();
             return this;

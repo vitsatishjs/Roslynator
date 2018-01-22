@@ -8,9 +8,9 @@ namespace Pihrtsoft.Markdown
     public enum HeadingOptions
     {
         None = 0,
-        UnderlineH1 = 1,
-        UnderlineH2 = 2,
-        Underline = UnderlineH1 | UnderlineH2,
+        UnderlineHeading1 = 1,
+        UnderlineHeading2 = 2,
+        Underline = UnderlineHeading1 | UnderlineHeading2,
         Close = 4,
         EmptyLineBefore = 8,
         EmptyLineAfter = 16,

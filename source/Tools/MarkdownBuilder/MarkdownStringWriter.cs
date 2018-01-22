@@ -60,8 +60,6 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(text))
                 return this;
 
-            OnBeforeWrite();
-
             int length = text.Length;
 
             int prev = 0;
@@ -73,6 +71,8 @@ namespace Pihrtsoft.Markdown
 
                 if (ch == 10)
                 {
+                    OnBeforeWriteLine();
+
                     if (NewLineHandling == NewLineHandling.Replace)
                     {
                         WriteString(text, prev, i - prev);
@@ -81,9 +81,9 @@ namespace Pihrtsoft.Markdown
                     else if (NewLineHandling == NewLineHandling.None)
                     {
                         WriteString(text, prev, i + 1 - prev);
-                        OnAfterWriteLine();
                     }
 
+                    OnAfterWriteLine();
                     i++;
 
                     if (i < length)
@@ -93,6 +93,8 @@ namespace Pihrtsoft.Markdown
                 }
                 else if (ch == 13)
                 {
+                    OnBeforeWriteLine();
+
                     if (i < length - 1
                         && text[i + 1] == 10)
                     {
@@ -104,7 +106,6 @@ namespace Pihrtsoft.Markdown
                         else if (NewLineHandling == NewLineHandling.None)
                         {
                             WriteString(text, prev, i + 2 - prev);
-                            OnAfterWriteLine();
                         }
 
                         i++;
@@ -117,9 +118,9 @@ namespace Pihrtsoft.Markdown
                     else if (NewLineHandling == NewLineHandling.None)
                     {
                         WriteString(text, prev, i + 1 - prev);
-                        OnAfterWriteLine();
                     }
 
+                    OnAfterWriteLine();
                     i++;
 
                     if (i < length)
@@ -165,7 +166,6 @@ namespace Pihrtsoft.Markdown
         public override MarkdownWriter WriteRaw(string data)
         {
             ThrowIfClosed();
-            OnBeforeWrite();
             _sb.Append(data);
             return this;
         }
@@ -173,6 +173,7 @@ namespace Pihrtsoft.Markdown
         public override MarkdownWriter WriteLine()
         {
             ThrowIfClosed();
+            OnBeforeWriteLine();
             _sb.Append(Settings.NewLineChars);
             OnAfterWriteLine();
             return this;

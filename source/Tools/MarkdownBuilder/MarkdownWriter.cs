@@ -13,26 +13,24 @@ namespace Pihrtsoft.Markdown
     public abstract class MarkdownWriter : IDisposable
     {
         private bool _disposed;
-
-        private bool _startOfLine;
-        private bool _emptyLine;
         private bool _indentedCodeBlock;
 
-        private int _headingPosition = -1;
+        private int _lineStartPos;
+        private int _emptyLineStartPos = -1;
+
         private int _headingLevel = -1;
 
         private IReadOnlyList<TableColumnInfo> _tableColumns;
         private int _tableColumnCount = -1;
         private int _tableRowIndex = -1;
         private int _tableColumnIndex = -1;
-        private int _tableCellPosition = -1;
+        private int _tableCellPos = -1;
 
         private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
 
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
         {
             Settings = settings ?? MarkdownWriterSettings.Default;
-            _startOfLine = true;
         }
 
         public virtual MarkdownWriterSettings Settings { get; }
@@ -209,11 +207,12 @@ namespace Pihrtsoft.Markdown
 
             CheckPush(MarkdownKind.Heading);
 
+            _headingLevel = level;
+
             bool underline = (level == 1 && Format.UnderlineHeading1)
                 || (level == 2 && Format.UnderlineHeading2);
 
-            WriteLineIfNecessary();
-            WriteEmptyLineIf(Format.EmptyLineBeforeHeading);
+            WriteLine(Format.EmptyLineBeforeHeading);
 
             if (!underline)
             {
@@ -239,12 +238,13 @@ namespace Pihrtsoft.Markdown
                 WriteRaw(Format.HeadingStart, level);
             }
 
+            int length = Length - _lineStartPos;
+
             WriteLineIfNecessary();
 
             if (underline)
             {
-                WriteRaw((level == 1) ? "=" : "-", Length - _headingPosition);
-                _headingPosition = -1;
+                WriteRaw((level == 1) ? "=" : "-", length);
                 WriteLine();
             }
 
@@ -515,14 +515,14 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteIndentedCodeBlock(string text)
         {
             Check(MarkdownKind.IndentedCodeBlock);
-            WriteLineIfNecessary();
-            WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
+
+            WriteLine(Format.EmptyLineBeforeCodeBlock);
+
             _indentedCodeBlock = true;
             WriteString(text, _ => false);
             _indentedCodeBlock = false;
-            WriteLineIfNecessary();
+            WriteLine();
             WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
-
             return this;
         }
 
@@ -531,8 +531,9 @@ namespace Pihrtsoft.Markdown
             Error.ThrowOnInvalidFencedCodeBlockInfo(info);
 
             Check(MarkdownKind.FencedCodeBlock);
-            WriteLineIfNecessary();
-            WriteEmptyLineIf(Format.EmptyLineBeforeCodeBlock);
+
+            WriteLine(Format.EmptyLineBeforeCodeBlock);
+
             WriteRaw(Format.CodeFence);
             WriteRaw(info);
             WriteLine();
@@ -541,8 +542,8 @@ namespace Pihrtsoft.Markdown
             WriteLineIfNecessary();
 
             WriteRaw(Format.CodeFence);
-            WriteLine();
 
+            WriteLine();
             WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
             return this;
         }
@@ -626,8 +627,9 @@ namespace Pihrtsoft.Markdown
         private MarkdownWriter WriteStartTable(IReadOnlyList<TableColumnInfo> columns, int columnCount)
         {
             CheckPush(MarkdownKind.Table);
-            WriteLineIfNecessary();
-            WriteEmptyLineIf(Format.EmptyLineBeforeTable);
+
+            WriteLine(Format.EmptyLineBeforeTable);
+
             _tableColumns = columns;
             _tableColumnCount = columnCount;
             return this;
@@ -727,7 +729,7 @@ namespace Pihrtsoft.Markdown
                 WriteRaw(" ");
             }
 
-            _tableCellPosition = Length;
+            _tableCellPos = Length;
         }
 
         public void WriteEndTableCell()
@@ -738,11 +740,11 @@ namespace Pihrtsoft.Markdown
                 if (_tableRowIndex == 0)
                 {
                     if (Format.FormatTableHeader)
-                        WritePadRight(Length - _tableCellPosition);
+                        WritePadRight(Length - _tableCellPos);
                 }
                 else if (Format.FormatTableContent)
                 {
-                    WritePadRight(Length - _tableCellPosition);
+                    WritePadRight(Length - _tableCellPos);
                 }
             }
 
@@ -761,11 +763,11 @@ namespace Pihrtsoft.Markdown
             }
             else if (Format.TablePadding)
             {
-                if (Length - _tableCellPosition > 0)
+                if (Length - _tableCellPos > 0)
                     WriteRaw(" ");
             }
 
-            _tableCellPosition = -1;
+            _tableCellPos = -1;
             Pop();
         }
 
@@ -985,44 +987,51 @@ namespace Pihrtsoft.Markdown
                 WriteRaw("    ");
         }
 
+        protected void OnBeforeWriteLine()
+        {
+            if (_lineStartPos == Length)
+            {
+                _emptyLineStartPos = _lineStartPos;
+            }
+            else
+            {
+                _emptyLineStartPos = -1;
+            }
+        }
+
         protected void OnAfterWriteLine()
         {
             WriteIndentation();
 
-            if (_startOfLine)
-            {
-                _emptyLine = true;
-            }
-            else
-            {
-                _startOfLine = true;
-            }
-        }
+            if (_emptyLineStartPos == _lineStartPos)
+                _emptyLineStartPos = Length;
 
-        protected void OnBeforeWrite()
-        {
-            _startOfLine = false;
-            _emptyLine = false;
+            _lineStartPos = Length;
         }
 
         internal void WriteLineIfNecessary()
         {
-            if (!_startOfLine)
+            if (_lineStartPos != Length)
                 WriteLine();
         }
 
         private void WriteEmptyLineIf(bool condition)
         {
-            if (condition)
-                WriteEmptyLine();
-        }
-
-        private void WriteEmptyLine()
-        {
-            if (Length > 0
-                && !_emptyLine)
+            if (condition
+                && Length > 0)
             {
                 WriteLine();
+            }
+        }
+
+        private void WriteLine(bool addEmptyLine)
+        {
+            if (_emptyLineStartPos != Length)
+            {
+                if (_lineStartPos != Length)
+                    WriteLine();
+
+                WriteEmptyLineIf(addEmptyLine);
             }
         }
     }
