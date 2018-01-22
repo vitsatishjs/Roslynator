@@ -222,7 +222,7 @@ namespace Pihrtsoft.Markdown
             fixed (char* pDstStart = _bufChars)
             {
                 _bufPos = (int)(pDst - pDstStart);
-                WriteRawUnsafe(Settings.NewLineChars);
+                WriteRawUnsafe(NewLineChars);
                 return pDstStart + _bufPos;
             }
         }
@@ -230,7 +230,7 @@ namespace Pihrtsoft.Markdown
         public override MarkdownWriter WriteLine()
         {
             OnBeforeWriteLine();
-            WriteRawUnsafe(Settings.NewLineChars);
+            WriteRawUnsafe(NewLineChars);
             OnAfterWriteLine();
             return this;
         }

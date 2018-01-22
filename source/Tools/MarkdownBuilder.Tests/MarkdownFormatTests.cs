@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using Xunit;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
@@ -42,15 +41,15 @@ namespace Pihrtsoft.Markdown.Tests
         [Fact]
         public void MarkdownFormat_Constructor_HorizontalRule()
         {
-            HorizontalRuleStyle style = HorizontalRuleStyle();
+            string text = HorizontalRuleText();
             int count = HorizontalRuleCount();
             string space = HorizontalRuleSpace();
 
-            var horizontalRule = new HorizontalRule(style, count, space);
+            var horizontalRule = new HorizontalRuleFormat(text, count, space);
 
             var format = new MarkdownFormat();
 
-            Assert.Equal(style, format.HorizontalRuleFormat.Style);
+            Assert.Equal(text, format.HorizontalRuleFormat.Text);
             Assert.Equal(count, format.HorizontalRuleFormat.Count);
             Assert.Equal(space, format.HorizontalRuleFormat.Separator);
         }
@@ -97,26 +96,6 @@ namespace Pihrtsoft.Markdown.Tests
             Assert.Equal(codeBlockOptions, format.CodeBlockOptions);
         }
 
-        [Theory]
-        [InlineData(EmphasisStyle.Asterisk, EmphasisStyle.Underscore)]
-        [InlineData(EmphasisStyle.Underscore, EmphasisStyle.Asterisk)]
-        public void MarkdownFormat_AlternativeBoldStyle(EmphasisStyle style, EmphasisStyle alternativeStyle)
-        {
-            var format = new MarkdownFormat(boldStyle: style);
-
-            Assert.Equal(alternativeStyle, format.AlternativeBoldStyle);
-        }
-
-        [Theory]
-        [InlineData(EmphasisStyle.Asterisk, EmphasisStyle.Underscore)]
-        [InlineData(EmphasisStyle.Underscore, EmphasisStyle.Asterisk)]
-        public void MarkdownFormat_AlternativeItalicStyle(EmphasisStyle style, EmphasisStyle alternativeStyle)
-        {
-            var format = new MarkdownFormat(italicStyle: style);
-
-            Assert.Equal(alternativeStyle, format.AlternativeItalicStyle);
-        }
-
         [Fact]
         public void MarkdownFormat_Equals()
         {
@@ -132,26 +111,6 @@ namespace Pihrtsoft.Markdown.Tests
             MarkdownFormat format2 = format.Modify();
 
             Assert.False(format.Equals((object)format2));
-        }
-
-        [Fact]
-        public void MarkdownFormat_IEquatableEquals()
-        {
-            MarkdownFormat format = CreateMarkdownFormat();
-            MarkdownFormat format2 = format;
-            IEquatable<MarkdownFormat> equatable = format;
-
-            Assert.True(equatable.Equals(format2));
-        }
-
-        [Fact]
-        public void MarkdownFormat_IEquatableNotEquals()
-        {
-            MarkdownFormat format = CreateMarkdownFormat();
-            MarkdownFormat format2 = CreateMarkdownFormat().Modify();
-            IEquatable<MarkdownFormat> equatable = format;
-
-            Assert.False(format.Equals(format2));
         }
 
         [Fact]

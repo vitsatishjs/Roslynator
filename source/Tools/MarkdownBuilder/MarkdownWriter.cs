@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml;
 using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
@@ -26,18 +27,22 @@ namespace Pihrtsoft.Markdown
         private int _tableColumnIndex = -1;
         private int _tableCellPos = -1;
 
-        private readonly Stack<MarkdownKind> _containers = new Stack<MarkdownKind>();
+        private readonly Stack<MarkdownKind> _stack = new Stack<MarkdownKind>();
 
         protected MarkdownWriter(MarkdownWriterSettings settings = null)
         {
             Settings = settings ?? MarkdownWriterSettings.Default;
         }
 
+        public WriteState WriteState { get; }
+
         public virtual MarkdownWriterSettings Settings { get; }
 
         public MarkdownFormat Format => Settings.Format;
 
         internal NewLineHandling NewLineHandling => Settings.NewLineHandling;
+
+        internal string NewLineChars => Settings.NewLineChars;
 
         public int QuoteLevel { get; private set; }
 
@@ -73,6 +78,14 @@ namespace Pihrtsoft.Markdown
             return new MarkdownTextWriter(output, settings);
         }
 
+        public static MarkdownWriter Create(Stream stream, Encoding encoding = null, MarkdownWriterSettings settings = null)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            return new MarkdownTextWriter(new StreamWriter(stream, encoding ?? Encoding.UTF8), settings);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -83,8 +96,11 @@ namespace Pihrtsoft.Markdown
         {
             if (!_disposed)
             {
-                if (disposing)
+                if (disposing
+                    && WriteState != WriteState.Closed)
+                {
                     Close();
+                }
 
                 _disposed = true;
             }
@@ -98,15 +114,15 @@ namespace Pihrtsoft.Markdown
         private void CheckPush(MarkdownKind kind)
         {
             Check(kind);
-            _containers.Push(kind);
+            _stack.Push(kind);
         }
 
         private void Pop()
         {
-            _containers.Pop();
+            _stack.Pop();
         }
 
-        internal void Check(MarkdownKind kind)
+        internal void Check(MarkdownKind _)
         {
         }
 
@@ -868,6 +884,16 @@ namespace Pihrtsoft.Markdown
         public MarkdownWriter WriteComment(string text)
         {
             Check(MarkdownKind.Comment);
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                if (text.IndexOf("--", StringComparison.Ordinal) >= 0)
+                    throw new ArgumentException("XML comment text cannot contain '--'.");
+
+                if (text[text.Length - 1] == '-')
+                    throw new ArgumentException("Last character of XML comment text cannot be '-'.");
+            }
+
             WriteRaw("<!-- ");
             WriteRaw(text);
             WriteRaw(" -->");
@@ -935,7 +961,7 @@ namespace Pihrtsoft.Markdown
 
         public virtual MarkdownWriter WriteLine()
         {
-            WriteRaw(Settings.NewLineChars);
+            WriteRaw(NewLineChars);
             OnAfterWriteLine();
             return this;
         }

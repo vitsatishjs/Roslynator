@@ -17,7 +17,7 @@ namespace Pihrtsoft.Markdown
             if (value >= 0xD800
                 && value <= 0xDFFF)
             {
-                throw new ArgumentException("Character reference cannot be in the surrogate pair character range.", nameof(value));
+                throw new ArgumentException("Character entity cannot be in the surrogate pair character range.", nameof(value));
             }
         }
 

@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace Pihrtsoft.Markdown
 {
@@ -11,13 +10,11 @@ namespace Pihrtsoft.Markdown
     {
         public MarkdownWriterSettings(
             MarkdownFormat format = null,
-            Encoding encoding = null,
             string newLineChars = null,
             NewLineHandling newLineHandling = NewLineHandling.Replace,
             bool closeOutput = false)
         {
             Format = format ?? MarkdownFormat.Default;
-            Encoding = encoding ?? Encoding.UTF8;
             NewLineChars = newLineChars ?? Environment.NewLine;
             NewLineHandling = newLineHandling;
             CloseOutput = closeOutput;
@@ -28,8 +25,6 @@ namespace Pihrtsoft.Markdown
         internal static MarkdownWriterSettings Debugging { get; } = new MarkdownWriterSettings(MarkdownFormat.Debugging);
 
         public MarkdownFormat Format { get; }
-
-        public Encoding Encoding { get; }
 
         public string NewLineChars { get; }
 

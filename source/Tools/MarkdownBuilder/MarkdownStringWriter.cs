@@ -37,7 +37,7 @@ namespace Pihrtsoft.Markdown
             _isOpen = true;
         }
 
-        public virtual StringBuilder GetStringBuilder()
+        internal virtual StringBuilder GetStringBuilder()
         {
             return _sb;
         }
@@ -84,12 +84,7 @@ namespace Pihrtsoft.Markdown
                     }
 
                     OnAfterWriteLine();
-                    i++;
-
-                    if (i < length)
-                        WriteIndentation();
-
-                    prev = i;
+                    prev = ++i;
                 }
                 else if (ch == 13)
                 {
@@ -121,12 +116,7 @@ namespace Pihrtsoft.Markdown
                     }
 
                     OnAfterWriteLine();
-                    i++;
-
-                    if (i < length)
-                        WriteIndentation();
-
-                    prev = i;
+                    prev = ++i;
                 }
                 else if (ShouldBeEscaped(ch))
                 {
@@ -160,7 +150,7 @@ namespace Pihrtsoft.Markdown
         private void WriteNewLine()
         {
             ThrowIfClosed();
-            _sb.Append(Settings.NewLineChars);
+            _sb.Append(NewLineChars);
         }
 
         public override MarkdownWriter WriteRaw(string data)
@@ -172,9 +162,9 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownWriter WriteLine()
         {
-            ThrowIfClosed();
             OnBeforeWriteLine();
-            _sb.Append(Settings.NewLineChars);
+            ThrowIfClosed();
+            _sb.Append(NewLineChars);
             OnAfterWriteLine();
             return this;
         }

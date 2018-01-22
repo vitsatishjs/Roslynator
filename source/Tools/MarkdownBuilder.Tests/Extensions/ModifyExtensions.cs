@@ -1,12 +1,18 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Pihrtsoft.Markdown.Linq;
 using static Pihrtsoft.Markdown.Tests.TestHelpers;
 
 namespace Pihrtsoft.Markdown.Tests
 {
     internal static class ModifyExtensions
     {
+        public static MHorizontalRule Modify(this MHorizontalRule horizontalRule)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string Modify(this string value)
         {
             return value + "x";
@@ -69,84 +75,47 @@ namespace Pihrtsoft.Markdown.Tests
             return !value;
         }
 
-        public static FencedCodeBlock Modify(this FencedCodeBlock block)
+        public static MFencedCodeBlock Modify(this MFencedCodeBlock block)
         {
-            return new FencedCodeBlock(block.Text.Modify(), block.Info.Modify());
+            return new MFencedCodeBlock(block.Text.Modify(), block.Info.Modify());
         }
 
-        public static IndentedCodeBlock Modify(this IndentedCodeBlock block)
+        public static MIndentedCodeBlock Modify(this MIndentedCodeBlock block)
         {
-            return new IndentedCodeBlock(block.Text.Modify());
+            return new MIndentedCodeBlock(block.Text.Modify());
         }
 
-        public static Heading Modify(this Heading heading)
+        public static MImage Modify(this MImage image)
         {
-            return new Heading(heading.Text.Modify(), heading.Level.Modify(1, 6));
+            return new MImage(image.Text.Modify(), image.Url.Modify(), image.Title.Modify());
         }
 
-        public static HorizontalRule Modify(this HorizontalRule horizontalRule)
+        public static MLink Modify(this MLink link)
         {
-            return new HorizontalRule(horizontalRule.Style.Modify(), horizontalRule.Count.Modify(3, 10), horizontalRule.Space.Modify());
+            return new MLink(link.Text.Modify(), link.Url.Modify(), link.Title.Modify());
         }
 
-        public static Image Modify(this Image image)
+        public static MRaw Modify(this MRaw text)
         {
-            return new Image(image.Text.Modify(), image.Url.Modify(), image.Title.Modify());
-        }
-
-        public static Link Modify(this Link link)
-        {
-            return new Link(link.Text.Modify(), link.Url.Modify(), link.Title.Modify());
-        }
-
-        public static ListItem Modify(this ListItem item)
-        {
-            return new ListItem(item.Text.Modify());
-        }
-
-        public static Emphasis Modify(this Emphasis text)
-        {
-            return new Emphasis(text.Text.Modify(), text.Option.Modify());
-        }
-
-        public static RawText Modify(this RawText text)
-        {
-            return new RawText(text.Text.Modify());
-        }
-
-        public static OrderedListItem Modify(this OrderedListItem item)
-        {
-            return new OrderedListItem(item.Number.Modify(0, 10), item.Text.Modify());
-        }
-
-        public static BlockQuote Modify(this BlockQuote quoteBlock)
-        {
-            return new BlockQuote(quoteBlock.Text.Modify());
-        }
-
-        public static TableColumn Modify(this TableColumn column)
-        {
-            return new TableColumn(column.Name.Modify(), column.Alignment.Modify());
-        }
-
-        public static TaskListItem Modify(this TaskListItem item)
-        {
-            return new TaskListItem(item.Text.Modify(), item.IsCompleted.Modify());
+            return new MRaw(text.Value.Modify());
         }
 
         public static MarkdownFormat Modify(this MarkdownFormat x)
         {
+            throw new NotImplementedException();
+
             return new MarkdownFormat(
                 x.BoldStyle.Modify(),
                 x.ItalicStyle.Modify(),
                 x.BulletListStyle.Modify(),
-                x.HorizontalRuleFormat.Modify(),
+                x.OrderedListStyle,
+                x.HeadingStyle,
                 x.HeadingOptions.Modify(),
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
                 x.CharEntityFormat.Modify(),
-                horizontalRuleFormat: x.HeadingStyle.Modify());
+                horizontalRuleFormat: x.HorizontalRuleFormat);
         }
 
         public static BulletListStyle Modify(this BulletListStyle style)
@@ -249,35 +218,9 @@ namespace Pihrtsoft.Markdown.Tests
             }
         }
 
-        public static HorizontalRuleStyle Modify(this HorizontalRuleStyle style)
+        public static MCharEntity Modify(this MCharEntity htmlEntity)
         {
-            switch (style)
-            {
-                case HorizontalRuleStyle.Hyphen:
-                    return HorizontalRuleStyle.Asterisk;
-                case HorizontalRuleStyle.Asterisk:
-                    return HorizontalRuleStyle.Underscore;
-                case HorizontalRuleStyle.Underscore:
-                    return HorizontalRuleStyle.Hyphen;
-                default:
-                    throw new ArgumentException(style.ToString(), nameof(style));
-            }
-        }
-
-        public static EmphasisOption Modify(this EmphasisOption options)
-        {
-            switch (options)
-            {
-                case EmphasisOption.None:
-                    return EmphasisOption.Bold;
-                default:
-                    return EmphasisOption.None;
-            }
-        }
-
-        public static CharReference Modify(this CharReference htmlEntity)
-        {
-            return new CharReference(htmlEntity.Number.Modify(1, 0xFFFF));
+            return new MCharEntity((char)((int)htmlEntity.Value).Modify(1, 0xFFFF));
         }
 
         public static CharEntityFormat Modify(this CharEntityFormat format)

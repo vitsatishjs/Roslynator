@@ -18,7 +18,6 @@
 | RCF0020 | Add return statement that returns default value | [CS0161](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0161), [CS1643](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1643) | &#x2713; |
 | RCF0033 | Add 'static' modifier | [CS0708](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0708), [CS0710](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0710), [CS1105](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1105), [CS1106](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1106) | &#x2713; |
 | RCF0044 | Add type argument | [CS0305](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0305) | &#x2713; |
-| RCF0051 | Add 'unsafe' modifier | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | &#x2713; |
 | RCF0078 | Add variable type | [CS0103](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0103) | &#x2713; |
 | RCF0067 | Assign default value to 'out' parameter | [CS0177](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0177) | &#x2713; |
 | RCF0005 | Base base class before any interface | [CS1722](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1722) | &#x2713; |
@@ -44,6 +43,7 @@
 | RCF0068 | Make class non\-static | [CS0713](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0713), [CS0718](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0718) | &#x2713; |
 | RCF0034 | Make containing class abstract | [CS0513](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0513) | &#x2713; |
 | RCF0062 | Make containing class non\-static | [CS0708](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0708), [CS0710](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0710) | &#x2713; |
+| RCF0051 | Make containing declaration unsafe | [CS0214](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0214) | &#x2713; |
 | RCF0042 | Make member non\-static | [CS0120](http://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/cs0120) | &#x2713; |
 | RCF0010 | Mark operator as 'public' and 'static' | [CS0558](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs0558) | &#x2713; |
 | RCF0019 | Member type must match overridden member type | [CS1715](http://docs.microsoft.com/en-us/dotnet/csharp/misc/cs1715) | &#x2713; |
