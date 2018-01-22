@@ -13,7 +13,7 @@ namespace Pihrtsoft.Markdown
     public abstract class MarkdownWriter : IDisposable
     {
         private bool _disposed;
-        private bool _indentedCodeBlock;
+        private bool _inIndentedCodeBlock;
 
         private int _lineStartPos;
         private int _emptyLineStartPos = -1;
@@ -38,11 +38,6 @@ namespace Pihrtsoft.Markdown
         public MarkdownFormat Format => Settings.Format;
 
         internal NewLineHandling NewLineHandling => Settings.NewLineHandling;
-
-        private MarkdownKind CurrentKind
-        {
-            get { return (_containers.Count > 0) ? _containers.Peek() : MarkdownKind.None; }
-        }
 
         public int QuoteLevel { get; private set; }
 
@@ -518,9 +513,9 @@ namespace Pihrtsoft.Markdown
 
             WriteLine(Format.EmptyLineBeforeCodeBlock);
 
-            _indentedCodeBlock = true;
+            _inIndentedCodeBlock = true;
             WriteString(text, _ => false);
-            _indentedCodeBlock = false;
+            _inIndentedCodeBlock = false;
             WriteLine();
             WriteEmptyLineIf(Format.EmptyLineAfterCodeBlock);
             return this;
@@ -983,7 +978,7 @@ namespace Pihrtsoft.Markdown
             for (int i = 0; i < ListLevel; i++)
                 WriteRaw("  ");
 
-            if (_indentedCodeBlock)
+            if (_inIndentedCodeBlock)
                 WriteRaw("    ");
         }
 
