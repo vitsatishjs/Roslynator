@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MBold : MInlineContainer
+    public class MBold : MInline
     {
         public MBold()
         {
@@ -25,12 +25,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Bold;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             writer.WriteStartBold();
             WriteContentTo(writer);
             writer.WriteEndBold();
-            return writer;
         }
 
         internal override MElement Clone()

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Number} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {Number} {ToStringDebuggerDisplay(),nq}")]
     public class MOrderedItem : MBlockContainer
     {
         private int _number;
@@ -33,7 +33,7 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Number = other.Number;
+            _number = other.Number;
         }
 
         public int Number
@@ -48,12 +48,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedItem;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             writer.WriteStartOrderedItem(Number);
             WriteContentTo(writer);
             writer.WriteEndOrderedItem();
-            return writer;
         }
 
         internal override MElement Clone()

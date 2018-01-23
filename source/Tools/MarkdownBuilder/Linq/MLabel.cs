@@ -4,7 +4,7 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MLabel : MLink
     {
-        internal MLabel(string text, string url, string title = null)
+        public MLabel(string text, string url, string title = null)
             : base(text, url, title)
         {
         }
@@ -16,9 +16,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.Label;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteLabel(Text, Url, Title);
+            writer.WriteLabel(Text, Url, Title);
         }
 
         internal override MElement Clone()

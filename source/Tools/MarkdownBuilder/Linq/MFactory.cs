@@ -26,12 +26,12 @@ namespace Pihrtsoft.Markdown.Linq
             return new MDocument(other);
         }
 
-        public static MRaw RawText(string text)
+        public static MRaw Raw(string text)
         {
             return new MRaw(text);
         }
 
-        public static MRaw RawText(MRaw other)
+        public static MRaw Raw(MRaw other)
         {
             return new MRaw(other);
         }
@@ -96,16 +96,6 @@ namespace Pihrtsoft.Markdown.Linq
             return new MStrikethrough(other);
         }
 
-        public static MInlineContainer BoldItalic(object content)
-        {
-            return Bold(Italic(content));
-        }
-
-        public static MInlineContainer BoldItalic(params object[] content)
-        {
-            return Bold(Italic(content));
-        }
-
         public static MInlineCode InlineCode(string text)
         {
             return new MInlineCode(text);
@@ -116,34 +106,34 @@ namespace Pihrtsoft.Markdown.Linq
             return new MInlineCode(other);
         }
 
-        public static MInlineContainer Inline()
+        public static MInline Inline()
         {
-            return new MInlineContainer();
+            return new MInline();
         }
 
-        public static MInlineContainer Inline(object content)
+        public static MInline Inline(object content)
         {
-            return new MInlineContainer(content);
+            return new MInline(content);
         }
 
-        public static MInlineContainer Inline(params object[] content)
+        public static MInline Inline(params object[] content)
         {
-            return new MInlineContainer(content);
+            return new MInline(content);
         }
 
-        public static MInlineContainer Inline(MInlineContainer other)
+        public static MInline Inline(MInline other)
         {
-            return new MInlineContainer(other);
+            return new MInline(other);
         }
 
-        public static MInlineContainer Join(object separator, params object[] values)
+        public static MInline Join(object separator, params object[] values)
         {
             return Join(separator, (IEnumerable<MElement>)values);
         }
 
-        public static MInlineContainer Join(object separator, IEnumerable<object> values)
+        public static MInline Join(object separator, IEnumerable<object> values)
         {
-            return new MInlineContainer(GetContent());
+            return new MInline(GetContent());
 
             IEnumerable<object> GetContent()
             {
@@ -350,39 +340,39 @@ namespace Pihrtsoft.Markdown.Linq
             return TaskItem(isCompleted: true, content: content);
         }
 
-        public static MBulletList List()
+        public static MBulletList BulletList()
         {
             return new MBulletList();
         }
 
-        public static MBulletList List(object content)
+        public static MBulletList BulletList(object content)
         {
             return new MBulletList(content);
         }
 
-        public static MBulletList List(params object[] content)
+        public static MBulletList BulletList(params object[] content)
         {
             return new MBulletList(content);
         }
 
-        public static MBulletList List(MBulletList other)
+        public static MBulletList BulletList(MBulletList other)
         {
             return new MBulletList(other);
         }
 
-        public static MOrderedList OrderedList(int number)
+        public static MOrderedList OrderedList()
         {
-            return new MOrderedList(number);
+            return new MOrderedList();
         }
 
-        public static MOrderedList OrderedList(int number, object content)
+        public static MOrderedList OrderedList(object content)
         {
-            return new MOrderedList(number, content);
+            return new MOrderedList(content);
         }
 
-        public static MOrderedList OrderedList(int number, params object[] content)
+        public static MOrderedList OrderedList(params object[] content)
         {
-            return new MOrderedList(number, content);
+            return new MOrderedList(content);
         }
 
         public static MOrderedList OrderedList(MOrderedList other)
@@ -390,19 +380,19 @@ namespace Pihrtsoft.Markdown.Linq
             return new MOrderedList(other);
         }
 
-        public static MTaskList TaskList(bool isCompleted)
+        public static MTaskList TaskList()
         {
-            return new MTaskList(isCompleted);
+            return new MTaskList();
         }
 
-        public static MTaskList TaskList(bool isCompleted, object content)
+        public static MTaskList TaskList(object content)
         {
-            return new MTaskList(isCompleted, content);
+            return new MTaskList(content);
         }
 
-        public static MTaskList TaskList(bool isCompleted, params object[] content)
+        public static MTaskList TaskList(params object[] content)
         {
-            return new MTaskList(isCompleted, content);
+            return new MTaskList(content);
         }
 
         public static MTaskList TaskList(MTaskList other)
@@ -458,20 +448,42 @@ namespace Pihrtsoft.Markdown.Linq
             return new MBlockQuote(other);
         }
 
-        public static MHorizontalRule HorizontalRule(string value = "-", int count = 3, string separator = " ")
+        public static MHorizontalRule HorizontalRule()
         {
-            return new MHorizontalRule(value, count, separator);
+            return HorizontalRule(HorizontalRuleFormat.Default);
         }
 
-        public static MCharReference CharReference(char value)
+        public static MHorizontalRule HorizontalRule(HorizontalRuleFormat format)
         {
-            return new MCharReference(value);
+            return new MHorizontalRule(format);
         }
 
-        public static MEntityReference EntityReference(string name)
+        public static MHorizontalRule HorizontalRule(string text, int count = HorizontalRuleFormat.DefaultCount, string separator = HorizontalRuleFormat.DefaultSeparator)
         {
-            return new MEntityReference(name);
+            return new MHorizontalRule(text, count, separator);
         }
+
+        public static MCharEntity CharEntity(char value)
+        {
+            return new MCharEntity(value);
+        }
+
+        public static MEntityRef EntityRef(string name)
+        {
+            return new MEntityRef(name);
+        }
+
+        public static MEntityRef NonBreakingSpace() => MEntityRef.CreateTrusted("nbsp");
+
+        public static MEntityRef LessThan() => MEntityRef.CreateTrusted("lt");
+
+        public static MEntityRef GreaterThan() => MEntityRef.CreateTrusted("gt");
+
+        public static MEntityRef Ampersand() => MEntityRef.CreateTrusted("amp");
+
+        public static MEntityRef SingleQuote() => MEntityRef.CreateTrusted("apos");
+
+        public static MEntityRef DoubleQuote() => MEntityRef.CreateTrusted("quot");
 
         public static MTable Table()
         {

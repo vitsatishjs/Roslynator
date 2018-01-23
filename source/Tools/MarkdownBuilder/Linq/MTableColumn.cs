@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {Alignment} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {Alignment} {ToStringDebuggerDisplay(),nq}")]
     public class MTableColumn : MContainer
     {
         public MTableColumn(Alignment alignment)
@@ -32,12 +32,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public Alignment Alignment { get; set; }
 
-        public override MarkdownKind Kind => MarkdownKind.TableColumn;
+        public override MarkdownKind Kind => MarkdownKind.TableCell;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             WriteContentTo(writer);
-            return writer;
         }
 
         internal override MElement Clone()

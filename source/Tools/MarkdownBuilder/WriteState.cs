@@ -2,15 +2,11 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum State
+    public enum WriteState
     {
-        None,
-        RawText,
-        InlineCodeText,
-        LinkText,
-        LinkUrl,
-        LinkTitle,
-        AngleBrackets,
-        Comment
+        Start = 0,
+        Content = 1,
+        Closed = 2,
+        Error = 3
     }
 }

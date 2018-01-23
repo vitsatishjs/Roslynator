@@ -2,181 +2,231 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    internal class MarkdownStringWriter : MarkdownWriter
+    public class MarkdownStringWriter : MarkdownWriter
     {
-        private bool _isOpen;
+        private readonly StringBuilder _sb;
         private readonly IFormatProvider _formatProvider;
+        private bool _isOpen;
 
-        public MarkdownStringWriter(IFormatProvider formatProvider, StringBuilder stringBuilder = null, MarkdownWriterSettings settings = null)
+        public MarkdownStringWriter(MarkdownWriterSettings settings = null)
+            : this(new StringBuilder(), settings)
+        {
+        }
+
+        public MarkdownStringWriter(StringBuilder sb, MarkdownWriterSettings settings = null)
+            : this(sb, CultureInfo.CurrentCulture, settings)
+        {
+        }
+
+        public MarkdownStringWriter(IFormatProvider formatProvider, MarkdownWriterSettings settings = null)
+            : this(new StringBuilder(), formatProvider, settings)
+        {
+        }
+
+        public MarkdownStringWriter(StringBuilder sb, IFormatProvider formatProvider, MarkdownWriterSettings settings = null)
             : base(settings)
         {
-            _formatProvider = formatProvider ?? throw new ArgumentNullException(nameof(formatProvider));
-            StringBuilder = stringBuilder ?? new StringBuilder();
+            _sb = sb ?? throw new ArgumentNullException(nameof(sb));
+            _formatProvider = formatProvider;
             _isOpen = true;
         }
 
-        public StringBuilder StringBuilder { get; }
+        internal virtual StringBuilder GetStringBuilder()
+        {
+            return _sb;
+        }
+
+        public virtual IFormatProvider FormatProvider
+        {
+            get { return _formatProvider ?? CultureInfo.CurrentCulture; }
+        }
 
         protected internal override int Length
         {
-            get { return StringBuilder.Length; }
-            set { StringBuilder.Length = value; }
+            get { return _sb.Length; }
+            set { _sb.Length = value; }
         }
 
-        public override MarkdownWriter WriteString(string value)
+        public override MarkdownWriter WriteString(string text)
         {
             ThrowIfClosed();
 
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(text))
                 return this;
 
-            RawText(value);
-            return this;
-        }
-
-        protected void RawText(string value)
-        {
-            Debug.Assert(value != null);
-
-            int length = value.Length;
-
-            int prev = 0;
-
-            int i = 0;
-            while (i < length)
+            try
             {
-                char ch = value[i];
+                int length = text.Length;
 
-                if (ch == 10)
+                int prev = 0;
+
+                int i = 0;
+                while (i < length)
                 {
-                    OnBeforeWrite();
+                    char ch = text[i];
 
-                    if (Settings.NewLineHandling == NewLineHandling.Replace)
+                    if (ch == 10)
                     {
-                        WriteString(value, prev, i - prev);
-                        WriteLine();
-                    }
-                    else if (Settings.NewLineHandling == NewLineHandling.None)
-                    {
-                        WriteString(value, prev, i + 1 - prev);
+                        OnBeforeWriteLine();
+
+                        if (NewLineHandling == NewLineHandling.Replace)
+                        {
+                            WriteString(text, prev, i - prev);
+                            WriteNewLine();
+                        }
+                        else if (NewLineHandling == NewLineHandling.None)
+                        {
+                            WriteString(text, prev, i + 1 - prev);
+                        }
+
                         OnAfterWriteLine();
+                        prev = ++i;
                     }
-
-                    prev = ++i;
-                }
-                else if (ch == 13)
-                {
-                    OnBeforeWrite();
-
-                    if (i < length - 1
-                        && value[i + 1] == 10)
+                    else if (ch == 13)
                     {
-                        if (Settings.NewLineHandling == NewLineHandling.Replace)
+                        OnBeforeWriteLine();
+
+                        if (i < length - 1
+                            && text[i + 1] == 10)
                         {
-                            WriteString(value, prev, i - prev);
-                            WriteLine();
+                            if (NewLineHandling == NewLineHandling.Replace)
+                            {
+                                WriteString(text, prev, i - prev);
+                                WriteNewLine();
+                            }
+                            else if (NewLineHandling == NewLineHandling.None)
+                            {
+                                WriteString(text, prev, i + 2 - prev);
+                            }
+
+                            i++;
                         }
-                        else if (Settings.NewLineHandling == NewLineHandling.None)
+                        else if (NewLineHandling == NewLineHandling.Replace)
                         {
-                            WriteString(value, prev, i + 2 - prev);
-                            OnAfterWriteLine();
+                            WriteString(text, prev, i - prev);
+                            WriteNewLine();
+                        }
+                        else if (NewLineHandling == NewLineHandling.None)
+                        {
+                            WriteString(text, prev, i + 1 - prev);
                         }
 
-                        i++;
+                        OnAfterWriteLine();
+                        prev = ++i;
+                    }
+                    else if (ShouldBeEscaped(ch))
+                    {
+                        WriteString(text, prev, i - prev);
+                        WriteChar(EscapingChar);
+                        WriteChar(ch);
+                        prev = ++i;
                     }
                     else
                     {
-                        if (Settings.NewLineHandling == NewLineHandling.Replace)
-                        {
-                            WriteString(value, prev, i - prev);
-                            WriteLine();
-                        }
-                        else if (Settings.NewLineHandling == NewLineHandling.None)
-                        {
-                            WriteString(value, prev, i + 1 - prev);
-                            OnAfterWriteLine();
-                        }
+                        i++;
                     }
+                }
 
-                    prev = ++i;
-                }
-                else if (_shouldBeEscaped(ch))
-                {
-                    OnBeforeWrite();
-                    WriteString(value, prev, i - prev);
-                    WriteChar((_state == State.InlineCodeText) ? '`' : '\\');
-                    WriteChar(ch);
-                    prev = ++i;
-                }
-                else
-                {
-                    i++;
-                }
+                WriteString(text, prev, text.Length - prev);
+                return this;
             }
-
-            OnBeforeWrite();
-            WriteString(value, prev, value.Length - prev);
-        }
-
-        private void WriteChar(char ch)
-        {
-            ThrowIfClosed();
-            StringBuilder.Append(ch);
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         private void WriteString(string value, int startIndex, int count)
         {
             ThrowIfClosed();
-            StringBuilder.Append(value, startIndex, count);
+            _sb.Append(value, startIndex, count);
+        }
+
+        private void WriteChar(char ch)
+        {
+            ThrowIfClosed();
+            _sb.Append(ch);
+        }
+
+        private void WriteNewLine()
+        {
+            ThrowIfClosed();
+            _sb.Append(NewLineChars);
+        }
+
+        public override MarkdownWriter WriteRaw(string data)
+        {
+            ThrowIfClosed();
+
+            try
+            {
+                _sb.Append(data);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override MarkdownWriter WriteLine()
         {
-            ThrowIfClosed();
-            StringBuilder.Append(Settings.NewLineChars);
-            OnAfterWriteLine();
-            return this;
+            try
+            {
+                OnBeforeWriteLine();
+                ThrowIfClosed();
+                _sb.Append(NewLineChars);
+                OnAfterWriteLine();
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override void WriteValue(int value)
         {
-            ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(long value)
         {
-            ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(float value)
         {
-            ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(double value)
         {
-            ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
-            ThrowIfClosed();
-            StringBuilder.Append(value.ToString(_formatProvider));
+            WriteString(value.ToString(FormatProvider));
+        }
+
+        public override string ToString()
+        {
+            return _sb.ToString();
         }
 
         protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
-            throw new InvalidOperationException();
+            return TableAnalyzer.Analyze(rows, Settings, FormatProvider)?.AsReadOnly();
         }
 
         public override void Flush()
@@ -191,7 +241,7 @@ namespace Pihrtsoft.Markdown
         private void ThrowIfClosed()
         {
             if (!_isOpen)
-                throw new ObjectDisposedException(null, "Cannot write to a closed TextWriter.");
+                throw new ObjectDisposedException(null, "Cannot write to a closed writer.");
         }
     }
 }

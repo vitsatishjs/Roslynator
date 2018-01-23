@@ -6,37 +6,39 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MTable : MContainer
     {
-        internal MTable()
+        public MTable()
         {
         }
 
-        internal MTable(object content)
+        public MTable(object content)
             : base(content)
         {
         }
 
-        internal MTable(params object[] content)
+        public MTable(params object[] content)
             : base(content)
         {
         }
 
-        internal MTable(MContainer other)
+        public MTable(MContainer other)
             : base(other)
         {
         }
 
         public override MarkdownKind Kind => MarkdownKind.Table;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(Elements());
+            IEnumerable<MElement> rows = Elements();
+
+            IReadOnlyList<TableColumnInfo> columns = writer.AnalyzeTable(rows);
 
             if (columns == null)
-                return writer;
+                return;
 
             writer.WriteStartTable(columns);
 
-            using (IEnumerator<MElement> en = Elements().GetEnumerator())
+            using (IEnumerator<MElement> en = rows.GetEnumerator())
             {
                 if (en.MoveNext())
                 {
@@ -49,8 +51,6 @@ namespace Pihrtsoft.Markdown.Linq
             }
 
             writer.WriteEndTable();
-
-            return writer;
         }
 
         internal override MElement Clone()
@@ -62,7 +62,7 @@ namespace Pihrtsoft.Markdown.Linq
         {
             switch (element.Kind)
             {
-                case MarkdownKind.TableColumn:
+                case MarkdownKind.TableCell:
                 case MarkdownKind.TableRow:
                     return;
             }

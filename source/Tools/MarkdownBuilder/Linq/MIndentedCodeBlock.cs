@@ -25,9 +25,9 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.IndentedCodeBlock;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteIndentedCodeBlock(Text);
+            writer.WriteIndentedCodeBlock(Text);
         }
 
         internal override MElement Clone()

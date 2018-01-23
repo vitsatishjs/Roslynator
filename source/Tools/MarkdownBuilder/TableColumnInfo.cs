@@ -6,7 +6,7 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    [DebuggerDisplay("Alignment = {Alignment} Width = {Width} IsWhiteSpace = {IsWhiteSpace}")]
+    [DebuggerDisplay("{Alignment} {Width} IsWhiteSpace = {IsWhiteSpace}")]
     public struct TableColumnInfo : IEquatable<TableColumnInfo>
     {
         public TableColumnInfo(Alignment alignment, int width, bool isWhiteSpace)
@@ -15,6 +15,8 @@ namespace Pihrtsoft.Markdown
             Width = width;
             IsWhiteSpace = isWhiteSpace;
         }
+
+        internal static TableColumnInfo Default { get; } = new TableColumnInfo(Alignment.Left, 0, isWhiteSpace: true);
 
         public Alignment Alignment { get; }
 
@@ -34,23 +36,13 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        internal static TableColumnInfo Create(MElement element)
-        {
-            Alignment alignment = (element as MTableColumn)?.Alignment ?? Alignment.Left;
-
-            return new TableColumnInfo(alignment, 0, true);
-        }
-
         internal static TableColumnInfo Create(MElement element, MarkdownStringWriter writer, int index = 0)
         {
             Alignment alignment = (element as MTableColumn)?.Alignment ?? Alignment.Left;
 
-            int length = writer.StringBuilder.Length - index;
+            int length = writer.Length - index;
 
-            return new TableColumnInfo(
-                alignment,
-                length,
-                TextUtility.IsWhiteSpace(writer.StringBuilder, index, length));
+            return new TableColumnInfo(alignment, length, writer.GetStringBuilder().IsWhiteSpace(index, length));
         }
 
         public override bool Equals(object obj)

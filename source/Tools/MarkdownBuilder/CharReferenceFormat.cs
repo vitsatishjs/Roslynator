@@ -2,7 +2,7 @@
 
 namespace Pihrtsoft.Markdown
 {
-    public enum CharReferenceFormat
+    public enum CharEntityFormat
     {
         Hexadecimal = 0,
         Decimal = 1

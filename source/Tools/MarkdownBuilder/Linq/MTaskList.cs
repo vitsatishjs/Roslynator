@@ -25,7 +25,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.TaskList;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             if (content is string s)
             {
@@ -48,10 +48,9 @@ namespace Pihrtsoft.Markdown.Linq
 
                     writer.WriteEndTaskItem();
                 }
-            }
 
-            writer.WriteLine();
-            return writer;
+                writer.WriteLine();
+            }
         }
 
         internal override void ValidateElement(MElement element)

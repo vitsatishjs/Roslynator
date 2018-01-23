@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    [DebuggerDisplay("{Kind} {GetString(),nq}")]
+    [DebuggerDisplay("{Kind} {ToStringDebuggerDisplay(),nq}")]
     public class MTaskItem : MBlockContainer
     {
         public MTaskItem(bool isCompleted)
@@ -34,12 +34,11 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.TaskItem;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             writer.WriteStartTaskItem(IsCompleted);
             WriteContentTo(writer);
             writer.WriteEndTaskItem();
-            return writer;
         }
 
         internal override MElement Clone()

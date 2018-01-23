@@ -37,6 +37,7 @@ namespace Pihrtsoft.Markdown.Linq
             else
             {
                 var e = (MElement)other.content;
+
                 if (e != null)
                 {
                     do
@@ -76,10 +77,10 @@ namespace Pihrtsoft.Markdown.Linq
                     if (s.Length == 0)
                         return null;
 
-                    var text = new MText(s) { parent = this };
-                    text.next = text;
+                    var t = new MText(s) { Parent = this };
+                    t.next = t;
 
-                    Interlocked.CompareExchange<object>(ref content, text, s);
+                    Interlocked.CompareExchange<object>(ref content, t, s);
                 }
 
                 return (MElement)content;
@@ -110,35 +111,23 @@ namespace Pihrtsoft.Markdown.Linq
                     e = e.next;
                     yield return e;
 
-                } while (e.parent == this && e != content);
-            }
-        }
-
-        internal object TextOrElements()
-        {
-            if (content is string)
-            {
-                return content;
-            }
-            else
-            {
-                return Elements();
+                } while (e.Parent == this && e != content);
             }
         }
 
         public IEnumerable<MContainer> AncestorsAndSelf()
         {
-            return GetAncestors(true);
+            return GetAncestors(self: true);
         }
 
         public IEnumerable<MElement> Descendants()
         {
-            return GetDescendants(false);
+            return GetDescendants(self: false);
         }
 
         public IEnumerable<MElement> DescendantsAndSelf()
         {
-            return GetDescendants(true);
+            return GetDescendants(self: true);
         }
 
         internal IEnumerable<MElement> GetDescendants(bool self)
@@ -161,9 +150,9 @@ namespace Pihrtsoft.Markdown.Linq
                 else
                 {
                     while (e != this
-                        && e == e.parent.content)
+                        && e == e.Parent.content)
                     {
-                        e = e.parent;
+                        e = e.Parent;
                     }
 
                     if (e == this)
@@ -198,7 +187,7 @@ namespace Pihrtsoft.Markdown.Linq
                 p.next = e.next;
             }
 
-            e.parent = null;
+            e.Parent = null;
             e.next = null;
         }
 
@@ -219,7 +208,7 @@ namespace Pihrtsoft.Markdown.Linq
             {
                 MElement n = e.next;
 
-                e.parent = null;
+                e.Parent = null;
                 e.next = null;
 
                 e = n;
@@ -274,33 +263,44 @@ namespace Pihrtsoft.Markdown.Linq
         {
             ValidateElement(e);
 
-            if (e.parent != null
-                || e == TopmostParentOrSelf())
+            if (e.Parent != null)
             {
                 e = e.Clone();
+            }
+            else
+            {
+                var p = this;
+
+                while (p.Parent != null)
+                    p = p.Parent;
+
+                if (e == p)
+                {
+                    e = e.Clone();
+                }
             }
 
             ConvertTextToElement();
             AppendElement(e);
         }
 
-        internal void AppendElement(MElement element)
+        internal void AppendElement(MElement e)
         {
-            element.parent = this;
+            e.Parent = this;
 
             if (content == null
                 || content is string)
             {
-                element.next = element;
+                e.next = e;
             }
             else
             {
-                var e = (MElement)content;
-                element.next = e.next;
-                e.next = element;
+                var x = (MElement)content;
+                e.next = x.next;
+                x.next = e;
             }
 
-            content = element;
+            content = e;
         }
 
         internal void AddString(string s)
@@ -348,17 +348,17 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.ImageReference:
                 case MarkdownKind.Autolink:
                 case MarkdownKind.InlineCode:
-                case MarkdownKind.CharReference:
-                case MarkdownKind.EntityReference:
+                case MarkdownKind.CharEntity:
+                case MarkdownKind.EntityRef:
                 case MarkdownKind.Comment:
                 case MarkdownKind.Bold:
                 case MarkdownKind.Italic:
                 case MarkdownKind.Strikethrough:
-                case MarkdownKind.InlineContainer:
+                case MarkdownKind.Inline:
                     return;
             }
 
-            Error.ThrowInvalidContent(this, element);
+            Error.InvalidContent(this, element);
         }
 
         internal virtual void ValidateString(string s)
@@ -371,10 +371,10 @@ namespace Pihrtsoft.Markdown.Linq
 
             if (!string.IsNullOrEmpty(s))
             {
-                var text = new MText(s) { parent = this };
+                var t = new MText(s) { Parent = this };
 
-                text.next = text;
-                content = text;
+                t.next = t;
+                content = t;
             }
         }
     }

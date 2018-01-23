@@ -191,3 +191,4 @@
 | RR0175 | [Wrap in region](../../docs/refactorings/RR0175.md) | &#x2713; |
 | RR0176 | [Wrap in try-catch](../../docs/refactorings/RR0176.md) | &#x2713; |
 | RR0177 | [Wrap in using statement](../../docs/refactorings/RR0177.md) | &#x2713; |
+

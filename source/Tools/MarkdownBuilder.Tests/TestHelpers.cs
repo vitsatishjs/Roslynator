@@ -2,6 +2,7 @@
 
 using System;
 using System.Text;
+using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown.Tests
 {
@@ -33,9 +34,9 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static string Backtick { get; } = "`";
 
-        public static FencedCodeBlock CreateCodeBlock()
+        public static MFencedCodeBlock CreateCodeBlock()
         {
-            return new FencedCodeBlock(CodeBlockText(), CodeBlockInfo());
+            return new MFencedCodeBlock(CodeBlockText(), CodeBlockInfo());
         }
 
         public static string CodeBlockText()
@@ -43,9 +44,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static IndentedCodeBlock CreateIndentedCodeBlock()
+        public static MIndentedCodeBlock CreateIndentedCodeBlock()
         {
-            return new IndentedCodeBlock(IndentedCodeBlockText());
+            return new MIndentedCodeBlock(IndentedCodeBlockText());
         }
 
         public static string IndentedCodeBlockText()
@@ -58,9 +59,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static Heading CreateHeading()
+        public static MHeading CreateHeading()
         {
-            return new Heading(HeadingText(), HeadingLevel());
+            return new MHeading(HeadingLevel(), HeadingText());
         }
 
         public static string HeadingText()
@@ -73,14 +74,19 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(1, 6);
         }
 
-        public static HorizontalRule CreateHorizontalRule()
+        public static HorizontalRuleFormat HorizontalRuleFormat()
         {
-            return new HorizontalRule(HorizontalRuleStyle(), HorizontalRuleCount(), HorizontalRuleSpace());
+            return new HorizontalRuleFormat(HorizontalRuleText(), HorizontalRuleCount(), HorizontalRuleSpace());
         }
 
-        public static HorizontalRuleStyle HorizontalRuleStyle()
+        public static MHorizontalRule CreateHorizontalRule()
         {
-            return (HorizontalRuleStyle)IntValue(0, 2);
+            return new MHorizontalRule(HorizontalRuleText(), HorizontalRuleCount(), HorizontalRuleSpace());
+        }
+
+        public static string HorizontalRuleText()
+        {
+            return StringValue();
         }
 
         public static int HorizontalRuleCount()
@@ -93,14 +99,14 @@ namespace Pihrtsoft.Markdown.Tests
             return Spaces(0, 2);
         }
 
-        public static Image CreateImage()
+        public static MImage CreateImage()
         {
-            return new Image(LinkText(), LinkUrl(), LinkTitle());
+            return new MImage(LinkText(), LinkUrl(), LinkTitle());
         }
 
-        public static Link CreateLink()
+        public static MLink CreateLink()
         {
-            return new Link(LinkText(), LinkUrl(), LinkTitle());
+            return new MLink(LinkText(), LinkUrl(), LinkTitle());
         }
 
         public static string LinkText()
@@ -118,19 +124,19 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static ListItem CreateListItem()
+        public static MBulletItem CreateListItem()
         {
-            return new ListItem(ListItemText());
+            return new MBulletItem(BulletItemText());
         }
 
-        public static string ListItemText()
+        public static string BulletItemText()
         {
             return StringValue();
         }
 
-        public static Emphasis CreateMarkdownText()
+        public static MText CreateMarkdownText()
         {
-            return new Emphasis(MarkdownTextText(), MarkdownTextOptions());
+            return new MText(MarkdownTextText());
         }
 
         public static string MarkdownTextText()
@@ -138,9 +144,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static RawText CreateRawText()
+        public static MRaw CreateRawText()
         {
-            return new RawText(RawTextText());
+            return new MRaw(RawTextText());
         }
 
         public static string RawTextText()
@@ -148,14 +154,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static EmphasisOption MarkdownTextOptions()
+        public static MOrderedItem CreateOrderedListItem()
         {
-            return (EmphasisOption)IntValue(0, 8);
-        }
-
-        public static OrderedListItem CreateOrderedListItem()
-        {
-            return new OrderedListItem(OrderedListItemNumber(), ListItemText());
+            return new MOrderedItem(OrderedListItemNumber(), BulletItemText());
         }
 
         public static int OrderedListItemNumber()
@@ -163,9 +164,9 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(0, 9);
         }
 
-        public static BlockQuote CreateQuoteBlock()
+        public static MBlockQuote CreateBlockQuote()
         {
-            return new BlockQuote(QuoteBlockText());
+            return new MBlockQuote(QuoteBlockText());
         }
 
         public static string QuoteBlockText()
@@ -173,9 +174,9 @@ namespace Pihrtsoft.Markdown.Tests
             return StringValue();
         }
 
-        public static TableColumn CreateTableColumn()
+        public static MTableColumn CreateTableColumn()
         {
-            return new TableColumn(TableColumnName(), TableColumnAlignment());
+            return new MTableColumn(TableColumnAlignment(), TableColumnName());
         }
 
         public static string TableColumnName()
@@ -188,9 +189,9 @@ namespace Pihrtsoft.Markdown.Tests
             return (Alignment)IntValue(0, 2);
         }
 
-        public static TaskListItem CreateTaskListItem()
+        public static MTaskItem CreateTaskListItem()
         {
-            return new TaskListItem(ListItemText(), TaskListItemIsCompleted());
+            return new MTaskItem(TaskListItemIsCompleted(), BulletItemText());
         }
 
         public static bool TaskListItemIsCompleted()
@@ -203,14 +204,15 @@ namespace Pihrtsoft.Markdown.Tests
             return new MarkdownFormat(
                 BoldStyle(),
                 ItalicStyle(),
-                ListItemStyle(),
-                CreateHorizontalRule(),
+                BulletListStyle(),
+                OrderedListStyle(),
+                HeadingStyle(),
                 HeadingOptions(),
                 TableOptions(),
                 CodeFenceStyle(),
                 CodeBlockOptions(),
                 HtmlEntityFormat(),
-                horizontalRuleFormat: HeadingStyle());
+                horizontalRuleFormat: HorizontalRuleFormat());
         }
 
         public static EmphasisStyle BoldStyle()
@@ -223,9 +225,14 @@ namespace Pihrtsoft.Markdown.Tests
             return (EmphasisStyle)IntValue(0, 1);
         }
 
-        public static BulletListStyle ListItemStyle()
+        public static BulletListStyle BulletListStyle()
         {
             return (BulletListStyle)IntValue(0, 2);
+        }
+
+        public static OrderedListStyle OrderedListStyle()
+        {
+            return (OrderedListStyle)IntValue(0, 1);
         }
 
         public static HeadingStyle HeadingStyle()
@@ -253,74 +260,64 @@ namespace Pihrtsoft.Markdown.Tests
             return (CodeBlockOptions)IntValue(0, 3);
         }
 
-        public static CharReference CreateHtmlEntity()
+        public static MCharEntity CreateHtmlEntity()
         {
-            return new CharReference(IntValue(1, 0xFFFF));
+            return new MCharEntity((char)IntValue(1, 0xFFFF));
         }
 
-        public static int HtmlEntityNumber()
+        public static char CharEntityChar()
         {
-            return IntValue(1, 0xFFFF);
+            return (char)IntValue(1, 0xFFFF);
         }
 
-        public static CharReferenceFormat HtmlEntityFormat()
+        public static CharEntityFormat HtmlEntityFormat()
         {
-            return (CharReferenceFormat)IntValue(0, 1);
+            return (CharEntityFormat)IntValue(0, 1);
         }
 
-        public static MarkdownBuilder CreateBuilder(MarkdownFormat format = null)
+        public static MarkdownWriter CreateWriter(MarkdownFormat format = null)
         {
             return CreateBuilder(new StringBuilder(), format);
         }
 
-        public static MarkdownBuilder CreateBuilderWithHtmlEntityFormat(CharReferenceFormat? format)
+        public static MarkdownWriter CreateBuilderWithHtmlEntityFormat(CharEntityFormat? format)
         {
-            return CreateBuilder((format != null) ? new MarkdownFormat() : null);
+            return CreateWriter((format != null) ? new MarkdownFormat() : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
+        public static MarkdownWriter CreateBuilderWithCodeBlockOptions(CodeBlockOptions options)
         {
-            return CreateBuilder(new MarkdownFormat(codeBlockOptions: options));
+            return CreateWriter(new MarkdownFormat(codeBlockOptions: options));
         }
 
-        public static MarkdownBuilder CreateBuilderWithCodeFenceOptions(CodeFenceStyle? style)
+        public static MarkdownWriter CreateBuilderWithCodeFenceOptions(CodeFenceStyle? style)
         {
-            return CreateBuilder((style != null) ? new MarkdownFormat(codeFenceStyle: style.Value) : null);
+            return CreateWriter((style != null) ? new MarkdownFormat(codeFenceStyle: style.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithBoldStyle(EmphasisStyle? boldStyle)
+        public static MarkdownWriter CreateBuilderWithBoldStyle(EmphasisStyle? boldStyle)
         {
-            return CreateBuilder((boldStyle != null) ? new MarkdownFormat(boldStyle: boldStyle.Value) : null);
+            return CreateWriter((boldStyle != null) ? new MarkdownFormat(boldStyle: boldStyle.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithItalicStyle(EmphasisStyle? italicStyle)
+        public static MarkdownWriter CreateBuilderWithItalicStyle(EmphasisStyle? italicStyle)
         {
-            return CreateBuilder((italicStyle != null) ? new MarkdownFormat(italicStyle: italicStyle.Value) : null);
+            return CreateWriter((italicStyle != null) ? new MarkdownFormat(italicStyle: italicStyle.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithHeadingOptions(HeadingOptions? headingOptions)
+        public static MarkdownWriter CreateBuilderWithHeadingOptions(HeadingOptions? headingOptions)
         {
-            return CreateBuilder((headingOptions != null) ? new MarkdownFormat(headingOptions: headingOptions.Value) : null);
+            return CreateWriter((headingOptions != null) ? new MarkdownFormat(headingOptions: headingOptions.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilderWithListItemStyle(BulletListStyle? style)
+        public static MarkdownWriter CreateBuilderWithListItemStyle(BulletListStyle? style)
         {
-            return CreateBuilder((style != null) ? new MarkdownFormat(bulletListStyle: style.Value) : null);
+            return CreateWriter((style != null) ? new MarkdownFormat(bulletListStyle: style.Value) : null);
         }
 
-        public static MarkdownBuilder CreateBuilder(StringBuilder sb, MarkdownFormat format = null)
+        public static MarkdownWriter CreateBuilder(StringBuilder sb, MarkdownFormat format = null)
         {
-            return new MarkdownBuilder(sb, format);
-        }
-
-        public static CodeMarkdownBuilder CreateCodeBuilder(MarkdownFormat format = null)
-        {
-            return CreateCodeBuilder(new StringBuilder(), format);
-        }
-
-        public static CodeMarkdownBuilder CreateCodeBuilder(StringBuilder sb, MarkdownFormat format = null)
-        {
-            return new CodeMarkdownBuilder(sb, format);
+            return MarkdownWriter.Create(sb, MarkdownWriterSettings.From(format));
         }
 
         public static int IntValue()

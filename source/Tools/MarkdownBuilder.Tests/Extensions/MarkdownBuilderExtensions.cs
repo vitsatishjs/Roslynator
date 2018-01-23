@@ -4,11 +4,18 @@ namespace Pihrtsoft.Markdown.Tests
 {
     internal static class MarkdownBuilderExtensions
     {
-        public static string ToStringAndClear(this MarkdownBuilder mb)
+        public static string ToStringAndClear(this MarkdownWriter mb)
         {
             string s = mb.ToString();
-            mb.Clear();
+            ((MarkdownStringWriter)mb).GetStringBuilder().Clear();
             return s;
+        }
+
+        public static MarkdownWriter Write2(this MarkdownWriter writer, object value)
+        {
+            writer.Write(value);
+
+            return writer;
         }
     }
 }

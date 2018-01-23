@@ -7,15 +7,48 @@ namespace Pihrtsoft.Markdown
 {
     internal static class Error
     {
-        public static void ThrowInvalidContent(MContainer container, MElement element)
+        public static void InvalidContent(MContainer container, MElement element)
         {
             throw new InvalidOperationException($"Element '{container.Kind}' cannot contain element '{element.Kind}'.");
         }
 
+        public static void ThrowOnInvalidCharEntity(char value)
+        {
+            if (value >= 0xD800
+                && value <= 0xDFFF)
+            {
+                throw new ArgumentException("Character entity cannot be in the surrogate pair character range.", nameof(value));
+            }
+        }
+
+        public static void ThrowOnInvalidFencedCodeBlockInfo(string info)
+        {
+            if (string.IsNullOrEmpty(info))
+                return;
+
+            for (int i = 0; i < info.Length; i++)
+            {
+                if (TextUtility.IsCarriageReturnOrLinefeed(info[i]))
+                    throw new ArgumentException("Code block info cannot contain a new line character.", nameof(info));
+            }
+        }
+
+        public static void ThrowOnInvalidHorizontalRuleText(string text)
+        {
+            if (!HorizontalRuleFormat.IsValidText(text))
+                throw new ArgumentException("Horizontal rule text must be equal to '-', '_' or '*'.", nameof(text));
+        }
+
         public static void ThrowOnInvalidHorizontalRuleCount(int count)
         {
-            if (count < 3)
-                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule cannot be less than 3.");
+            if (!HorizontalRuleFormat.IsValidCount(count))
+                throw new ArgumentOutOfRangeException(nameof(count), count, "Number of characters in horizontal rule must be greater than or equal to 3.");
+        }
+
+        public static void ThrowOnInvalidHorizontalRuleSeparator(string separator)
+        {
+            if (!HorizontalRuleFormat.IsValidSeparator(separator))
+                throw new ArgumentException("Horizontal rule separator must be empty or consists of space(s).", nameof(separator));
         }
 
         public static void ThrowOnInvalidHeadingLevel(int level)

@@ -4,6 +4,8 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MOrderedList : MList
     {
+        private const int NumberingBase = 1;
+
         public MOrderedList()
         {
         }
@@ -25,15 +27,16 @@ namespace Pihrtsoft.Markdown.Linq
 
         public override MarkdownKind Kind => MarkdownKind.OrderedList;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             if (content is string s)
             {
-                return writer.WriteOrderedItem(1, s);
+                writer.WriteOrderedItem(NumberingBase, s);
             }
             else
             {
-                int number = 1;
+                int number = NumberingBase;
+
                 foreach (MElement element in Elements())
                 {
                     writer.WriteStartOrderedItem(number);
@@ -50,10 +53,9 @@ namespace Pihrtsoft.Markdown.Linq
                     writer.WriteEndOrderedItem();
                     number++;
                 }
-            }
 
-            writer.WriteLine();
-            return writer;
+                writer.WriteLine();
+            }
         }
 
         internal override void ValidateElement(MElement element)

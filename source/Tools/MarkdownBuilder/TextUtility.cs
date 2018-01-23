@@ -1,11 +1,25 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text;
-
 namespace Pihrtsoft.Markdown
 {
     internal static class TextUtility
     {
+        public static bool IsNullOrSpace(string s)
+        {
+            if (s == null)
+                return true;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] != ' ')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool IsCarriageReturnOrLinefeed(char ch)
         {
             return ch == '\n' || ch == '\r';
@@ -18,30 +32,12 @@ namespace Pihrtsoft.Markdown
 
             for (int i = 0; i < s.Length; i++)
             {
-                if (!(i >= 48 && i <= 57)
-                    && !(i >= 65 && i <= 90)
-                    && !(i >= 97 && i <= 122))
+                if (!(i >= 48 && i <= 57) // 0-9
+                    && !(i >= 65 && i <= 90) // A-Z
+                    && !(i >= 97 && i <= 122)) // a-z
                 {
                     return false;
                 }
-            }
-
-            return true;
-        }
-
-        public static bool IsWhiteSpace(StringBuilder sb)
-        {
-            return IsWhiteSpace(sb, 0, sb.Length);
-        }
-
-        public static bool IsWhiteSpace(StringBuilder sb, int index, int length)
-        {
-            int max = index + length;
-
-            for (int i = index; i < max; i++)
-            {
-                if (!char.IsWhiteSpace(sb[i]))
-                    return false;
             }
 
             return true;

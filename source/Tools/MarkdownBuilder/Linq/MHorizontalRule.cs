@@ -6,17 +6,19 @@ namespace Pihrtsoft.Markdown.Linq
 {
     public class MHorizontalRule : MElement
     {
+        private string _text;
         private int _count;
+        private string _separator;
 
-        internal MHorizontalRule(string value, int count = 3, string separator = " ")
+        public MHorizontalRule(string text, int count, string separator)
         {
-            Value = value;
+            Text = text;
             Count = count;
-            Separator = separator ?? "";
+            Separator = separator;
         }
 
         public MHorizontalRule(HorizontalRuleFormat format)
-            : this(format.Value, format.Count, format.Separator)
+            : this(format.Text, format.Count, format.Separator)
         {
         }
 
@@ -25,12 +27,20 @@ namespace Pihrtsoft.Markdown.Linq
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
-            Value = other.Value;
-            Count = other.Count;
-            Separator = other.Separator;
+            _text = other.Text;
+            _count = other.Count;
+            _separator = other.Separator;
         }
 
-        public string Value { get; set; }
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                Error.ThrowOnInvalidHorizontalRuleText(value);
+                _text = value;
+            }
+        }
 
         public int Count
         {
@@ -42,13 +52,21 @@ namespace Pihrtsoft.Markdown.Linq
             }
         }
 
-        public string Separator { get; set; }
+        public string Separator
+        {
+            get { return _separator; }
+            set
+            {
+                Error.ThrowOnInvalidHorizontalRuleSeparator(value);
+                _separator = value;
+            }
+        }
 
         public override MarkdownKind Kind => MarkdownKind.HorizontalRule;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
-            return writer.WriteHorizontalRule(Value, Count, Separator);
+            writer.WriteHorizontalRule(Text, Count, Separator);
         }
 
         internal override MElement Clone()

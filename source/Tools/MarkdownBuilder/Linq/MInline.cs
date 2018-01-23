@@ -2,38 +2,37 @@
 
 namespace Pihrtsoft.Markdown.Linq
 {
-    public class MInlineContainer : MContainer
+    public class MInline : MContainer
     {
-        internal MInlineContainer()
+        public MInline()
         {
         }
 
-        internal MInlineContainer(object content)
+        public MInline(object content)
             : base(content)
         {
         }
 
-        internal MInlineContainer(params object[] content)
+        public MInline(params object[] content)
             : base(content)
         {
         }
 
-        internal MInlineContainer(MContainer other)
+        public MInline(MContainer other)
             : base(other)
         {
         }
 
-        public override MarkdownKind Kind => MarkdownKind.InlineContainer;
+        public override MarkdownKind Kind => MarkdownKind.Inline;
 
-        public override MarkdownWriter WriteTo(MarkdownWriter writer)
+        public override void WriteTo(MarkdownWriter writer)
         {
             WriteContentTo(writer);
-            return writer;
         }
 
         internal override MElement Clone()
         {
-            return new MInlineContainer(this);
+            return new MInline(this);
         }
 
         internal override void ValidateElement(MElement element)
@@ -48,8 +47,8 @@ namespace Pihrtsoft.Markdown.Linq
                 case MarkdownKind.ImageReference:
                 case MarkdownKind.Autolink:
                 case MarkdownKind.InlineCode:
-                case MarkdownKind.CharReference:
-                case MarkdownKind.EntityReference:
+                case MarkdownKind.CharEntity:
+                case MarkdownKind.EntityRef:
                 case MarkdownKind.Comment:
                 case MarkdownKind.Bold:
                 case MarkdownKind.Italic:
@@ -57,7 +56,7 @@ namespace Pihrtsoft.Markdown.Linq
                     return;
             }
 
-            Error.ThrowInvalidContent(this, element);
+            Error.InvalidContent(this, element);
         }
     }
 }

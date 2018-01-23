@@ -285,7 +285,7 @@ namespace Roslynator.CodeGeneration.Markdown
         {
             if (value)
             {
-                return CharReference((char)0x2713);
+                return CharEntity((char)0x2713);
             }
             else
             {

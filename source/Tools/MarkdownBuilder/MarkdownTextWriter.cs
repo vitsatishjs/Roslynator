@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Pihrtsoft.Markdown.Linq;
 
@@ -13,58 +13,73 @@ namespace Pihrtsoft.Markdown
         private const int BufferOverflow = 32;
 
         private TextWriter _writer;
+        private bool _noWrite;
+
         private readonly char[] _bufChars;
         private int _bufPos;
-        protected int _bufLen = BufferSize;
-        private bool _skipWrite;
+        private readonly int _bufLen = BufferSize;
 
-        public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings)
+        public MarkdownTextWriter(TextWriter writer, MarkdownWriterSettings settings = null)
             : base(settings)
         {
-            Debug.Assert(writer != null);
-
-            _writer = writer;
+            _writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
             _bufChars = new char[_bufLen + BufferOverflow];
         }
 
         protected internal override int Length { get; set; }
 
-        public override unsafe MarkdownWriter WriteString(string value)
+        public override MarkdownWriter WriteString(string text)
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(text))
                 return this;
 
-            RawText(value);
-            return this;
-        }
-
-        protected unsafe void RawText(string s)
-        {
-            fixed (char* pSrcBegin = s)
+            try
             {
-                RawText(pSrcBegin, pSrcBegin + s.Length);
+                WriteStringUnsafe(text);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
             }
         }
 
-        protected unsafe void RawText(char* pSrcBegin, char* pSrcEnd)
+        private unsafe void WriteStringUnsafe(string value)
         {
-            fixed (char* pDstBegin = _bufChars)
+            fixed (char* pSrcStart = value)
             {
-                char* pDst = pDstBegin + _bufPos;
-                char* pSrc = pSrcBegin;
+                WriteStringUnsafe(pSrcStart, pSrcStart + value.Length);
+            }
+        }
+
+        private unsafe void WriteStringUnsafe(char* pSrcStart, char* pSrcEnd)
+        {
+            fixed (char* pDstStart = _bufChars)
+            {
+                char* pDst = pDstStart + _bufPos;
+                char* pSrc = pSrcStart;
 
                 int ch = 0;
                 while (true)
                 {
                     char* pDstEnd = pDst + (pSrcEnd - pSrc);
 
-                    if (pDstEnd > pDstBegin + _bufLen)
-                        pDstEnd = pDstBegin + _bufLen;
+                    if (pDstEnd > pDstStart + _bufLen)
+                        pDstEnd = pDstStart + _bufLen;
 
-                    while (pDst < pDstEnd
-                        && !_shouldBeEscaped((char)(ch = *pSrc))) //TODO: \r\n
+                    while (pDst < pDstEnd)
                     {
+                        ch = *pSrc;
+
+                        if (ch == 10
+                            || ch == 13
+                            || ShouldBeEscaped((char)ch))
+                        {
+                            break;
+                        }
+
                         pSrc++;
                         *pDst = (char)ch;
                         pDst++;
@@ -76,9 +91,9 @@ namespace Pihrtsoft.Markdown
 
                     if (pDst >= pDstEnd)
                     {
-                        _bufPos = (int)(pDst - pDstBegin);
+                        _bufPos = (int)(pDst - pDstStart);
                         FlushBuffer();
-                        pDst = pDstBegin;
+                        pDst = pDstStart;
                         continue;
                     }
 
@@ -86,30 +101,13 @@ namespace Pihrtsoft.Markdown
                     {
                         case (char)10:
                             {
-                                if (Settings.NewLineHandling == NewLineHandling.Replace)
-                                {
-                                    pDst = WriteNewLine(pDst);
-                                }
-                                else
-                                {
-                                    *pDst = (char)ch;
-                                    pDst++;
-                                    Length++;
-                                }
+                                OnBeforeWriteLine();
 
-                                break;
-                            }
-                        case (char)13:
-                            {
-                                switch (Settings.NewLineHandling)
+                                switch (NewLineHandling)
                                 {
                                     case NewLineHandling.Replace:
                                         {
-                                            //TODO: overflow?
-                                            if (pSrc[1] == '\n')
-                                                pSrc++;
-
-                                            pDst = WriteNewLine(pDst);
+                                            pDst = WriteNewLineUnsafe(pDst);
                                             break;
                                         }
                                     case NewLineHandling.None:
@@ -121,11 +119,41 @@ namespace Pihrtsoft.Markdown
                                         }
                                 }
 
+                                OnAfterWriteLine();
+                                break;
+                            }
+                        case (char)13:
+                            {
+                                OnBeforeWriteLine();
+
+                                switch (NewLineHandling)
+                                {
+                                    case NewLineHandling.Replace:
+                                        {
+                                            if (pSrc < pSrcEnd
+                                                && pSrc[1] == '\n')
+                                            {
+                                                pSrc++;
+                                            }
+
+                                            pDst = WriteNewLineUnsafe(pDst);
+                                            break;
+                                        }
+                                    case NewLineHandling.None:
+                                        {
+                                            *pDst = (char)ch;
+                                            pDst++;
+                                            Length++;
+                                            break;
+                                        }
+                                }
+
+                                OnAfterWriteLine();
                                 break;
                             }
                         default:
                             {
-                                *pDst = (_state == State.InlineCodeText) ? '`' : '\\';
+                                *pDst = EscapingChar;
                                 pDst++;
                                 Length++;
                                 *pDst = (char)ch;
@@ -138,51 +166,122 @@ namespace Pihrtsoft.Markdown
                     pSrc++;
                 }
 
-                _bufPos = (int)(pDst - pDstBegin);
+                _bufPos = (int)(pDst - pDstStart);
             }
         }
 
-        protected unsafe char* WriteNewLine(char* pDst)
+        public override MarkdownWriter WriteRaw(string data)
         {
-            fixed (char* pDstBegin = _bufChars)
+            if (string.IsNullOrEmpty(data))
+                return this;
+
+            try
             {
-                _bufPos = (int)(pDst - pDstBegin);
-                RawText(Settings.NewLineChars);
-                OnAfterWriteLine();
-                return pDstBegin + _bufPos;
+                WriteRawUnsafe(data);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
+        }
+
+        private unsafe void WriteRawUnsafe(string s)
+        {
+            fixed (char* pSrcStart = s)
+            {
+                WriteRawUnsafe(pSrcStart, pSrcStart + s.Length);
+            }
+        }
+
+        private unsafe void WriteRawUnsafe(char* pSrcStart, char* pSrcEnd)
+        {
+            fixed (char* pDstStart = _bufChars)
+            {
+                char* pDst = pDstStart + _bufPos;
+                char* pSrc = pSrcStart;
+
+                while (true)
+                {
+                    char* pDstEnd = pDst + (pSrcEnd - pSrc);
+
+                    if (pDstEnd > pDstStart + _bufLen)
+                        pDstEnd = pDstStart + _bufLen;
+
+                    while (pDst < pDstEnd)
+                    {
+                        *pDst = *pSrc;
+                        pSrc++;
+                        pDst++;
+                        Length++;
+                    }
+
+                    if (pSrc >= pSrcEnd)
+                        break;
+
+                    if (pDst >= pDstEnd)
+                    {
+                        _bufPos = (int)(pDst - pDstStart);
+                        FlushBuffer();
+                        pDst = pDstStart;
+                        continue;
+                    }
+                }
+
+                _bufPos = (int)(pDst - pDstStart);
+            }
+        }
+
+        private unsafe char* WriteNewLineUnsafe(char* pDst)
+        {
+            fixed (char* pDstStart = _bufChars)
+            {
+                _bufPos = (int)(pDst - pDstStart);
+                WriteRawUnsafe(NewLineChars);
+                return pDstStart + _bufPos;
             }
         }
 
         public override MarkdownWriter WriteLine()
         {
-            RawText(Settings.NewLineChars);
-            OnAfterWriteLine();
-            return this;
+            try
+            {
+                OnBeforeWriteLine();
+                WriteRawUnsafe(NewLineChars);
+                OnAfterWriteLine();
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override void WriteValue(int value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(long value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(float value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(double value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void Flush()
@@ -196,12 +295,12 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                if (!_skipWrite)
+                if (!_noWrite)
                     _writer.Write(_bufChars, 0, _bufPos);
             }
             catch
             {
-                _skipWrite = true;
+                _noWrite = true;
                 throw;
             }
             finally
@@ -218,7 +317,7 @@ namespace Pihrtsoft.Markdown
             }
             finally
             {
-                _skipWrite = true;
+                _noWrite = true;
 
                 if (_writer != null)
                 {

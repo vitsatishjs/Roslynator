@@ -27,11 +27,11 @@ namespace Pihrtsoft.Markdown.Linq
         {
             switch (element.Kind)
             {
-                case MarkdownKind.TableColumn:
+                case MarkdownKind.TableCell:
                 case MarkdownKind.TableRow:
                 case MarkdownKind.Document:
                     {
-                        Error.ThrowInvalidContent(this, element);
+                        Error.InvalidContent(this, element);
                         break;
                     }
             }
