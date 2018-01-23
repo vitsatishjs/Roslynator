@@ -34,8 +34,16 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(text))
                 return this;
 
-            WriteStringUnsafe(text);
-            return this;
+            try
+            {
+                WriteStringUnsafe(text);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         private unsafe void WriteStringUnsafe(string value)
@@ -167,8 +175,16 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(data))
                 return this;
 
-            WriteRawUnsafe(data);
-            return this;
+            try
+            {
+                WriteRawUnsafe(data);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         private unsafe void WriteRawUnsafe(string s)
@@ -229,35 +245,43 @@ namespace Pihrtsoft.Markdown
 
         public override MarkdownWriter WriteLine()
         {
-            OnBeforeWriteLine();
-            WriteRawUnsafe(NewLineChars);
-            OnAfterWriteLine();
-            return this;
+            try
+            {
+                OnBeforeWriteLine();
+                WriteRawUnsafe(NewLineChars);
+                OnAfterWriteLine();
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override void WriteValue(int value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(long value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(float value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(double value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
-            _writer.Write(value);
+            WriteString(value.ToString(_writer.FormatProvider));
         }
 
         public override void Flush()

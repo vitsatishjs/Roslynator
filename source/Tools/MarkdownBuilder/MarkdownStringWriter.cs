@@ -60,39 +60,21 @@ namespace Pihrtsoft.Markdown
             if (string.IsNullOrEmpty(text))
                 return this;
 
-            int length = text.Length;
-
-            int prev = 0;
-
-            int i = 0;
-            while (i < length)
+            try
             {
-                char ch = text[i];
+                int length = text.Length;
 
-                if (ch == 10)
+                int prev = 0;
+
+                int i = 0;
+                while (i < length)
                 {
-                    OnBeforeWriteLine();
+                    char ch = text[i];
 
-                    if (NewLineHandling == NewLineHandling.Replace)
+                    if (ch == 10)
                     {
-                        WriteString(text, prev, i - prev);
-                        WriteNewLine();
-                    }
-                    else if (NewLineHandling == NewLineHandling.None)
-                    {
-                        WriteString(text, prev, i + 1 - prev);
-                    }
+                        OnBeforeWriteLine();
 
-                    OnAfterWriteLine();
-                    prev = ++i;
-                }
-                else if (ch == 13)
-                {
-                    OnBeforeWriteLine();
-
-                    if (i < length - 1
-                        && text[i + 1] == 10)
-                    {
                         if (NewLineHandling == NewLineHandling.Replace)
                         {
                             WriteString(text, prev, i - prev);
@@ -100,39 +82,65 @@ namespace Pihrtsoft.Markdown
                         }
                         else if (NewLineHandling == NewLineHandling.None)
                         {
-                            WriteString(text, prev, i + 2 - prev);
+                            WriteString(text, prev, i + 1 - prev);
                         }
 
-                        i++;
+                        OnAfterWriteLine();
+                        prev = ++i;
                     }
-                    else if (NewLineHandling == NewLineHandling.Replace)
+                    else if (ch == 13)
+                    {
+                        OnBeforeWriteLine();
+
+                        if (i < length - 1
+                            && text[i + 1] == 10)
+                        {
+                            if (NewLineHandling == NewLineHandling.Replace)
+                            {
+                                WriteString(text, prev, i - prev);
+                                WriteNewLine();
+                            }
+                            else if (NewLineHandling == NewLineHandling.None)
+                            {
+                                WriteString(text, prev, i + 2 - prev);
+                            }
+
+                            i++;
+                        }
+                        else if (NewLineHandling == NewLineHandling.Replace)
+                        {
+                            WriteString(text, prev, i - prev);
+                            WriteNewLine();
+                        }
+                        else if (NewLineHandling == NewLineHandling.None)
+                        {
+                            WriteString(text, prev, i + 1 - prev);
+                        }
+
+                        OnAfterWriteLine();
+                        prev = ++i;
+                    }
+                    else if (ShouldBeEscaped(ch))
                     {
                         WriteString(text, prev, i - prev);
-                        WriteNewLine();
+                        WriteChar(EscapingChar);
+                        WriteChar(ch);
+                        prev = ++i;
                     }
-                    else if (NewLineHandling == NewLineHandling.None)
+                    else
                     {
-                        WriteString(text, prev, i + 1 - prev);
+                        i++;
                     }
+                }
 
-                    OnAfterWriteLine();
-                    prev = ++i;
-                }
-                else if (ShouldBeEscaped(ch))
-                {
-                    WriteString(text, prev, i - prev);
-                    WriteChar(EscapingChar);
-                    WriteChar(ch);
-                    prev = ++i;
-                }
-                else
-                {
-                    i++;
-                }
+                WriteString(text, prev, text.Length - prev);
+                return this;
             }
-
-            WriteString(text, prev, text.Length - prev);
-            return this;
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         private void WriteString(string value, int startIndex, int count)
@@ -156,47 +164,59 @@ namespace Pihrtsoft.Markdown
         public override MarkdownWriter WriteRaw(string data)
         {
             ThrowIfClosed();
-            _sb.Append(data);
-            return this;
+
+            try
+            {
+                _sb.Append(data);
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override MarkdownWriter WriteLine()
         {
-            OnBeforeWriteLine();
-            ThrowIfClosed();
-            _sb.Append(NewLineChars);
-            OnAfterWriteLine();
-            return this;
+            try
+            {
+                OnBeforeWriteLine();
+                ThrowIfClosed();
+                _sb.Append(NewLineChars);
+                OnAfterWriteLine();
+                return this;
+            }
+            catch
+            {
+                _state = State.Error;
+                throw;
+            }
         }
 
         public override void WriteValue(int value)
         {
-            ThrowIfClosed();
-            _sb.Append(value.ToString(FormatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(long value)
         {
-            ThrowIfClosed();
-            _sb.Append(value.ToString(FormatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(float value)
         {
-            ThrowIfClosed();
-            _sb.Append(value.ToString(FormatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(double value)
         {
-            ThrowIfClosed();
-            _sb.Append(value.ToString(FormatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override void WriteValue(decimal value)
         {
-            ThrowIfClosed();
-            _sb.Append(value.ToString(FormatProvider));
+            WriteString(value.ToString(FormatProvider));
         }
 
         public override string ToString()
