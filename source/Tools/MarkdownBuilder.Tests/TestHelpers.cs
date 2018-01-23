@@ -86,7 +86,7 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static string HorizontalRuleText()
         {
-            throw new NotImplementedException();
+            return StringValue();
         }
 
         public static int HorizontalRuleCount()
