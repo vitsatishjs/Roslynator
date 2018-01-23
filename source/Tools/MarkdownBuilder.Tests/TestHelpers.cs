@@ -74,6 +74,11 @@ namespace Pihrtsoft.Markdown.Tests
             return IntValue(1, 6);
         }
 
+        public static HorizontalRuleFormat HorizontalRuleFormat()
+        {
+            return new HorizontalRuleFormat(HorizontalRuleText(), HorizontalRuleCount(), HorizontalRuleSpace());
+        }
+
         public static MHorizontalRule CreateHorizontalRule()
         {
             return new MHorizontalRule(HorizontalRuleText(), HorizontalRuleCount(), HorizontalRuleSpace());
@@ -199,14 +204,15 @@ namespace Pihrtsoft.Markdown.Tests
             return new MarkdownFormat(
                 BoldStyle(),
                 ItalicStyle(),
-                ListItemStyle(),
-                CreateHorizontalRule(),
+                BulletListStyle(),
+                OrderedListStyle(),
+                HeadingStyle(),
                 HeadingOptions(),
                 TableOptions(),
                 CodeFenceStyle(),
                 CodeBlockOptions(),
                 HtmlEntityFormat(),
-                horizontalRuleFormat: HeadingStyle());
+                horizontalRuleFormat: HorizontalRuleFormat());
         }
 
         public static EmphasisStyle BoldStyle()
@@ -219,9 +225,14 @@ namespace Pihrtsoft.Markdown.Tests
             return (EmphasisStyle)IntValue(0, 1);
         }
 
-        public static BulletListStyle ListItemStyle()
+        public static BulletListStyle BulletListStyle()
         {
             return (BulletListStyle)IntValue(0, 2);
+        }
+
+        public static OrderedListStyle OrderedListStyle()
+        {
+            return (OrderedListStyle)IntValue(0, 1);
         }
 
         public static HeadingStyle HeadingStyle()

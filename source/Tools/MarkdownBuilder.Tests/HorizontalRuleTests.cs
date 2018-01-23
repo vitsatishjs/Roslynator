@@ -20,29 +20,11 @@ namespace Pihrtsoft.Markdown.Tests
         }
 
         [Fact]
-        public void HorizontalRule_NotEquals()
-        {
-            MHorizontalRule horizontalRule = CreateHorizontalRule();
-            MHorizontalRule horizontalRule2 = horizontalRule.Modify();
-
-            Assert.False(horizontalRule.Equals((object)horizontalRule2));
-        }
-
-        [Fact]
         public void HorizontalRule_GetHashCode_Equal()
         {
             MHorizontalRule horizontalRule = CreateHorizontalRule();
 
             Assert.Equal(horizontalRule.GetHashCode(), horizontalRule.GetHashCode());
-        }
-
-        [Fact]
-        public void HorizontalRule_GetHashCode_NotEqual()
-        {
-            MHorizontalRule horizontalRule = CreateHorizontalRule();
-            MHorizontalRule horizontalRule2 = horizontalRule.Modify();
-
-            Assert.NotEqual(horizontalRule.GetHashCode(), horizontalRule2.GetHashCode());
         }
 
         [Fact]
@@ -52,15 +34,6 @@ namespace Pihrtsoft.Markdown.Tests
             MHorizontalRule horizontalRule2 = horizontalRule;
 
             Assert.True(horizontalRule == horizontalRule2);
-        }
-
-        [Fact]
-        public void HorizontalRule_OperatorNotEquals()
-        {
-            MHorizontalRule horizontalRule = CreateHorizontalRule();
-            MHorizontalRule horizontalRule2 = horizontalRule.Modify();
-
-            Assert.True(horizontalRule != horizontalRule2);
         }
 
         [Fact]

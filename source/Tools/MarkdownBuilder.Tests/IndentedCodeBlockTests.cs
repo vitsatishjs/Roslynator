@@ -69,13 +69,5 @@ namespace Pihrtsoft.Markdown.Tests
 
             Assert.Equal(text, block.Text);
         }
-
-        [Fact]
-        public void IndentedCodeBlock_WithText()
-        {
-            string text = IndentedCodeBlockText();
-
-            Assert.Equal(text, CreateIndentedCodeBlock().WithText(text).Text);
-        }
     }
 }

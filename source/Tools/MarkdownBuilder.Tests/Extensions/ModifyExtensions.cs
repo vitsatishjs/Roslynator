@@ -8,11 +8,6 @@ namespace Pihrtsoft.Markdown.Tests
 {
     internal static class ModifyExtensions
     {
-        public static MHorizontalRule Modify(this MHorizontalRule horizontalRule)
-        {
-            throw new NotImplementedException();
-        }
-
         public static string Modify(this string value)
         {
             return value + "x";
@@ -102,20 +97,23 @@ namespace Pihrtsoft.Markdown.Tests
 
         public static MarkdownFormat Modify(this MarkdownFormat x)
         {
-            throw new NotImplementedException();
-
             return new MarkdownFormat(
                 x.BoldStyle.Modify(),
                 x.ItalicStyle.Modify(),
                 x.BulletListStyle.Modify(),
-                x.OrderedListStyle,
-                x.HeadingStyle,
+                x.OrderedListStyle.Modify(),
+                x.HeadingStyle.Modify(),
                 x.HeadingOptions.Modify(),
                 x.TableOptions.Modify(),
                 x.CodeFenceStyle.Modify(),
                 x.CodeBlockOptions.Modify(),
                 x.CharEntityFormat.Modify(),
-                horizontalRuleFormat: x.HorizontalRuleFormat);
+                horizontalRuleFormat: x.HorizontalRuleFormat.Modify());
+        }
+
+        public static HorizontalRuleFormat Modify(this HorizontalRuleFormat format)
+        {
+            return new HorizontalRuleFormat(format.Text.Modify(), format.Count.Modify(), format.Separator.Modify());
         }
 
         public static BulletListStyle Modify(this BulletListStyle style)
@@ -128,6 +126,19 @@ namespace Pihrtsoft.Markdown.Tests
                     return BulletListStyle.Minus;
                 case BulletListStyle.Minus:
                     return BulletListStyle.Asterisk;
+                default:
+                    throw new ArgumentException(style.ToString(), nameof(style));
+            }
+        }
+
+        public static OrderedListStyle Modify(this OrderedListStyle style)
+        {
+            switch (style)
+            {
+                case OrderedListStyle.Dot:
+                    return OrderedListStyle.Parenthesis;
+                case OrderedListStyle.Parenthesis:
+                    return OrderedListStyle.Dot;
                 default:
                     throw new ArgumentException(style.ToString(), nameof(style));
             }
