@@ -32,8 +32,6 @@ namespace Pihrtsoft.Markdown
 
         Table = 21,
         TableRow = 22,
-
-        //TODO: TableColumn
         TableColumn = 23,
 
         Document = 24,

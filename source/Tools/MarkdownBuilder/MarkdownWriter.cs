@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -105,7 +106,7 @@ namespace Pihrtsoft.Markdown
             return new MarkdownTextWriter(new StreamWriter(stream, encoding ?? Encoding.UTF8), settings);
         }
 
-        private void CheckPush(MarkdownKind kind)
+        private void Push(MarkdownKind kind)
         {
             Check(kind);
             _stack.Push(kind);
@@ -119,7 +120,7 @@ namespace Pihrtsoft.Markdown
                     throw new InvalidOperationException("Cannot write to a closed writer.");
 
                 if (_state == State.Error)
-                    throw new InvalidOperationException("Cannot write to a writer in an error state.");
+                    throw new InvalidOperationException("Cannot write to a writer in error state.");
             }
             catch
             {
@@ -145,7 +146,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.Bold);
+                Push(MarkdownKind.Bold);
                 WriteRaw(Format.BoldDelimiter);
             }
             catch
@@ -188,7 +189,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.Italic);
+                Push(MarkdownKind.Italic);
                 WriteRaw(Format.ItalicDelimiter);
             }
             catch
@@ -231,7 +232,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.Strikethrough);
+                Push(MarkdownKind.Strikethrough);
                 WriteRaw("~~");
             }
             catch
@@ -274,7 +275,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                Check(MarkdownKind.InlineCode);
+                Push(MarkdownKind.InlineCode);
                 WriteRaw("`");
 
                 if (!string.IsNullOrEmpty(text))
@@ -303,7 +304,7 @@ namespace Pihrtsoft.Markdown
             {
                 Error.ThrowOnInvalidHeadingLevel(level);
 
-                CheckPush(MarkdownKind.Heading);
+                Push(MarkdownKind.Heading);
 
                 _headingLevel = level;
 
@@ -411,7 +412,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.BulletItem);
+                Push(MarkdownKind.BulletItem);
                 WriteLineIfNecessary();
                 WriteRaw(Format.BulletItemStart);
                 ListLevel++;
@@ -458,7 +459,7 @@ namespace Pihrtsoft.Markdown
             try
             {
                 Error.ThrowOnInvalidItemNumber(number);
-                CheckPush(MarkdownKind.OrderedItem);
+                Push(MarkdownKind.OrderedItem);
                 WriteLineIfNecessary();
                 WriteValue(number);
                 WriteRaw(Format.OrderedItemStart);
@@ -506,7 +507,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.TaskItem);
+                Push(MarkdownKind.TaskItem);
                 WriteLineIfNecessary();
 
                 if (isCompleted)
@@ -586,7 +587,7 @@ namespace Pihrtsoft.Markdown
 
                 Error.ThrowOnInvalidUrl(url);
 
-                Check(MarkdownKind.Image);
+                Push(MarkdownKind.Image);
                 WriteRaw("!");
                 WriteLinkCore(text, url, title);
             }
@@ -606,7 +607,7 @@ namespace Pihrtsoft.Markdown
 
                 Error.ThrowOnInvalidUrl(url);
 
-                Check(MarkdownKind.Link);
+                Push(MarkdownKind.Link);
                 WriteLinkCore(text, url, title);
             }
             catch
@@ -642,7 +643,7 @@ namespace Pihrtsoft.Markdown
             try
             {
                 Error.ThrowOnInvalidUrl(url);
-                Check(MarkdownKind.Autolink);
+                Push(MarkdownKind.Autolink);
                 WriteAngleBrackets(url);
             }
             catch
@@ -656,7 +657,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                Check(MarkdownKind.ImageReference);
+                Push(MarkdownKind.ImageReference);
                 WriteRaw("!");
                 WriteLinkReferenceCore(text, label);
             }
@@ -671,7 +672,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                Check(MarkdownKind.LinkReference);
+                Push(MarkdownKind.LinkReference);
                 WriteLinkReferenceCore(text, label);
             }
             catch
@@ -693,7 +694,7 @@ namespace Pihrtsoft.Markdown
             {
                 Error.ThrowOnInvalidUrl(url);
 
-                Check(MarkdownKind.Label);
+                Push(MarkdownKind.Label);
                 WriteLineIfNecessary();
                 WriteSquareBrackets(label);
                 WriteRaw(": ");
@@ -737,7 +738,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                Check(MarkdownKind.IndentedCodeBlock);
+                Push(MarkdownKind.IndentedCodeBlock);
 
                 WriteLine(Format.EmptyLineBeforeCodeBlock);
 
@@ -759,7 +760,7 @@ namespace Pihrtsoft.Markdown
             try
             {
                 Error.ThrowOnInvalidFencedCodeBlockInfo(info);
-                Check(MarkdownKind.FencedCodeBlock);
+                Push(MarkdownKind.FencedCodeBlock);
 
                 WriteLine(Format.EmptyLineBeforeCodeBlock);
 
@@ -786,7 +787,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.BlockQuote);
+                Push(MarkdownKind.BlockQuote);
                 WriteLineIfNecessary();
                 QuoteLevel++;
             }
@@ -846,7 +847,7 @@ namespace Pihrtsoft.Markdown
                 Error.ThrowOnInvalidHorizontalRuleCount(count);
                 Error.ThrowOnInvalidHorizontalRuleSeparator(separator);
 
-                Check(MarkdownKind.HorizontalRule);
+                Push(MarkdownKind.HorizontalRule);
 
                 WriteLineIfNecessary();
 
@@ -892,7 +893,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.Table);
+                Push(MarkdownKind.Table);
 
                 WriteLine(Format.EmptyLineBeforeTable);
 
@@ -967,7 +968,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                CheckPush(MarkdownKind.TableRow);
+                Push(MarkdownKind.TableRow);
                 _tableRowIndex++;
                 _tableColumnIndex = -1;
             }
@@ -1006,7 +1007,7 @@ namespace Pihrtsoft.Markdown
             {
                 //TODO: stack top is table row
 
-                CheckPush(MarkdownKind.Inline);
+                Push(MarkdownKind.Inline);
 
                 _tableColumnIndex++;
 
@@ -1176,7 +1177,7 @@ namespace Pihrtsoft.Markdown
             {
                 Error.ThrowOnInvalidCharEntity(value);
 
-                Check(MarkdownKind.CharEntity);
+                Push(MarkdownKind.CharEntity);
                 WriteRaw("&#");
 
                 if (Format.CharEntityFormat == CharEntityFormat.Hexadecimal)
@@ -1206,7 +1207,7 @@ namespace Pihrtsoft.Markdown
         {
             try
             {
-                Check(MarkdownKind.EntityRef);
+                Push(MarkdownKind.EntityRef);
                 WriteRaw("&");
                 WriteRaw(name);
                 WriteRaw(";");
@@ -1231,7 +1232,7 @@ namespace Pihrtsoft.Markdown
                         throw new ArgumentException("Last character of XML comment text cannot be '-'.");
                 }
 
-                Check(MarkdownKind.Comment);
+                Push(MarkdownKind.Comment);
                 WriteRaw("<!-- ");
                 WriteRaw(text);
                 WriteRaw(" -->");
