@@ -7,7 +7,7 @@ using Pihrtsoft.Markdown.Linq;
 
 namespace Pihrtsoft.Markdown
 {
-    internal class MarkdownTextWriter : MarkdownWriter
+    internal class MarkdownTextWriter : MarkdownWriter, ITableAnalyzer
     {
         private const int BufferSize = 1024 * 6;
         private const int BufferOverflow = 32;
@@ -29,15 +29,16 @@ namespace Pihrtsoft.Markdown
 
         protected internal override int Length { get; set; }
 
-        public override MarkdownWriter WriteString(string text)
+        public override void WriteString(string text)
         {
             if (string.IsNullOrEmpty(text))
-                return this;
+                return;
 
             try
             {
+                //TODO: check
+
                 WriteStringUnsafe(text);
-                return this;
             }
             catch
             {
@@ -168,17 +169,28 @@ namespace Pihrtsoft.Markdown
 
                 _bufPos = (int)(pDst - pDstStart);
             }
+
+            char* WriteNewLineUnsafe(char* pDst)
+            {
+                fixed (char* pDstStart = _bufChars)
+                {
+                    _bufPos = (int)(pDst - pDstStart);
+                    WriteRawUnsafe(NewLineChars);
+                    return pDstStart + _bufPos;
+                }
+            }
         }
 
-        public override MarkdownWriter WriteRaw(string data)
+        public override void WriteRaw(string data)
         {
             if (string.IsNullOrEmpty(data))
-                return this;
+                return;
 
             try
             {
+                //TODO: check
+
                 WriteRawUnsafe(data);
-                return this;
             }
             catch
             {
@@ -233,24 +245,13 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        private unsafe char* WriteNewLineUnsafe(char* pDst)
-        {
-            fixed (char* pDstStart = _bufChars)
-            {
-                _bufPos = (int)(pDst - pDstStart);
-                WriteRawUnsafe(NewLineChars);
-                return pDstStart + _bufPos;
-            }
-        }
-
-        public override MarkdownWriter WriteLine()
+        public override void WriteLine()
         {
             try
             {
                 OnBeforeWriteLine();
                 WriteRawUnsafe(NewLineChars);
                 OnAfterWriteLine();
-                return this;
             }
             catch
             {
@@ -341,7 +342,7 @@ namespace Pihrtsoft.Markdown
             }
         }
 
-        protected internal override IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
+        public IReadOnlyList<TableColumnInfo> AnalyzeTable(IEnumerable<MElement> rows)
         {
             return TableAnalyzer.Analyze(rows, Settings, _writer.FormatProvider)?.AsReadOnly();
         }

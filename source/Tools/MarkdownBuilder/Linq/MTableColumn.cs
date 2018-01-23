@@ -32,7 +32,7 @@ namespace Pihrtsoft.Markdown.Linq
 
         public Alignment Alignment { get; set; }
 
-        public override MarkdownKind Kind => MarkdownKind.TableCell;
+        public override MarkdownKind Kind => MarkdownKind.TableColumn;
 
         public override void WriteTo(MarkdownWriter writer)
         {
